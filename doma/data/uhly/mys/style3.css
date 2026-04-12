@@ -1,0 +1,158 @@
+:root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --accent: #2c5aa0;
+    --border: #e0e0e0;
+}
+
+body.theme-3 {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, serif;
+}
+
+#container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+#pohadka {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    padding: 1.5em;
+    margin: 2em 0;
+    background: #fafafa;
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+#pohadka.visible { display: block !important; }
+
+h1 {
+    text-align: center;
+    font-size: 2rem;
+}
+
+#angleTitle { display: none; }
+
+.ilustrace {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.ilustrace img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* ===== AKORDEON ===== */
+.angle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2em 0;
+    border: 1px solid var(--border);
+}
+
+.angle-list button {
+    width: 100%;
+    background: white;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-align: left;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.angle-list button:last-child {
+    border-bottom: none;
+}
+
+.angle-list button:hover {
+    background: #f9f9f9;
+}
+
+.angle-list button.selected {
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+}
+
+.output {
+    border: 1px solid var(--border);
+    padding: 2.5em;
+    margin-top: 0;
+    background: #f9f9f9;
+    min-height: 300px;
+    margin-bottom: 2em;
+}
+
+.angle-name {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 0.3em;
+    font-weight: bold;
+}
+
+.angle-desc {
+    font-size: 0.95rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 1.5em;
+}
+
+.angle-text {
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.generative-block {
+    margin-top: 2em;
+    padding: 1.5em;
+    border: 1px solid var(--accent);
+    background: rgba(44, 90, 160, 0.05);
+}
+
+.generator-link {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 8px 14px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.generator-link:hover {
+    background: #1d3a5f;
+}
+
+.audio-link {
+    text-align: center;
+    margin-top: 1em;
+    font-size: 0.9rem;
+}
+
+.audio-link a {
+    color: var(--accent);
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 3em;
+    padding-top: 2em;
+    border-top: 1px solid var(--border);
+}
+
+.footer a {
+    color: var(--accent);
+}
