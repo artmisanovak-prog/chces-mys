@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Páv - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        /* --- ILUSTRACE --- */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        /* --- POHÁDKA - SCROLLOVACÍ OKNO --- */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        /* --- 12 TLAČÍTEK - JEDNODUCHÁ MŘÍŽKA --- */
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        /* --- VÝSTUP - POD TLAČÍTKY --- */
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🦚 12 úhlů pohledu</h1>
+<p><em>„O pávovi, který měl tolik ok, že se mu začala dívat zpátky – a o tom, že když se díváš na svět skrz sebe, všechno vypadá jako ty“</em></p>
+
+<!-- ILUSTRACE PÁVA -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/pav.jpg" alt="Ilustrace páva">
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p><strong>O PÁVOVI</strong></p>
+        <p><strong>Pohádka o pávovi</strong></p>
+        <p><strong>Oko za okem, páv za pávem – a nikdo neví proč.</strong></p>
+        
+        <p>—</p>
+        
+        <p>Byl jednou jeden páv, který měl tolik ok na ocase, že se mu začaly dívat zpátky.</p>
+        <p>Ne on na svět, ale svět na něj – skrz jeho vlastní pera.</p>
+        <p>A to byl problém.</p>
+        
+        <p>—</p>
+        
+        <p>Protože když se díváš na svět skrz sebe, všechno vypadá jako ty.</p>
+        <p>A páv si začal myslet, že celý svět je páv.</p>
+        <p>Že stromy jsou pávové, jen bez per.</p>
+        <p>Že mraky jsou pávové, co se rozplynuli.</p>
+        <p>A že myš je jen páv, co se zapomněl rozvinout.</p>
+        
+        <p>—</p>
+        
+        <p>A tak začal pávy počítat.</p>
+        <p>Ne podle počtu nohou, ale podle počtu ok.</p>
+        <p>Kdo měl víc než jedno oko, byl podezřelý.</p>
+        <p>Kdo měl méně než jedno, byl prorok.</p>
+        
+        <p>—</p>
+        
+        <p>Jednou potkal lemura, co se díval jen na stranu.</p>
+        <p>Páv se zarazil: „To je páv, co se otočil dovnitř.“</p>
+        <p>Pak potkal kocoura, co krkal tečky.</p>
+        <p>„To je páv, co spolkl interpunkci.“</p>
+        
+        <p>—</p>
+        
+        <p>A když potkal zaječici, co prošla ohněm, řekl:</p>
+        <p>„To je páv, co se přepálil.“</p>
+        
+        <p>—</p>
+        
+        <p>A tak vznikla nová teorie:</p>
+        <p>Každé zvíře je páv v jiném stádiu rozpadu.</p>
+        <p>A každé oko je jen zrcadlo, co se snaží zapomenout, co vidělo.</p>
+        
+        <p>—</p>
+        
+        <p>Páv si začal odtrhávat pera.</p>
+        <p>Ne proto, že by chtěl být méně krásný.</p>
+        <p>Ale proto, že chtěl být méně páv.</p>
+        
+        <p>—</p>
+        
+        <p>A když mu zbylo jen jedno oko, konečně uviděl:</p>
+        <p>Že není páv.</p>
+        <p>Že je pohádka.</p>
+        
+        <p>—</p>
+        
+        <p>A že pohádka se nedá rozvinout jako ocas.</p>
+    </div>
+</div>
+    
+<!-- 12 ÚHLŮ -->
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<!-- VÝSTUP -->
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20PÁV">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S KRÁTKÝM POPISEM A KONKRÉTNÍ VĚTOU O POHÁDCE O PÁVOVI ---
+    const data = [
+        { 
+            name: "Absurdní", 
+            desc: "Hledá nesmysl, paradox, rozpor.", 
+            text: "Páv s tolika oky na ocase, že se mu začala dívat zpátky. Svět, který se skládá z pávů – stromy, mraky, myš. A teorie, že každé zvíře je páv v jiném stádiu rozpadu. Absurdní? Ano. Ale co je absurdnější: vidět svět takový, jaký je, nebo ho vidět takový, jací jsme my?" 
+        },
+        { 
+            name: "Jazykový", 
+            desc: "Sleduje slova, rytmus, dvojznačnost.", 
+            text: "„Oko za okem, páv za pávem“ – rytmus, který připomíná přísloví, ale nedává smysl. A přesto dává. Jazyk se tady láme: páv přestává být ptákem a stává se kategorií. Kdo spolkl interpunkci, je páv. Kdo se přepálil, je páv. Slova ztrácejí význam a získávají nový – páví." 
+        },
+        { 
+            name: "Ironický", 
+            desc: "Vidí rozpor mezi záměrem a výsledkem.", 
+            text: "Páv chce vidět svět, ale místo toho vidí jen sebe. Jeho teorie o pávovitosti světa je sebestředná, ale on to neví. Ironie: čím víc se snaží pochopit svět, tím víc ho obaluje sebou. A když si začne trhat pera, aby byl méně páv, zjistí, že je pohádka – což je možná ještě víc páví." 
+        },
+        { 
+            name: "Filozofický", 
+            desc: "Ptá se po smyslu a podstatě.", 
+            text: "Co je to identita? Je to to, co vidíme, nebo to, co si myslíme, že vidíme? Páv promítá sebe do všeho – stromy, mraky, myš. Je to extrémní solipsismus. Ale když si odtrhá pera a zbude mu jen jedno oko, uvidí, že je pohádka. Pohádka, která se nedá rozvinout jako ocas. Není to tak s námi všemi?" 
+        },
+        { 
+            name: "Surrealistický", 
+            desc: "Propojuje nesouvisející.", 
+            text: "Páv, co potkává lemura hledícího stranou, kocoura krkajícího tečky, zaječici po ohni. A všechno to jsou pávové. Stromy bez per, rozplynulé mraky, zapomenutá myš. Svět, kde se realita láme přes páví optiku a vznikají nové, nemožné kategorie." 
+        },
+        { 
+            name: "Naivní", 
+            desc: "Vidí věci jednoduše, bez předsudků.", 
+            text: "Páv měl na ocase hodně ok. Díval se přes ně a myslel si, že všechno je páv. Stromy jsou pávové, mraky jsou pávové, myš je páv. Potkával zvířata a říkal si, jací jsou to pávové. Pak si začal trhat pera, až mu zbylo jedno oko. A uviděl, že není páv, ale pohádka. Jednoduchý, ne?" 
+        },
+        { 
+            name: "Introspektivní", 
+            desc: "Promítá do příběhu vlastní pocity.", 
+            text: "Tohle jsem já. Někdy mám pocit, že se dívám na svět skrz sebe a všechno vidím jako odraz. Lidé jsou moje verze, události jsou moje příběhy. A pak si uvědomím, že možná nejsem nic víc než pohádka, kterou si vyprávím. A že ta pohádka se nedá rozvinout jako ocas." 
+        },
+        { 
+            name: "Betonový", 
+            desc: "Čte doslovně, fakticky.", 
+            text: "Příběh vypráví o pávovi s nadměrným množstvím ok na ocase, což mu způsobilo, že svět vnímal jako projekci sebe sama. Vytvořil teorii, že všechna zvířata jsou pávové v různých fázích existence. Postupně si odtrhával pera, až mu zbylo jediné oko. Tehdy dospěl k poznání, že není reálná bytost, ale literární útvar – pohádka." 
+        },
+        { 
+            name: "Kulturní", 
+            desc: "Hledá archetypy a paralely.", 
+            text: "Páv jako archetyp marnivosti a krásy. Tady je ale jeho krása pastí – tolik ok, že se jimi nemůže dívat ven, jen dovnitř. Je to Narcis v ptačí podobě. Jeho teorie o pávovitosti světa je moderní mýtus o sebestřednosti. A pointa – že je pohádka – je existenciální obrat: možná jsme všichni jen příběhy, které si o sobě vyprávíme." 
+        },
+        { 
+            name: "Asociační", 
+            desc: "Vyvolává osobní vzpomínky.", 
+            text: "Připomnělo mi to strýce, který měl teorii o všem. Všechno vysvětloval podle sebe – politiku, počasí, vztahy. Říkal: „Lidi jsou jako já, jen to nevědí.“ A my jsme se tomu smáli. Ale teď, když čtu o pávovi, říkám si – možná měl pravdu. A možná jsme všichni pávové, co se snaží odtrhat pera, aby zjistili, kdo doopravdy jsou." 
+        },
+        { 
+            name: "Metaforický", 
+            desc: "Vidí symboly za věcmi.", 
+            text: "Páv je naše ego. Oka na ocase jsou naše perspektivy, úhly pohledu, předsudky. Čím víc jich máme, tím víc vidíme svět jako sebe. Stromy, mraky, myš – to jsou ostatní, které přetváříme ke svému obrazu. Trhání per je zbavování se iluzí. A když zbude jen jedno oko, uvidíme, že nejsme to, co jsme si mysleli. Jsme příběh." 
+        },
+        { 
+            name: "Groteskní", 
+            desc: "Vidí přehnanou, temnou komiku.", 
+            text: "Představ si: páv s obrovským ocasem plným ok, co se na něj dívají. On si myslí, že strom je páv, mrak je páv, myš je páv. Potká lemura: „Aha, páv, co se otočil dovnitř.“ Kocoura: „Páv, co spolkl interpunkci.“ Zaječici: „Páv, co se přepálil.“ Je to groteska o tom, že největší ješita vidí všude jen sebe. A když si oškube ocas, zjistí, že je jen pohádka." 
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+
+    // Vytvoření tlačítek
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            // Zvýraznění
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Výpis
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    // Předvolit první úhel
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+<!-- Poznámka: Tímto je kompletní série devatenácti pohádek (myš, kocour, ryba, motýl, plameňák, čáp, liška, netopýr, lemur, moucha, žížala, zajíc, tygr, krokodýl, želva, jednorožec, pavouk, parohy, páv) – všechny se stejným designem a funkcí. -->
+
+</body>
+</html>
