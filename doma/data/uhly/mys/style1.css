@@ -1,0 +1,165 @@
+style1.css
+:root {
+    --bg: #faf9f7;
+    --text: #2a2a2a;
+    --accent: #c1121f;
+    --border: #ddd;
+}
+
+body.theme-1 {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, serif;
+}
+
+#container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.ilustrace {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.ilustrace img {
+    max-width: 250px;
+    height: auto;
+    border: 2px solid var(--accent);
+}
+
+#pohadka { display: none !important; }
+
+h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 0.3em;
+}
+
+#angleTitle { display: none; }
+
+/* ===== KRUHOVÝ LAYOUT ===== */
+.angle-list {
+    width: 500px;
+    height: 500px;
+    margin: 3em auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.angle-list button {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--text);
+    background: white;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px;
+}
+
+.angle-list button:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.angle-list button.selected {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* Kruhové rozmístění (CSS transformace) */
+.angle-list button:nth-child(1) { transform: rotate(0deg) translateY(-200px) rotate(0deg); }
+.angle-list button:nth-child(2) { transform: rotate(30deg) translateY(-200px) rotate(-30deg); }
+.angle-list button:nth-child(3) { transform: rotate(60deg) translateY(-200px) rotate(-60deg); }
+.angle-list button:nth-child(4) { transform: rotate(90deg) translateY(-200px) rotate(-90deg); }
+.angle-list button:nth-child(5) { transform: rotate(120deg) translateY(-200px) rotate(-120deg); }
+.angle-list button:nth-child(6) { transform: rotate(150deg) translateY(-200px) rotate(-150deg); }
+.angle-list button:nth-child(7) { transform: rotate(180deg) translateY(-200px) rotate(-180deg); }
+.angle-list button:nth-child(8) { transform: rotate(210deg) translateY(-200px) rotate(-210deg); }
+.angle-list button:nth-child(9) { transform: rotate(240deg) translateY(-200px) rotate(-240deg); }
+.angle-list button:nth-child(10) { transform: rotate(270deg) translateY(-200px) rotate(-270deg); }
+.angle-list button:nth-child(11) { transform: rotate(300deg) translateY(-200px) rotate(-300deg); }
+.angle-list button:nth-child(12) { transform: rotate(330deg) translateY(-200px) rotate(-330deg); }
+
+.output {
+    border: 2px solid var(--border);
+    padding: 3em;
+    margin-top: 3em;
+    background: white;
+    text-align: center;
+}
+
+.angle-name {
+    font-size: 2.2rem;
+    color: var(--accent);
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+.angle-desc {
+    font-size: 1rem;
+    color: #777;
+    font-style: italic;
+    margin-bottom: 1.5em;
+}
+
+.angle-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.generative-block {
+    margin-top: 2em;
+    padding: 1.5em;
+    border: 1px dashed var(--accent);
+    background: rgba(193, 18, 31, 0.05);
+}
+
+.generator-link {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 10px 16px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.generator-link:hover {
+    background: #a00820;
+}
+
+.audio-link {
+    margin-top: 1em;
+    font-size: 0.9rem;
+}
+
+.audio-link a {
+    color: var(--accent);
+}
+
+.footer {
+    margin-top: 3em;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.footer a {
+    color: var(--accent);
+}
