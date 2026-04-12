@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryba - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        .audio-link {
+            text-align: center;
+            margin-top: 0.5em;
+            font-size: 0.9rem;
+        }
+        .audio-link a {
+            color: #000;
+            text-decoration: underline;
+        }
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .generative-block {
+            margin-top: 2em;
+            padding: 1.2em;
+            border: 1px solid #000;
+            background: #f3f3f3;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .generative-label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        .generative-sentence {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1em;
+        }
+        .generator-link {
+            display: inline-block;
+            margin-top: 0.5em;
+            padding: 0.5em 1em;
+            border: 1px solid #000;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.1s;
+        }
+        .generator-link:hover {
+            background: #000;
+            color: #fff;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🐟 12 úhlů pohledu</h1>
+<p><em>„O rybě, která rapovala, a o tom, jak ticho konečně dostalo hlas“</em></p>
+
+<!-- ILUSTRACE RYBY + odkaz na audio -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/ryba.jpg" alt="Ilustrace ryby">
+    <div class="audio-link">
+        🎧 <a href="https://youtu.be/s0BENxFsOiY?is=W5Y9WuqmikgNbnXD" target="_blank">Poslechnout si pohádku (YouTube audio)</a>
+    </div>
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        <p><strong>O RYBĚ</strong></p>
+        <p><strong>která rapovala</strong></p>
+        <p>—</p>
+        <p>—</p>
+        <p>Říká se, že ryby mlčí.</p>
+        <p>Že nemají hlas.</p>
+        <p>Že jen plavou, koukají, a občas se nechají chytit.</p>
+        <p>Ale to je omyl. Kec.</p>
+        <p>Suchozemská lež.</p>
+        <p>—</p>
+        <p>Ryby totiž nemlčí.</p>
+        <p>Ryby rapujou.</p>
+        <p>—</p>
+        <p>Ne tak, jak si to představuješ – žádné mikrofony, žádné beaty z repro beden.</p>
+        <p>„Rybí rap je jinej.</p>
+        <p>Je to rytmus proudů.</p>
+        <p>Je to nížka, výška vln a vlnek.</p>
+        <p>Je to tempo vodních kruhů.</p>
+        <p>Je to mezera mezi bublinama.</p>
+        <p>—</p>
+        <p>Pod vodou se zvuk jinak šíří.</p>
+        <p>Hlubší. Širší. Pomalejší.</p>
+        <p>A tak ryby neřvou.</p>
+        <p>Ryby vibrujou.</p>
+        <p>—</p>
+        <p>Každej druh rybí má svůj styl hudební.</p>
+        <p>Kosatky zpívají chansony – dlouhé, nostalgické, ovlivňují směry proudů.</p>
+        <p>Žraloci zpívaj gospel – hluboký a s ozvěnou. Míchají barevné odstíny hladin s tóny hlubin.</p>
+        <p>Velryba si troufne na operu</p>
+        <p>a medúzy jí dělaj vokály nebo se daj na triangly, rolničky, zvonce.</p>
+        <p>Delfin je folklor.</p>
+        <p>Chobotnice strihne jazzovy improvizace.</p>
+        <p>Ryba co se nafukuje zvládá dechovky, ale nemá je ráda.</p>
+        <p>Piraňi balady.</p>
+        <p>A kapr zkouší hrdelní zpěvy.</p>
+        <p>Mušle a lastury pějí lovestory.</p>
+        <p>Ska umí létací ryby.</p>
+        <p>Tučňák se vidí v klasice.</p>
+        <p>Na pop je odbornice bělice.</p>
+        <p>A úhoř nemá hudební ambice.</p>
+        <p>—</p>
+        <p>Je toho více.</p>
+        <p>Ale tohle všechno není hudba pro uši,</p>
+        <p>Tohle ovlivňuje různé vodní vlastnosti.</p>
+        <p>—</p>
+        <p>A ryba?</p>
+        <p>Ryba má rap.</p>
+        <p>Ne kvůli slávě.</p>
+        <p>Kvůli přesnosti.</p>
+        <p>—</p>
+        <p>Flow je king a king je ryba.</p>
+        <p>Beat jí dělá sea i jezera.</p>
+        <p>Riff kape, flow teče.</p>
+        <p>Přesná slova proudí jak voda.</p>
+        <p>Její punchline je fontána.</p>
+        <p>—</p>
+        <p>Každý verš má váhu.</p>
+        <p>A tohle ryby umí.</p>
+        <p>Líp než ptáci.</p>
+        <p>—</p>
+        <p>Ptačí zpěv?</p>
+        <p>Křikot je to.</p>
+        <p>Řev, ryk, krákot, jekot.</p>
+        <p>Tempo? Melodie? Text?</p>
+        <p>Ptáci neumí dávat.</p>
+        <p>Ptáci umí jen sprostě nadávat.</p>
+        <p>Píp rýmuje s píp, jinak bez ideje.</p>
+        <p>Cokoli řeknou hned se cenzuruje.</p>
+        <p>—</p>
+        <p>Zato ryby fakt dávaj.</p>
+        <p>Dávaj rytmus vodě.</p>
+        <p>Dávaj smysl tichu.</p>
+        <p>Dávají beaty proudům.</p>
+        <p>—</p>
+        <p>A stalo se jednoho dne, že ryba začala rapovat i na hladině.</p>
+        <p>Ne pro ostatní.</p>
+        <p>Pro vodu.</p>
+        <p>—</p>
+        <p>A voda odpověděla.</p>
+        <p>Jinak se zavlnila.</p>
+        <p>Do rytmu se natřásala.</p>
+        <p>Tvořila verše jako vodní kruhy, v kterých byly další kruhy.</p>
+        <p>Mlha, spadlá do polí, opsala jejich flow.</p>
+        <p>A vytvořila kruhy v obilí.</p>
+        <p>Rybi hudba byla slyšet – ne uchem, ale okem, tělem.</p>
+        <p>—</p>
+        <p>A tak se po kapkách roznáší všude kolem,</p>
+        <p>že prvni místo v hitparádě,</p>
+        <p>vyhrály ryby - nepochybně.</p>
+        <p>—</p>
+        <p>Ne proto, že zpívaj.</p>
+        <p>Ale proto, že ví..</p>
+        <p>—</p>
+        <p>..kdy mlčet.</p>
+        <p>—</p>
+        <p>Možná je čas,</p>
+        <p>aby se svět dozvěděl o rybím rapu.</p>
+        <p>–</p>
+        <p>Možná je čas,</p>
+        <p>aby se</p>
+        <p>přestalo poslouchat a začalo se vnímat.</p>
+        <p>—</p>
+        <p>Možná je čas,</p>
+        <p>aby se ticho konečně dostalo nad hladinu.</p>
+    </div>
+</div>
+    
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+    <div id="generativeBlock" class="generative-block" style="display: none;">
+        <div class="generative-label">🎲 GENERATIVNÍ VĚTA (KLÍČ MYŠI)</div>
+        <div class="generative-sentence" id="generativeSentence"></div>
+        <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 Otevřít v generátoru</a>
+    </div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20RYBA">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S POPISEM, TEXTEM A GENERATIVNÍ VĚTOU (KLÍČEM) ---
+    const data = [
+        { 
+            name: "Absurdní",
+            desc: "Hledá nesmysl, paradox, rozpor.",
+            text: "Ryby, které rapují? Beat z vodních kruhů, flow z proudů, punchline jako fontána? Ptáci, kteří jen sprostě nadávají? Tahle pohádka staví realitu na hlavu – a přitom v té absurditě je víc pravdy než v suchozemských klepech o mlčících rybách.",
+            key: "hudba bez plic"
+        },
+        { 
+            name: "Jazykový",
+            desc: "Sleduje slova, rytmus, dvojznačnost.",
+            text: "Rybí rap není o slovech, ale o vibracích. O mezerách mezi bublinami, o tempu vln. Jazyk se tady stává fyzikální veličinou – flow teče, riff kape. Pohádka je manifestem toho, že řeč nemusí být slyšet, aby dávala smysl.",
+            key: "rytmus místo slov"
+        },
+        { 
+            name: "Ironický",
+            desc: "Vidí rozpor mezi záměrem a výsledkem.",
+            text: "Lidi si myslí, že ryby mlčí, a přitom celá vodní říše žije hudbou. Ptáci, kteří mají být pěvci, jsou jen sprostí nadávkaři. Ironie suchozemského světa: posloucháme ty, co křičí, a nevnímáme ty, co opravdu hrají.",
+            key: "projev slyšitelný jen pod hladinou"
+        },
+        { 
+            name: "Filozofický",
+            desc: "Ptá se po smyslu a podstatě.",
+            text: "Co je to ticho? Je to nepřítomnost zvuku, nebo jiná forma řeči? Ryby ví, kdy mlčet – a to mlčení je plné rytmu. Pohádka klade otázku: Není náhodou nejhlubší moudrost v tom, nevydávat zbytečné zvuky, ale nechat mluvit proud?",
+            key: "komunikace, která nepotřebuje porozumění"
+        },
+        { 
+            name: "Surrealistický",
+            desc: "Propojuje nesouvisející.",
+            text: "Kosatky zpívají chansony, žraloci gospel, medúzy hrají na triangly. Ryba rapuje, voda odpovídá kruhy a mlha opisuje flow do obilí. Svět, kde se všechny živly propojují v jednu velkou symfonii – to není pohádka, to je vize.",
+            key: "voda jako notový papír"
+        },
+        { 
+            name: "Analytický",
+            desc: "Hledá struktury, vztahy, příčiny.",
+            text: "Systém rybího rapu: každý druh má svůj žánr, svou frekvenci, svůj vliv na vodní vlastnosti. Je to ekosystém zvuku, kde každý tón má svou funkci. A mlčení je součást flow – pauza mezi bublinami, která dává rytmu řád.",
+            key: "mlčení je součást flow"
+        },
+        { 
+            name: "Groteskní",
+            desc: "Vidí přehnanou, temnou komiku.",
+            text: "Představ si: žralok zpívá gospel, medúzy cinkají na triangly, a ryba rapuje pod hladinou tak silně, že se dělají kruhy v obilí. Mezitím ptáci nadávaj jak dlaždiči. Je to fraška o tom, že svět je jedna velká nesourodá kapela – a my suchozemci jsme ti nejhlučnější a nejmíň muzikální.",
+            key: "ptačí zpěv redukovaný na chaos"
+        },
+        { 
+            name: "Metaforický",
+            desc: "Vidí symboly za věcmi.",
+            text: "Ryba je myšlenka, která koluje v hlubině. Rap je způsob, jak ji vyjádřit – ne nahlas, ale skrze vibrace. Voda je společnost, která tyto myšlenky šíří dál. A kruhy v obilí? Ty jsou otiskem toho, co zůstane, když myšlenka pronikne na povrch.",
+            key: "flow jako vnímání tělem"
+        },
+        { 
+            name: "Asociační",
+            desc: "Vyvolává osobní vzpomínky.",
+            text: "Připomnělo mi to, jak jsem jako dítě ležel u potoka a poslouchal šumění vody. Říkal jsem si, že to musí být nějaká řeč. A teď vím – byl to rybí rap. A ty kruhy, co jsem házel kamínky? Ty byly moje beaty.",
+            key: "rap je čin, ne zvuk"
+        },
+        { 
+            name: "Introspektivní",
+            desc: "Promítá do příběhu vlastní pocity.",
+            text: "Vždycky jsem měl pocit, že moje myšlenky jsou jako ryby pod hladinou – nikdo je neslyší, ale uvnitř mě bouří. Tenhle příběh o rybím rapu je o mně. O tom, že i ticho může bejt plný rytmu, když ho nikdo neposlouchá.",
+            key: "pouze podstata rytmu"
+        },
+        { 
+            name: "Kulturní",
+            desc: "Hledá archetypy a paralely.",
+            text: "Ryba jako symbol ticha a hloubky – v mnoha kulturách znamená moudrost. Tady se stává rapperem, tedy hlasem ulice (vody). Ptáci jako symbol vzdušnosti a povrchnosti jsou odsunuti do role křiklounů. Je to převrácení mýtu: to, co je dole, má větší váhu než to, co je nahoře.",
+            key: "underground doslova"
+        },
+        { 
+            name: "Naivní",
+            desc: "Vidí věci jednoduše, bez předsudků.",
+            text: "Ryby rapujou. Ptáci nadávaj. Voda tancuje do rytmu. A kruhy v obilí? Ty dělá rybí hudba. Jednoduchý, ne? Nemusíš tomu rozumět, stačí to vnímat tělem.",
+            key: "prostě to plyne"
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+    const generativeBlock = document.getElementById('generativeBlock');
+    const generativeSentenceEl = document.getElementById('generativeSentence');
+    const generatorLink = document.getElementById('generatorLink');
+
+    function updateGeneratorLink(angleName, key) {
+        const encodedKey = encodeURIComponent(key);
+        const encodedAngle = encodeURIComponent(angleName);
+        const url = `generator.html?zvir=Ryba&uhel=${encodedAngle}&klic=${encodedKey}`;
+        generatorLink.href = url;
+    }
+
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+            if (angle.key) {
+                generativeSentenceEl.textContent = angle.key;
+                generativeBlock.style.display = 'block';
+                updateGeneratorLink(angle.name, angle.key);
+            } else {
+                generativeBlock.style.display = 'none';
+            }
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+</body>
+</html>
