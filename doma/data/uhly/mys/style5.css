@@ -1,0 +1,164 @@
+/* MOTIV 5: Tabulka – dva sloupce */
+:root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --border: #c0c0c0;
+    --accent: #4a4a4a;
+    --accent-light: #777;
+}
+
+body.theme-5 {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+}
+
+h1, h2 {
+    border-bottom: 2px solid var(--border);
+}
+
+.angle-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    margin: 2em 0;
+    border: 1px solid var(--border);
+    background: var(--border);
+}
+
+.angle-list button {
+    background: var(--bg);
+    border: none;
+    padding: 18px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.angle-list button:hover {
+    background: #f5f5f5;
+    border-left: 4px solid var(--accent);
+}
+
+.angle-list button.selected {
+    background: #f5f5f5;
+    border-left: 4px solid var(--accent);
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.output {
+    border: 1px solid var(--border);
+    padding: 2.5em;
+    margin-top: 2em;
+    background: #fafafa;
+    min-height: 280px;
+}
+
+.angle-name {
+    font-size: 1.9rem;
+    color: var(--accent);
+    margin-bottom: 0.3em;
+    font-weight: bold;
+}
+
+.angle-desc {
+    font-size: 0.9rem;
+    color: var(--accent-light);
+    font-style: italic;
+    margin-bottom: 1.5em;
+}
+
+.angle-text {
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.generative-block {
+    margin-top: 2em;
+    padding: 1.5em;
+    border: 1px solid var(--border);
+    background: white;
+}
+
+.generative-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    font-weight: bold;
+    margin-bottom: 0.7em;
+}
+
+.generator-link {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 10px 18px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.generator-link:hover {
+    background: #333;
+    border-color: #333;
+}
+
+.pohadka-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    padding: 1.5em;
+    margin: 2em 0;
+    background: white;
+    font-style: italic;
+    color: var(--accent-light);
+}
+
+.ilustrace {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.ilustrace img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+}
+
+.audio-link {
+    margin-top: 1em;
+    font-size: 0.9rem;
+}
+
+.audio-link a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.footer {
+    margin-top: 3em;
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    padding-top: 2em;
+    color: var(--accent-light);
+}
+
+.footer a {
+    color: var(--accent);
+}
+
+@media (max-width: 600px) {
+    .angle-list {
+        grid-template-columns: 1fr;
+    }
+}
