@@ -1,0 +1,181 @@
+:root {
+    --bg: #f9f8f6;
+    --text: #2a2a2a;
+    --accent: #8b6f47;
+    --line: #ddd;
+}
+
+body.theme-4 {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, serif;
+}
+
+#container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+#pohadka {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    padding: 1.5em;
+    margin: 2em 0;
+    background: white;
+    font-style: italic;
+}
+
+#pohadka.visible { display: block !important; }
+
+h1, h2 {
+    text-align: center;
+}
+
+#angleTitle { display: none; }
+
+.ilustrace {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.ilustrace img {
+    max-width: 180px;
+    height: auto;
+}
+
+/* ===== VERTIKÁLNÍ TIMELINE ===== */
+.angle-list {
+    position: relative;
+    padding: 2em 0;
+    margin: 2em 0;
+}
+
+.angle-list::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+}
+
+.angle-list button {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 1.2em 0 1.2em 100px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.angle-list button::before {
+    content: '';
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 3px solid var(--text);
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.angle-list button:hover::before {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.angle-list button.selected::before {
+    background: var(--accent);
+    border-color: var(--accent);
+    width: 40px;
+    height: 40px;
+    left: 20px;
+}
+
+.angle-list button.selected {
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.output {
+    border: 1px solid var(--line);
+    padding: 2.5em;
+    margin-top: 3em;
+    background: white;
+}
+
+.angle-name {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 0.3em;
+    font-weight: bold;
+}
+
+.angle-desc {
+    font-size: 0.95rem;
+    color: #777;
+    font-style: italic;
+    margin-bottom: 1.5em;
+}
+
+.angle-text {
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.generative-block {
+    margin-top: 2em;
+    padding: 1.5em;
+    border-left: 3px solid var(--accent);
+    background: rgba(139, 111, 71, 0.08);
+}
+
+.generator-link {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 8px 14px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.generator-link:hover {
+    background: #6d5839;
+}
+
+.audio-link {
+    text-align: center;
+    margin-top: 1em;
+    font-size: 0.9rem;
+}
+
+.audio-link a {
+    color: var(--accent);
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 3em;
+    padding-top: 2em;
+    border-top: 1px solid var(--line);
+}
+
+.footer a {
+    color: var(--accent);
+}
