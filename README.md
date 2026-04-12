@@ -13,6 +13,11 @@
 
 ---
 
+# [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
+
+---
+
+
 <!-- Onboarding banner: vložte do <body> nahoře -->
 <section id="onboarding-banner" style="background:#fff9f0;border-left:6px solid #ff8c42;padding:18px;margin:12px 0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;">
   <div style="max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
