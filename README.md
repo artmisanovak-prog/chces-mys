@@ -15,6 +15,18 @@
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
 
+## z myší perspektivy:
+- [myš](doma/data/uhly/mys_uhly.html)
+- [kocour](doma/data/uhly/kocour_uhly.html)
+- [ryba](doma/data/uhly/ryba_uhly.html)
+- [zajic](doma/data/uhly/zajic_uhly.html)
+- [páv](doma/data/uhly/pav_uhly.html)
+- [krokodýl](doma/data/uhly/krokodyl_uhly.html)
+- [motýl](doma/data/uhly/motyl_uhly.html)
+- [pavouk](doma/data/uhly/pavouk_uhly.html)
+- [netopýr](doma/data/uhly/netopyr_uhly.html)
+
+
 ---
 
 
