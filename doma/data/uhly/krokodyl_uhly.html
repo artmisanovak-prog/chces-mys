@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krokodýl - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        /* --- ILUSTRACE --- */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        /* --- POHÁDKA - SCROLLOVACÍ OKNO --- */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        /* --- 12 TLAČÍTEK - JEDNODUCHÁ MŘÍŽKA --- */
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        /* --- VÝSTUP - POD TLAČÍTKY --- */
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🐊 12 úhlů pohledu</h1>
+<p><em>„O krokodýlovi, který se stal zbožím, a o jeho slzách v totálním výprodeji – sleva na smysl 90 %“</em></p>
+
+<!-- ILUSTRACE KROKODÝLA -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/krokodyl.jpg" alt="Ilustrace krokodýla">
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p><strong>O KROKODÝLOVI</strong></p>
+        <p><strong>který šel do výprodeje</strong></p>
+        
+        <p>—</p>
+        
+        <p>Krokodýl se jednoho dne probudil a zjistil,</p>
+        <p>že je zboží.</p>
+        <p>Ne zvíře.</p>
+        <p>Ne postava.</p>
+        <p>Ne symbol.</p>
+        <p>Ale produkt.</p>
+        
+        <p>—</p>
+        
+        <p>Na čele měl cenovku.</p>
+        <p>Na ocasu slevu.</p>
+        <p>A místo slz měl marketingové sdělení:</p>
+        
+        <p>—</p>
+        
+        <p>„Tento týden sleva 90 %. Tři za cenu jedné. Krokodýlí slzy. Totální výprodej.“</p>
+        
+        <p>—</p>
+        
+        <p>Lidé chodili kolem a ptali se:</p>
+        <p>„Co to vlastně je?“</p>
+        <p>Prodavač se usmál:</p>
+        <p>„To je emoce. Ale levná. Už není čerstvá.“</p>
+        
+        <p>—</p>
+        
+        <p>Krokodýl se snažil vysvětlit, že jeho slzy nejsou falešné.</p>
+        <p>Jsou jen komerčně dostupné.</p>
+        <p>Že pláče, protože přišel o jazyk, když ztratil smysl.</p>
+        <p>Že kdysi byl symbolem:</p>
+        <p>„Něčeho... Možná... Kdysi... Kdo ví..?</p>
+        <p>Ale teď je tři za cenu jedné.“</p>
+        
+        <p>—-------</p>
+        
+        <p>Jedna paní si ho koupila.</p>
+        <p>Dala si ho na poličku vedle keramického smutku a plastového soucitu.</p>
+        <p>A vždycky, když se cítila deprimovaná, zmáčkla tlačítko na jeho břiše.</p>
+        <p>Krokodýl řekl:</p>
+        <p>„Buďte dojatí. Sleva končí v neděli.“</p>
+        
+        <p>—</p>
+        
+        <p>Jednou přišel jazyk.</p>
+        <p>také se smyslem.</p>
+        <p>Ne jako zákazníci</p>
+        <p>Ne jako návštěvníci.</p>
+        <p>Jako na kontrolu.</p>
+        
+        <p>—</p>
+        
+        <p>Jazyk vrhl na krokodýla pohled plný rozpaků a po hlubokém nádechu vypustil slova:</p>
+        <p>„Tohle není věta. To je výkřik v obalu!! Ale v nepoškozeném, neschváleném.“</p>
+        
+        <p>—</p>
+        
+        <p>Krokodýl se rozplakal.</p>
+        <p>Ale slzy už nikdo nebral vážně.</p>
+        <p>Byly v akci.</p>
+        <p>Do vyprodání.</p>
+        
+        <p>—</p>
+        
+        <p>A krokodýl těchto dob říká, že když někdo pláče a mluví u toho jako leták reklamní,</p>
+        <p>možná to není lež.</p>
+        <p>Možná je to jen význam v akci.</p>
+        <p>Sleva na smysl.</p>
+        
+        <p>—</p>
+        
+        <p>Protože krokodýlí slzy nejsou falešné.</p>
+        <p>Jsou jen snadno dostupné.</p>
+    </div>
+</div>
+    
+<!-- 12 ÚHLŮ -->
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<!-- VÝSTUP -->
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20KROKODÝL">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S KRÁTKÝM POPISEM A KONKRÉTNÍ VĚTOU O POHÁDCE O KROKODÝLOVI ---
+    const data = [
+        { 
+            name: "Absurdní", 
+            desc: "Hledá nesmysl, paradox, rozpor.", 
+            text: "Krokodýl, který se probudí jako zboží. Cenovka na čele, sleva na ocasu. Jeho slzy jsou v akci. Lidé si ho kupují a mačkají mu břicho, aby řekl reklamní slogan. Absurdní? Ano. Ale není to přesně to, co se děje s emocemi v konzumní společnosti?" 
+        },
+        { 
+            name: "Jazykový", 
+            desc: "Sleduje slova, rytmus, dvojznačnost.", 
+            text: "„Tohle není věta. To je výkřik v obalu!!“ – jazyk sám přichází na kontrolu a zjišťuje, že se z něj stal marketing. ‚Význam v akci‘, ‚sleva na smysl‘ – slova ztrácejí váhu, stávají se snadno dostupnými. Jako krokodýlí slzy." 
+        },
+        { 
+            name: "Ironický", 
+            desc: "Vidí rozpor mezi záměrem a výsledkem.", 
+            text: "Krokodýl chtěl být symbolem, něčím... možná... kdysi... A teď je tři za cenu jedné. Jeho slzy, které měly být opravdové, jsou v akci. Ironie: čím víc pláče, tím míň to někdo bere vážně. Protože všechno je zlevněné, i smutek." 
+        },
+        { 
+            name: "Filozofický", 
+            desc: "Ptá se po smyslu a podstatě.", 
+            text: "Co se stane, když se z emoce stane produkt? Když se smutek prodává v oddělení slev? Krokodýl pláče, ale jeho slzy už nikdo nebere vážně. Pohádka klade otázku: Nejsou i naše opravdové city komerčně dostupné? A neřídíme se někdy spíš letáky než srdcem?" 
+        },
+        { 
+            name: "Surrealistický", 
+            desc: "Propojuje nesouvisející.", 
+            text: "Krokodýl s cenovkou na čele, paní, co si ho dává na poličku vedle keramického smutku, jazyk, který přichází na kontrolu. Svět, kde se realita mísí s reklamou, kde jsou emoce zbožím a slzy mají expiraci. Tohle není pohádka – to je obraz dneška." 
+        },
+        { 
+            name: "Naivní", 
+            desc: "Vidí věci jednoduše, bez předsudků.", 
+            text: "Krokodýl se probudil a měl na sobě cenovku. Lidé si ho kupovali. Jedna paní ho měla na poličce a mačkala mu břicho. On říkal reklamy. Pak přišel jazyk a řekl, že to není věta. Krokodýl plakal, ale nikdo to nebral vážně, protože slzy byly v akci. Jednoduchý, ne?" 
+        },
+        { 
+            name: "Introspektivní", 
+            desc: "Promítá do příběhu vlastní pocity.", 
+            text: "Tohle jsem já. Někdy mám pocit, že moje emoce nejsou moje. Že jsou na prodej, že je někdo balí do reklamních sloganů. A když pláču, lidi se ptají: ‚Je to čerstvé, nebo už je to sleva?‘ A já chci křičet, že moje slzy jsou pravý, ale oni vidí jen cenovku." 
+        },
+        { 
+            name: "Betonový", 
+            desc: "Čte doslovně, fakticky.", 
+            text: "Příběh vypráví o krokodýlovi, který byl přeměněn na komerční produkt s cenovkou a reklamním sdělením o slevě 90 % na jeho slzy. Byl prodán paní, která ho používala jako dekoraci s tlačítkem spouštějícím reklamní fráze. Následně přišla personifikovaná entita Jazyk, která konstatovala, že se nejedná o větu, ale o výkřik v obalu. Krokodýl plakal, ale jeho slzy byly vnímány jako součást výprodeje." 
+        },
+        { 
+            name: "Kulturní", 
+            desc: "Hledá archetypy a paralely.", 
+            text: "Krokodýlí slzy – odvěký symbol falešného smutku. Tady se ale obrací: nejsou falešné, jsou jen snadno dostupné. Je to kritika konzumní společnosti, kde se všechno – včetně emocí – stává zbožím. Jazyk jako kontrolor připomíná ministry kultury, kteří rozhodují, co je ještě umění a co už jen reklama." 
+        },
+        { 
+            name: "Asociační", 
+            desc: "Vyvolává osobní vzpomínky.", 
+            text: "Připomnělo mi to Vánoce v obchoďáku. Všude slevy, všude reklamy, a uprostřed stál chlap v kostýmu krokodýla a rozdával letáky. Děti se s ním fotily, nikdo neřešil, jestli je to opravdový krokodýl. A já měl pocit, že přesně o tom je tahle pohádka – že jsme zapomněli rozlišovat mezi skutečným a zlevněným." 
+        },
+        { 
+            name: "Metaforický", 
+            desc: "Vidí symboly za věcmi.", 
+            text: "Krokodýl je lidská duše v kapitalismu. Cenovka je hodnota, kterou nám přiřadí trh. Slzy jsou emoce, které se dají koupit. Jazyk je pravda, která přichází na kontrolu. A pointa? ‚Sleva na smysl‘ – to je naše doba. Všechno je dostupné, ale nic nemá cenu." 
+        },
+        { 
+            name: "Groteskní", 
+            desc: "Vidí přehnanou, temnou komiku.", 
+            text: "Představ si: krokodýl s cenovkou na čele, na ocasu sleva 90 %. Paní si ho koupí a dá ho na poličku mezi keramický smutek a plastový soucit. Když je smutná, zmáčkne mu břicho a on řekne: ‚Buďte dojatí, sleva končí v neděli!‘ Pak přijde jazyk a řekne, že to není věta. A krokodýl pláče, ale nikdo to nebere vážně. Je to groteska o tom, jak jsme zkonzumovali i vlastní city." 
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+
+    // Vytvoření tlačítek
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            // Zvýraznění
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Výpis
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    // Předvolit první úhel
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+</body>
+</html>
