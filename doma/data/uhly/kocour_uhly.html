@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kocour - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        .audio-link {
+            text-align: center;
+            margin-top: 0.5em;
+            font-size: 0.9rem;
+        }
+        .audio-link a {
+            color: #000;
+            text-decoration: underline;
+        }
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .generative-block {
+            margin-top: 2em;
+            padding: 1.2em;
+            border: 1px solid #000;
+            background: #f3f3f3;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .generative-label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        .generative-sentence {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1em;
+        }
+        .generator-link {
+            display: inline-block;
+            margin-top: 0.5em;
+            padding: 0.5em 1em;
+            border: 1px solid #000;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.1s;
+        }
+        .generator-link:hover {
+            background: #000;
+            color: #fff;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🐈 12 úhlů pohledu</h1>
+<p><em>„O kocourovi, beruškách a tečkách, které nedají spát“</em></p>
+
+<!-- ILUSTRACE KOCOURA + odkaz na audio -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/kocour.jpg" alt="Ilustrace kocoura">
+    <div class="audio-link">
+        🎧 <a href="https://youtu.be/SxgvtgWYWog?is=QgKzGPH8RrDBxrzJ" target="_blank">Poslechnout si pohádku (YouTube audio)</a>
+    </div>
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        <p><strong>O KOCOUROVI</strong></p>
+        <p><strong>Jak kocour sežral dvě berušky a půl hodiny krkal tečky</strong></p>
+        <p>_________________</p>
+        <p>Sležral dvě - ne tři, ne jednu - dvě - přesně - 14 teček a trvalo to půl hodiny - 30 minut - přesně.</p>
+        <p>Jak to přišlo tak to přestalo.</p>
+        <p>Ráz na ráz.</p>
+        <p>Chňap a hlt a chlamst - nebo něco takového a nakonec - mlask, mlask - dvakrát - přesně.</p>
+        <p>Žily byly dvě berušky, každá sedm teček měla, když uviděl je jeden kocour byla to mela.</p>
+        <p>Aspoň pro ně.</p>
+        <p>Po 14ti tečkách<br>v jednom mžiku<br>zem se slehla.</p>
+        <p>Rozhodně aspoň kocour se svými útrobami.</p>
+        <p>Ale ta myš, vždycky zvědavá byla.<br>Odmalička chodívala<br>a kde mohla se vyptávala,<br>kde se tečky na beruškách vzaly?<br>K čemu je maji?<br>Proč si radši nevytvoří pravý maskování?</p>
+        <p>A ta přesná matika..<br>Kdo vlastně z těch, co s nimi přijdou do styku, takhle přesně počítá?</p>
+        <p>No a toho dne - náhle - se to stalo<br>a myš svou odpověď měla.</p>
+        <p>Kocour mlaskl a pak znovu<br>a hned na to začalo to.</p>
+        <p>Půl hodiny a bylo to zaznamenáno - přesně.</p>
+        <p>Kocour krkal tečky a dokončoval věty!<br>Někdy celé souvětí!!</p>
+        <p>Jenomže tím zároveň skákal lidem do řeči,<br>tím že za ně dokončoval, co nedokončili.</p>
+        <p>Skočil všem do řeči koncem věty</p>
+        <p>ale vždycky o něco málo</p>
+        <p>někdy i o docela dost</p>
+        <p>dřív, než měla věta původně skončit</p>
+        <p>nebo - než původně věta skončit měla.</p>
+        <p>A celou půlhodinu nemohl tenkrát nikdo nic</p>
+        <p>ne - dokončit.</p>
+        <p>Nešlo to.</p>
+        <p>Každému dřív.</p>
+        <p>než se k tomu dostal.</p>
+        <p>všem kocour větu ukončil.</p>
+        <p>Hned.</p>
+        <p>Kocour se tomu smál,<br>ale krkal dál.<br>A krkal, dokud neskončil.</p>
+        <p>Představte si to:<br>Skončil větu a pak skončil krkat.</p>
+        <p>A lidé zase začali moct své věty ukončovat sami.<br>Hned.</p>
+        <p>Jenže, jak se to tak občas stává,<br>přestože nikdo nevěděl co,<br>každý věděl,<br>že něco nebylo stejné.</p>
+        <p>A to, co jednou není stejné dnes,<br>to není jednou stejné nikdy.</p>
+        <p>Jen nedokončené věty bývají všechny stejné. Jednou, dnes i zítra.</p>
+        <p>Berušky mají na sobě nedokončené konce vět. Věci, které jsou nespolknuté.</p>
+        <p>Kocour to nevěděl - a dvě spolknul.</p>
+        <p>Spolknuté konce ale vykrkal zpátky<br>a lide se naučili,<br>že všechno se spolknout nedá.<br>A že tečka je někdy silnější, než celá věta.</p>
+        <p>Kocour se nažral a myš i věty zůstali celé.</p>
+        <p>Díky bohu za to.</p>
+        <p>Štěstí dvou berušek se vrátilo zpátky.</p>
+        <p>Ale všimly si toho jen kocour a malá myš.<br>A ani jeden neříkali nic.</p>
+        <p>KONEC</p>
+    </div>
+</div>
+    
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+    <div id="generativeBlock" class="generative-block" style="display: none;">
+        <div class="generative-label">🎲 GENERATIVNÍ VĚTA (KLÍČ MYŠI)</div>
+        <div class="generative-sentence" id="generativeSentence"></div>
+        <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 Otevřít v generátoru</a>
+    </div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20KOCOUR">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S POPISEM, TEXTEM A GENERATIVNÍ VĚTOU (KLÍČEM) ---
+    const data = [
+        { 
+            name: "Absurdní",
+            desc: "Hledá nesmysl, paradox, rozpor.",
+            text: "Kocour, který krká tečky a dokončuje věty dřív, než je někdo stačí říct? A berušky jako nositelky interpunkce? Celá situace je absurdní – a přitom se v ní skrývá podivná logika: každý konec je zároveň začátkem nového krkání.",
+            key: "trávení interpunkce"
+        },
+        { 
+            name: "Jazykový",
+            desc: "Sleduje slova, rytmus, dvojznačnost.",
+            text: "Tečky jako interpunkce i jako berušký znak. Kocour svým krkáním narušuje plynulost řeči – skáče do vět, ukončuje je předčasně. Pohádka je metaforou jazyka, který se vzpírá kontrole. A myš? Ta jen tiše zapisuje, co jazyk nedokáže spolknout.",
+            key: "tečka jako stravitelný znak"
+        },
+        { 
+            name: "Ironický",
+            desc: "Vidí rozpor mezi záměrem a výsledkem.",
+            text: "Kocour chtěl jen sníst berušky, ale nakonec na půl hodiny ovládl řeč celého okolí. Jeho vítězství je zároveň prohrou – lidé nemohou mluvit, on nemůže přestat krkat. Ironie osudu: kdo spolkne tečky, stane se jejich otrokem.",
+            key: "predátor ohrožuje syntax"
+        },
+        { 
+            name: "Filozofický",
+            desc: "Ptá se po smyslu a podstatě.",
+            text: "Co je to tečka? Konec, nebo začátek? Berušky nosí na zádech nedokončené věty – ale kdo je jejich autorem? Kocour je spolkne a vyvrhne zpět, ale věty už nejsou stejné. Pohádka klade otázku: Může být něco po konci vůbec stejné?",
+            key: "konec věty jako látka"
+        },
+        { 
+            name: "Surrealistický",
+            desc: "Propojuje nesouvisející.",
+            text: "Berušky s tečkami, kocour krkající interpunkci, myš jako tichý pozorovatel. Realita se mísí s jazykovou hrou – svět, kde se věty rodí v kočičím žaludku a umírají v nedokončenosti. Tohle není pohádka, ale obraz, který si žádá výklad.",
+            key: "říhání souvětí"
+        },
+        { 
+            name: "Kulturní",
+            desc: "Hledá archetypy a paralely.",
+            text: "Kocour jako trickster – postava, která narušuje řád, aby odhalila jeho podstatu. Berušky jako symbol nevinnosti a zároveň nositelky kódu (tečky = písmo). Myš jako múza, která mlčí a zaznamenává. Pohádka připomíná mýty o tom, jak vznikla řeč – z náhody a chaosu.",
+            key: "řeč přerušena autoritou žaludku"
+        },
+        { 
+            name: "Naivní",
+            desc: "Vidí věci jednoduše, bez předsudků.",
+            text: "Kocour snědl berušky a pak krkal tečky. Lidé nemohli mluvit, protože jim skákal do řeči. Pak přestal a bylo to zas normální. Myš se jen dívala. Jednoduché, ne?",
+            key: "prostě měl hlad"
+        },
+        { 
+            name: "Introspektivní",
+            desc: "Promítá do příběhu vlastní pocity.",
+            text: "Vždycky mám pocit, že mi někdo skáče do řeči. Že za mě dokončuje věty dřív, než je stačím vyslovit. Ten kocour jsem já – nebo spíš všichni ti, co mě nenechají domluvit. A berušky? Ty ubohé, co nosí na zádech to, co nikdo nechce poslouchat.",
+            key: "tělo mluví dřív než mysl"
+        },
+        { 
+            name: "Groteskní",
+            desc: "Vidí přehnanou, temnou komiku.",
+            text: "Představ si: kocour sežere berušky, začne krkat tečky a najednou všichni kolem nemůžou dokončit větu. Mluví, ale nikdo je neposlouchá, protože kocour mluví za ně. Je to fraška – tragikomedie o tom, že někdy je lepší držet pusu a nechat tečky být.",
+            key: "mlaskání jako editace reality"
+        },
+        { 
+            name: "Analytický",
+            desc: "Hledá struktury, vztahy, příčiny.",
+            text: "Motivace skrze nedosažitelnost: slon běží za třešní, kterou nikdy nedostane, a právě ta nedosažitelnost ho udržuje v pohybu. Mechanismus, který pohání mnoho lidských činností – cíl je záminka, důležitý je běh.",
+            key: "nemožnost spolknout smysl"
+        },
+        { 
+            name: "Asociační",
+            desc: "Vyvolává osobní vzpomínky.",
+            text: "Připomnělo mi to, jak jsme jako děti krkali po limonádě a smáli se, že mluvíme cizími jazyky. A taky kolegu v práci, který neustále skáče do řeči – ale ten nekrká tečky, jen své vlastní názory.",
+            key: "říhnutí jako jazykový zásah"
+        },
+        { 
+            name: "Metaforický",
+            desc: "Vidí symboly za věcmi.",
+            text: "Kocour je čas, který polyká okamžiky (tečky) a vyvrhuje je jako vzpomínky. Berušky jsou události – každá nese svůj počet teček, svou důležitost. Myš je paměť, která mlčí, ale všechno si ukládá. A věty? Ty jsou životy, co nestihly skončit.",
+            key: "ukončení řeči jako tělesný akt"
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+    const generativeBlock = document.getElementById('generativeBlock');
+    const generativeSentenceEl = document.getElementById('generativeSentence');
+    const generatorLink = document.getElementById('generatorLink');
+
+    function updateGeneratorLink(angleName, key) {
+        const encodedKey = encodeURIComponent(key);
+        const encodedAngle = encodeURIComponent(angleName);
+        const url = `generator.html?zvir=Kocour&uhel=${encodedAngle}&klic=${encodedKey}`;
+        generatorLink.href = url;
+    }
+
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+            if (angle.key) {
+                generativeSentenceEl.textContent = angle.key;
+                generativeBlock.style.display = 'block';
+                updateGeneratorLink(angle.name, angle.key);
+            } else {
+                generativeBlock.style.display = 'none';
+            }
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+</body>
+</html>
