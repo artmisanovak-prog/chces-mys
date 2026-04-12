@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pavouk - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        /* --- ILUSTRACE --- */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        /* --- POHÁDKA - SCROLLOVACÍ OKNO --- */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        /* --- 12 TLAČÍTEK - JEDNODUCHÁ MŘÍŽKA --- */
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        /* --- VÝSTUP - POD TLAČÍTKY --- */
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🕷️ 12 úhlů pohledu</h1>
+<p><em>„O pavoukovi, který věšel na nitě neviditelné věci, a o tom, že největší pád je, když se nic nezmění“</em></p>
+
+<!-- ILUSTRACE PAVOUKA -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/pavouk.jpg" alt="Ilustrace pavouka">
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p><strong>PAVOUK</strong></p>
+        <p><strong>který byl jen Jen Tak. Tak.</strong></p>
+        
+        <p>—</p>
+        
+        <p>Pavouk měl nitě.</p>
+        <p>Tenké, pevné, neviditelné.</p>
+        <p>Věšel na ně věci.</p>
+        <p>Ne věci jako ponožky nebo klíče.</p>
+        <p>Ale věci, co se nedají držet.</p>
+        <p>Slova, co se neřekla.</p>
+        <p>Pocity, co se nehodily.</p>
+        <p>Otázky, co neměly odpověď.</p>
+        
+        <p>—</p>
+        
+        <p>Všechno zůstalo viset.</p>
+        <p>Jen tak.</p>
+        <p>Tak.</p>
+        
+        <p>—</p>
+        
+        <p>Jedna věta visela mezi dvěma větvemi.</p>
+        <p>„Promiň, že jsem…“</p>
+        <p>A dál už nic.</p>
+        <p>Jen nit.</p>
+        <p>Jen ticho.</p>
+        
+        <p>—</p>
+        
+        <p>Jedna vzpomínka visela nad dveřmi.</p>
+        <p>Na den, kdy se mělo něco stát, ale nestalo.</p>
+        <p>A pořád tam byla.</p>
+        <p>Jako ozdoba, co nikdo nechtěl.</p>
+        
+        <p>—</p>
+        
+        <p>Jedna omluva visela těsně nad hlavou.</p>
+        <p>Tak nízko, že se jí dalo dotknout.</p>
+        <p>Ale nikdo to neudělal.</p>
+        <p>Protože co kdyby spadla?</p>
+        
+        <p>—</p>
+        
+        <p>Pavouk seděl uprostřed.</p>
+        <p>V srdci sítě.</p>
+        <p>A nehybal se.</p>
+        <p>Protože když se hýbeš, věci padají.</p>
+        <p>A když padají, už je nikdo nezvedne.</p>
+        
+        <p>—</p>
+        
+        <p>„Proč to nenecháš spadnout?“ zeptala se myš.</p>
+        <p>Ta, co si zapisuje ticho.</p>
+        <p>„Protože když to visí, ještě to může být,“ řekl pavouk.</p>
+        <p>„A když to spadne?“</p>
+        <p>„Pak už je to jen minulost.“</p>
+        
+        <p>—</p>
+        
+        <p>Myš si to poznamenala.</p>
+        <p>Do mezery mezi slovy „jen“ a „tak“.</p>
+        <p>A pak se zeptala:</p>
+        <p>„A co když to visí moc dlouho?“</p>
+        <p>„Pak to ztvrdne,“ řekl pavouk.</p>
+        <p>„A už to nejde rozmotat.“</p>
+        
+        <p>—</p>
+        
+        <p>Pavouk dál věšel.</p>
+        <p>Jednu lásku, co se neřekla.</p>
+        <p>Jednu hádku, co se nevyřešila.</p>
+        <p>Jednu neděli, co se nikdy nestala.</p>
+        <p>A jednu větu, co zněla:</p>
+        <p>„To je v pohodě.“</p>
+        <p>Ale nebyla.</p>
+        
+        <p>—</p>
+        
+        <p>Vítr přišel.</p>
+        <p>Nenápadný.</p>
+        <p>Ale přesný.</p>
+        <p>Zavál.</p>
+        <p>A všechno se rozhoupalo.</p>
+        <p>Ale nic nespadlo.</p>
+        
+        <p>—</p>
+        
+        <p>„Všechno zůstalo viset,“ řekl pavouk.</p>
+        <p>„Jen tak.“</p>
+        <p>„Tak.“</p>
+        
+        <p>—</p>
+        
+        <p>Myš se podívala nahoru.</p>
+        <p>Na síť.</p>
+        <p>Na věci, co visely.</p>
+        <p>Na to, co se mělo stát, ale nestalo.</p>
+        <p>A řekla:</p>
+        <p>„Možná je tohle ten největší pád. Když se nic nezmění.“</p>
+        
+        <p>—</p>
+        
+        <p>Pavouk se usmál.</p>
+        <p>Ale jen trochu.</p>
+        <p>A zavěsil další věc.</p>
+        <p>Tentokrát ticho.</p>
+    </div>
+</div>
+    
+<!-- 12 ÚHLŮ -->
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<!-- VÝSTUP -->
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20PAVOUK">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S KRÁTKÝM POPISEM A KONKRÉTNÍ VĚTOU O POHÁDCE O PAVOUKOVI ---
+    const data = [
+        { 
+            name: "Absurdní", 
+            desc: "Hledá nesmysl, paradox, rozpor.", 
+            text: "Pavouk, který na síť věší neviditelné věci – slova, pocity, otázky. Věta ‚Promiň, že jsem…‘ visí bez konce. Omluva visí těsně nad hlavou, ale nikdo se jí nedotkne. Absurdní? Ano. Ale co je absurdnější: nechat to viset, nebo nechat to spadnout?" 
+        },
+        { 
+            name: "Jazykový", 
+            desc: "Sleduje slova, rytmus, dvojznačnost.", 
+            text: "‚Jen tak. Tak.‘ – tři slova, která jsou celou filozofií. Myš si zapisuje do mezery mezi ‚jen‘ a ‚tak‘. Jazyk visí na nitích jako všechno ostatní. Nedokončené věty, nevyřčená slova, ticho, které pavouk nakonec zavěsí – to je řeč, která se bojí spadnout." 
+        },
+        { 
+            name: "Ironický", 
+            desc: "Vidí rozpor mezi záměrem a výsledkem.", 
+            text: "Pavouk chce zachránit věci před pádem, a tak je nechá viset. Ale čím déle visí, tím víc tvrdnou a nejde je rozmotat. Ironie: snaha uchovat věci navždy je promění v něco, co už nikdy nemůže být živé. A největší pád? Když se nic nezmění." 
+        },
+        { 
+            name: "Filozofický", 
+            desc: "Ptá se po smyslu a podstatě.", 
+            text: "Co je to existence? Je to to, co se stalo, nebo to, co visí jako možnost? Pavouk věří, že dokud věci visí, ještě mohou být. Myš namítá, že když visí moc dlouho, ztvrdnou. Pohádka klade otázku: Není lepší nechat věci spadnout a stát se minulostí, než je nechat viset jako zkameněliny?" 
+        },
+        { 
+            name: "Surrealistický", 
+            desc: "Propojuje nesouvisející.", 
+            text: "Síť plná neviditelných věcí: věta mezi větvemi, vzpomínka nad dveřmi, omluva nad hlavou, láska co se neřekla, neděle co se nestala. A myš, která si zapisuje do mezer. Svět, kde se hmotné a nehmotné prolíná, kde ticho má váhu a slova visí jako ovoce." 
+        },
+        { 
+            name: "Naivní", 
+            desc: "Vidí věci jednoduše, bez předsudků.", 
+            text: "Pavouk věšel na nitě věci, který nejsou vidět. Myš se ptala, proč je nenechá spadnout. On řekl, že když visí, ještě můžou bejt. Myš řekla, že když visí moc dlouho, ztvrdnou. Pak přišel vítr, ale nic nespadlo. A myš řekla, že největší pád je, když se nic nezmění. Pavouk zavěsil ticho. Jednoduchý, ne?" 
+        },
+        { 
+            name: "Introspektivní", 
+            desc: "Promítá do příběhu vlastní pocity.", 
+            text: "Tohle jsem já. Mám v hlavě síť plnou věcí, co jsem neřekl, co jsem neudělal, co visí a čeká. Bojím se, že když se pohnu, všechno spadne a bude to minulost. Ale bojím se víc, že když to nechám viset, ztvrdne to a už to nikdy nerozmotám. A možná ten největší pád je, když se nic nezmění." 
+        },
+        { 
+            name: "Betonový", 
+            desc: "Čte doslovně, fakticky.", 
+            text: "Příběh vypráví o pavoukovi, který na svou síť věší nehmotné entity (nevyřčená slova, neprožité pocity, nezodpovězené otázky). Tyto entity visí v prostoru. Myš (postava z jiných pohádek) vstupuje do dialogu a ptá se na smysl tohoto počínání. Pavouk vysvětluje, že visení je stav možnosti, zatímco pád je definitivní minulost. Vítr způsobí rozhoupání, ale nic nespadne. Myš konstatuje, že největší pád je stav, kdy se nic nemění. Pavouk nakonec zavěsí ticho." 
+        },
+        { 
+            name: "Kulturní", 
+            desc: "Hledá archetypy a paralely.", 
+            text: "Pavouk jako archetyp – tkadlec osudu, tvůrce sítě života. Tady ale netká osudy, ale nehmotné stavy. Myš jako kronikářka (opět) zapisuje, co se děje. Je to moderní mýtus o tom, jak zacházíme s tím, co jsme neudělali. A pointa: ‚největší pád je, když se nic nezmění‘ – to je existenciální výkřik." 
+        },
+        { 
+            name: "Asociační", 
+            desc: "Vyvolává osobní vzpomínky.", 
+            text: "Připomnělo mi to půdu u babičky. Všude visely věci, který nikdo nechtěl, ale nikdo je nevyhodil. Byly to vzpomínky, který visely a čekaly. A když jsme je po letech vytáhli, byly ztuhlý, nejde je rozmotat. Přesně jak říká pavouk. A ta věta ‚Možná je tohle ten největší pád‘ – to mě dostalo." 
+        },
+        { 
+            name: "Metaforický", 
+            desc: "Vidí symboly za věcmi.", 
+            text: "Pavouk je naše vědomí. Nitě jsou myšlenky. Věci, co visí, jsou naše traumata, nevyřešené situace, nevyřčená slova. Myš je naše moudrost, která se ptá, proč to nenecháme být. Vítr je čas, který vším hýbe. A pointa: největší pád není, když věci spadnou, ale když zůstanou viset a ztvrdnou v něco, co už nejde změnit." 
+        },
+        { 
+            name: "Groteskní", 
+            desc: "Vidí přehnanou, temnou komiku.", 
+            text: "Představ si: pavouk, co věší na síť omluvy a lásky a neděle. Všechno to visí jako vánoční ozdoby. Myš chodí a zapisuje si to do mezer. Přijde vítr, všechno se houpe, ale nic nespadne. A myš suše prohlásí: ‚Největší pád je, když se nic nezmění.‘ Je to groteska o tom, že někdy je horší viset než spadnout." 
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+
+    // Vytvoření tlačítek
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            // Zvýraznění
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Výpis
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    // Předvolit první úhel
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+<!-- Poznámka: Tímto je kompletní série sedmnácti pohádek (myš, kocour, ryba, motýl, plameňák, čáp, liška, netopýr, lemur, moucha, žížala, zajíc, tygr, krokodýl, želva, jednorožec, pavouk) – všechny se stejným designem a funkcí. -->
+
+</body>
+</html>
