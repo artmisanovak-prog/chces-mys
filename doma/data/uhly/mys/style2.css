@@ -1,0 +1,165 @@
+style2.css
+:root {
+    --left-bg: #1a1a1a;
+    --left-text: #e0e0e0;
+    --right-bg: #f5f5f5;
+    --right-text: #2a2a2a;
+    --accent: #8ec5fc;
+}
+
+body.theme-2 {
+    background: var(--right-bg);
+    color: var(--right-text);
+    font-family: Georgia, serif;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 100vh;
+}
+
+/* LEVÁ STRANA - POHÁDKA */
+#pohadka {
+    grid-column: 1;
+    background: var(--left-bg);
+    color: var(--left-text);
+    padding: 3em 2em;
+    overflow-y: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+#pohadka.visible { display: block !important; }
+
+.pohadka {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    font-style: italic;
+}
+
+.pohadka p {
+    margin-bottom: 1.2em;
+}
+
+/* PRAVÁ STRANA - ÚHLY */
+h1, h2, #angleTitle {
+    grid-column: 2;
+}
+
+h1 {
+    text-align: left;
+    font-size: 1.8rem;
+    padding: 2em 2em 0;
+    border: none;
+}
+
+#angleTitle {
+    padding: 1em 2em 0;
+    font-size: 1.2rem;
+}
+
+.ilustrace { display: none; }
+
+.angle-list {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 1.5em 2em;
+    justify-content: flex-start;
+}
+
+.angle-list button {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.angle-list button:hover {
+    border-color: var(--accent);
+    background: #f0f8ff;
+}
+
+.angle-list button.selected {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: bold;
+}
+
+.output {
+    grid-column: 2;
+    padding: 0 2em 3em;
+    border: none;
+    background: transparent;
+}
+
+.angle-name {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 0.3em;
+    font-weight: bold;
+}
+
+.angle-desc {
+    font-size: 0.95rem;
+    color: #777;
+    font-style: italic;
+    margin-bottom: 1.5em;
+}
+
+.angle-text {
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.generative-block {
+    margin-top: 2em;
+    padding: 1.5em;
+    border-left: 3px solid var(--accent);
+    background: rgba(142, 197, 252, 0.08);
+}
+
+.generator-link {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 8px 14px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.generator-link:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.audio-link { display: none; }
+.footer {
+    grid-column: 2;
+    padding: 2em;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.footer a { color: var(--accent); }
+
+@media (max-width: 900px) {
+    #container {
+        grid-template-columns: 1fr;
+    }
+    #pohadka {
+        position: relative;
+        max-height: 400px;
+    }
+}
