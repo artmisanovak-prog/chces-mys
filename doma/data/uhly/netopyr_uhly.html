@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netopýr - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        /* --- ILUSTRACE --- */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        /* --- POHÁDKA - SCROLLOVACÍ OKNO --- */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        /* --- 12 TLAČÍTEK - JEDNODUCHÁ MŘÍŽKA --- */
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        /* --- VÝSTUP - POD TLAČÍTKY --- */
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🦇 12 úhlů pohledu</h1>
+<p><em>„O netopýrovi a kráse, která se ráno nehodí – a přesto je pravdou noci“</em></p>
+
+<!-- ILUSTRACE NETOPÝRA -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/netopyr.jpg" alt="Ilustrace netopýra">
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p><strong>O NETOPÝROVI</strong></p>
+        <p><strong>a krása která ráno se [už] nehodí</strong></p>
+        
+        <p>—</p>
+        
+        <p>Netopýr žil v noci.</p>
+        <p>Ne jen fyzicky.</p>
+        <p>Esteticky.</p>
+        <p>Filozoficky.</p>
+        <p>V noci bylo všechno správně.</p>
+        <p>Stíny měly tvar.</p>
+        <p>Zvuky měly smysl.</p>
+        <p>Lidé byli krásní, protože nebyli vidět.</p>
+        
+        <p>—</p>
+        
+        <p>Každý večer se probudil, natáhl křídla, protáhl zobák a vyletěl.</p>
+        <p>Ne za potravou.</p>
+        <p>Za atmosférou.</p>
+        <p>Za tím, co se děje jenom ve chvílích, kdy svět zapomene na pravidla.</p>
+        <p>Letěl nad městem, kde se světla třpytila jako sliby.</p>
+        <p>A všechno bylo možné.</p>
+        <p>Všechno bylo krásné.</p>
+        <p>Všechno bylo trochu nepravdivé – ale o dost pravdivější.</p>
+        
+        <p>—</p>
+        
+        <p>A pak přišlo ráno.</p>
+        <p>A všechno se nehodilo.</p>
+        <p>Tváře, co v noci zářily, byly najednou unavené.</p>
+        <p>Slova, co zněla jako poezie, se změnila v trapné poznámky.</p>
+        <p>Doteky, co vibrovaly, se změnily v rozpaky.</p>
+        <p>A netopýr se schoval.</p>
+        <p>Do stropu.</p>
+        <p>Do tmy.</p>
+        <p>Do snu.</p>
+        
+        <p>—</p>
+        
+        <p>„V noci krása, co ráno už se nehodí,“ šeptal si.</p>
+        <p>A nebyl v tom sám.</p>
+        <p>Všichni, kdo v noci žili, to znali.</p>
+        <p>Básníci.</p>
+        <p>Barmani.</p>
+        <p>Ztracenci.</p>
+        <p>Zamilovaní.</p>
+        <p>A ti, co si ráno říkají:</p>
+        <p>„Tohle jsem neřekl.</p>
+        <p>Tohle jsem necítil.</p>
+        <p>Tohle jsem nebyl.“</p>
+        
+        <p>—</p>
+        
+        <p>Ale netopýr věděl, že byl.</p>
+        <p>Že noc není lež.</p>
+        <p>Je to jiný jazyk.</p>
+        <p>Jiný smysl.</p>
+        <p>Jiný druh pravdy, která se nehodí do denního světla.</p>
+        
+        <p>—</p>
+        
+        <p>A tak se začalo říkat, že netopýr je tvor, který nosí krásu, co se nehodí.</p>
+        <p>A že jeho pohádky jsou jako kocovina.</p>
+        <p>Bolí.</p>
+        <p>Ale připomínají, že jsme žili.</p>
+    </div>
+</div>
+    
+<!-- 12 ÚHLŮ -->
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<!-- VÝSTUP -->
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20NETOPÝR">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S KRÁTKÝM POPISEM A KONKRÉTNÍ VĚTOU O POHÁDCE O NETOPÝROVI ---
+    const data = [
+        { 
+            name: "Absurdní", 
+            desc: "Hledá nesmysl, paradox, rozpor.", 
+            text: "Netopýr, který nelétá za potravou, ale za atmosférou. Krása, která je v noci pravdivá a ráno trapná. Lidé, kteří jsou krásní, protože nejsou vidět. Paradox noci a dne – obojí je pravda, ale jen jedna se hodí. Absurdní? Ano. Ale taková je realita všech, co žijí na hraně." 
+        },
+        { 
+            name: "Jazykový", 
+            desc: "Sleduje slova, rytmus, dvojznačnost.", 
+            text: "‚Krása, která ráno se už nehodí‘ – věta, která drhne, jako by sama patřila do noci. Netopýr ‚žil v noci esteticky, filozoficky‘ – jazyk se tady pokouší popsat něco, co se vymyká denní logice. A nakonec přirovnání ke kocovině: bolí to, ale víš, že jsi žil." 
+        },
+        { 
+            name: "Ironický", 
+            desc: "Vidí rozpor mezi záměrem a výsledkem.", 
+            text: "Netopýr hledá v noci krásu – a najde ji. Ale ráno je ta krása k ničemu. Ironie osudu: to nejcennější, co prožiješ, se nedá použít ve světle dne. A ti, co v noci žijí (básníci, barmani, ztracenci), to vědí – a přesto v tom pokračují." 
+        },
+        { 
+            name: "Filozofický", 
+            desc: "Ptá se po smyslu a podstatě.", 
+            text: "Co je pravda? Je to to, co vidíme ve dne, nebo to, co cítíme v noci? Netopýr tvrdí, že noc není lež, ale jiný jazyk. Jiný druh pravdy. Pohádka klade otázku: Máme dvě identity – denní a noční? A která z nich je ta pravá? Nebo jsou obě, jen se jedna nehodí?" 
+        },
+        { 
+            name: "Surrealistický", 
+            desc: "Propojuje nesouvisející.", 
+            text: "Netopýr letí nad městem, kde se světla třpytí jako sliby. Tváře září, slova jsou poezie, doteky vibrují. A pak ráno – unavené tváře, trapné poznámky, rozpaky. Dva světy vedle sebe, které se nesnášejí. A netopýr je spojuje, i když v tom sám létá." 
+        },
+        { 
+            name: "Naivní", 
+            desc: "Vidí věci jednoduše, bez předsudků.", 
+            text: "Netopýr má rád noc. V noci je všechno hezký. Lidi jsou hezký, protože nejsou vidět. Ráno je všechno blbý. On se schová. A ví, že noc byla pravda, i když si to ráno nikdo nepamatuje. Jednoduchý, ne?" 
+        },
+        { 
+            name: "Introspektivní", 
+            desc: "Promítá do příběhu vlastní pocity.", 
+            text: "Tohle jsem já. V noci jsem básník, milenec, filosof. Píšu, cítím, žiju. A ráno? Ráno se na to dívám a říkám si: ‚To jsem nebyl já.‘ Ale ten netopýr má pravdu – byl jsem. A ta kocovina? Ta je důkaz, že to bylo skutečný." 
+        },
+        { 
+            name: "Betonový", 
+            desc: "Čte doslovně, fakticky.", 
+            text: "Příběh vypráví o netopýrovi, který je aktivní v noci, kdy vnímá svět jako esteticky a filozoficky hodnotný. Létá nad městem, pozoruje světla, lidi, zvuky. Po ránu se ukrývá, protože noční realita se neslučuje s denní. Konstatuje, že existuje skupina lidí (básníci, barmani, ztracenci, zamilovaní), kteří zažívají stejný rozpor. Noční prožitky přirovnává ke kocovině – bolí, ale připomínají, že k nim došlo." 
+        },
+        { 
+            name: "Kulturní", 
+            desc: "Hledá archetypy a paralely.", 
+            text: "Netopýr jako symbol noci, tajemna, přechodu. V mnoha kulturách je spojován s podsvětím, sny, magií. Tady je to bytost, která nese krásu noci – tu, kterou znají všichni, kdo žijí na okraji dne. Je to archetyp poutníka mezi světy, který ví, že každá pravda má svůj čas a místo." 
+        },
+        { 
+            name: "Asociační", 
+            desc: "Vyvolává osobní vzpomínky.", 
+            text: "Připomnělo mi to všechny ty noci, kdy jsem s přáteli mluvil o životě, vesmíru a všem, a ráno jsme si to nepamatovali. Ale věděli jsme, že to bylo důležitý. A ta kocovina – ta nás ujišťovala, že jsme nebyli sami. Netopýr má pravdu: bolí to, ale je to důkaz." 
+        },
+        { 
+            name: "Metaforický", 
+            desc: "Vidí symboly za věcmi.", 
+            text: "Netopýr je duše, která žije v noci – v říši snů, fantazie, opravdových pocitů. Den je realita, role, maska. Krása, co se ráno nehodí, je všechno, co v životě opravdu prožijeme, ale nemůžeme to ukázat světu. A kocovina? Ta je metaforou pro cenu, kterou platíme za to, že jsme skuteční." 
+        },
+        { 
+            name: "Groteskní", 
+            desc: "Vidí přehnanou, temnou komiku.", 
+            text: "Představ si: netopýr, co létá nad městem a hledá atmosféru. Dole lidi, co v noci září a ráno jsou unavený. A všichni si říkají: ‚To jsem nebyl já.‘ Je to fraška o tom, že každý máme dvě tváře – a ta noční je sice krásná, ale ráno se na ni vykašleme. A kocovina? Ta je směšná i bolestná zároveň." 
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+
+    // Vytvoření tlačítek
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            // Zvýraznění
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Výpis
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    // Předvolit první úhel
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+<!-- Poznámka: Tímto je kompletní série osmi pohádek (myš, kocour, ryba, motýl, plameňák, čáp, liška, netopýr) – všechny se stejným designem a funkcí. -->
+
+</body>
+</html>
