@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motýl - 12 úhlů pohledu</title>
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        /* --- ILUSTRACE --- */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        /* --- POHÁDKA - SCROLLOVACÍ OKNO --- */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        /* --- 12 TLAČÍTEK - JEDNODUCHÁ MŘÍŽKA --- */
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        /* --- VÝSTUP - POD TLAČÍTKY --- */
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🦋 12 úhlů pohledu</h1>
+<p><em>„O motýlech, hladu a tom, že láska se nedá jíst ani s přílohou“</em></p>
+
+<!-- ILUSTRACE MOTÝLA -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/motyl.jpg" alt="Ilustrace motýla">
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p><strong>O MOTÝLECH</strong></p>
+        <p><strong>kterých se nenajíš</strong></p>
+        
+        <p>—</p>
+        
+        <p>„Já mám hlad,“ řekla.</p>
+        <p>„Tak tady máš,“ řekl.</p>
+        <p>A podal jí motýly.</p>
+        <p>Tři.</p>
+        <p>Jeden modrý, jeden žlutý, jeden trochu rozmazaný.</p>
+        <p>Ten třetí se jmenoval Horac, ale to se dozvěděli až později.</p>
+        
+        <p>—</p>
+        
+        <p>„To se nedá sníst,“ řekla.</p>
+        <p>„Ale dá se na to koukat,“ řekl.</p>
+        <p>„Já nechci koukat. Já chci jíst.“</p>
+        <p>„Motýli jsou lehcí. Nezatíží ti žaludek.“</p>
+        <p>„Ale já chci, aby mi žaludek zpíval, ne aby si šeptal básničky.“</p>
+        
+        <p>—</p>
+        
+        <p>Motýli se zatím rozhlíželi.</p>
+        <p>Jeden si lehl do polívky.</p>
+        <p>Druhý se schoval pod rohlík.</p>
+        <p>Třetí Horac se snažil otevřít ledničku, ale neměl palce.</p>
+        
+        <p>—</p>
+        
+        <p>„Já mám hlad,“ řekla znovu.</p>
+        <p>„A ty mi dáváš křídla.“</p>
+        <p>„Křídla jsou taky něco,“ řekl.</p>
+        <p>„Ale nejsou chleba,“ řekla.</p>
+        <p>„To je pravda,“ řekl.</p>
+        <p>„Ale chleba neumí lítat.“</p>
+        
+        <p>“A ještě je chleba nejvic emo," řekl polohlasem.</p>
+        <p>" Jakto?“ řekla.</p>
+        <p>“Řeže se a má dvě patky." řekl.</p>
+        <p>"aha” uzavřela.</p>
+        
+        <p>—</p>
+        
+        <p>Chvíli bylo ticho.</p>
+        <p>Motýli se tvářili, že rozumí.</p>
+        <p>Ale nerozuměli.</p>
+        <p>Jeden se pokusil být salát.</p>
+        <p>Druhý se schoulil do tvaru knedlíku.</p>
+        <p>Horác se převlékl za banán.</p>
+        <p>A začal si říkat Florián.</p>
+        
+        <p>—</p>
+        
+        <p>„Tohle je divný,“ řekla.</p>
+        <p>„To je umění,“ řekl.</p>
+        <p>„To je hlad,“ řekla.</p>
+        <p>„To je interpretace,“ řekl.</p>
+        <p>„To je nesmysl,“ řekla.</p>
+        <p>„To je možné,“ řekl.</p>
+        
+        <p>—</p>
+        
+        <p>Nakonec si sedla na zem.</p>
+        <p>Motýli jí kroužili kolem hlavy.</p>
+        <p>Dělal vitr a i víry v myšlenkách.</p>
+        <p>A jeden jí přistál na nose.</p>
+        <p>„Já tě nesním,“ řekla mu.</p>
+        <p>„To je dobře,“ řekl Florián.</p>
+        <p>„Já bych stejně chutnal jako neděle.“</p>
+        
+        <p>—</p>
+        
+        <p>A tak si vzala rohlík.</p>
+        <p>Bez motýlů.</p>
+        <p>Bez klišé.</p>
+        <p>Bez chutí.</p>
+        
+        <p>—</p>
+        
+        <p>Ale v hlavě jí drnčela věta:</p>
+        <p>„Motýlů v břiše se nenajíš.“</p>
+        
+        <p>—</p>
+        
+        <p>A pokaždé, když jí někdo</p>
+        <p>chtěl nakrmit láskou,</p>
+        <p>zeptala se:</p>
+        <p>„A máš k tomu i přílohu?”</p>
+    </div>
+</div>
+    
+<!-- 12 ÚHLŮ -->
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<!-- VÝSTUP -->
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20MOTÝL">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S KRÁTKÝM POPISEM A KONKRÉTNÍ VĚTOU O POHÁDCE O MOTÝLECH ---
+    const data = [
+        { 
+            name: "Absurdní", 
+            desc: "Hledá nesmysl, paradox, rozpor.", 
+            text: "Motýli jako jídlo? Jeden v polévce, druhý pod rohlíkem, třetí se převléká za banán. A ten dialog: ‚To je umění.‘ ‚To je hlad.‘ Absurdní situace, kde se všechno snaží být něčím, čím není – a přitom je to k smíchu i k pláči zároveň." 
+        },
+        { 
+            name: "Jazykový", 
+            desc: "Sleduje slova, rytmus, dvojznačnost.", 
+            text: "‚Motýlů v břiše‘ – klišé o lásce se tady bere doslova. ‚Chleba je nejvíc emo, protože řeže se a má dvě patky.‘ Jazyk se v pohádce láme, převléká a hledá nové významy. Každá věta je hra – a každé slovo může být zítra banán." 
+        },
+        { 
+            name: "Ironický", 
+            desc: "Vidí rozpor mezi záměrem a výsledkem.", 
+            text: "On jí chce dát něco krásného, symbolického – motýly. Ona má ale hlad. On vidí umění, ona vidí nesmysl. Ironie vztahů: někdo nosí křídla, druhej chce rohlík. A nakonec zjistíš, že motýli chutnají jako neděle – tedy vlastně nijak." 
+        },
+        { 
+            name: "Filozofický", 
+            desc: "Ptá se po smyslu a podstatě.", 
+            text: "Co člověka doopravdy nasytí? Chleba, nebo krása? Láska, nebo jídlo? Pohádka klade otázku po hodnotách: můžeme žít z pocitů, nebo potřebujeme něco hmatatelného? A proč vlastně chceme, aby nám žaludek zpíval, místo aby šeptal básničky?" 
+        },
+        { 
+            name: "Surrealistický", 
+            desc: "Propojuje nesouvisející.", 
+            text: "Motýl v polévce, motýl jako knedlík, motýl jménem Horac, který se převlékne za Floriána. Svět, kde se věci mění v jiné věci, kde dialog připomíná absurdní drama a kde nakonec usedáš s rohlíkem, zatímco ti kolem hlavy krouží křídla. Tohle není realita – to je obraz." 
+        },
+        { 
+            name: "Naivní", 
+            desc: "Vidí věci jednoduše, bez předsudků.", 
+            text: "Holka má hlad. Kluk jí dá motýly. Ona říká, že se to nedá jíst. On říká, že se na to dá koukat. Motýli se snaží být jídlo, ale nejde jim to. Nakonec si holka vezme rohlík. A motýli lítaj dál. Prostě." 
+        },
+        { 
+            name: "Introspektivní", 
+            desc: "Promítá do příběhu vlastní pocity.", 
+            text: "Tohle je přesně můj život. Pořád mi někdo dává motýly – očekávání, symboly, krásné řeči. A já mám hlad. Pořádnej hlad po něčem skutečným. A nakonec sáhnu po rohlíku, protože aspoň vím, co dostanu. A ta věta: ‚A máš k tomu i přílohu?‘ – tu budu říkat napořád." 
+        },
+        { 
+            name: "Betonový", 
+            desc: "Čte doslovně, fakticky.", 
+            text: "Příběh vypráví o ženě, která má hlad a muž jí místo jídla nabídne tři motýly (modrý, žlutý, rozmazaný). Motýli se neúspěšně pokoušejí stát se jídlem (polévka, rohlík, banán). Po sérii absurdních dialogů si žena vezme rohlík, ale v hlavě jí utkví věta o motýlech v břiše. Od té doby se ptá těch, co jí nabízejí lásku, zda mají i přílohu." 
+        },
+        { 
+            name: "Kulturní", 
+            desc: "Hledá archetypy a paralely.", 
+            text: "Motýli jako symbol duše, lásky, pomíjivosti. Tady jsou konfrontováni s naprosto hmotnou potřebou – hladem. Je to střet dvou světů: romantického a pragmatického. Florián (bývalý Horac) je jako postmoderní Don Quijote – bojuje s větrnými mlýny (ledničkou bez palců) a převléká se za to, čím není." 
+        },
+        { 
+            name: "Asociační", 
+            desc: "Vyvolává osobní vzpomínky.", 
+            text: "Připomnělo mi to, jak mi kdysi někdo dal k narozeninám básničku. Měl jsem hlad jako vlk, a on mi četl verše. Tehdy bych dal za rohlík. Dneska už vím, že motýli v břiše jsou fajn, ale k večeři si dám radši řízek. A přílohu." 
+        },
+        { 
+            name: "Metaforický", 
+            desc: "Vidí symboly za věcmi.", 
+            text: "Motýli jsou sny, touhy, ideály. Ona je realita, každodennost, hlad. On se jí snaží nakrmit ideály, ale ty nenasytí. Motýli se mění v banány a knedlíky – ideály se převlékají za to, co je hmatatelné. Ale stejně chutnají jako neděle – jako prázdný den, kdy se nic neděje." 
+        },
+        { 
+            name: "Groteskní", 
+            desc: "Vidí přehnanou, temnou komiku.", 
+            text: "Představ si: motýl v polévce, motýl pod rohlíkem, motýl otevírající ledničku. A k tomu debata o tom, jestli je chleba emo. Je to fraška o tom, jak se lidi míjejí – ona chce žrát, on jí dává poezii. A nakonec z toho zbude jen otázka: ‚A máš k tomu i přílohu?‘ Směšný. A smutný." 
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+
+    // Vytvoření tlačítek
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            // Zvýraznění
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Výpis
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    // Předvolit první úhel
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+<!-- Poznámka: Stejným způsobem lze přidat ilustraci do libovolné pohádky – stačí zkopírovat blok .ilustrace a upravit cestu k obrázku. -->
+
+</body>
+</html>
