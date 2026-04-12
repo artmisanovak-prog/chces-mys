@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myš - 12 úhlů pohledu</title>
+
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>
+        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+        plausible.init()
+    </script>
+
+    <style>
+        /* --- ČERNOBÍLÝ SVĚT - ŽÁDNÉ BARVY --- */
+        html {
+            filter: grayscale(1);
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        h1, h2, h3 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #000;
+        }
+        .audio-link {
+            text-align: center;
+            margin-top: 0.5em;
+            font-size: 0.9rem;
+        }
+        .audio-link a {
+            color: #000;
+            text-decoration: underline;
+        }
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f9f9f9;
+            font-style: italic;
+        }
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        .angle-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6em;
+            margin: 2em 0;
+            justify-content: center;
+        }
+        .angle-list button {
+            background: #fff;
+            border: 1px solid #000;
+            padding: 0.7em 1.2em;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #000;
+        }
+        .angle-list button:hover {
+            background: #ddd;
+        }
+        .angle-list button.selected {
+            background: #000;
+            color: #fff;
+            border: 2px solid #000;
+            font-weight: bold;
+        }
+        .output {
+            border: 1px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 180px;
+        }
+        .angle-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+        }
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .generative-block {
+            margin-top: 2em;
+            padding: 1.2em;
+            border: 1px solid #000;
+            background: #f3f3f3;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .generative-label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+        .generative-sentence {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1em;
+        }
+        .generator-link {
+            display: inline-block;
+            margin-top: 0.5em;
+            padding: 0.5em 1em;
+            border: 1px solid #000;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.1s;
+        }
+        .generator-link:hover {
+            background: #000;
+            color: #fff;
+        }
+        .footer {
+            margin-top: 3em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        .footer a {
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🐁 12 úhlů pohledu</h1>
+<p><em>„O myši a o tom, co se stane, když si jí nevšimneš (scrol)“</em></p>
+
+<!-- ILUSTRACE MYŠI + odkaz na audio -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/mys.jpg" alt="Ilustrace myši">
+    <div class="audio-link">
+        🎧 <a href="https://youtu.be/oGZr8erlyIc?is=l8YEr3LyIVuGBWxa" target="_blank">Poslechnout si pohádku (YouTube audio)</a>
+    </div>
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        
+        <p>Tyto pohádky nevyprávějí příběhy tak, jak by měly.<br>
+        Místo kouzel tu vládne nedorozumění.<br>
+        Místo dobra a zla – podivný klid mezi nimi.<br>
+        Zvířata tu mluví, ale ne proto, aby nás bavila.<br>
+        Říkají to, co lidé nemohou vyslovit.<br>
+        Příběhy, co se spíš staly, než vymyslely –<br>
+        a možná se pořád dějí.<br>
+        Jen je nelze vidět z běžného úhlu.</p>
+        
+        <p><strong>KŘIVÁ POHÁDKA   ⬇️</strong></p>
+        
+        <p>Taková malá, divná, křivá<br>
+        pohádka o myši,<br>
+        co možná ani není pohádka,<br>
+        ale něco,<br>
+        co se stalo.</p>
+        
+        <p>A v tom světě jsou i jiná zvířata<br>
+        – čáp, páv, kocour, kozel…<br>
+        ale všechno to je<br>
+        napůl sen,<br>
+        napůl vtip,<br>
+        napůl výklad<br>
+        a napůl úplně mimo</p>
+        
+        <p><strong>O MYŠI<br>
+        a o tom, co se stane, když si jí NEvšimneš</strong></p>
+        
+        <p>Kdysi – zároveň ne tak docela dávno.<br>
+        A ne úplně blízko, ale zase ani ne nijak moc daleko.</p>
+        
+        <p>Žila jedna myš.<br>
+        Byla malá, tak jak to u myší<br>
+        normálně bývá.<br>
+        A měla dvě veliké uši,<br>
+        což také není u myši žádná vzácnost.</p>
+        
+        <p>Nebyla nijak zvlášť rychlá,<br>
+        ale ani úplně pomalá.<br>
+        Nebyla hloupá,<br>
+        ale ani kdovíjak chytrá.</p>
+        
+        <p>Na první pohled<br>
+        obyčejná, běžná myš.</p>
+        
+        <p>Ale ne – normální.<br>
+        Všímala si věcí, které ostatní přehlíželi.</p>
+        
+        <p>Například toho, že se ve vzduchu občas zadrhne věta.<br>
+        Nebo že páv,<br>
+        když se nikdo nedívá,<br>
+        přepočítává svá oka.<br>
+        Nebo že čáp,<br>
+        někdy jen tak<br>
+        přistane na komíně<br>
+        a zapomene,<br>
+        koho měl donést.</p>
+        
+        <p>A tahle myš<br>
+        si začala věci zapisovat.<br>
+        Ne na papír.<br>
+        Ale tak nějak.<br>
+        Do ticha.<br>
+        Do koutů.<br>
+        Do skulin mezi slovama,<br>
+        kde to obvykle nikdo nečte.</p>
+        
+        <p>A pak si jednoho dne všimla,<br>
+        že se kolem ní začínají<br>
+        hromadit zvířata.</p>
+        
+        <p>Ne v řadě.<br>
+        Ne v kruhu.<br>
+        Prostě…<br>
+        tak nějak.</p>
+        
+        <p>A každé si neslo něco,<br>
+        co nevysvětlovalo.</p>
+        
+        <p>Zajíc měl popálené uši<br>
+        a voněl po kouři.<br>
+        Kocour se dusil smíchem,<br>
+        protože spolkl tečku.<br>
+        Slon si v chobotu nesl třešně,<br>
+        co nikdy nedozrají.<br>
+        A lemur se nedíval na nic,<br>
+        jen na stranu,<br>
+        kde nic nebylo.</p>
+        
+        <p>Myš neříkala nic.<br>
+        Ale všechno si poznamenala.<br>
+        A pak se jednoho dne<br>
+        zeptala první větu.</p>
+        
+        <p>Ne velkou.<br>
+        Ne důležitou.<br>
+        Jenom tu jednu:</p>
+        
+        <p>„Chceš myš?“</p>
+        
+        <p>A to nebyla otázka,<br>
+        co se ptá<br>
+        na ni samotnou.<br>
+        To byla otázka,<br>
+        co se ptá<br>
+        na všechno.</p>
+        
+        <p>Na smysl.<br>
+        Na jazyk.<br>
+        Na strach.<br>
+        Na to,<br>
+        co si z nás kdo udělá.</p>
+        
+        <p>A taky na to,<br>
+        jestli si tuhle pohádku<br>
+        necháš vyprávět<br>
+        do konce.<br>
+        Nebo zapištíš a utečeš.<br>
+        Nebo si ji složíš jinak.</p>
+        
+        <p>Protože od té chvíle,<br>
+        už to nebyla jen myš.</p>
+        
+        <p>Byl to klíč.<br>
+        A pádlo.<br>
+        A past.<br>
+        A konec úvodu.<br>
+        Ale začátek něčeho dalšího.</p>
+        
+        <p>..možná..</p>
+        
+    </div>
+</div>
+    
+<h2>Vyber úhel pohledu</h2>
+<div class="angle-list" id="buttons"></div>
+
+<div class="output" id="output">
+    <div class="angle-name" id="angleName"></div>
+    <div class="angle-desc" id="angleDesc"></div>
+    <div id="angleText"></div>
+    <div id="generativeBlock" class="generative-block" style="display: none;">
+        <div class="generative-label">🎲 GENERATIVNÍ VĚTA (KLÍČ MYŠI)</div>
+        <div class="generative-sentence" id="generativeSentence"></div>
+        <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 Otevřít v generátoru</a>
+    </div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20MYŠ">pro více info pište</a>
+</div>
+
+<script>
+    // --- 12 ÚHLŮ S POPISEM, TEXTEM A GENERATIVNÍ VĚTOU (KLÍČEM) ---
+    const data = [
+        { 
+            name: "Absurdní",
+            desc: "Hledá nesmysl, paradox, rozpor.",
+            text: "Myš, která zapisuje do ticha? Co je to za nesmysl? A proč by se zvířata hromadila kolem ní? Celá pohádka je jeden velký paradox – a právě proto je pravdivá.",
+            key: "archiv ticha místo děje"
+        },
+        { 
+            name: "Jazykový",
+            desc: "Sleduje slova, rytmus, dvojznačnost.",
+            text: "Věta 'Chceš myš?' není otázka. Je to past. Jazyk se může zaseknout – a tohle je přesně ten moment. Pohádka ukazuje, jak se jazyk může zaseknout – a jak ho zase odpichnout.",
+            key: "mezery mezi slovy jako dokument"
+        },
+        { 
+            name: "Ironický",
+            desc: "Vidí rozpor mezi záměrem a výsledkem.",
+            text: "Myš nechtěla nic, jen si zapisovat do kouta. A najednou je středem lesa. Všichni čekají, co udělá. Ironie? Spíš tragikomedie.",
+            key: "nejmenší bytost jako svědek všeho"
+        },
+        { 
+            name: "Filozofický",
+            desc: "Ptá se po smyslu a podstatě.",
+            text: "Co to znamená 'být myš'? Je to role, nebo podstata? A co znamená 'chtít myš'? Touha po smyslu? Po odpovědi? Pohádka je jedna velká otázka, na kterou není odpověď – jen další otázky.",
+            key: "skutečnost je to, co uniká výkladu"
+        },
+        { 
+            name: "Surrealistický",
+            desc: "Propojuje nesouvisející.",
+            text: "Páv s očima na ocase, slon s třešněmi v chobotu, myš co zapisuje do ticha. Tohle není les, je to obraz – a každé zvíře je štětec, kterým myš maluje svět.",
+            key: "zvířata nesou poruchy významu"
+        },
+        { 
+            name: "Kulturní",
+            desc: "Hledá archetypy a paralely.",
+            text: "Myš je jako Ariadna – dává nit, aby se neztratil. Jenže její nit není z klubka, ale z ticha. A nevede z labyrintu, ale do něj. Je to antický mýtus, jen místo Thésea máš lemura.",
+            key: "anti-pohádka proti očekávání"
+        },
+        { 
+            name: "Naivní",
+            desc: "Vidí věci jednoduše, bez předsudků.",
+            text: "Myš si všímá věcí, které ostatní nevidí. A pak se jich na jednu věc zeptá. To je celé. Nemusíš tomu rozumět víc, než rozumí myš.",
+            key: "jen si všímá"
+        },
+        { 
+            name: "Introspektivní",
+            desc: "Promítá do příběhu vlastní pocity.",
+            text: "Cítím z toho ticho. Myš, co je sama uprostřed lesa, obklopená zvířaty, kterým nerozumím. Vždycky jsem byl taky ten, kdo zapisoval věci do kouta, protože venku na ně nikdo nečekal.",
+            key: "pozornost místo moci"
+        },
+        { 
+            name: "Groteskní",
+            desc: "Vidí přehnanou, temnou komiku.",
+            text: "Představ si: páv si přepočítává oči, lemur civí do prázdna, slon s třešněma v chobotu, a myš je zachrání otázkou, na kterou neznají odpověď. Je to fraška. A je to nádherný.",
+            key: "svědectví bez soudu"
+        },
+        { 
+            name: "Analytický",
+            desc: "Hledá struktury, vztahy, příčiny.",
+            text: "Myš jako kronikářka – sbírá data, která ostatní ignorují. Její zápisky jsou archivem toho, co by jinak zmizelo. A otázka 'Chceš myš?' je kód, který spouští interpretaci.",
+            key: "tichý kronikář"
+        },
+        { 
+            name: "Asociační",
+            desc: "Vyvolává osobní vzpomínky.",
+            text: "Připomnělo mi to naši projektovou manažerku. Taky si všechno zapisovala a nikdo nevěděl proč. A pak jednou položila otázku a celý tým ztichl. Přesně jako myš.",
+            key: "zadrhnutá věta jako zvuk stopy"
+        },
+        { 
+            name: "Metaforický",
+            desc: "Vidí symboly za věcmi.",
+            text: "Myš není myš. Je to pozornost. Páv je ješitnost, kocour je spěch, slon je paměť, lemur je ztráta. A otázka 'Chceš myš?' není otázka. Je to volba, jestli chceš vidět.",
+            key: "otázka, která otevírá pasti"
+        }
+    ];
+
+    const buttonsDiv = document.getElementById('buttons');
+    const nameEl = document.getElementById('angleName');
+    const descEl = document.getElementById('angleDesc');
+    const textEl = document.getElementById('angleText');
+    const generativeBlock = document.getElementById('generativeBlock');
+    const generativeSentenceEl = document.getElementById('generativeSentence');
+    const generatorLink = document.getElementById('generatorLink');
+
+    function updateGeneratorLink(angleName, key) {
+        const encodedKey = encodeURIComponent(key);
+        const encodedAngle = encodeURIComponent(angleName);
+        const url = `generator.html?zvir=Myš&uhel=${encodedAngle}&klic=${encodedKey}`;
+        generatorLink.href = url;
+    }
+
+    data.forEach((angle, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.angle-list button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            nameEl.textContent = angle.name;
+            descEl.textContent = angle.desc;
+            textEl.innerHTML = `<p>${angle.text}</p>`;
+            if (angle.key) {
+                generativeSentenceEl.textContent = angle.key;
+                generativeBlock.style.display = 'block';
+                updateGeneratorLink(angle.name, angle.key);
+            } else {
+                generativeBlock.style.display = 'none';
+            }
+        });
+        buttonsDiv.appendChild(btn);
+    });
+
+    if (data.length) {
+        document.querySelector('.angle-list button').click();
+    }
+</script>
+
+</body>
+</html>
