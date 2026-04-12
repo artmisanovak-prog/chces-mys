@@ -6,7 +6,9 @@
 # 🔸🔸◀️ chces mys: obsah ▶️🔻🔺🔻
 
 
+---
 
+[myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
 
 
 
