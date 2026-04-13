@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myš — 12 úhlů pohledu | Chceš myš?</title>
+
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>
+        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+        plausible.init()
+    </script>
+
+    <style>
+        :root {
+            --bg: #fefefe;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --border: #e5e5e5;
+            --accent: #000;
+            --hover: #f8f8f8;
+            --muted: #999;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 0.3em;
+        }
+
+        h2 {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin: 3rem 0 1.2rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            padding: 12vh 0 6vh;
+            text-align: center;
+        }
+
+        .meta {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            font-style: italic;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .hero-image-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            filter: grayscale(100%) contrast(1.05);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .hero-image:hover {
+            filter: grayscale(100%) contrast(1.15);
+            transform: scale(1.01);
+        }
+
+        .audio-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background: var(--bg);
+        }
+
+        .audio-pill:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* Fairy Tale Section */
+        .fairy-tale {
+            margin: 4rem 0;
+            border: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .fairy-tale-header {
+            padding: 1.2rem 1.5rem;
+            background: var(--hover);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            user-select: none;
+        }
+
+        .fairy-tale-header:hover {
+            background: #f0f0f0;
+        }
+
+        .fairy-tale-header h2 {
+            margin: 0;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .toggle-icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            color: var(--muted);
+        }
+
+        .fairy-tale.expanded .toggle-icon {
+            transform: rotate(45deg);
+        }
+
+        .fairy-tale-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fairy-tale.expanded .fairy-tale-content {
+            max-height: 3000px;
+        }
+
+        .fairy-tale-inner {
+            padding: 2rem 1.5rem;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.9;
+            color: #333;
+        }
+
+        .fairy-tale-inner p {
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+
+        .fairy-tale.expanded .fairy-tale-inner p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fairy-tale.expanded .fairy-tale-inner p:nth-child(1) { transition-delay: 0.05s; }
+        .fairy-tale.expanded .fairy-tale-inner p:nth-child(2) { transition-delay: 0.1s; }
+        .fairy-tale.expanded .fairy-tale-inner p:nth-child(3) { transition-delay: 0.15s; }
+        .fairy-tale.expanded .fairy-tale-inner p:nth-child(4) { transition-delay: 0.2s; }
+        .fairy-tale.expanded .fairy-tale-inner p:nth-child(5) { transition-delay: 0.25s; }
+
+        .fairy-tale-inner em {
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .fairy-tale-inner strong {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Angles Workshop Section */
+        .workshop-section {
+            margin: 5rem 0;
+        }
+
+        .section-intro {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-intro p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0.5rem auto 0;
+        }
+
+        /* Angle Selector */
+        .angle-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .angle-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 1rem 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .angle-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+            z-index: 0;
+        }
+
+        .angle-card:hover::before,
+        .angle-card.active::before {
+            height: 100%;
+        }
+
+        .angle-card span {
+            position: relative;
+            z-index: 1;
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .angle-card:hover span,
+        .angle-card.active span {
+            color: #fff;
+        }
+
+        .angle-card .angle-num {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-bottom: 0.3rem;
+            transition: color 0.3s;
+        }
+
+        .angle-card.active .angle-num,
+        .angle-card:hover .angle-num {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Output Display */
+        .angle-workshop {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .workshop-header {
+            padding: 1.5rem;
+            background: var(--hover);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .angle-meta {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .angle-title {
+            font-size: 1.6rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        .angle-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+        }
+
+        .angle-definition {
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .workshop-content {
+            padding: 2rem 1.5rem;
+        }
+
+        .interpretation-block {
+            margin-bottom: 2rem;
+        }
+
+        .block-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .interpretation-text {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--text);
+        }
+
+        /* Generative Key Block */
+        .key-block {
+            background: var(--hover);
+            border-left: 2px solid var(--accent);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .key-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .key-sentence {
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .key-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 1px;
+            transition: opacity 0.3s;
+        }
+
+        .key-link:hover {
+            opacity: 0.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 6rem;
+            padding: 2.5rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        footer a:hover {
+            border-bottom-color: var(--text);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.7s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .angle-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .angle-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .angle-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Print */
+        @media print {
+            .progress-bar, .angle-selector, .audio-pill {
+                display: none;
+            }
+            
+            .fairy-tale-content {
+                max-height: none !important;
+            }
+            
+            .angle-workshop {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="container">
+        <header class="animate-in">
+            <div class="meta">Fenomén Myši — Kreativní workshop</div>
+            <h1>🐁 12 úhlů pohledu</h1>
+            <p class="subtitle">„O myši a o tom, co se stane, když si jí nevšimneš"</p>
+        </header>
+
+        <section class="hero animate-in" style="animation-delay: 0.15s">
+            <div class="hero-image-container">
+                <img src="doma/ilustrace/mys.jpg" alt="Ilustrace myši" class="hero-image" id="heroImage">
+            </div>
+            <div style="text-align: center;">
+                <a href="https://youtu.be/oGZr8erlyIc?is=l8YEr3LyIVuGBWxa" target="_blank" rel="noopener" class="audio-pill">
+                    <span>▶</span> Poslechnout pohádku
+                </a>
+            </div>
+        </section>
+
+        <section class="fairy-tale animate-in" id="fairyTale" style="animation-delay: 0.3s">
+            <div class="fairy-tale-header" onclick="toggleFairyTale()">
+                <h2>Křivá pohádka — rovné svědectví</h2>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="fairy-tale-content">
+                <div class="fairy-tale-inner">
+                    <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                    
+                    <p>Tyto pohádky nevyprávějí příběhy tak, jak by měly.<br>
+                    Místo kouzel tu vládne nedorozumění.<br>
+                    Místo dobra a zla – podivný klid mezi nimi.<br>
+                    Zvířata tu mluví, ale ne proto, aby nás bavila.<br>
+                    Říkají to, co lidé nemohou vyslovit.</p>
+                    
+                    <p><strong>Křivá pohádka</strong></p>
+                    
+                    <p>Taková malá, divná, křivá<br>
+                    pohádka o myši,<br>
+                    co možná ani není pohádka,<br>
+                    ale něco,<br>
+                    co se stalo.</p>
+                    
+                    <p>A v tom světě jsou i jiná zvířata<br>
+                    – čáp, páv, kocour, kozel…<br>
+                    ale všechno to je<br>
+                    napůl sen,<br>
+                    napůl vtip,<br>
+                    napůl výklad<br>
+                    a napůl úplně mimo</p>
+                    
+                    <p><strong>O MYŠI<br>
+                    a o tom, co se stane, když si jí NEvšimneš</strong></p>
+                    
+                    <p>Kdysi – zároveň ne tak docela dávno.<br>
+                    A ne úplně blízko, ale zase ani ne nijak moc daleko.</p>
+                    
+                    <p>Žila jedna myš.<br>
+                    Byla malá, tak jak to u myší<br>
+                    normálně bývá.<br>
+                    A měla dvě veliké uši,<br>
+                    což také není u myši žádná vzácnost.</p>
+                    
+                    <p>Nebyla nijak zvlášť rychlá,<br>
+                    ale ani úplně pomalá.<br>
+                    Nebyla hloupá,<br>
+                    ale ani kdovíjak chytrá.</p>
+                    
+                    <p>Na první pohled<br>
+                    obyčejná, běžná myš.</p>
+                    
+                    <p>Ale ne – normální.<br>
+                    Všímala si věcí, které ostatní přehlíželi.</p>
+                    
+                    <p>Například toho, že se ve vzduchu občas zadrhne věta.<br>
+                    Nebo že páv,<br>
+                    když se nikdo nedívá,<br>
+                    přepočítává svá oka.<br>
+                    Nebo že čáp,<br>
+                    někdy jen tak<br>
+                    přistane na komíně<br>
+                    a zapomene,<br>
+                    koho měl donést.</p>
+                    
+                    <p>A tahle myš<br>
+                    si začala věci zapisovat.<br>
+                    Ne na papír.<br>
+                    Ale tak nějak.<br>
+                    Do ticha.<br>
+                    Do koutů.<br>
+                    Do skulin mezi slovama,<br>
+                    kde to obvykle nikdo nečte.</p>
+                    
+                    <p>A pak si jednoho dne všimla,<br>
+                    že se kolem ní začínají<br>
+                    hromadit zvířata.</p>
+                    
+                    <p>Ne v řadě.<br>
+                    Ne v kruhu.<br>
+                    Prostě…<br>
+                    tak nějak.</p>
+                    
+                    <p>A každé si neslo něco,<br>
+                    co nevysvětlovalo.</p>
+                    
+                    <p>Zajíc měl popálené uši<br>
+                    a voněl po kouři.<br>
+                    Kocour se dusil smíchem,<br>
+                    protože spolkl tečku.<br>
+                    Slon si v chobotu nesl třešně,<br>
+                    co nikdy nedozrají.<br>
+                    A lemur se nedíval na nic,<br>
+                    jen na stranu,<br>
+                    kde nic nebylo.</p>
+                    
+                    <p>Myš neříkala nic.<br>
+                    Ale všechno si poznamenala.<br>
+                    A pak se jednoho dne<br>
+                    zeptala první větu.</p>
+                    
+                    <p>Ne velkou.<br>
+                    Ne důležitou.<br>
+                    Jenom tu jednu:</p>
+                    
+                    <p><strong>„Chceš myš?“</strong></p>
+                    
+                    <p>A to nebyla otázka,<br>
+                    co se ptá<br>
+                    na ni samotnou.<br>
+                    To byla otázka,<br>
+                    co se ptá<br>
+                    na všechno.</p>
+                    
+                    <p>Na smysl.<br>
+                    Na jazyk.<br>
+                    Na strach.<br>
+                    Na to,<br>
+                    co si z nás kdo udělá.</p>
+                    
+                    <p>A taky na to,<br>
+                    jestli si tuhle pohádku<br>
+                    necháš vyprávět<br>
+                    do konce.<br>
+                    Nebo zapištíš a utečeš.<br>
+                    Nebo si ji složíš jinak.</p>
+                    
+                    <p>Protože od té chvíle,<br>
+                    už to nebyla jen myš.</p>
+                    
+                    <p>Byl to klíč.<br>
+                    A pádlo.<br>
+                    A past.<br>
+                    A konec úvodu.<br>
+                    Ale začátek něčeho dalšího.</p>
+                    
+                    <p><em>..možná..</em></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="workshop-section animate-in" style="animation-delay: 0.45s">
+            <div class="section-intro">
+                <h2>12 úhlů fenoménu Myši</h2>
+                <p>Vyberte úhel — každý s interpretací a generativním klíčem</p>
+            </div>
+            
+            <div class="angle-selector" id="angleSelector"></div>
+            
+            <div class="angle-workshop" id="workshop">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">◈</div>
+                    <p>Vyberte úhel pohledu výše</p>
+                </div>
+                
+                <div id="workshopContent" style="display: none;">
+                    <div class="workshop-header">
+                        <div class="angle-meta">
+                            <h3 class="angle-title" id="angleTitle"></h3>
+                            <span class="angle-type" id="angleType">Perspektiva</span>
+                        </div>
+                        <div class="angle-definition" id="angleDefinition"></div>
+                    </div>
+                    
+                    <div class="workshop-content">
+                        <div class="interpretation-block">
+                            <div class="block-label">
+                                <span>◉</span> Co vidí tento úhel
+                            </div>
+                            <div class="interpretation-text" id="interpretationText"></div>
+                        </div>
+                        
+                        <div class="key-block">
+                            <div class="key-label">🗝 Generativní klíč (Myš čte takto)</div>
+                            <div class="key-sentence" id="keySentence"></div>
+                            <a href="#" class="key-link" id="keyLink" target="_blank">
+                                Otevřít v generátoru →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="animate-in" style="animation-delay: 0.6s">
+            <p><strong>Michaela Nováková</strong> — metoda REPODOM · web bez webu</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20MYŠ">chcesmys@gmail.com</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Data for 12 angles matching the project's style
+        const anglesData = [
+            { 
+                num: "01",
+                name: "Absurdní",
+                type: "Paradox",
+                desc: "Hledá nesmysl, paradox, rozpor.",
+                text: "Myš, která zapisuje do ticha? Co je to za nesmysl? A proč by se zvířata hromadila kolem ní? Celá pohádka je jeden velký paradox – a právě proto je pravdivá. Myš neexistuje jako postava, ale jako klíč k tomu, co uniká logice.",
+                key: "archiv ticha místo děje"
+            },
+            { 
+                num: "02",
+                name: "Jazykový",
+                type: "Struktura",
+                desc: "Sleduje slova, rytmus, dvojznačnost.",
+                text: "Věta 'Chceš myš?' není otázka. Je to past. Jazyk se může zaseknout – a tohle je přesně ten moment. Pohádka ukazuje, jak se jazyk může zaseknout mezi významy a jak ho zase odpichnout.",
+                key: "mezery mezi slovy jako dokument"
+            },
+            { 
+                num: "03",
+                name: "Ironický",
+                type: "Nadhled",
+                desc: "Vidí rozpor mezi záměrem a výsledkem.",
+                text: "Myš nechtěla nic, jen si zapisovat do kouta. A najednou je středem lesa. Všichni čekají, co udělá. Ironie? Spíš tragikomedie. Nejmenší bytost jako svědek všeho – to je ironie situace, ne záměr.",
+                key: "nejmenší bytost jako svědek všeho"
+            },
+            { 
+                num: "04",
+                name: "Filozofický",
+                type: "Otázka",
+                desc: "Ptá se po smyslu a podstatě.",
+                text: "Co to znamená 'být myš'? Je to role, nebo podstata? A co znamená 'chtít myš'? Touha po smyslu? Po odpovědi? Pohádka je jedna velká otázka, na kterou není odpověď – jen další otázky. Skutečnost je to, co uniká výkladu.",
+                key: "skutečnost je to, co uniká výkladu"
+            },
+            { 
+                num: "05",
+                name: "Surrealistický",
+                type: "Obraz",
+                desc: "Propojuje nesouvisející.",
+                text: "Páv s očima na ocase, slon s třešněmi v chobotu, myš co zapisuje do ticha. Tohle není les, je to obraz – a každé zvíře je štětec, kterým myš maluje svět. Zvířata nesou poruchy významu.",
+                key: "zvířata nesou poruchy významu"
+            },
+            { 
+                num: "06",
+                name: "Kulturní",
+                type: "Archetyp",
+                desc: "Hledá paralely a mýty.",
+                text: "Myš je jako Ariadna – dává nit, aby se neztratil. Jenže její nit není z klubka, ale z ticha. A nevede z labyrintu, ale do něj. Je to antický mýtus, jen místo Thésea máš lemura. Anti-pohádka proti očekávání.",
+                key: "anti-pohádka proti očekávání"
+            },
+            { 
+                num: "07",
+                name: "Naivní",
+                type: "Přímost",
+                desc: "Vidí věci jednoduše, bez předsudků.",
+                text: "Myš si všímá věcí, které ostatní nevidí. A pak se jich na jednu věc zeptá. To je celé. Nemusíš tomu rozumět víc, než rozumí myš. Jen si všímá – a to stačí.",
+                key: "jen si všímá"
+            },
+            { 
+                num: "08",
+                name: "Introspektivní",
+                type: "Vnitřek",
+                desc: "Promítá do příběhu vlastní pocity.",
+                text: "Cítím z toho ticho. Myš, co je sama uprostřed lesa, obklopená zvířaty, kterým nerozumím. Vždycky jsem byl taky ten, kdo zapisoval věci do kouta, protože venku na ně nikdo nečekal. Pozornost místo moci.",
+                key: "pozornost místo moci"
+            },
+            { 
+                num: "09",
+                name: "Groteskní",
+                type: "Tělo",
+                desc: "Vidí přehnanou, temnou komiku.",
+                text: "Představ si: páv si přepočítává oči, lemur civí do prázdna, slon s třešněma v chobotu, a myš je zachrání otázkou, na kterou neznají odpověď. Je to fraška. A je to nádherný. Svědectví bez soudu.",
+                key: "svědectví bez soudu"
+            },
+            { 
+                num: "10",
+                name: "Analytický",
+                type: "Struktura",
+                desc: "Hledá vztahy a příčiny.",
+                text: "Myš jako kronikářka – sbírá data, která ostatní ignorují. Její zápisky jsou archivem toho, co by jinak zmizelo. A otázka 'Chceš myš?' je kód, který spouští interpretaci. Tichý kronikář.",
+                key: "tichý kronikář"
+            },
+            { 
+                num: "11",
+                name: "Asociační",
+                type: "Stopa",
+                desc: "Vyvolává osobní vzpomínky.",
+                text: "Připomnělo mi to naši projektovou manažerku. Taky si všechno zapisovala a nikdo nevěděl proč. A pak jednou položila otázku a celý tým ztichl. Přesně jako myš. Zadrhnutá věta jako zvuk stopy.",
+                key: "zadrhnutá věta jako zvuk stopy"
+            },
+            { 
+                num: "12",
+                name: "Metaforický",
+                type: "Symbol",
+                desc: "Vidí symboly za věcmi.",
+                text: "Myš není myš. Je to pozornost. Páv je ješitnost, kocour je spěch, slon je paměť, lemur je ztráta. A otázka 'Chceš myš?' není otázka. Je to volba, jestli chceš vidět. Otázka, která otevírá pasti.",
+                key: "otázka, která otevírá pasti"
+            }
+        ];
+
+        let currentAngle = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAngleCards();
+            setupProgressBar();
+            setupImageInteraction();
+            
+            // Auto-select first angle
+            setTimeout(() => {
+                selectAngle(0);
+            }, 800);
+        });
+
+        function renderAngleCards() {
+            const selector = document.getElementById('angleSelector');
+            anglesData.forEach((angle, index) => {
+                const card = document.createElement('div');
+                card.className = 'angle-card';
+                card.innerHTML = `
+                    <div class="angle-num">${angle.num}</div>
+                    <span>${angle.name}</span>
+                `;
+                card.onclick = () => selectAngle(index);
+                selector.appendChild(card);
+            });
+        }
+
+        function selectAngle(index) {
+            const cards = document.querySelectorAll('.angle-card');
+            cards.forEach((card, i) => {
+                card.classList.toggle('active', i === index);
+            });
+
+            const angle = anglesData[index];
+            currentAngle = angle;
+
+            // Hide empty state, show content
+            document.getElementById('emptyState').style.display = 'none';
+            const content = document.getElementById('workshopContent');
+            content.style.display = 'block';
+            
+            // Animate content change
+            content.style.opacity = '0';
+            content.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                document.getElementById('angleTitle').textContent = angle.name;
+                document.getElementById('angleType').textContent = angle.type;
+                document.getElementById('angleDefinition').textContent = angle.desc;
+                document.getElementById('interpretationText').textContent = angle.text;
+                document.getElementById('keySentence').textContent = angle.key;
+                
+                const encodedKey = encodeURIComponent(angle.key);
+                const encodedAngle = encodeURIComponent(angle.name);
+                document.getElementById('keyLink').href = `generator.html?zvir=Myš&uhel=${encodedAngle}&klic=${encodedKey}`;
+                
+                content.style.opacity = '1';
+                content.style.transform = 'translateY(0)';
+            }, 150);
+
+            // Track
+            if (window.plausible) {
+                plausible('Angle Selected', {props: {angle: angle.name, num: angle.num}});
+            }
+        }
+
+        function toggleFairyTale() {
+            const tale = document.getElementById('fairyTale');
+            const wasExpanded = tale.classList.contains('expanded');
+            tale.classList.toggle('expanded');
+            
+            if (window.plausible) {
+                plausible(wasExpanded ? 'Fairy Tale Closed' : 'Fairy Tale Opened');
+            }
+        }
+
+        function setupProgressBar() {
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('progressBar').style.width = scrolled + "%";
+            });
+        }
+
+        function setupImageInteraction() {
+            const img = document.getElementById('heroImage');
+            img.addEventListener('click', () => {
+                img.style.transform = 'scale(1.03)';
+                setTimeout(() => {
+                    img.style.transform = '';
+                }, 300);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                const current = anglesData.findIndex(a => a === currentAngle);
+                const next = (current + 1) % anglesData.length;
+                selectAngle(next);
+                document.querySelectorAll('.angle-card')[next].scrollIntoView({behavior: 'smooth', block: 'nearest'});
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                const current = anglesData.findIndex(a => a === currentAngle);
+                const prev = (current - 1 + anglesData.length) % anglesData.length;
+                selectAngle(prev);
+                document.querySelectorAll('.angle-card')[prev].scrollIntoView({behavior: 'smooth', block: 'nearest'});
+            }
+        });
+    </script>
+</body>
+</html>
