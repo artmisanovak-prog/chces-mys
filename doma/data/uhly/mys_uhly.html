@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myší klíče aneb jak pohádku čte Myš</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #111;
+            --text: #f0f0f0;
+            --text-dim: #444;
+            --text-mid: #777;
+            --accent: #fff;
+            --border: #1a1a1a;
+            --mouth: #c9a227;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .noise {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.015;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1.5rem; }
+        h1 { font-family: 'Crimson Text', serif; font-size: clamp(1.2rem, 4vw, 1.8rem); 
+             font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase; }
+        .subtitle { font-size: 0.65rem; letter-spacing: 0.4em; color: var(--text-dim); margin-top: 0.3rem; }
+
+        .hero { position: relative; max-width: 450px; margin: 0 auto; padding: 1.5rem; display: flex; justify-content: center; }
+        .card-illustration { width: 100%; max-width: 300px; filter: grayscale(100%) contrast(1.05); opacity: 0.9; }
+        
+        .mouse { position: absolute; width: 24px; height: 24px; 
+                 background: url('doma/ilustrace/mys_ikonka.png') center/contain no-repeat;
+                 filter: grayscale(100%) invert(1); opacity: 0.6; pointer-events: none; }
+        .mouse-1 { top: 15%; right: 10%; animation: float 6s ease-in-out infinite; }
+        .mouse-2 { bottom: 20%; left: 10%; animation: float 8s ease-in-out infinite reverse; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.6rem 1.2rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.08em; transition: all 0.3s;
+        }
+        .audio-btn:hover { color: var(--accent); border-color: var(--text-mid); }
+
+        /* Fairy tale - minimal */
+        .fairy-wrap { max-width: 500px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; border-bottom: 1px solid var(--border);
+            color: var(--text-mid); font-family: 'Crimson Text', serif; 
+            font-size: 1rem; font-style: italic; cursor: pointer; padding: 0.3rem 0.5rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1); text-align: left; }
+        .fairy-content.open { max-height: 2000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem; font-family: 'Crimson Text', serif; 
+            font-size: 1rem; line-height: 1.9; color: #888;
+            border-left: 1px solid var(--border); margin-left: 1rem;
+        }
+        .fairy-inner p { margin-bottom: 1rem; }
+        .fairy-inner strong { color: var(--text); font-weight: 400; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2rem; }
+        .big-words h2 { font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 300; 
+                        letter-spacing: 0.2em; line-height: 1.2; text-transform: uppercase; }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.2rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.6em; letter-spacing: 0.3em; }
+
+        /* Protractor */
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.8); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80px; height: 80px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #151515, #000);
+            border: 1px solid #222;
+            box-shadow: 0 0 30px rgba(255,255,255,0.02);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.08;
+            animation: spin 40s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Hand with smooth physics */
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 130px;
+            background: linear-gradient(to top, transparent 10%, rgba(255,255,255,0.8) 90%);
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(180deg);
+            transition: transform 1.2s cubic-bezier(0.34, 1.8, 0.64, 1);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+
+        /* Angle buttons - clean text */
+        .angle-btn {
+            position: absolute; 
+            padding: 0.3rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Inter', sans-serif;
+            transition: all 0.4s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { 
+            color: var(--text-mid); 
+            z-index: 30;
+        }
+        
+        .angle-btn.active { 
+            color: var(--accent); 
+            font-weight: 400;
+        }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.4; 
+            margin-bottom: 2px;
+            letter-spacing: 0.1em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.08em; 
+            text-align: center; 
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        /* Hover description tooltip */
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            width: 180px;
+            padding: 0.8rem;
+            background: var(--bg-elevated);
+            border: 1px solid #222;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: var(--text-mid);
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+            pointer-events: none;
+            text-align: center;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Speech bubble */
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 550px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: transparent; 
+            border: 1px solid var(--border);
+            padding: 2rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--text-dim); 
+            text-transform: uppercase; 
+            letter-spacing: 0.25em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .angle-header::before, .angle-header::after {
+            content: ''; flex: 1; height: 1px; background: var(--border); max-width: 50px;
+        }
+
+        .bubble-text {
+            font-family: 'Crimson Text', serif; 
+            font-size: 1.1rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+        }
+
+        .key-hint {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            opacity: 0.6;
+            letter-spacing: 0.05em;
+        }
+
+        .mouth {
+            width: 40px; 
+            height: 20px;
+            background: linear-gradient(to bottom, #d4b43f, var(--mouth));
+            border-radius: 0 0 20px 20px; 
+            border: 1px solid #2a2a2a; 
+            border-top: none;
+            opacity: 0.8;
+        }
+
+        footer { 
+            margin-top: 3rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.1em;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--text); border-color: var(--text-mid); }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Myší klíče</h1>
+        <div class="subtitle">aneb jak pohádku čte Myš</div>
+    </header>
+
+    <section class="hero">
+        <div class="mouse mouse-1"></div>
+        <div class="mouse mouse-2"></div>
+        <img src="doma/ilustrace/mys.jpg" alt="Karta Myš" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtu.be/oGZr8erlyIc?is=l8YEr3LyIVuGBWxa" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Myši</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p>Žila jedna myš. <strong>Všímala si věcí, které ostatní přehlíželi.</strong> Zapisovala do ticha, do koutů, do skulin mezi slovy.</p>
+                <p>A zeptala se: <strong>„Chceš myš?"</strong></p>
+                <p>To nebyla otázka na ni. To byla otázka na všechno. Na smysl, na jazyk, na strach.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Analytický</div>
+                <div class="bubble-text" id="bubbleText">Myš jako kronikářka – sbírá data, která ostatní ignorují. Její zápisky jsou archivem toho, co by jinak zmizelo.</div>
+                <div class="key-hint" id="keyHint">tichý kronikář</div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        const angles = [
+            { deg: 0, hour: "9h", name: "Analytický", text: "Myš jako kronikářka – sbírá data, která ostatní ignorují. Její zápisky jsou archivem toho, co by jinak zmizelo.", key: "tichý kronikář" },
+            { deg: 30, hour: "7h", name: "Kulturní", text: "Myš je jako Ariadna – dává nit, aby se neztratil. Jenže její nit není z klubka, ale z ticha. A nevede z labyrintu, ale do něj.", key: "anti-pohádka proti očekávání" },
+            { deg: 60, hour: "8h", name: "Filozofický", text: "Co to znamená 'být myš'? Je to role, nebo podstata? Pohádka je jedna velká otázka, na kterou není odpověď – jen další otázky.", key: "skutečnost je to, co uniká výkladu" },
+            { deg: 90, hour: "6h", name: "Naivní", text: "Myš si všímá věcí, které ostatní nevidí. A pak se jich na jednu věc zeptá. To je celé. Nemusíš tomu rozumět víc, než rozumí myš.", key: "jen si všímá" },
+            { deg: 120, hour: "5h", name: "Jazykový", text: "Věta 'Chceš myš?' není otázka. Je to past. Jazyk se může zaseknout – a tohle je přesně ten moment.", key: "mezery mezi slovy jako dokument" },
+            { deg: 150, hour: "4h", name: "Metaforický", text: "Myš není myš. Je to pozornost. Páv je ješitnost, kocour je spěch, slon je paměť. A otázka 'Chceš myš?' je volba, jestli chceš vidět.", key: "otázka, která otevírá pasti" },
+            { deg: 180, hour: "3h", name: "Asociační", text: "Připomnělo mi to naši projektovou manažerku. Taky si všechno zapisovala a nikdo nevěděl proč. A pak jednou položila otázku a celý tým ztichl.", key: "zadrhnutá věta jako zvuk stopy" },
+            { deg: 210, hour: "2h", name: "Introspektivní", text: "Cítím z toho ticho. Myš, co je sama uprostřed lesa, obklopená zvířaty, kterým nerozumím. Vždycky jsem byl taky ten, kdo zapisoval věci do kouta.", key: "pozornost místo moci" },
+            { deg: 240, hour: "1h", name: "Ironický", text: "Myš nechtěla nic, jen si zapisovat do kouta. A najednou je středem lesa. Všichni čekají, co udělá. Ironie? Spíš tragikomedie.", key: "nejmenší bytost jako svědek všeho" },
+            { deg: 270, hour: "12h", name: "Groteskní", text: "Představ si: páv si přepočítává oči, lemur civí do prázdna, slon s třešněma v chobotu. Je to fraška. A je to nádherný.", key: "svědectví bez soudu" },
+            { deg: 300, hour: "11h", name: "Absurdní", text: "Myš, která zapisuje do ticha? Co je to za nesmysl? Celá pohádka je jeden velký paradox – a právě proto je pravdivá.", key: "archiv ticha místo děje" },
+            { deg: 330, hour: "10h", name: "Surrealistický", text: "Páv s očima na ocase, slon s třešněmi v chobotu, myš co zapisuje do ticha. Tohle není les, je to obraz.", key: "zvířata nesou poruchy významu" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.text.substring(0, 60)}...</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            // Smooth hand rotation with elastic effect
+            const cssDeg = (180 - angle.deg) % 360;
+            const hand = document.getElementById('hand');
+            hand.style.transform = `translate(-50%, -100%) rotate(${cssDeg}deg)`;
+            
+            // Update active state
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            // Update content with fade
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
