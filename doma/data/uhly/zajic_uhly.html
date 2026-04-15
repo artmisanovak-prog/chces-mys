@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zajíc - 12 úhlů pohledu</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #fafafa;
+            color: #222;
+            line-height: 1.7;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        h1 {
+            font-weight: normal;
+            border-bottom: 2px solid #000;
+            padding-bottom: 0.3em;
+            text-align: center;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            font-weight: normal;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+            margin-top: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 2em;
+            color: #555;
+        }
+        
+        /* Ilustrace */
+        .ilustrace {
+            text-align: center;
+            margin: 2em 0;
+        }
+        
+        .ilustrace img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #000;
+        }
+        
+        .audio-link {
+            text-align: center;
+            margin-top: 0.5em;
+            font-size: 0.9rem;
+        }
+        
+        .audio-link a {
+            color: #000;
+            text-decoration: underline;
+        }
+        
+        /* Pohádka */
+        .pohadka-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #000;
+            padding: 0 1.5em;
+            margin: 2em 0;
+            background: #f5f5f5;
+            font-style: italic;
+            box-shadow: 4px 4px 0 #ccc;
+        }
+        
+        .pohadka p {
+            padding: 0.5em 0;
+            margin: 0;
+        }
+        
+        /* Kompas */
+        .compass-section {
+            margin: 3em 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .compass-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 2em auto;
+        }
+        
+        .compass-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #000;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+        }
+        
+        .compass-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        
+        /* Ručička */
+        .hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 160px;
+            background: #e74c3c;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 5;
+            border-radius: 2px;
+        }
+        
+        .hand::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 15px solid #e74c3c;
+        }
+        
+        /* Body úhlů na kružnici */
+        .angle-point {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            margin-left: -40px;
+            margin-top: -40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 8;
+        }
+        
+        .angle-point button {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 0.5em;
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+        
+        .angle-point button:hover {
+            background: #000;
+            color: #fff;
+            transform: scale(1.1);
+        }
+        
+        .angle-point.active button {
+            background: #e74c3c;
+            color: #fff;
+            border-color: #e74c3c;
+            transform: scale(1.15);
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+        
+        /* Výstup */
+        .output {
+            border: 2px solid #000;
+            padding: 2em;
+            margin-top: 2em;
+            background: #fff;
+            min-height: 200px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .angle-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.3em;
+            color: #e74c3c;
+        }
+        
+        .angle-desc {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 1.5em;
+            color: #666;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5em;
+        }
+        
+        .angle-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .generative-block {
+            margin-top: 2em;
+            padding: 1.2em;
+            border: 2px dashed #000;
+            background: #f9f9f9;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .generative-label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            color: #e74c3c;
+        }
+        
+        .generative-sentence {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1em;
+            font-size: 1.1rem;
+        }
+        
+        .generator-link {
+            display: inline-block;
+            margin-top: 0.5em;
+            padding: 0.5em 1em;
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .generator-link:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        .footer {
+            margin-top: 4em;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1.5em;
+        }
+        
+        /* Responzivita */
+        @media (max-width: 600px) {
+            .compass-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .hand {
+                height: 120px;
+            }
+            
+            .angle-point {
+                width: 60px;
+                height: 60px;
+                margin-left: -30px;
+                margin-top: -30px;
+            }
+            
+            .angle-point button {
+                font-size: 0.7rem;
+                padding: 0.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>🐇 12 úhlů pohledu</h1>
+<p class="subtitle"><em>„O zaječici, která skočila do ohně a neshořela – protože někdy je nejbezpečnější místo tam, kde už všechno shořelo"</em></p>
+
+<!-- ILUSTRACE ZAJÍCE + odkaz na audio -->
+<div class="ilustrace">
+    <img src="doma/ilustrace/zajic.jpg" alt="Ilustrace zajíce">
+    <div class="audio-link">
+        🎧 <a href="https://youtu.be/UOGicKmcLxM?is=xJ_D2ca_RhsQFp04" target="_blank">Poslechnout si pohádku (YouTube audio)</a>
+    </div>
+</div>
+
+<!-- POHÁDKA -->
+<h2>KŘIVÁ POHÁDKA – ROVNÉ SVĚDECTVÍ</h2>
+<div class="pohadka-container" id="pohadka">
+    <div class="pohadka">
+        <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+        <p><strong>O ZAJEČICI</strong></p>
+        <p><strong>aneb zajícem nezatopíš</strong></p>
+        <p>—</p>
+        <p>Bylo jedno pole, takové obyčejné, plné trávy, obilí a prachu. V létě, slunce stálo vysoko, dokázalo se to pole vznítit jedinou jiskrou. A tak se i stalo: zapraskalo suché stéblo, rozfoukal se vítr, a oheň se rozběhl přes lány rychleji než lidský krok. Všechna zvířata, která tam byla, věděla, co mají dělat. Utíkat. Utíkat pryč, co nejdál, co nejrychleji. Utíkal bažant, myši, i celé hejno koroptví. A také zajíci.</p>
+        <p>—</p>
+        <p>Jenže jeden zajíc – vlastně zaječice – byla jiná. Nebyla statečnější než ostatní, nebyla chytřejší, dokonce ani nebyla rychlejší. Jen se lekla tak moc, že zapomněla na všechny instinkty. A zatímco ostatní běželi kupředu před ohněm, ona udělala pravý opak: skočila přímo do plamenů.</p>
+        <p>—</p>
+        <p>Teď byste čekali, že se promění v popel a zůstane po ní jen smutný pach spálených chlupů. Ale kdepak. Ona dopadla do místa, které už bylo shořelé. Tam, kde oheň už dávno sežral všechen svůj pokrm a nechal jen černou zemi. A tak zaječice prošla plameny, aniž by jí ublížily.</p>
+        <p>—</p>
+        <p>A tohle se stalo legendou. Protože všechno, co přežije proti logice, se stane pohádkou.</p>
+        <p>—</p>
+        <p>Zajíci si pak začali vyprávět, že ona je ohnivzdorná. Že se jí žádný žár nemůže dotknout, protože oheň si ji spletl s popelem a nechal ji být. Jiní říkali, že to byla náhoda – že jen zakopla a náhodou dopadla do bezpečí. Ale pohádky o náhodě nebývají uvěřitelné, proto si přidávali vlastní verze.</p>
+        <p>—</p>
+        <p>Jedni tvrdili, že zaječice byla vyvolená – že měla v srsti zakódované znamení, neviditelné očima, ale čitelné plamenům. Jiní, že ji chránila pradávná smlouva mezi ohněm a zajíci: „Když skočíš do mých úst dobrovolně, já tě nespálím." A další vykládali, že to byla zkouška – že kdo se dokáže vzdát vlastního pudu sebezáchovy, ten se stává nesmrtelným.</p>
+        <p>—</p>
+        <p>A tak zaječice, která jen zakopla o vlastní strach, byla prohlášena za hrdinku.</p>
+        <p>—</p>
+        <p>Ale ona sama se nikdy necítila hrdinkou. Když seděla večer na okraji pole a čistila si spálené vousky, říkala si: „Já jsem se jen lekla. Jen jsem skočila blbě." A přitom se kolem ní scházeli ostatní a šeptali: „Podívej, to je ta, co neshoří."</p>
+        <p>—</p>
+        <p>Časem začala chápat, že nezáleží na tom, co se opravdu stalo. Realita byla jen podklad, jako spáleniště pod jejími tlapkami. To, co rostlo nad ní, byla řeč, příběh, legenda. A tak se naučila nosit svůj omyl jako korunu. Když se jí někdo ptal, jak to udělala, neodpovídala. Jen se tajemně usmála a trochu si načechrala srst, aby to vypadalo, že opravdu skrývá nějaké kouzlo.</p>
+        <p>—</p>
+        <p>Od té doby se traduje, že zajíce nemůžeš zapálit. Že není palivo, že není dřevo na hranici. Oheň ho možná spálí, ale nikdy nepohltí. Protože kdo jednou skočil do plamenů a vyšel ven živý, toho si už žádný oheň netroufne znovu.</p>
+        <p>—</p>
+        <p>A děti v lese se učí od matek tuto pohádku: „Neboj se strachu. Strach tě může hodit tam, kam by tě nikdy nenapadlo jít. A možná právě tam je cesta k přežití."</p>
+        <p>—</p>
+        <p>A tak se stalo, že jedna zaječice, co jen udělala chybu, se zapsala do paměti jako hrdinka.</p>
+        <p>—</p>
+        <p>A její příběh? Ten pořád doutná, i když pole dávno vychladlo.</p>
+    </div>
+</div>
+
+<!-- KOMPAS -->
+<div class="compass-section">
+    <h2>Vyber úhel pohledu</h2>
+    
+    <div class="compass-container" id="compass">
+        <div class="compass-circle"></div>
+        <div class="compass-center"></div>
+        <div class="hand" id="hand"></div>
+        <!-- Body budou vygenerovány JS -->
+    </div>
+
+    <div class="output" id="output">
+        <div class="angle-name" id="angleName">Vyber úhel na kompasu</div>
+        <div class="angle-desc" id="angleDesc"></div>
+        <div id="angleText">
+            <p>Klikni na kterýkoliv bod na kruhu a ručička se k němu plynule přiblíží...</p>
+        </div>
+        <div id="generativeBlock" class="generative-block" style="display: none;">
+            <div class="generative-label">🎲 GENERATIVNÍ VĚTA (KLÍČ MYŠI)</div>
+            <div class="generative-sentence" id="generativeSentence"></div>
+            <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 Otevřít v generátoru</a>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    Autorka: Art Misa Novak - metoda REPO DOMY<br>
+    <a href="mailto:chcesmys@gmail.com?subject=REPO%20DOMY%20-%20ZAJÍC">pro více info pište</a>
+</div>
+
+<script>
+    // Data úhlů
+    const data = [
+        { 
+            name: "Absurdní",
+            desc: "Hledá nesmysl, paradox, rozpor.",
+            text: "Zaječice, která uteče před ohněm tím, že skočí přímo do něj. A místo aby shořela, dopadne na místo, které už shořelo. Paradox: útěk vpřed je jistá smrt, útěk vzad je záchrana. Absurdní? Ano. Ale právě v té absurditě se rodí legendy.",
+            key: "přežití jako navigační chyba"
+        },
+        { 
+            name: "Jazykový",
+            desc: "Sleduje slova, rytmus, dvojznačnost.",
+            text: "‚Zajícem nezatopíš‘ – rčení, které najednou dává smysl. ‚Skočila blbě‘ – ona sama to tak říká, ale legenda z toho udělala ‚skočila správně‘. Jazyk tvoří realitu: z chyby se stává hrdinství, z omylu moudrost. A příběh pořád doutná, i když slova dávno vychladla.",
+            key: "omyl přeložený jako zázrak"
+        },
+        { 
+            name: "Ironický",
+            desc: "Vidí rozpor mezi záměrem a výsledkem.",
+            text: "Chtěla utéct, ale skočila do ohně. Chtěla přežít, ale udělala přesný opak toho, co všichni radí. Výsledek? Přežila jako jediná. Ironie: ten, kdo se řídí instinkty, uhoří. Ta, která instinkty zapomněla, žije dál. A pak je prohlášena za hrdinku, i když jen ‚skočila blbě‘.",
+            key: "panika jako strategie"
+        },
+        { 
+            name: "Filozofický",
+            desc: "Ptá se po smyslu a podstatě.",
+            text: "Co je to hrdinství? Je to vědomý čin, nebo jen náhoda, kterou zpětně obalíme příběhem? Zaječice nic neplánovala – jen se lekla. Přesto se stala legendou. Pohádka klade otázku: Není každý hrdina jen ten, kdo měl štěstí v pravou chvíli na pravém místě? A není na tom něco osvobozujícího?",
+            key: "pravda je méně stabilní než příběh"
+        },
+        { 
+            name: "Surrealistický",
+            desc: "Propojuje nesouvisející.",
+            text: "Pole hoří, zvířata prchají, jen jedna zaječice skáče do plamenů. A místo smrti najde spáleniště – černou zemi, ticho, bezpečí. Oheň si ji spletl s popelem. Pak se kolem ní scházejí zajíci a šeptají si o pradávných smlouvách. Realita a legenda se mísí v jeden obraz.",
+            key: "oheň čte znamení v srsti"
+        },
+        { 
+            name: "Kulturní",
+            desc: "Hledá archetypy a paralely.",
+            text: "Zaječice jako archetyp nečekaného hrdiny – podobně jako v mnoha mýtech (např. král Oidipus, který nevědomky naplnil proroctví). Oheň jako symbol zkoušky, smrti a znovuzrození. Spáleniště jako místo transformace. A legenda, která vzniká z náhody – to je přesně to, jak fungují mýty: realita je podklad, příběh je to, co roste nad ní.",
+            key: "mýtus vzniká rychleji než popel"
+        },
+        { 
+            name: "Naivní",
+            desc: "Vidí věci jednoduše, bez předsudků.",
+            text: "Hořelo pole. Všichni utíkali. Jedna zaječice se lekla a skočila do ohně. Ale dopadla na místo, co už shořelo. A tak byla živá. Ostatní si mysleli, že je kouzelná. Ona věděla, že se jen lekla. Ale nechala je, ať si myslí, co chtějí. A tak vznikla legenda.",
+            key: "prostě skočila jinam"
+        },
+        { 
+            name: "Introspektivní",
+            desc: "Promítá do příběhu vlastní pocity.",
+            text: "Tohle jsem já. Kolikrát v životě jsem udělal něco, co nedávalo smysl, a přesto to vyšlo. A lidi kolem říkali: ‚Ty jsi ale borec!‘ A já věděl, že to byla jen náhoda, jen panika, jen štěstí. Ale naučil jsem se usmívat a načechrat si srst. Protože příběhy jsou někdy důležitější než pravda.",
+            key: "spáleniště jako rodný list legendy"
+        },
+        { 
+            name: "Groteskní",
+            desc: "Vidí přehnanou, temnou komiku.",
+            text: "Představ si: pole hoří, zvířata prchají v panice, a jedna zaječice skočí rovnou do plamenů. Všichni čekají, že z ní bude uzený, ale ona si jen tak čistí spálené vousky na černé zemi. A pak se kolem ní začnou scházet zajíci a šeptat si o vyvolení a pradávných smlouvách. Je to fraška o tom, jak z náhody děláme mýty.",
+            key: "nehoda korunovaná legendou"
+        },
+        { 
+            name: "Analytický",
+            desc: "Hledá struktury, vztahy, příčiny.",
+            text: "Kolektivní potřeba vytvořit ikonu – zaječice se stala hrdinkou, protože skupina potřebovala příběh, který by překryl chaos a náhodu. Její ‚omyl‘ byl systematicky reinterpretován jako ‚strategie‘. Společnost tvoří legendy, aby si udělala řád v nepochopitelném. A v tom je její síla – i kdyby pravda byla banální.",
+            key: "kolektiv potřebuje ikonu víc než fakta"
+        },
+        { 
+            name: "Metaforický",
+            desc: "Vidí symboly za věcmi.",
+            text: "Oheň je chaos, panika, krize. Zaječice je ten, kdo v krizi udělá něco iracionálního – a najednou je hrdina. Spáleniště je místo, kde už nic nehrozí – bezpečí, které vzniklo z popela. Praskání ohně je jako marketing – dělá hluk, aby přesvědčil. A legenda? Ta je zvuk, který zůstane, když oheň utichne.",
+            key: "praskání ohně jako marketing"
+        },
+        { 
+            name: "Asociační",
+            desc: "Vyvolává osobní vzpomínky.",
+            text: "Připomnělo mi to dědečka. Vyprávěl, jak za války utekl tím, že se schoval na místě, které už nacisté prohledali. Všichni říkali, že je hrdina, ale on říkal: ‚Já se jen bál a nevěděl, kam jinam.‘ A já mu to věřil. Ale zároveň vím, že ten jeho ‚omyl‘ zachránil život. A tak je to i s tou zaječicí.",
+            key: "náhoda převlečená za osud"
+        }
+    ];
+
+    // Nastavení kompasu
+    const compass = document.getElementById('compass');
+    const hand = document.getElementById('hand');
+    const radius = 150; // poloměr pro umístění bodů
+    let currentAngle = 0;
+    let activeIndex = -1;
+
+    // Vytvoření bodů na kružnici
+    data.forEach((angle, index) => {
+        const angleDeg = (index * 30) - 90; // Rozdělení po 30° (360/12), začínáme nahoře (-90°)
+        const angleRad = (angleDeg * Math.PI) / 180;
+        
+        const x = 200 + radius * Math.cos(angleRad); // 200 = střed (400/2)
+        const y = 200 + radius * Math.sin(angleRad);
+        
+        const point = document.createElement('div');
+        point.className = 'angle-point';
+        point.style.left = x + 'px';
+        point.style.top = y + 'px';
+        point.dataset.index = index;
+        point.dataset.angle = angleDeg;
+        
+        const btn = document.createElement('button');
+        btn.textContent = angle.name;
+        point.appendChild(btn);
+        
+        point.addEventListener('click', () => selectAngle(index));
+        
+        compass.appendChild(point);
+    });
+
+    // Funkce pro výběr úhlu s plynulou animací
+    function selectAngle(index) {
+        const selectedPoint = document.querySelector(`.angle-point[data-index="${index}"]`);
+        const targetAngle = parseFloat(selectedPoint.dataset.angle);
+        
+        // Odstranění active ze všech
+        document.querySelectorAll('.angle-point').forEach(p => p.classList.remove('active'));
+        selectedPoint.classList.add('active');
+        
+        // Výpočet nejkratší cesty (proti směru nebo po směru)
+        let diff = targetAngle - currentAngle;
+        
+        // Normalizace na -180 až +180 pro nejkratší cestu
+        while (diff > 180) diff -= 360;
+        while (diff < -180) diff += 360;
+        
+        // Přidáme malou "extra" rotaci pro efekt kroužení (volitelně)
+        // Můžeme přidat 1-2 extra otáčky pro delší, plynulejší animaci
+        const extraRotations = (Math.abs(diff) > 90) ? 0 : 0; // Pro menší úhly může kroužit víc
+        
+        currentAngle += diff;
+        
+        // Aplikace rotace s plynulým přechodem
+        hand.style.transform = `translate(-50%, -100%) rotate(${currentAngle}deg)`;
+        
+        // Aktualizace obsahu
+        updateContent(index);
+        activeIndex = index;
+    }
+
+    function updateContent(index) {
+        const angle = data[index];
+        document.getElementById('angleName').textContent = angle.name;
+        document.getElementById('angleDesc').textContent = angle.desc;
+        document.getElementById('angleText').innerHTML = `<p>${angle.text}</p>`;
+        
+        if (angle.key) {
+            document.getElementById('generativeSentence').textContent = angle.key;
+            document.getElementById('generativeBlock').style.display = 'block';
+            
+            // Aktualizace linku
+            const encodedKey = encodeURIComponent(angle.key);
+            const encodedAngle = encodeURIComponent(angle.name);
+            document.getElementById('generatorLink').href = `generator.html?zvir=Zajíc&uhel=${encodedAngle}&klic=${encodedKey}`;
+        } else {
+            document.getElementById('generativeBlock').style.display = 'none';
+        }
+    }
+
+    // Inicializace - první úhel
+    selectAngle(0);
+</script>
+
+</body>
+</html>
