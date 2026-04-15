@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krokodýl — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        :root {
+            --bg: #080808;
+            --bg-elevated: #0f0f0f;
+            --text: #e8e8e8;
+            --text-dim: #4a4a4a;
+            --text-mid: #6b6b6b;
+            --accent: #d4e4d0;
+            --accent-dim: #2a3328;
+            --border: #151515;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        /* Subtle grain */
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s; font-weight: 400;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: clamp(1.4rem, 5vw, 2.2rem); 
+            font-weight: 400; 
+            letter-spacing: 0.15em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.3em; 
+            color: var(--text-dim); 
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        /* Hero with crocodile */
+        .hero { 
+            position: relative; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 320px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* Swimming crocodile animations */
+        .croc-icon { 
+            position: absolute; 
+            width: 40px; 
+            height: 40px; 
+            background: url('doma/ilustrace/krokodyl_ikonka.png') center/contain no-repeat;
+            filter: grayscale(100%) invert(1); 
+            opacity: 0.4;
+            pointer-events: none; 
+        }
+        .croc-1 { 
+            top: 20%; right: 5%; 
+            animation: swim 8s ease-in-out infinite;
+        }
+        .croc-2 { 
+            bottom: 25%; left: 5%; 
+            animation: swim 10s ease-in-out infinite reverse;
+        }
+        
+        @keyframes swim {
+            0%, 100% { transform: translateY(0) rotate(-5deg) scaleX(1); }
+            25% { transform: translateY(-10px) rotate(5deg) scaleX(1); }
+            50% { transform: translateY(0) rotate(-5deg) scaleX(1); }
+            75% { transform: translateY(-10px) rotate(5deg) scaleX(1); }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        /* Fairy tale - minimal underline toggle */
+        .fairy-wrap { max-width: 550px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.1rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; }
+        .fairy-content.open { max-height: 2500px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #666;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(212,228,208,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 400; }
+        .fairy-inner em { color: #555; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        /* Protractor */
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90px; height: 90px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #0f1510, #000);
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 0 40px rgba(212,228,208,0.04);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(212,228,208,0.3);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 280%; height: 280%;
+            transform: translate(-50%, -50%); opacity: 0.06;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Hand with smooth elastic rotation */
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 135px;
+            background: linear-gradient(to top, transparent 15%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(180deg);
+            transition: transform 1s cubic-bezier(0.25, 1.5, 0.5, 1);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Angle buttons - text only, no borders */
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        /* Hover preview tooltip */
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            width: 200px;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: var(--text-mid);
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            pointer-events: none;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Speech bubble */
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 600px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .key-hint {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .mouth {
+            width: 50px; 
+            height: 25px;
+            background: linear-gradient(to bottom, #c4d4c0, #8a9a86);
+            border-radius: 0 0 25px 25px; 
+            border: 1px solid #2a3328; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 5px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Krokodýl</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="croc-icon croc-1"></div>
+        <div class="croc-icon croc-2"></div>
+        <img src="doma/ilustrace/krokodyl.jpg" alt="Ilustrace krokodýla" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="#" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Krokodýlovi</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                
+                <p><strong>O KROKODÝLOVI<br>který šel do výprodeje</strong></p>
+                
+                <p>Krokodýl se jednoho dne probudil a zjistil, že je zboží. Ne zvíře. Ne postava. Ne symbol. Ale produkt.</p>
+                
+                <p>Na čele měl cenovku. Na ocasu slevu. A místo slz měl marketingové sdělení: <em>„Tento týden sleva 90 %. Tři za cenu jedné. Krokodýlí slzy. Totální výprodej."</em></p>
+                
+                <p>Lidé chodili kolem a ptali se: <em>„Co to vlastně je?"</em><br>
+                Prodavač se usmál: <em>„To je emoce. Ale levná. Už není čerstvá."</em></p>
+                
+                <p>Krokodýl se snažil vysvětlit, že jeho slzy nejsou falešné. Jsou jen komerčně dostupné. Že pláče, protože přišel o jazyk, když ztratil smysl.</p>
+                
+                <p>Jednou přišel <strong>Jazyk</strong>. Ne jako zákazník. Ne jako návštěvník. Jako na kontrolu. Podíval se na krokodýla a řekl: <em>„Tohle není věta. To je výkřik v obalu!! Ale v nepoškozeném, neschváleném."</em></p>
+                
+                <p>Krokodýl se rozplakal. Ale slzy už nikdo nebral vážně. Byly v akci. Do vyprodání.</p>
+                
+                <p>Protože krokodýlí slzy nejsou falešné. Jsou jen snadno dostupné.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(212,228,208,0.5)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Betonový</div>
+                <div class="bubble-text" id="bubbleText">Příběh vypráví o krokodýlovi, který byl přeměněn na komerční produkt s cenovkou a reklamním sdělením o slevě 90 % na jeho slzy.</div>
+                <div class="key-hint" id="keyHint">cenovka na čele</div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // Data mapped to protractor positions
+        const angles = [
+            { deg: 0, hour: "9h", name: "Betonový", text: "Příběh vypráví o krokodýlovi, který byl přeměněn na komerční produkt s cenovkou a reklamním sdělením o slevě 90 % na jeho slzy. Byl prodán paní, která ho používala jako dekoraci s tlačítkem spouštějícím reklamní fráze. Následně přišla personifikovaná entita Jazyk, která konstatovala, že se nejedná o větu, ale o výkřik v obalu.", key: "cenovka na čele" },
+            { deg: 30, hour: "7h", name: "Kulturní", text: "Krokodýlí slzy – odvěký symbol falešného smutku. Tady se ale obrací: nejsou falešné, jsou jen snadno dostupné. Je to kritika konzumní společnosti, kde se všechno – včetně emocí – stává zbožím. Jazyk jako kontrolor připomíná ministry kultury, kteří rozhodují, co je ještě umění a co už jen reklama.", key: "symbol v akci" },
+            { deg: 60, hour: "8h", name: "Filozofický", text: "Co se stane, když se z emoce stane produkt? Když se smutek prodává v oddělení slev? Krokodýl pláče, ale jeho slzy už nikdo nebere vážně. Pohádka klade otázku: Nejsou i naše opravdové city komerčně dostupné? A neřídíme se někdy spíš letáky než srdcem?", key: "sleva na smysl" },
+            { deg: 90, hour: "6h", name: "Naivní", text: "Krokodýl se probudil a měl na sobě cenovku. Lidé si ho kupovali. Jedna paní ho měla na poličce a mačkala mu břicho. On říkal reklamy. Pak přišel jazyk a řekl, že to není věta. A krokodýl plakal, ale nikdo to nebral vážně, protože slzy byly v akci. Jednoduchý, ne?", key: "tři za cenu jedné" },
+            { deg: 120, hour: "5h", name: "Jazykový", text: "„Tohle není věta. To je výkřik v obalu!!“ – jazyk sám přichází na kontrolu a zjišťuje, že se z něj stal marketing. ‚Význam v akci‘, ‚sleva na smysl‘ – slova ztrácejí váhu, stávají se snadno dostupnými. Jako krokodýlí slzy.", key: "výkřik v obalu" },
+            { deg: 150, hour: "4h", name: "Metaforický", text: "Krokodýl je lidská duše v kapitalismu. Cenovka je hodnota, kterou nám přiřadí trh. Slzy jsou emoce, které se dají koupit. Jazyk je pravda, která přichází na kontrolu. A pointa? ‚Sleva na smysl‘ – to je naše doba. Všechno je dostupné, ale nic nemá cenu.", key: "emoce na prodej" },
+            { deg: 180, hour: "3h", name: "Asociační", text: "Připomnělo mi to Vánoce v obchoďáku. Všude slevy, všude reklamy, a uprostřed stál chlap v kostýmu krokodýla a rozdával letáky. Děti se s ním fotily, nikdo neřešil, jestli je to opravdový krokodýl. A já měl pocit, že přesně o tom je tahle pohádka – že jsme zapomněli rozlišovat mezi skutečným a zlevněným.", key: "keramický smutek" },
+            { deg: 210, hour: "2h", name: "Introspektivní", text: "Tohle jsem já. Někdy mám pocit, že moje emoce nejsou moje. Že jsou na prodej, že je někdo balí do reklamních sloganů. A když pláču, lidi se ptají: ‚Je to čerstvé, nebo už je to sleva?‘ A já chci křičet, že moje slzy jsou pravý, ale oni vidí jen cenovku.", key: "plastový soucit" },
+            { deg: 240, hour: "1h", name: "Ironický", text: "Krokodýl chtěl být symbolem, něčím... možná... kdysi... A teď je tři za cenu jedné. Jeho slzy, které měly být opravdové, jsou v akci. Ironie: čím víc pláče, tím míň to někdo bere vážně. Protože všechno je zlevněné, i smutek.", key: "slevový smutek" },
+            { deg: 270, hour: "12h", name: "Groteskní", text: "Představ si: krokodýl s cenovkou na čele, na ocasu sleva 90 %. Paní si ho koupí a dá ho na poličku mezi keramický smutek a plastový soucit. Když je smutná, zmáčkne mu břicho a on řekne: ‚Buďte dojatí, sleva končí v neděli!‘ Pak přijde jazyk a řekne, že to není věta. A krokodýl pláče, ale nikdo to nebere vážně. Je to groteska o tom, jak jsme zkonzumovali i vlastní city.", key: "mačkací břicho" },
+            { deg: 300, hour: "11h", name: "Absurdní", text: "Krokodýl, který se probudí jako zboží. Cenovka na čele, sleva na ocasu. Jeho slzy jsou v akci. Lidé si ho kupují a mačkají mu břicho, aby řekl reklamní slogan. Absurdní? Ano. Ale není to přesně to, co se děje s emocemi v konzumní společnosti?", key: "zboží se smyslem" },
+            { deg: 330, hour: "10h", name: "Surrealistický", text: "Krokodýl s cenovkou na čele, paní, co si ho dává na poličku vedle keramického smutku, jazyk, který přichází na kontrolu. Svět, kde se realita mísí s reklamou, kde jsou emoce zbožím a slzy mají expiraci. Tohle není pohádka – to je obraz dneška.", key: "expirace slz" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.text.substring(0, 55)}...</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            const cssDeg = (180 - angle.deg) % 360;
+            document.getElementById('hand').style.transform = 
+                `translate(-50%, -100%) rotate(${cssDeg}deg)`;
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
