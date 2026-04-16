@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zajíc — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0f0a06;
+            --bg-elevated: #1a120a;
+            --text: #f5eee6;
+            --text-dim: #665544;
+            --text-mid: #8a7766;
+            --accent: #d97706;       /* tmavě oranžová / žlutohnědá */
+            --accent-dim: #78350f;
+            --border: #201810;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní prvky – plamínky / uhlíky */
+        .ember { 
+            position: absolute; 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.25;
+            pointer-events: none; 
+            filter: blur(2px);
+        }
+        .ember-1 { top: 20%; right: 15%; animation: emberFloat1 10s ease-in-out infinite; }
+        .ember-2 { bottom: 25%; left: 12%; width: 12px; height: 12px; animation: emberFloat2 12s ease-in-out infinite; }
+        .ember-3 { top: 60%; right: 20%; width: 6px; height: 6px; animation: emberFloat3 8s infinite; }
+        
+        @keyframes emberFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(-15px, -25px) scale(1.5); opacity: 0.4; }
+        }
+        @keyframes emberFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(20px, -15px) scale(1.3); opacity: 0.1; }
+        }
+        @keyframes emberFloat3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+            50% { transform: translate(-25px, -10px); opacity: 0.35; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; }
+        .fairy-content.open { max-height: 8000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #b8a090;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(217,119,6,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #9a7a6a; font-style: italic; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1a120a, #050200);
+            border: 1px solid #3a2818;
+            box-shadow: 0 0 40px rgba(217,119,6,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(217,119,6,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+            animation: handRotate 38s linear infinite;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        @keyframes handRotate {
+            from { transform: translate(-50%, -100%) rotate(0deg); }
+            to { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .key-hint {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #e0a060, #b45309);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #78350f; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Zajíc</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="ember ember-1"></div>
+        <div class="ember ember-2"></div>
+        <div class="ember ember-3"></div>
+        <img src="doma/ilustrace/zajic.jpg" alt="Ilustrace zajíce" class="card-illustration" onerror="this.src='./doma/ilustrace/zajic.jpg'">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtu.be/UOGicKmcLxM?is=xJ_D2ca_RhsQFp04" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Zaječici</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O ZAJEČICI</strong></p>
+                <p><strong>aneb zajícem nezatopíš</strong></p>
+                <p>—</p>
+                <p>Bylo jedno pole, takové obyčejné, plné trávy, obilí a prachu. V létě, slunce stálo vysoko, dokázalo se to pole vznítit jedinou jiskrou. A tak se i stalo: zapraskalo suché stéblo, rozfoukal se vítr, a oheň se rozběhl přes lány rychleji než lidský krok. Všechna zvířata, která tam byla, věděla, co mají dělat. Utíkat. Utíkat pryč, co nejdál, co nejrychleji. Utíkal bažant, myši, i celé hejno koroptví. A také zajíci.</p>
+                <p>—</p>
+                <p>Jenže jeden zajíc – vlastně zaječice – byla jiná. Nebyla statečnější než ostatní, nebyla chytřejší, dokonce ani nebyla rychlejší. Jen se lekla tak moc, že zapomněla na všechny instinkty. A zatímco ostatní běželi kupředu před ohněm, ona udělala pravý opak: skočila přímo do plamenů.</p>
+                <p>—</p>
+                <p>Teď byste čekali, že se promění v popel a zůstane po ní jen smutný pach spálených chlupů. Ale kdepak. Ona dopadla do místa, které už bylo shořelé. Tam, kde oheň už dávno sežral všechen svůj pokrm a nechal jen černou zemi. A tak zaječice prošla plameny, aniž by jí ublížily.</p>
+                <p>—</p>
+                <p>A tohle se stalo legendou. Protože všechno, co přežije proti logice, se stane pohádkou.</p>
+                <p>—</p>
+                <p>Zajíci si pak začali vyprávět, že ona je ohnivzdorná. Že se jí žádný žár nemůže dotknout, protože oheň si ji spletl s popelem a nechal ji být. Jiní říkali, že to byla náhoda – že jen zakopla a náhodou dopadla do bezpečí. Ale pohádky o náhodě nebývají uvěřitelné, proto si přidávali vlastní verze.</p>
+                <p>—</p>
+                <p>Jedni tvrdili, že zaječice byla vyvolená – že měla v srsti zakódované znamení, neviditelné očima, ale čitelné plamenům. Jiní, že ji chránila pradávná smlouva mezi ohněm a zajíci: „Když skočíš do mých úst dobrovolně, já tě nespálím.“ A další vykládali, že to byla zkouška – že kdo se dokáže vzdát vlastního pudu sebezáchovy, ten se stává nesmrtelným.</p>
+                <p>—</p>
+                <p>A tak zaječice, která jen zakopla o vlastní strach, byla prohlášena za hrdinku.</p>
+                <p>—</p>
+                <p>Ale ona sama se nikdy necítila hrdinkou. Když seděla večer na okraji pole a čistila si spálené vousky, říkala si: „Já jsem se jen lekla. Jen jsem skočila blbě.“ A přitom se kolem ní scházeli ostatní a šeptali: „Podívej, to je ta, co neshoří.“</p>
+                <p>—</p>
+                <p>Časem začala chápat, že nezáleží na tom, co se opravdu stalo. Realita byla jen podklad, jako spáleniště pod jejími tlapkami. To, co rostlo nad ní, byla řeč, příběh, legenda. A tak se naučila nosit svůj omyl jako korunu. Když se jí někdo ptal, jak to udělala, neodpovídala. Jen se tajemně usmála a trochu si načechrala srst, aby to vypadalo, že opravdu skrývá nějaké kouzlo.</p>
+                <p>—</p>
+                <p>Od té doby se traduje, že zajíce nemůžeš zapálit. Že není palivo, že není dřevo na hranici. Oheň ho možná spálí, ale nikdy nepohltí. Protože kdo jednou skočil do plamenů a vyšel ven živý, toho si už žádný oheň netroufne znovu.</p>
+                <p>—</p>
+                <p>A děti v lese se učí od matek tuto pohádku: „Neboj se strachu. Strach tě může hodit tam, kam by tě nikdy nenapadlo jít. A možná právě tam je cesta k přežití.“</p>
+                <p>—</p>
+                <p>A tak se stalo, že jedna zaječice, co jen udělala chybu, se zapsala do paměti jako hrdinka.</p>
+                <p>—</p>
+                <p>A její příběh? Ten pořád doutná, i když pole dávno vychladlo.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(217,119,6,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Zaječice, která uteče před ohněm tím, že skočí přímo do něj. A místo aby shořela, dopadne na místo, které už shořelo. Paradox: útěk vpřed je jistá smrt, útěk vzad je záchrana. Absurdní? Ano. Ale právě v té absurditě se rodí legendy.</div>
+                <div class="key-hint">
+                    <span id="keyHint">přežití jako navigační chyba</span>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro zaječici včetně klíčů pro generátor
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Zaječice, která uteče před ohněm tím, že skočí přímo do něj. A místo aby shořela, dopadne na místo, které už shořelo. Paradox: útěk vpřed je jistá smrt, útěk vzad je záchrana. Absurdní? Ano. Ale právě v té absurditě se rodí legendy.", key: "přežití jako navigační chyba" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "‚Zajícem nezatopíš‘ – rčení, které najednou dává smysl. ‚Skočila blbě‘ – ona sama to tak říká, ale legenda z toho udělala ‚skočila správně‘. Jazyk tvoří realitu: z chyby se stává hrdinství, z omylu moudrost. A příběh pořád doutná, i když slova dávno vychladla.", key: "omyl přeložený jako zázrak" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Chtěla utéct, ale skočila do ohně. Chtěla přežít, ale udělala přesný opak toho, co všichni radí. Výsledek? Přežila jako jediná. Ironie: ten, kdo se řídí instinkty, uhoří. Ta, která instinkty zapomněla, žije dál. A pak je prohlášena za hrdinku, i když jen ‚skočila blbě‘.", key: "panika jako strategie" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je to hrdinství? Je to vědomý čin, nebo jen náhoda, kterou zpětně obalíme příběhem? Zaječice nic neplánovala – jen se lekla. Přesto se stala legendou. Pohádka klade otázku: Není každý hrdina jen ten, kdo měl štěstí v pravou chvíli na pravém místě? A není na tom něco osvobozujícího?", key: "pravda je méně stabilní než příběh" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Pole hoří, zvířata prchají, jen jedna zaječice skáče do plamenů. A místo smrti najde spáleniště – černou zemi, ticho, bezpečí. Oheň si ji spletl s popelem. Pak se kolem ní scházejí zajíci a šeptají si o pradávných smlouvách. Realita a legenda se mísí v jeden obraz.", key: "oheň čte znamení v srsti" },
+            { deg: 150, hour: "4h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Zaječice jako archetyp nečekaného hrdiny – podobně jako v mnoha mýtech (např. král Oidipus, který nevědomky naplnil proroctví). Oheň jako symbol zkoušky, smrti a znovuzrození. Spáleniště jako místo transformace. A legenda, která vzniká z náhody – to je přesně to, jak fungují mýty: realita je podklad, příběh je to, co roste nad ní.", key: "mýtus vzniká rychleji než popel" },
+            { deg: 180, hour: "3h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Hořelo pole. Všichni utíkali. Jedna zaječice se lekla a skočila do ohně. Ale dopadla na místo, co už shořelo. A tak byla živá. Ostatní si mysleli, že je kouzelná. Ona věděla, že se jen lekla. Ale nechala je, ať si myslí, co chtějí. A tak vznikla legenda.", key: "prostě skočila jinam" },
+            { deg: 210, hour: "2h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. Kolikrát v životě jsem udělal něco, co nedávalo smysl, a přesto to vyšlo. A lidi kolem říkali: ‚Ty jsi ale borec!‘ A já věděl, že to byla jen náhoda, jen panika, jen štěstí. Ale naučil jsem se usmívat a načechrat si srst. Protože příběhy jsou někdy důležitější než pravda.", key: "spáleniště jako rodný list legendy" },
+            { deg: 240, hour: "1h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: pole hoří, zvířata prchají v panice, a jedna zaječice skočí rovnou do plamenů. Všichni čekají, že z ní bude uzený, ale ona si jen tak čistí spálené vousky na černé zemi. A pak se kolem ní začnou scházet zajíci a šeptat si o vyvolení a pradávných smlouvách. Je to fraška o tom, jak z náhody děláme mýty.", key: "nehoda korunovaná legendou" },
+            { deg: 270, hour: "12h", name: "Analytický", desc: "Hledá struktury, vztahy, příčiny.", text: "Kolektivní potřeba vytvořit ikonu – zaječice se stala hrdinkou, protože skupina potřebovala příběh, který by překryl chaos a náhodu. Její ‚omyl‘ byl systematicky reinterpretován jako ‚strategie‘. Společnost tvoří legendy, aby si udělala řád v nepochopitelném. A v tom je její síla – i kdyby pravda byla banální.", key: "kolektiv potřebuje ikonu víc než fakta" },
+            { deg: 300, hour: "11h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Oheň je chaos, panika, krize. Zaječice je ten, kdo v krizi udělá něco iracionálního – a najednou je hrdina. Spáleniště je místo, kde už nic nehrozí – bezpečí, které vzniklo z popela. Praskání ohně je jako marketing – dělá hluk, aby přesvědčil. A legenda? Ta je zvuk, který zůstane, když oheň utichne.", key: "praskání ohně jako marketing" },
+            { deg: 330, hour: "10h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to dědečka. Vyprávěl, jak za války utekl tím, že se schoval na místě, které už nacisté prohledali. Všichni říkali, že je hrdina, ale on říkal: ‚Já se jen bál a nevěděl, kam jinam.‘ A já mu to věřil. Ale zároveň vím, že ten jeho ‚omyl‘ zachránil život. A tak je to i s tou zaječicí.", key: "náhoda převlečená za osud" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let handElement = document.getElementById('hand');
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            selectAngle(0);
+        }
+
+        function getCurrentRotation() {
+            if (handElement) {
+                const style = window.getComputedStyle(handElement);
+                const transform = style.transform;
+                if (transform && transform !== 'none') {
+                    const values = transform.split('(')[1].split(')')[0].split(',');
+                    const a = parseFloat(values[0]);
+                    const b = parseFloat(values[1]);
+                    const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+                    return angle < 0 ? angle + 360 : angle;
+                }
+            }
+            return 0;
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                // Aktualizace odkazu na generátor
+                const encodedKey = encodeURIComponent(angle.key);
+                const encodedAngle = encodeURIComponent(angle.name);
+                genLink.href = `generator.html?zvir=Zajíc&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            // Animace ručičky – zhoupne se k cílovému úhlu, zakmitá a vrátí se k pomalé rotaci
+            if (handElement) {
+                handElement.style.animation = 'none';
+                
+                let startRot = getCurrentRotation();
+                let targetRot = (180 - angle.deg) % 360;
+                
+                let diff = targetRot - startRot;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                
+                handElement.style.setProperty('--start-rot', startRot + 'deg');
+                handElement.style.setProperty('--target-rot', targetRot + 'deg');
+                
+                const animName = 'swingToAngle_' + Date.now();
+                const keyframes = `
+                    @keyframes ${animName} {
+                        0% { transform: translate(-50%, -100%) rotate(${startRot}deg); }
+                        30% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        40% { transform: translate(-50%, -100%) rotate(${targetRot - 6}deg); }
+                        50% { transform: translate(-50%, -100%) rotate(${targetRot + 4}deg); }
+                        60% { transform: translate(-50%, -100%) rotate(${targetRot - 2}deg); }
+                        70% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        80% { transform: translate(-50%, -100%) rotate(${targetRot + 1}deg); }
+                        90% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        100% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                    }
+                `;
+                
+                const styleSheet = document.createElement("style");
+                styleSheet.innerHTML = keyframes;
+                document.head.appendChild(styleSheet);
+                
+                handElement.style.animation = `${animName} 1.3s cubic-bezier(0.25, 1.2, 0.5, 1) forwards`;
+                
+                setTimeout(() => {
+                    document.head.removeChild(styleSheet);
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${targetRot}deg)`;
+                    handElement.style.animation = `handRotate 38s linear infinite`;
+                }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
