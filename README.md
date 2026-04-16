@@ -10,9 +10,10 @@
 
 [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
 
-- (přehlídka jevů)[doma/nastroje/prehlidka_jevu.html]
+- [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
 
-- (analyzér)[doma/nastroje/analyzer.html]
+- [analyzér](doma/nastroje/analyzer.html)
+  
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
