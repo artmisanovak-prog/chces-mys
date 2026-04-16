@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Páv — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #050a10;
+            --bg-elevated: #0a1218;
+            --text: #e0f0f5;
+            --text-dim: #3a5060;
+            --text-mid: #5a7a8a;
+            --accent: #14b8a6;       /* tmavě tyrkysová */
+            --accent-dim: #134e4a;
+            --border: #0f1a20;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní "oka" – kruhy připomínající paví pera */
+        .eye-orb { 
+            position: absolute; 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%;
+            border: 1px solid var(--accent-dim);
+            opacity: 0.3;
+            pointer-events: none; 
+        }
+        .orb-1 { top: 20%; right: 12%; animation: float1 14s ease-in-out infinite; }
+        .orb-2 { bottom: 25%; left: 10%; animation: float2 16s ease-in-out infinite; }
+        .orb-3 { top: 60%; right: 20%; width: 16px; height: 16px; animation: float3 12s infinite; }
+        
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-25px, 15px) scale(1.2); }
+            66% { transform: translate(10px, -20px) scale(0.9); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -25px) scale(1.1); }
+            75% { transform: translate(-15px, 10px) scale(0.8); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.2; }
+            50% { transform: translate(-10px, -30px); opacity: 0.5; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; }
+        .fairy-content.open { max-height: 6000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #8aa0aa;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(20,184,166,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #6a8a9a; font-style: italic; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #0a1518, #000);
+            border: 1px solid #1a3538;
+            box-shadow: 0 0 40px rgba(20,184,166,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(20,184,166,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.06;
+            animation: spin 32s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+            /* pomalé plynulé otáčení, výchozí stav */
+            animation: handRotate 38s linear infinite;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        @keyframes handRotate {
+            from { transform: translate(-50%, -100%) rotate(0deg); }
+            to { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+        
+        /* Animace ručičky – bude dynamicky vytvořena v JS */
+        .hand-swing {
+            animation: swingToAngle 1.4s cubic-bezier(0.25, 1.6, 0.5, 1) !important;
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .key-hint {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #5eead4, #14b8a6);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #0f766e; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Páv</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="eye-orb orb-1"></div>
+        <div class="eye-orb orb-2"></div>
+        <div class="eye-orb orb-3"></div>
+        <img src="doma/ilustrace/pav.jpg" alt="Ilustrace páva" class="card-illustration" onerror="this.src='./doma/ilustrace/pav.jpg'">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtube.com/shorts/jRv8k4a751Q?is=MU26mdSLeXGjqSmx" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Pávovi</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                
+                <p><strong>O PÁVOVI</strong><br><strong>Pohádka o pávovi</strong><br><strong>Oko za okem, páv za pávem – a nikdo neví proč.</strong></p>
+                
+                <p>—</p>
+                
+                <p>Byl jednou jeden páv, který měl tolik ok na ocase, že se mu začaly dívat zpátky.<br>Ne on na svět, ale svět na něj – skrz jeho vlastní pera.<br>A to byl problém.</p>
+                
+                <p>—</p>
+                
+                <p>Protože když se díváš na svět skrz sebe, všechno vypadá jako ty.<br>A páv si začal myslet, že celý svět je páv.<br>Že stromy jsou pávové, jen bez per.<br>Že mraky jsou pávové, co se rozplynuli.<br>A že myš je jen páv, co se zapomněl rozvinout.</p>
+                
+                <p>—</p>
+                
+                <p>A tak začal pávy počítat.<br>Ne podle počtu nohou, ale podle počtu ok.<br>Kdo měl víc než jedno oko, byl podezřelý.<br>Kdo měl méně než jedno, byl prorok.</p>
+                
+                <p>—</p>
+                
+                <p>Jednou potkal lemura, co se díval jen na stranu.<br>Páv se zarazil: „To je páv, co se otočil dovnitř.“<br>Pak potkal kocoura, co krkal tečky.<br>„To je páv, co spolkl interpunkci.“</p>
+                
+                <p>—</p>
+                
+                <p>A když potkal zaječici, co prošla ohněm, řekl:<br>„To je páv, co se přepálil.“</p>
+                
+                <p>—</p>
+                
+                <p>A tak vznikla nová teorie:<br>Každé zvíře je páv v jiném stádiu rozpadu.<br>A každé oko je jen zrcadlo, co se snaží zapomenout, co vidělo.</p>
+                
+                <p>—</p>
+                
+                <p>Páv si začal odtrhávat pera.<br>Ne proto, že by chtěl být méně krásný.<br>Ale proto, že chtěl být méně páv.</p>
+                
+                <p>—</p>
+                
+                <p>A když mu zbylo jen jedno oko, konečně uviděl:<br>Že není páv.<br>Že je pohádka.</p>
+                
+                <p>—</p>
+                
+                <p>A že pohádka se nedá rozvinout jako ocas.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(20,184,166,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Páv s tolika oky na ocase, že se mu začala dívat zpátky. Svět, který se skládá z pávů – stromy, mraky, myš. A teorie, že každé zvíře je páv v jiném stádiu rozpadu. Absurdní? Ano. Ale co je absurdnější: vidět svět takový, jaký je, nebo ho vidět takový, jací jsme my?</div>
+                <div class="key-hint" id="keyHint">oka co se dívají zpět</div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro páva
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Páv s tolika oky na ocase, že se mu začala dívat zpátky. Svět, který se skládá z pávů – stromy, mraky, myš. A teorie, že každé zvíře je páv v jiném stádiu rozpadu. Absurdní? Ano. Ale co je absurdnější: vidět svět takový, jaký je, nebo ho vidět takový, jací jsme my?", key: "oka co se dívají zpět" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "„Oko za okem, páv za pávem“ – rytmus, který připomíná přísloví, ale nedává smysl. A přesto dává. Jazyk se tady láme: páv přestává být ptákem a stává se kategorií. Kdo spolkl interpunkci, je páv. Kdo se přepálil, je páv. Slova ztrácejí význam a získávají nový – páví.", key: "páv jako kategorie" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Páv chce vidět svět, ale místo toho vidí jen sebe. Jeho teorie o pávovitosti světa je sebestředná, ale on to neví. Ironie: čím víc se snaží pochopit svět, tím víc ho obaluje sebou. A když si začne trhat pera, aby byl méně páv, zjistí, že je pohádka – což je možná ještě víc páví.", key: "sebestředný páv" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je to identita? Je to to, co vidíme, nebo to, co si myslíme, že vidíme? Páv promítá sebe do všeho – stromy, mraky, myš. Je to extrémní solipsismus. Ale když si odtrhá pera a zbude mu jen jedno oko, uvidí, že je pohádka. Pohádka, která se nedá rozvinout jako ocas. Není to tak s námi všemi?", key: "identita a solipsismus" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Páv, co potkává lemura hledícího stranou, kocoura krkajícího tečky, zaječici po ohni. A všechno to jsou pávové. Stromy bez per, rozplynulé mraky, zapomenutá myš. Svět, kde se realita láme přes páví optiku a vznikají nové, nemožné kategorie.", key: "surrealita pávů" },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Páv měl na ocase hodně ok. Díval se přes ně a myslel si, že všechno je páv. Stromy jsou pávové, mraky jsou pávové, myš je páv. Potkával zvířata a říkal si, jací jsou to pávové. Pak si začal trhat pera, až mu zbylo jedno oko. A uviděl, že není páv, ale pohádka. Jednoduchý, ne?", key: "prostě páv" },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. Někdy mám pocit, že se dívám na svět skrz sebe a všechno vidím jako odraz. Lidé jsou moje verze, události jsou moje příběhy. A pak si uvědomím, že možná nejsem nic víc než pohádka, kterou si vyprávím. A že ta pohádka se nedá rozvinout jako ocas.", key: "jsem páv?" },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o pávovi s nadměrným množstvím ok na ocase, což mu způsobilo, že svět vnímal jako projekci sebe sama. Vytvořil teorii, že všechna zvířata jsou pávové v různých fázích existence. Postupně si odtrhával pera, až mu zbylo jediné oko. Tehdy dospěl k poznání, že není reálná bytost, ale literární útvar – pohádka.", key: "doslovný výklad" },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Páv jako archetyp marnivosti a krásy. Tady je ale jeho krása pastí – tolik ok, že se jimi nemůže dívat ven, jen dovnitř. Je to Narcis v ptačí podobě. Jeho teorie o pávovitosti světa je moderní mýtus o sebestřednosti. A pointa – že je pohádka – je existenciální obrat: možná jsme všichni jen příběhy, které si o sobě vyprávíme.", key: "narcis s pery" },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: páv s obrovským ocasem plným ok, co se na něj dívají. On si myslí, že strom je páv, mrak je páv, myš je páv. Potká lemura: „Aha, páv, co se otočil dovnitř.“ Kocoura: „Páv, co spolkl interpunkci.“ Zaječici: „Páv, co se přepálil.“ Je to groteska o tom, že největší ješita vidí všude jen sebe. A když si oškube ocas, zjistí, že je jen pohádka.", key: "groteska ješity" },
+            { deg: 300, hour: "11h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to strýce, který měl teorii o všem. Všechno vysvětloval podle sebe – politiku, počasí, vztahy. Říkal: „Lidi jsou jako já, jen to nevědí.“ A my jsme se tomu smáli. Ale teď, když čtu o pávovi, říkám si – možná měl pravdu. A možná jsme všichni pávové, co se snaží odtrhat pera, aby zjistili, kdo doopravdy jsou.", key: "strýcova teorie" },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Páv je naše ego. Oka na ocase jsou naše perspektivy, úhly pohledu, předsudky. Čím víc jich máme, tím víc vidíme svět jako sebe. Stromy, mraky, myš – to jsou ostatní, které přetváříme ke svému obrazu. Trhání per je zbavování se iluzí. A když zbude jen jedno oko, uvidíme, že nejsme to, co jsme si mysleli. Jsme příběh.", key: "ego a iluze" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let handElement = document.getElementById('hand');
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            selectAngle(0);
+        }
+
+        function getCurrentRotation() {
+            if (handElement) {
+                const style = window.getComputedStyle(handElement);
+                const transform = style.transform;
+                if (transform && transform !== 'none') {
+                    const values = transform.split('(')[1].split(')')[0].split(',');
+                    const a = parseFloat(values[0]);
+                    const b = parseFloat(values[1]);
+                    const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+                    return angle < 0 ? angle + 360 : angle;
+                }
+            }
+            return 0;
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            // Animace ručičky – zhoupne se k cílovému úhlu, zakmitá a vrátí se k pomalé rotaci
+            if (handElement) {
+                handElement.style.animation = 'none';
+                
+                let startRot = getCurrentRotation();
+                let targetRot = (180 - angle.deg) % 360;
+                
+                let diff = targetRot - startRot;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                
+                handElement.style.setProperty('--start-rot', startRot + 'deg');
+                handElement.style.setProperty('--target-rot', targetRot + 'deg');
+                
+                const animName = 'swingToAngle_' + Date.now();
+                const keyframes = `
+                    @keyframes ${animName} {
+                        0% { transform: translate(-50%, -100%) rotate(${startRot}deg); }
+                        30% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        40% { transform: translate(-50%, -100%) rotate(${targetRot - 6}deg); }
+                        50% { transform: translate(-50%, -100%) rotate(${targetRot + 4}deg); }
+                        60% { transform: translate(-50%, -100%) rotate(${targetRot - 2}deg); }
+                        70% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        80% { transform: translate(-50%, -100%) rotate(${targetRot + 1}deg); }
+                        90% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        100% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                    }
+                `;
+                
+                const styleSheet = document.createElement("style");
+                styleSheet.innerHTML = keyframes;
+                document.head.appendChild(styleSheet);
+                
+                handElement.style.animation = `${animName} 1.3s cubic-bezier(0.25, 1.2, 0.5, 1) forwards`;
+                
+                setTimeout(() => {
+                    document.head.removeChild(styleSheet);
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${targetRot}deg)`;
+                    handElement.style.animation = `handRotate 38s linear infinite`;
+                }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
