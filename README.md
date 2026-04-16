@@ -31,6 +31,19 @@
 
 ---
 
+ilustrace:
+
+- [mys](doma/ilustrace/mys.jpg)
+- [kocour](doma/ilustrace/kocour.jpg)
+- [ryba](doma/ilustrace/ryba.jpg)
+- [zajic](doma/ilustrace/zajic.jpg)
+- [krokodyl](doma/ilustrace/krokodyl.jpg)
+- [pav](doma/ilustrace/pav.jpg)
+- [netopyr](doma/ilustrace/netopyr.jpg)
+- [motyl](doma/ilustrace/motyl.jpg)
+- [pavouk](doma/ilustrace/pavouk.jpg)
+
+---
 
 <!-- Onboarding banner: vložte do <body> nahoře -->
 <section id="onboarding-banner" style="background:#fff9f0;border-left:6px solid #ff8c42;padding:18px;margin:12px 0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;">
