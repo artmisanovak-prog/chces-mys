@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Želva — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0a0f0a;
+            --bg-elevated: #101810;
+            --text: #e6f0e6;
+            --text-dim: #4a604a;
+            --text-mid: #709070;
+            --accent: #1a4a1a;       /* tmavě zelená */
+            --accent-dim: #0e2a0e;
+            --border: #182018;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní prvky – lístky / kapky */
+        .leaf { 
+            position: absolute; 
+            width: 8px; 
+            height: 12px; 
+            background: var(--accent-dim);
+            opacity: 0.25;
+            pointer-events: none; 
+            border-radius: 50% 0 50% 0;
+            transform-origin: center;
+        }
+        .leaf-1 { top: 20%; right: 15%; transform: rotate(30deg); animation: leafFloat1 12s ease-in-out infinite; }
+        .leaf-2 { bottom: 25%; left: 12%; transform: rotate(-20deg); animation: leafFloat2 14s ease-in-out infinite; }
+        .leaf-3 { top: 60%; right: 20%; width: 6px; height: 10px; transform: rotate(60deg); animation: leafFloat3 10s infinite; }
+        .leaf-4 { top: 40%; left: 18%; width: 10px; height: 14px; transform: rotate(-45deg); animation: leafFloat4 16s infinite; }
+        
+        @keyframes leafFloat1 {
+            0%, 100% { transform: translate(0, 0) rotate(30deg) scale(1); opacity: 0.2; }
+            50% { transform: translate(-15px, -20px) rotate(45deg) scale(1.2); opacity: 0.4; }
+        }
+        @keyframes leafFloat2 {
+            0%, 100% { transform: translate(0, 0) rotate(-20deg) scale(1); opacity: 0.25; }
+            50% { transform: translate(20px, -15px) rotate(-5deg) scale(1.1); opacity: 0.15; }
+        }
+        @keyframes leafFloat3 {
+            0%, 100% { transform: translate(0, 0) rotate(60deg); opacity: 0.15; }
+            50% { transform: translate(-25px, -10px) rotate(80deg); opacity: 0.35; }
+        }
+        @keyframes leafFloat4 {
+            0%, 100% { transform: translate(0, 0) rotate(-45deg) scale(1); opacity: 0.2; }
+            33% { transform: translate(10px, 20px) rotate(-30deg) scale(0.9); opacity: 0.4; }
+            66% { transform: translate(-15px, 5px) rotate(-60deg) scale(1.1); opacity: 0.15; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; }
+        .fairy-content.open { max-height: 8000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #a0b8a0;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(26,74,26,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #709070; font-style: italic; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #101810, #020502);
+            border: 1px solid #1a2a1a;
+            box-shadow: 0 0 40px rgba(26,74,26,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(26,74,26,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+            animation: handRotate 38s linear infinite;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        @keyframes handRotate {
+            from { transform: translate(-50%, -100%) rotate(0deg); }
+            to { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .key-hint {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #80b080, #407040);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #0e2a0e; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Želva</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <img src="doma/ilustrace/zelva.jpg" alt="Ilustrace želvy" class="card-illustration" onerror="this.src='./doma/ilustrace/zelva.jpg'">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="#" target="_blank" class="audio-btn" title="Audio verze pohádky (odkaz bude doplněn)">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Želvě</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                
+                <p><strong>O ŽELVĚ</strong></p>
+                <p><strong>která běží závod, a zajíci, který posílá pohlednice</strong></p>
+                
+                <p>—</p>
+                
+                <p>Želva běží závod.<br>Celé roky.<br>Ne pomalu.<br>Jen důkladně.<br>Každý krok je jako otisk.<br>Každý otisk stopy jako razítko.<br>Každý den jako další stránka v kalendáři, co nikdo neotáčí.</p>
+                
+                <p>—</p>
+                
+                <p>Zajíc už dávno doběhl.<br>Pak se vrátil.<br>Pak zase odběhl.<br>Pak si sedl.<br>Pak si lehl.<br>A pak začal psát.</p>
+                
+                <p>—</p>
+                
+                <p>Poslal pohlednici ze Sicílie.<br>„Tady je slunce, co se tváří jako výmluva.“<br>Poslal pohlednici z Madridu.<br>„Tady se běhá akorát v myšlenkách.“<br>Poslal pohlednici z Grónska.<br>„Tady je ticho, co se nedá doběhnout.“<br>A nakonec z Nemanic.<br>„Tady není nic. Ale to nevadí.“</p>
+                
+                <p>—</p>
+                
+                <p>Želva běží.<br>Dlouho<br>Nečte hned.<br>Času má dost.<br>Ale každý pohled jí přistane na krunýři.<br>A ona je nese.<br>Jako důkazy.<br>Jako sny.<br>Jako možnosti.<br>Jako mapy míst, kde nikdy nebyla, ale možná jednou bude.</p>
+                
+                <p>—</p>
+                
+                <p>Ale někdy po cestě,<br>když se zastaví,<br>ba chvíli<br>třeba kvůli křovisu, co se tváří<br>jako večeře — vytáhne jednu.</p>
+                
+                <p>—</p>
+                
+                <p>Sicílie.<br>Slunce, co se tváří jako výmluva.<br>A želva si řekne: „Tam bych mohla jednou dojít.“<br>A běží dál.</p>
+                
+                <p>—</p>
+                
+                <p>Madrid.<br>Město, kde se běhá jenom v myšlenkách.<br>To ji zaujme.<br>Protože ona běží tělem..<br>Ale možná by mohla i v myšlenkách?<br>A tak si to poznamená.<br>Do krunýře.<br>Do vzoru.</p>
+                
+                <p>—</p>
+                
+                <p>Grónsko.<br>Ticho, který se nedá předběhnout.<br>To ji dojme.<br>Protože to ona zná.<br>Ale nikdy to nepředběhla.<br>Jen jí to něco přesně připomíná.</p>
+                
+                <p>—</p>
+                
+                <p>Nemanice.<br>Nic.<br>Ale to nevadí.<br>To je její oblíbená.<br>Protože nic je místo, kde se může stát všechno.</p>
+                
+                <p>—</p>
+                
+                <p>A tak želva běží.<br>A čte.<br>A každý pohled má jako směr.<br>Ne cíl.<br>Ale důvod.</p>
+                
+                <p>—</p>
+                
+                <p>Zajíc mezitím píše dál.<br>Ne proto, že by musel.<br>Ale protože želva běží.<br>A dokud běží, má komu psát.</p>
+                
+                <p>—</p>
+                
+                <p>Jednou napíše:<br>„Tady jsem si uvědomil, že možná nejde o to, kdo doběhne.<br>Ale o to, kdo má kam psát.“</p>
+                
+                <p>—</p>
+                
+                <p>A želva si to přečte.<br>A usměje se.<br>Ne proto, že by to bylo vtipné.<br>Ale protože to je pravda.</p>
+                
+                <p>—</p>
+                
+                <p>A tak běží dál.<br>A pohlednice jí šustí na zádech.<br>Slova se splétají jako mašle.<br>A vítr je čte s ní.<br>A slunce je bledne.<br>A déšť je rozmazává.</p>
+                
+                <p>—</p>
+                
+                <p>A zajíc píše dál.<br>Z míst, která možná<br>ani eexistující.<br>Ale pokud je želva<br>jednou přečte,<br>možná začnou.</p>
+                
+                <p>—</p>
+                
+                <p>A každý z nich běží závod.<br>Jiný cíl, stejný důvod.<br>„Zajíc běží, aby mohl psát.<br>A želva běží, aby mohla číst.“<br>a želva čte, aby zajíc mohl psát.”<br>a zajíc píše, aby želva měla co číst.</p>
+                
+                <p>—</p>
+                
+                <p>A že závod není o čase.<br>Je o tom, kdo si pamatuje, proč vůbec závodil.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(26,74,26,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Želva běží závod celé roky, zajíc už dávno doběhl a posílá pohlednice. Závod, který nikdy neskončí, a psaní, které nemá adresáta? Ale ono má – želva čte a nese pohledy na krunýři. Paradox: nejde o cíl, ale o to, mít komu psát a mít co číst.</div>
+                <div class="key-hint">
+                    <span id="keyHint">běh bez cíle</span>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro želvu včetně klíčů pro generátor
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Želva běží závod celé roky, zajíc už dávno doběhl a posílá pohlednice. Závod, který nikdy neskončí, a psaní, které nemá adresáta? Ale ono má – želva čte a nese pohledy na krunýři. Paradox: nejde o cíl, ale o to, mít komu psát a mít co číst.", key: "běh bez cíle" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "„Slunce, co se tváří jako výmluva“ – věta, která by mohla být básní. „Ticho, který se nedá doběhnout“ – oxymóron, který vystihuje Grónsko. Pohádka je sama o sobě sbírkou jazykových hříček a obrazů, které želva nosí na zádech a vítr je čte s ní.", key: "poezie na krunýři" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Zajíc vyhrál závod, ale místo oslav píše pohlednice. Želva prohrává, ale získává svět. Ironie: ten, kdo doběhl první, ztrácí smysl, ten, kdo běží pomalu, nachází důvod. A nejde o čas, ale o to, kdo má kam psát.", key: "vítěz píše poražené" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je to cíl? Je to meta, nebo jen záminka k cestě? Želva běží, ale její cíl se neustále posouvá – je na pohlednicích, v myšlenkách, v tichu. Zajíc píše, ale jeho psaní nemá adresáta – má želvu. Pohádka klade otázku: Není důležitější než vítězství to, že máme pro koho psát a pro co běžet?", key: "smysl závodu" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Sicílie, Madrid, Grónsko, Nemanice – místa reálná i nereálná se mísí na krunýři želvy. Slunce jako výmluva, ticho, co se nedá doběhnout, nic, kde se může stát všechno. A zajíc píše z míst, která možná ani neexistují. Svět, kde se geologie snoubí s poezií.", key: "geografie snů" },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Želva běží závod. Zajíc jí posílá pohlednice. Ona je čte, až když má čas. Nosí je na krunýři. Každá pohlednice je jako důvod běžet dál. Zajíc píše, protože ví, že želva čte. A oba jsou spokojení. Jednoduchý, ne?", key: "prostě běží" },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. Pořád někam běžím, ale nevím přesně kam. A občas mi přijde dopis od někoho, kdo už dávno dorazil. A já si ho schovám a nesu ho s sebou. A v těch dopisech je občas víc než v celé cestě. Protože nejde o to, kam dojdu, ale o to, co po cestě dostanu.", key: "osobní želva" },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o želvě, která se účastní běžeckého závodu (pravděpodobně narážka na Ezopovu bajku) a běží ho velmi dlouho. Zajíc, který závod dokončil, posílá želvě pohlednice z různých míst. Želva si pohlednice ukládá na krunýř, čte je a používá je jako motivaci k dalšímu běhu. Zajíc píše, protože želva běží, a želva běží, protože zajíc píše – vytváří se vzájemná závislost.", key: "doslovný závod" },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Ezopova bajka o zajíci a želvě je tady převrácena. Zajíc neprohrává, ale vyhrává – a pak píše. Želva nevyhrává, ale běží dál. Je to příběh o tom, že vítězství není cíl, ale proces. Pohlednice jako moderní verze poselství. A Nemanice? To je česká díra, která se stává existenciální metaforou.", key: "obrácená bajka" },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: želva běží závod, co trvá roky. Zajíc, kterej už dávno vyhrál, jí posílá pohlednice z dovolených. Ona si je lepí na krunýř a čte je, když se zastaví u křoví. A nakonec zjistí, že nejde o závod, ale o to, mít komu psát. Je to groteska o tom, že komunikace je důležitější než soutěžení.", key: "groteska komunikace" },
+            { deg: 300, hour: "11h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to, jak jsem jako dítě dostával pohledy od babičky z lázní. Nikdy jsem tam nebyl, ale díky těm pohledům jsem věděl, že existují. A taky jsem si je schovával, jako želva na krunýř. A pak jsem jednou jel do těch lázní a všechno bylo přesně tak, jak babička psala. Pohledy byly mapy.", key: "pohlednice jako mapa" },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Želva je pomalé, ale vytrvalé bytí. Zajíc je rychlá, ale prchavá myšlenka. Pohlednice jsou sny, které nám posílá život. Krunýř je paměť, na kterou si ukládáme to, co nás přesahuje. A Nemanice? To je místo, kde nic není – a proto se tam může stát všechno. Závod není o vítězství, ale o tom, co si na tu cestu naložíme.", key: "metafora cesty" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let handElement = document.getElementById('hand');
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            selectAngle(0);
+        }
+
+        function getCurrentRotation() {
+            if (handElement) {
+                const style = window.getComputedStyle(handElement);
+                const transform = style.transform;
+                if (transform && transform !== 'none') {
+                    const values = transform.split('(')[1].split(')')[0].split(',');
+                    const a = parseFloat(values[0]);
+                    const b = parseFloat(values[1]);
+                    const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+                    return angle < 0 ? angle + 360 : angle;
+                }
+            }
+            return 0;
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                const encodedKey = encodeURIComponent(angle.key);
+                const encodedAngle = encodeURIComponent(angle.name);
+                genLink.href = `generator.html?zvir=Želva&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                handElement.style.animation = 'none';
+                
+                let startRot = getCurrentRotation();
+                let targetRot = (180 - angle.deg) % 360;
+                
+                handElement.style.setProperty('--start-rot', startRot + 'deg');
+                handElement.style.setProperty('--target-rot', targetRot + 'deg');
+                
+                const animName = 'swingToAngle_' + Date.now();
+                const keyframes = `
+                    @keyframes ${animName} {
+                        0% { transform: translate(-50%, -100%) rotate(${startRot}deg); }
+                        30% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        40% { transform: translate(-50%, -100%) rotate(${targetRot - 6}deg); }
+                        50% { transform: translate(-50%, -100%) rotate(${targetRot + 4}deg); }
+                        60% { transform: translate(-50%, -100%) rotate(${targetRot - 2}deg); }
+                        70% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        80% { transform: translate(-50%, -100%) rotate(${targetRot + 1}deg); }
+                        90% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                        100% { transform: translate(-50%, -100%) rotate(${targetRot}deg); }
+                    }
+                `;
+                
+                const styleSheet = document.createElement("style");
+                styleSheet.innerHTML = keyframes;
+                document.head.appendChild(styleSheet);
+                
+                handElement.style.animation = `${animName} 1.3s cubic-bezier(0.25, 1.2, 0.5, 1) forwards`;
+                
+                setTimeout(() => {
+                    document.head.removeChild(styleSheet);
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${targetRot}deg)`;
+                    handElement.style.animation = `handRotate 38s linear infinite`;
+                }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
