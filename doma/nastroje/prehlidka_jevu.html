@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Přehlídka fenoménů · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 13px; line-height: 1.7; padding: 2rem 1.5rem; min-height: 100vh;
+    }
+    .app { max-width: 1400px; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    h1 em { font-style: italic; color: #a89880; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; margin: 2rem 0 1rem; border-bottom: 1px solid rgba(168,152,128,.2); padding-bottom: 0.3rem; }
+    .subtitle { color: #a89880; margin-bottom: 2rem; font-style: italic; }
+
+    /* ovládací panel */
+    .panel { display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; align-items: center; }
+    .btn { padding: 0.4rem 1.2rem; font-family: inherit; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; background: transparent; border: 1px solid rgba(168,152,128,.35); color: #a89880; cursor: pointer; transition: all 0.15s; border-radius: 2px; }
+    .btn:hover { background: rgba(168,152,128,.08); border-color: #a89880; color: #e8e0d0; }
+    .btn-primary { background: #a89880; border-color: #a89880; color: #0f0d0a; }
+    .btn-primary:hover { background: #c0aa90; }
+    select, input { background: #171410; border: 1px solid rgba(168,152,128,.3); color: #e8e0d0; padding: 0.3rem 0.6rem; font-family: inherit; font-size: 0.8rem; }
+    .group-input { display: flex; gap: 0.5rem; align-items: center; }
+
+    /* mřížka karet */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .card-tile { background: #171410; border: 1px solid rgba(168,152,128,.15); padding: 1rem; cursor: pointer; transition: all 0.2s; }
+    .card-tile:hover { border-color: #a89880; background: #1e1a14; }
+    .card-img { width: 100%; aspect-ratio: 74/105; background-size: cover; background-position: center; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(168,152,128,.2); }
+    .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-bottom: 0.3rem; }
+    .card-stats { font-size: 0.7rem; color: #a89880; }
+
+    /* detail karty / fenoménu */
+    .detail-panel { background: #171410; border: 1px solid rgba(168,152,128,.2); padding: 1.5rem; margin: 2rem 0; }
+    .detail-header { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .angle-bars { display: flex; flex-direction: column; gap: 0.3rem; max-width: 300px; }
+    .angle-row { display: flex; align-items: center; gap: 0.5rem; }
+    .angle-color { width: 12px; height: 12px; border-radius: 2px; }
+    .angle-name { width: 100px; font-size: 0.75rem; }
+    .angle-bar { flex: 1; height: 8px; background: rgba(255,255,255,.05); }
+    .angle-fill { height: 100%; width: 0%; }
+    .angle-value { width: 40px; font-size: 0.7rem; text-align: right; }
+
+    .combo-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .combo-badge { background: rgba(168,152,128,.1); border: 1px solid rgba(168,152,128,.2); padding: 0.2rem 0.8rem; font-size: 0.7rem; border-radius: 20px; }
+
+    /* seznam otisků */
+    .imprints-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+    .imprints-table th { text-align: left; padding: 0.5rem; border-bottom: 1px solid rgba(168,152,128,.2); font-weight: 400; color: #a89880; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .imprints-table td { padding: 0.5rem; border-bottom: 1px solid rgba(168,152,128,.1); }
+    .mini-bars { display: flex; gap: 1px; height: 20px; align-items: center; }
+    .mini-seg { height: 20px; width: 6px; }
+
+    .filter-bar { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Přehlídka <em>fenoménů</em></h1>
+  <div class="subtitle">otisky jazykového chování · žádné texty, jen struktura</div>
+
+  <!-- Hlavní ovládání -->
+  <div class="panel">
+    <button class="btn btn-primary" id="addFromUrlBtn">➕ Přidat otisk z URL</button>
+    <button class="btn" id="exportImprintsBtn">📤 Exportovat všechny otisky</button>
+    <button class="btn" id="clearAllBtn">🗑 Smazat vše (lokálně)</button>
+    <div class="group-input">
+      <label>🔐 groupKey:</label>
+      <input type="text" id="groupKeyInput" placeholder="nepovinné" style="width:140px;">
+      <button class="btn" id="applyGroupBtn">Filtrovat</button>
+      <button class="btn" id="resetGroupBtn">✕</button>
+    </div>
+  </div>
+
+  <!-- Filtry -->
+  <div class="filter-bar">
+    <select id="filterCardSelect"><option value="">Všechny karty</option></select>
+    <select id="filterAngleSelect"><option value="">Všechny úhly</option></select>
+    <select id="filterContextSelect"><option value="">Všechny kontexty</option></select>
+    <input type="month" id="filterMonthInput" style="width:150px;">
+    <button class="btn" id="clearFiltersBtn">Zrušit filtry</button>
+  </div>
+
+  <!-- Statistiky -->
+  <div style="display:flex; gap:2rem; margin:1rem 0; font-size:0.9rem;">
+    <span>📊 Celkem otisků: <strong id="totalImprints">0</strong></span>
+    <span>🃏 Unikátních karet: <strong id="uniqueCards">0</strong></span>
+    <span>👥 Přezdívek: <strong id="uniqueNicks">0</strong></span>
+  </div>
+
+  <!-- Mřížka karet (fenoménů) -->
+  <h2>🧩 Fenomény</h2>
+  <div class="cards-grid" id="cardsGrid"></div>
+
+  <!-- Detail vybraného fenoménu -->
+  <div class="detail-panel" id="detailPanel" style="display:none;">
+    <div style="display:flex; justify-content:space-between;">
+      <h3 id="detailCardName" style="font-family:'Cormorant Garamond'; font-size:1.8rem; font-weight:300;"></h3>
+      <button class="btn" onclick="closeDetail()">✕ Zavřít</button>
+    </div>
+    <div class="detail-header">
+      <div>
+        <div style="margin-bottom:0.5rem; color:#a89880;">Rozložení úhlů</div>
+        <div class="angle-bars" id="detailAngleBars"></div>
+      </div>
+      <div>
+        <div style="margin-bottom:0.5rem; color:#a89880;">Nejčastější kombinace</div>
+        <div class="combo-list" id="detailCombos"></div>
+      </div>
+    </div>
+    <div>
+      <div style="margin-bottom:0.5rem; color:#a89880;">Výskyt v čase</div>
+      <canvas id="detailTimelineChart" width="400" height="80" style="width:100%; height:80px; background:#0f0d0a;"></canvas>
+    </div>
+  </div>
+
+  <!-- Tabulka všech otisků -->
+  <h2>📋 Všechny otisky</h2>
+  <table class="imprints-table" id="imprintsTable">
+    <thead><tr><th>Čas</th><th>Karty</th><th>Úhly</th><th>Kontext</th><th>Přezdívka</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- KONFIGURACE ----------
+    const BASE_ASSETS = (window.location.hostname.includes('github') || window.location.hostname.includes('artmisanovak'))
+      ? 'https://artmisanovak-prog.github.io/chces-mys/'
+      : '';
+    const STORAGE_KEY = 'chcesmys_prehlidka_otisky';
+
+    // Data karet (9 ks)
+    const CARDS = {
+      "myš": { file: "mys.jpg", name: "Myš", odkaz: "doma/data/uhly/mys_uhly.html" },
+      "kocour": { file: "kocour.jpg", name: "Kocour", odkaz: "doma/data/uhly/kocour_uhly.html" },
+      "zajíc": { file: "zajic.jpg", name: "Zajíc", odkaz: "doma/data/uhly/zajic_uhly.html" },
+      "ryba": { file: "ryba.jpg", name: "Ryba", odkaz: "doma/data/uhly/ryba_uhly.html" },
+      "páv": { file: "pav.jpg", name: "Páv", odkaz: "doma/data/uhly/pav_uhly.html" },
+      "netopýr": { file: "netopyr.jpg", name: "Netopýr", odkaz: "doma/data/uhly/netopyr_uhly.html" },
+      "motýl": { file: "motyl.jpg", name: "Motýl", odkaz: "doma/data/uhly/motyl_uhly.html" },
+      "pavouk": { file: "pavouk.jpg", name: "Pavouk", odkaz: "doma/data/uhly/pavouk_uhly.html" },
+      "krokodýl": { file: "krokodyl.jpg", name: "Krokodýl", odkaz: "doma/data/uhly/krokodyl_uhly.html" }
+    };
+
+    // Úhly (paleta)
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075' },
+      { st:30, name:'Kulturní', color:'#6a9e72' },
+      { st:60, name:'Filozofický', color:'#d4a0b0' },
+      { st:90, name:'Naivní', color:'#5fa8a0' },
+      { st:120, name:'Jazykový', color:'#8e7248' },
+      { st:150, name:'Metaforický', color:'#5a8a5a' },
+      { st:180, name:'Asociační', color:'#a85a5a' },
+      { st:210, name:'Introspektivní', color:'#c8a832' },
+      { st:240, name:'Ironický', color:'#c8722a' },
+      { st:270, name:'Groteskní', color:'#a83060' },
+      { st:300, name:'Absurdní', color:'#6080a0' },
+      { st:330, name:'Surrealistický', color:'#8060b0' }
+    ];
+    const ANGLE_MAP = Object.fromEntries(ANGLES.map(a => [a.st, a]));
+
+    // Stav
+    let imprints = [];            // všechny otisky v localStorage
+    let filteredImprints = [];    // po aplikaci groupKey a filtrů
+    let currentGroupKey = '';
+    let selectedCard = null;
+
+    // DOM
+    const cardsGrid = document.getElementById('cardsGrid');
+    const detailPanel = document.getElementById('detailPanel');
+    const imprintsTableBody = document.querySelector('#imprintsTable tbody');
+    const totalImprintsSpan = document.getElementById('totalImprints');
+    const uniqueCardsSpan = document.getElementById('uniqueCards');
+    const uniqueNicksSpan = document.getElementById('uniqueNicks');
+    const groupKeyInput = document.getElementById('groupKeyInput');
+    const filterCardSelect = document.getElementById('filterCardSelect');
+    const filterAngleSelect = document.getElementById('filterAngleSelect');
+    const filterContextSelect = document.getElementById('filterContextSelect');
+    const filterMonthInput = document.getElementById('filterMonthInput');
+
+    // ---------- NAČÍTÁNÍ / UKLÁDÁNÍ ----------
+    function loadImprints() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try { imprints = JSON.parse(stored); } catch(e){ imprints = []; }
+      } else {
+        imprints = [];
+      }
+    }
+    function saveImprints() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(imprints));
+    }
+
+    // ---------- PŘIDÁNÍ OTISKU Z URL (parametry) ----------
+    function addImprintFromParams(params) {
+      const cardsStr = params.get('cards');
+      const anglesStr = params.get('angles');
+      if (!cardsStr || !anglesStr) return false;
+
+      const cards = cardsStr.split(',').map(s => s.trim()).filter(id => CARDS[id]);
+      if (cards.length === 0) return false;
+
+      const percentages = {};
+      anglesStr.split(',').forEach(p => {
+        const [st, val] = p.split(':').map(Number);
+        if (!isNaN(st) && !isNaN(val)) percentages[st] = val;
+      });
+
+      const imprint = {
+        id: Date.now() + '-' + Math.random().toString(36),
+        timestamp: params.get('ts') ? parseInt(params.get('ts')) : Date.now(),
+        cards: cards,
+        percentages: percentages,
+        context: params.get('context') || 'deník',
+        mode: params.get('mode') || 'analyzovaný',
+        nickname: params.get('nick') || '',
+        groupKey: params.get('groupKey') || '',
+        source: 'url'
+      };
+
+      imprints.push(imprint);
+      saveImprints();
+      return true;
+    }
+
+    // Zpracování URL při načtení stránky
+    function processIncomingUrl() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('cards') && params.has('angles')) {
+        if (addImprintFromParams(params)) {
+          // vyčistit URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+          alert('Otisk byl přidán do přehlídky.');
+        }
+      }
+    }
+
+    // ---------- FILTROVÁNÍ ----------
+    function applyFilters() {
+      let filtered = imprints;
+      const groupKey = groupKeyInput.value.trim();
+      if (groupKey) {
+        filtered = filtered.filter(imp => imp.groupKey === groupKey);
+      }
+      currentGroupKey = groupKey;
+
+      const cardFilter = filterCardSelect.value;
+      if (cardFilter) {
+        filtered = filtered.filter(imp => imp.cards.includes(cardFilter));
+      }
+      const angleFilter = filterAngleSelect.value;
+      if (angleFilter) {
+        filtered = filtered.filter(imp => imp.percentages.hasOwnProperty(angleFilter));
+      }
+      const contextFilter = filterContextSelect.value;
+      if (contextFilter) {
+        filtered = filtered.filter(imp => imp.context === contextFilter);
+      }
+      const monthFilter = filterMonthInput.value;
+      if (monthFilter) {
+        const [year, month] = monthFilter.split('-').map(Number);
+        filtered = filtered.filter(imp => {
+          const d = new Date(imp.timestamp);
+          return d.getFullYear() === year && d.getMonth() + 1 === month;
+        });
+      }
+
+      filteredImprints = filtered;
+      renderAll();
+    }
+
+    function clearFilters() {
+      filterCardSelect.value = '';
+      filterAngleSelect.value = '';
+      filterContextSelect.value = '';
+      filterMonthInput.value = '';
+      groupKeyInput.value = '';
+      currentGroupKey = '';
+      applyFilters();
+    }
+
+    // ---------- VYKRESLOVÁNÍ ----------
+    function renderAll() {
+      renderStats();
+      renderCardsGrid();
+      renderImprintsTable();
+      if (selectedCard) {
+        showCardDetail(selectedCard);
+      }
+    }
+
+    function renderStats() {
+      totalImprintsSpan.textContent = filteredImprints.length;
+      const uniqueCardsSet = new Set();
+      const uniqueNicksSet = new Set();
+      filteredImprints.forEach(imp => {
+        imp.cards.forEach(c => uniqueCardsSet.add(c));
+        if (imp.nickname) uniqueNicksSet.add(imp.nickname);
+      });
+      uniqueCardsSpan.textContent = uniqueCardsSet.size;
+      uniqueNicksSpan.textContent = uniqueNicksSet.size;
+    }
+
+    function renderCardsGrid() {
+      // Agregace podle karty
+      const cardStats = {};
+      filteredImprints.forEach(imp => {
+        imp.cards.forEach(cardId => {
+          if (!cardStats[cardId]) cardStats[cardId] = { count: 0, angles: {} };
+          cardStats[cardId].count++;
+          Object.entries(imp.percentages).forEach(([st, val]) => {
+            cardStats[cardId].angles[st] = (cardStats[cardId].angles[st] || 0) + val;
+          });
+        });
+      });
+
+      cardsGrid.innerHTML = '';
+      Object.entries(CARDS).forEach(([id, card]) => {
+        const stats = cardStats[id] || { count: 0, angles: {} };
+        const imgUrl = BASE_ASSETS + 'doma/ilustrace/' + card.file;
+        const tile = document.createElement('div');
+        tile.className = 'card-tile';
+        tile.innerHTML = `
+          <div class="card-img" style="background-image:url('${imgUrl}')"></div>
+          <div class="card-name">${card.name}</div>
+          <div class="card-stats">${stats.count} otisků</div>
+        `;
+        tile.addEventListener('click', () => showCardDetail(id));
+        cardsGrid.appendChild(tile);
+      });
+
+      // Naplnění selectů
+      filterCardSelect.innerHTML = '<option value="">Všechny karty</option>';
+      Object.keys(CARDS).forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id; opt.textContent = CARDS[id].name;
+        filterCardSelect.appendChild(opt);
+      });
+      filterAngleSelect.innerHTML = '<option value="">Všechny úhly</option>';
+      ANGLES.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.st; opt.textContent = a.name;
+        filterAngleSelect.appendChild(opt);
+      });
+      const contexts = [...new Set(filteredImprints.map(imp => imp.context))];
+      filterContextSelect.innerHTML = '<option value="">Všechny kontexty</option>';
+      contexts.forEach(ctx => {
+        const opt = document.createElement('option');
+        opt.value = ctx; opt.textContent = ctx;
+        filterContextSelect.appendChild(opt);
+      });
+    }
+
+    function showCardDetail(cardId) {
+      selectedCard = cardId;
+      const cardImprints = filteredImprints.filter(imp => imp.cards.includes(cardId));
+      
+      // Agregace úhlů
+      const angleTotals = {};
+      cardImprints.forEach(imp => {
+        Object.entries(imp.percentages).forEach(([st, val]) => {
+          angleTotals[st] = (angleTotals[st] || 0) + val;
+        });
+      });
+      const totalAngleSum = Object.values(angleTotals).reduce((a,b)=>a+b,0);
+
+      const detailCardName = document.getElementById('detailCardName');
+      detailCardName.textContent = CARDS[cardId].name;
+      
+      const angleBarsDiv = document.getElementById('detailAngleBars');
+      angleBarsDiv.innerHTML = '';
+      ANGLES.forEach(ang => {
+        const val = angleTotals[ang.st] || 0;
+        const pct = totalAngleSum > 0 ? (val / totalAngleSum * 100) : 0;
+        const row = document.createElement('div'); row.className = 'angle-row';
+        row.innerHTML = `
+          <span class="angle-color" style="background:${ang.color}"></span>
+          <span class="angle-name">${ang.name}</span>
+          <div class="angle-bar"><div class="angle-fill" style="width:${pct}%; background:${ang.color}"></div></div>
+          <span class="angle-value">${Math.round(pct)}%</span>
+        `;
+        angleBarsDiv.appendChild(row);
+      });
+
+      // Kombinace s jinými kartami
+      const comboCnt = {};
+      cardImprints.forEach(imp => {
+        const others = imp.cards.filter(c => c !== cardId).sort().join('+');
+        if (others) comboCnt[others] = (comboCnt[others] || 0) + 1;
+      });
+      const comboDiv = document.getElementById('detailCombos');
+      comboDiv.innerHTML = '';
+      Object.entries(comboCnt).sort((a,b)=>b[1]-a[1]).slice(0,8).forEach(([combo, cnt]) => {
+        const badge = document.createElement('span'); badge.className = 'combo-badge';
+        badge.textContent = `${combo} (${cnt}×)`;
+        comboDiv.appendChild(badge);
+      });
+
+      // Časová osa (zjednodušený canvas)
+      const canvas = document.getElementById('detailTimelineChart');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if (cardImprints.length > 0) {
+        const sorted = [...cardImprints].sort((a,b) => a.timestamp - b.timestamp);
+        const start = sorted[0].timestamp;
+        const end = sorted[sorted.length-1].timestamp;
+        const range = Math.max(1, end - start);
+        const barW = canvas.width / sorted.length;
+        sorted.forEach((imp, i) => {
+          const mainAngle = Object.entries(imp.percentages).sort((a,b)=>b[1]-a[1])[0];
+          if (mainAngle) {
+            const ang = ANGLE_MAP[mainAngle[0]];
+            ctx.fillStyle = ang ? ang.color : '#888';
+            ctx.fillRect(i*barW, 0, barW-1, canvas.height);
+          }
+        });
+      }
+
+      detailPanel.style.display = 'block';
+      detailPanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+
+    window.closeDetail = () => {
+      detailPanel.style.display = 'none';
+      selectedCard = null;
+    };
+
+    function renderImprintsTable() {
+      imprintsTableBody.innerHTML = '';
+      filteredImprints.slice().reverse().forEach(imp => {
+        const row = document.createElement('tr');
+        const date = new Date(imp.timestamp).toLocaleString('cs-CZ');
+        const cardsStr = imp.cards.join(' + ');
+        
+        // mini bars
+        const barsDiv = document.createElement('div'); barsDiv.className = 'mini-bars';
+        Object.entries(imp.percentages).sort((a,b)=>b[1]-a[1]).forEach(([st, val]) => {
+          const seg = document.createElement('div'); seg.className = 'mini-seg';
+          seg.style.backgroundColor = ANGLE_MAP[st]?.color || '#888';
+          seg.style.width = Math.max(4, Math.round(val/10)) + 'px';
+          seg.title = `${ANGLE_MAP[st]?.name}: ${val}%`;
+          barsDiv.appendChild(seg);
+        });
+        
+        row.innerHTML = `
+          <td>${date}</td>
+          <td>${cardsStr}</td>
+          <td></td>
+          <td>${imp.context}</td>
+          <td>${imp.nickname || '—'}</td>
+          <td><button class="btn" style="padding:0.1rem 0.5rem;" onclick="shareImprint('${imp.id}')">🔗</button></td>
+        `;
+        row.cells[2].appendChild(barsDiv);
+        imprintsTableBody.appendChild(row);
+      });
+    }
+
+    window.shareImprint = (id) => {
+      const imp = imprints.find(i => i.id === id);
+      if (!imp) return;
+      const params = new URLSearchParams();
+      params.set('cards', imp.cards.join(','));
+      const anglesStr = Object.entries(imp.percentages).map(([st,val])=>`${st}:${val}`).join(',');
+      params.set('angles', anglesStr);
+      params.set('context', imp.context);
+      params.set('mode', imp.mode);
+      if (imp.nickname) params.set('nick', imp.nickname);
+      if (imp.groupKey) params.set('groupKey', imp.groupKey);
+      params.set('ts', imp.timestamp);
+      const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+      navigator.clipboard?.writeText(url);
+      alert('Odkaz na otisk zkopírován.');
+    };
+
+    window.exportImprints = () => {
+      const dataStr = JSON.stringify(filteredImprints, null, 2);
+      const blob = new Blob([dataStr], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `otisky_${new Date().toISOString().slice(0,10)}.json`; a.click();
+    };
+
+    window.clearAll = () => {
+      if (confirm('Opravdu smazat VŠECHNY otisky z localStorage?')) {
+        imprints = [];
+        saveImprints();
+        applyFilters();
+      }
+    };
+
+    // ---------- INICIALIZACE ----------
+    function init() {
+      loadImprints();
+      processIncomingUrl();
+      
+      document.getElementById('addFromUrlBtn').addEventListener('click', () => {
+        const url = prompt('Vložte URL s parametry (obsahující ?cards=...&angles=...):');
+        if (url) {
+          try {
+            const u = new URL(url);
+            if (addImprintFromParams(u.searchParams)) {
+              saveImprints();
+              applyFilters();
+              alert('Otisk přidán.');
+            } else {
+              alert('URL neobsahuje platná data.');
+            }
+          } catch(e) { alert('Neplatná URL.'); }
+        }
+      });
+      document.getElementById('exportImprintsBtn').addEventListener('click', window.exportImprints);
+      document.getElementById('clearAllBtn').addEventListener('click', window.clearAll);
+      document.getElementById('applyGroupBtn').addEventListener('click', applyFilters);
+      document.getElementById('resetGroupBtn').addEventListener('click', () => {
+        groupKeyInput.value = ''; applyFilters();
+      });
+      document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+      
+      filterCardSelect.addEventListener('change', applyFilters);
+      filterAngleSelect.addEventListener('change', applyFilters);
+      filterContextSelect.addEventListener('change', applyFilters);
+      filterMonthInput.addEventListener('change', applyFilters);
+
+      applyFilters();
+    }
+    init();
+  })();
+</script>
+</body>
+</html>
