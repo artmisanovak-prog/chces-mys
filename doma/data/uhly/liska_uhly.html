@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liška — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0f0806;
+            --bg-elevated: #1a0e0a;
+            --text: #f5eae6;
+            --text-dim: #705a50;
+            --text-mid: #a08070;
+            --accent: #b87333;       /* měděná / copper */
+            --accent-dim: #5a3a2a;
+            --border: #1e1410;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní prvky – jiskry / měděné tečky */
+        .spark { 
+            position: absolute; 
+            width: 6px; 
+            height: 6px; 
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.3;
+            pointer-events: none; 
+            box-shadow: 0 0 10px var(--accent);
+        }
+        .spark-1 { top: 20%; right: 15%; animation: sparkFloat1 10s ease-in-out infinite; }
+        .spark-2 { bottom: 25%; left: 12%; width: 8px; height: 8px; animation: sparkFloat2 12s ease-in-out infinite; }
+        .spark-3 { top: 60%; right: 20%; width: 4px; height: 4px; animation: sparkFloat3 8s infinite; }
+        .spark-4 { top: 40%; left: 18%; width: 7px; height: 7px; animation: sparkFloat4 14s infinite; }
+        
+        @keyframes sparkFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(-15px, -25px) scale(1.3); opacity: 0.5; }
+        }
+        @keyframes sparkFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(20px, -15px) scale(1.2); opacity: 0.15; }
+        }
+        @keyframes sparkFloat3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+            50% { transform: translate(-25px, -10px); opacity: 0.4; }
+        }
+        @keyframes sparkFloat4 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+            33% { transform: translate(10px, 20px) scale(0.9); opacity: 0.4; }
+            66% { transform: translate(-15px, 5px) scale(1.1); opacity: 0.15; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; }
+        .fairy-content.open { max-height: 7000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #c0a090;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(184,115,51,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #a08070; font-style: italic; }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1a0e0a, #050200);
+            border: 1px solid #3a2010;
+            box-shadow: 0 0 40px rgba(184,115,51,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(184,115,51,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Ručička – statický styl, animace přes transition v JS */
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+            /* pomalá rotace je teď řízena přes JS interval */
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .key-hint {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #d0a080, #b07050);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #5a3a2a; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Liška</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="spark spark-1"></div>
+        <div class="spark spark-2"></div>
+        <div class="spark spark-3"></div>
+        <div class="spark spark-4"></div>
+        <img src="doma/ilustrace/liska.jpg" alt="Ilustrace lišky" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="#" target="_blank" class="audio-btn" title="Audio verze pohádky (odkaz bude doplněn)">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <section class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">Pohádka o Lišce</button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O LIŠCE</strong></p>
+                <p><strong>která byla z části</strong></p>
+                <p>—</p>
+                <p>Kdysi, v krajině, kde se stromy nekláněly kvůli větru, ale kvůli tíze slov, žila liška. Ne ta z dětských knížek, co krade slepice a směje se pod fousy. Tahle liška byla jiná. Tichá. Pozorující. A hlavně – celá.</p>
+                <p>—</p>
+                <p>Měla kožich, který se leskl jako podzimní večer. Tlapky, které uměly chodit po sněhu, aniž by ho rušily. Oči, které viděly věci, co se ještě nestaly. A srdce – těžké, tvrdé, ale průzračné. Diamant. Velký. Ne pro parádu. Pro tíhu.</p>
+                <p>—</p>
+                <p>Ale svět si všiml. A jakmile si svět všimne, začne chtít.</p>
+                <p>—</p>
+                <p>První přišli obchodníci. S měřítky, s cenami, s rukama připravenýma brát.<br>„Ten kožich,“ řekli. „To je přesně ono. Luxus. Teplo. Lesk.“<br>A tak lišce vzali srst.<br>Zůstala nahá. Ale ne slabá. Jen jiná.</p>
+                <p>—</p>
+                <p>Pak přišli ti, co chodí v botách z hadí kůže. znají cestu. My chceme směr.“<br>A tak jí vzali chodidla.<br>Zůstaly jí jen vzpomínky na stopy.</p>
+                <p>—</p>
+                <p>Potom přišli šperkaři. Ne pro krásu, ale pro sílu.<br>„Zuby z mrožoviny? Pche. Ale liščí zuby – to je elegance s ostřím.“<br>A tak jí vzali úsměv.<br>Zůstalo mlčení.</p>
+                <p>—</p>
+                <p>Nakonec přišel někdo, kdo se neptal. Nepředstavil se. Jen sáhl do její hrudi a vytáhl srdce.<br>Byl to kámen. Diamant. Velký.<br>„Tohle je to nejcennější,“ řekl.<br>A odešel.</p>
+                <p>—</p>
+                <p>A liška?<br>Zůstala. Bez srsti. Bez tlapek. Bez smíchu. Bez srdce.<br>Ale pořád tam byla.<br>Ne jako zvíře. Jako stín. Jako paměť.</p>
+                <p>—</p>
+                <p>Začala se pohybovat jinak. Ne kráčet – ale klouzat. Ne mluvit – ale šeptat. Ne žít – ale být.</p>
+                <p>—</p>
+                <p>A v tom bytí se začalo něco dít.<br>Lidé, kteří si z ní vzali, začali ztrácet.<br>Kožich se rozpadl na chlupy, které se nedaly sešít.<br>Boty z hadí kůže se rozpadly na šupiny, které klouzaly z nohou.<br>Šperky ze zubů se začaly třepit, jako by se smály těm, kdo je nosí.<br>A diamant? Ten zčernal. Ne z špíny. Z pravdy.</p>
+                <p>—</p>
+                <p>Protože to, co se vezme násilím, se neudrží.<br>A to, co se vezme z lišky, se nehodí nikomu jinému.</p>
+                <p>—</p>
+                <p>Liška se mezitím stala legendou.<br>Ne tou, co se vypráví dětem.<br>Tou, co se šeptá mezi stromy.<br>„Viděli jste ji?“<br>„Ne, ale cítili jsme ji.“<br>„Jak?“<br>„Jako ticho, které má tvar.“</p>
+                <p>—</p>
+                <p>A tak se začalo říkat, že někde běhá liška, která nemá nic –<br>a právě proto má všechno.</p>
+                <p>—</p>
+                <p>Její srdce je kámen.<br>Ale ne ten, co se nosí.<br>Ten, co se nese.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(184,115,51,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Liška, které berou srst, tlapky, zuby i srdce – a ona pořád je. A dokonce se stává legendou. Paradox: čím víc jí berou, tím víc jí zbývá. A ti, co brali, nakonec ztrácejí. Absurdní? Možná. Ale v té absurditě je zákonitost.</div>
+                <div class="key-hint">
+                    <span id="keyHint">legenda z ničeho</span>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro lišku včetně klíčů pro generátor
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Liška, které berou srst, tlapky, zuby i srdce – a ona pořád je. A dokonce se stává legendou. Paradox: čím víc jí berou, tím víc jí zbývá. A ti, co brali, nakonec ztrácejí. Absurdní? Možná. Ale v té absurditě je zákonitost.", key: "legenda z ničeho" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "‚Být z části‘ – název, který je sám o sobě hádankou. Liška, která byla celá, se stává ‚z části‘, ale nakonec je víc než celá. Jazyk selhává, když má popsat něco, co je ‚ticho, které má tvar‘. Pohádka pracuje s významy, které se vymykají slovům – a přesto je musíme použít.", key: "ticho s tvarem" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Chtěli vzít to nejcennější – a nakonec zjistili, že se to nedá udržet. Kožich se rozpadl, boty se rozpadly, šperky se třepily, diamant zčernal. Ironie osudu: co jsme si vzali, nás ničí. A liška? Ta jen klouže dál, lehčí než předtím.", key: "co vzali, ztratili" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je to ‚být‘, když nemáš nic? Liška přestala žít, ale začala být. Stala se pamětí, stínem, legendou. Ptá se nás: co je naší podstatou, když nám vezmou všechno, co považujeme za své? A je vůbec možné něco skutečně vlastnit?", key: "podstata bez vlastnictví" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Kožich se rozpadá na chlupy, které nejdou sešít. Boty na šupiny, které kloužou. Diamant zčerná pravdou. A liška klouže světem jako ticho s tvarem. Realita se tady láme do obrazů, které nejdou logicky spojit – a přesto dávají smysl.", key: "diamant zčernal pravdou" },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Liška měla kožich, tlapky, zuby a srdce. Přišli lidi a vzali jí to. Ona zůstala. Pak se těm lidem věci rozpadly. A liška teď běhá jako legenda. Jednoduchý příběh o tom, že když ti něco vezmou, můžeš být pořád. A že brát se nevyplácí.", key: "prostě zůstala" },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. Pořád mi někdo bere kousky – čas, energii, víru. A já mám pocit, že se zmenšuju. Ale tahle pohádka mi říká, že i když mi vezmou všechno, pořád můžu být. Ne jako dřív, ale jako ticho, které má tvar. A to stačí.", key: "osobní liška" },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o lišce, které postupně skupiny lidí odebraly srst, tlapky, zuby a srdce (diamant). Poté, co o vše přišla, existovala dál jako nehmotná entita (stín, paměť). Jejím bývalým majetkům se začalo dařit špatně – rozpadaly se nebo ztrácely hodnotu. Liška se stala legendou, kterou lidé vnímají jako ‚ticho s tvarem‘.", key: "doslovné rozebrání" },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Liška jako archetyp moudrosti a mazanosti je tady převrácena – není to šibal, ale oběť. Připomíná mytologické postavy, které byly rozebrány a staly se nesmrtelnými (Orfeus, Osiris). Její proměna v legendu je starý motiv: to, co je zničeno, se stává posvátným. A diamant, který zčerná pravdou? To je už moderní mýtus.", key: "archetyp oběti" },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: lišce vezmou srst, ona je nahá. Vezmou jí tlapky, ona klouže. Vezmou jí zuby, mlčí. Vezmou jí srdce, a ona pořád je. A pak se těm zlodějům všechno rozpadne – kožich na chlupy, boty na šupiny. Je to tragikomedie o tom, že se nevyplácí brát, a že to nejcennější stejně neudržíš.", key: "groteska zlodějů" },
+            { deg: 300, hour: "11h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to babičku. Taky jí vzali všechno – dům, zdraví, nakonec i vzpomínky. A přesto, když jsme si o ní vyprávěli, byla víc než zaživa. Stala se příběhem. Jako ta liška. A ten diamant, co zčerná? To je pravda, kterou nechceme vidět.", key: "babička jako liška" },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Liška je lidská duše. Kožich je tělo, tlapky jsou cesta, zuby jsou hlas, srdce je esence. Svět bere, ale duše zůstává. A co si vezmeš násilím, ztratíš. Liška se stává tichem – tím, co zbývá, když zmizí všechno povrchní. Její srdce je kámen, který se nenosí, ale nese.", key: "duše jako liška" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let handElement = document.getElementById('hand');
+        
+        // Udržujeme aktuální rotaci v proměnné, abychom nemuseli parsovat matrix
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        // Spustíme pomalou rotaci (38s na 360°)
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360; // 0.5° každých cca 53ms => 360°/38s
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            currentIndex = index;
+            const angle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${angle.deg}° — ${angle.name}`;
+                textEl.textContent = angle.text;
+                keyEl.textContent = angle.key;
+                const encodedKey = encodeURIComponent(angle.key);
+                const encodedAngle = encodeURIComponent(angle.name);
+                genLink.href = `generator.html?zvir=Liška&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            // Animace ručičky – použijeme transition
+            if (handElement) {
+                isAnimating = true;
+                
+                // Cílová rotace
+                let targetRot = (180 - angle.deg) % 360;
+                
+                // Najdeme nejkratší cestu
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                // Nastavíme transition s "bounce" efektem
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                // Aktualizujeme currentRotation
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                // Po dokončení animace obnovíme pomalou rotaci
+                setTimeout(() => {
+                    isAnimating = false;
+                    // Ponecháme transition pro plynulost, ale bude se používat jen při klikání
+                    // Pro pomalou rotaci transition nepotřebujeme, ale nevadí
+                }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: angle.name}});
+        }
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
