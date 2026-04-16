@@ -10,7 +10,7 @@
 
 [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
 
-
+- (přehlídka jevů)[doma/nastroje/prehlidka_jevu.html]
 
 
 ---
