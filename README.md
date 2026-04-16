@@ -12,7 +12,7 @@
 
 - (přehlídka jevů)[doma/nastroje/prehlidka_jevu.html]
 
-
+- (analyzér)[doma/nastroje/analyzer.html]
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
