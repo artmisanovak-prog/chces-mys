@@ -28,6 +28,15 @@
 - [pavouk](doma/data/uhly/pavouk_uhly.html)
 - [netopýr](doma/data/uhly/netopyr_uhly.html)
 
+- [liska](doma/data/uhly/liska_uhly.html)
+- [lemur](doma/data/uhly/lemur_uhly.html)
+- [slon](doma/data/uhly/slon_uhly.html)
+- [cap](doma/data/uhly/cap_uhly.html)
+- [jednorozec](doma/data/uhly/jednorozec_uhly.html)
+- [zelva](doma/data/uhly/zelva_uhly.html)
+- [vrabec](doma/data/uhly/vravec_uhly.html)
+- [zralok](doma/data/uhly/zralok_uhly.html)
+- [plamenak](doma/data/uhly/plamenak_uhly.html)
 
 ---
 
