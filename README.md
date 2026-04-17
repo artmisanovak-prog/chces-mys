@@ -8,6 +8,8 @@
 
 ---
 
+- [kreslici_analyzer](doma/nastroje/kreslici_uzivatel.html)
+
 - [vizualni_analyzer](doma/nastroje/vizualni_analyzer.htm)
 
 - [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
