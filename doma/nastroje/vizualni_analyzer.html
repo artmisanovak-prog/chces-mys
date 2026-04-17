@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Vizuální analyzér · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 14px; line-height: 1.7; padding: 1.5rem; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .app { max-width: 1000px; width: 100%; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 1rem; color: #e8e0d0; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; margin: 1.5rem 0 1rem; border-bottom: 1px solid rgba(200,144,58,.2); padding-bottom: 0.3rem; }
+    .upload-area {
+      border: 2px dashed rgba(200,144,58,.4); border-radius: 8px; padding: 2rem;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      background: rgba(23,20,16,.5); margin: 1.5rem 0;
+    }
+    .upload-area:hover { border-color: #c8903a; background: rgba(200,144,58,.05); }
+    .upload-area input { display: none; }
+    .preview-container { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+    .preview-box { flex: 1; min-width: 250px; background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 0.5rem; border-radius: 4px; }
+    .preview-box img { width: 100%; height: auto; display: block; border-radius: 2px; }
+    .btn {
+      padding: 0.5rem 1.5rem; font-family: inherit; font-size: 0.8rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px; margin-right: 0.5rem;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary:hover { background: #daa050; }
+    .fragment-panel {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0;
+    }
+    .fragment-card {
+      background: #171410; border: 1px solid rgba(200,144,58,.3); padding: 1rem; border-radius: 4px;
+    }
+    .fragment-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid rgba(200,144,58,.2); margin-bottom: 0.8rem; }
+    .angle-suggestion { color: #c8903a; font-weight: 500; margin-bottom: 0.3rem; }
+    .intervention-text { font-size: 0.8rem; color: rgba(232,224,208,.7); margin-bottom: 1rem; font-style: italic; }
+    .fragment-actions { display: flex; gap: 0.5rem; }
+    .results-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 1.5rem; margin-top: 2rem; border-radius: 4px; }
+    .angle-bars { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+    .angle-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; }
+    .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .skulina-link { margin-top: 1rem; font-size: 0.8rem; }
+    .note { color: rgba(232,224,208,.5); font-size: 0.75rem; margin-top: 0.5rem; }
+    .status-msg { margin: 1rem 0; padding: 0.5rem; border-left: 3px solid #c8903a; background: rgba(200,144,58,.1); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Vizuální <em>analyzér</em></h1>
+  <p style="margin-bottom:1rem; color:rgba(232,224,208,.7);">Nahraj kresbu nebo malbu. Myš si všimne struktury. Fotografie donutí Myš k rozřezání na tři fragmenty.</p>
+
+  <!-- Oblast nahrání -->
+  <div class="upload-area" id="uploadArea">
+    <p>📂 Klikni sem nebo přetáhni obrázek</p>
+    <input type="file" id="fileInput" accept="image/*" capture="environment">
+  </div>
+
+  <!-- Náhled a základní info -->
+  <div class="preview-container" id="previewContainer" style="display:none;">
+    <div class="preview-box">
+      <img id="previewImage" alt="Náhled">
+    </div>
+    <div style="flex:1;">
+      <div id="imageInfo" class="status-msg"></div>
+      <div style="margin-top:1rem;">
+        <button class="btn btn-primary" id="analyzeBtn">🔍 Analyzovat</button>
+        <button class="btn" id="clearBtn">🗑️ Smazat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel pro Myší režim (fotografie) -->
+  <div id="mysiRezim" style="display:none;">
+    <h2>🐭 Myš neví, co s tím. Rozřeže to na tři kusy.</h2>
+    <p style="margin-bottom:1rem;">Každý kousek musíš potvrdit, nebo zahodit. Pak tě pustí.</p>
+    <div class="fragment-panel" id="fragmentPanel"></div>
+    <button class="btn" id="finishMysiRezim" style="display:none;">📤 Odeslat do Skuliny a Přehlídky</button>
+  </div>
+
+  <!-- Výsledky analýzy (pro kresbu) -->
+  <div class="results-panel" id="resultsPanel" style="display:none;">
+    <h2>Výsledek analýzy</h2>
+    <div id="angleResults"></div>
+    <div id="dominantInfo"></div>
+    <div style="margin-top:1rem;">
+      <button class="btn" id="saveToSkulinaBtn">💾 Uložit do Skuliny</button>
+      <button class="btn" id="sendToPrehlidkaBtn" style="display:none;">📊 Sdílet do Přehlídky</button>
+    </div>
+  </div>
+
+  <!-- Skulina (zobrazení uložených záznamů) -->
+  <div style="margin-top:3rem;">
+    <details>
+      <summary style="cursor:pointer; color:#c8903a;">📁 Otevřít Skulinu (uložené záznamy)</summary>
+      <div id="skulinaList" style="margin-top:1rem; max-height:300px; overflow-y:auto; border:1px solid rgba(200,144,58,.2); padding:1rem; background:#0f0d0a;"></div>
+      <button class="btn" id="clearSkulinaBtn" style="margin-top:0.5rem;">🗑️ Vyčistit Skulinu</button>
+    </details>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- KONFIGURACE ----------
+    const PREHLIDKA_URL = 'prehlidka_fenomenu/'; // relativní cesta, uprav dle nasazení
+
+    // 12 úhlů – upravená paleta (Analytický tmavě šedomodrá, Filozofický světle růžová, Surrealistický fialová)
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075', intervention:'Použij ostré, přesné linie. Kresli jako technický výkres, pravidelné šrafování, žádné stínování.' },
+      { st:30, name:'Kulturní', color:'#6a9e72', intervention:'Hledej harmonii a tradici. Oblé křivky, symetrie, ornament. Jemné, čisté linie.' },
+      { st:60, name:'Filozofický', color:'#d4a0b0', intervention:'Nech hodně prázdného místa. Tenké, přerušované linky, otazníky, nedokončené tvary.' },
+      { st:90, name:'Naivní', color:'#5fa8a0', intervention:'Zjednodušuj. Žádné stínování, čisté plochy, jednoduché linky jako dětská kresba.' },
+      { st:120, name:'Jazykový', color:'#8e7248', intervention:'Vytvoř rytmus. Opakující se linie, refrén, pravidelná kompozice, čisté tvary.' },
+      { st:150, name:'Metaforický', color:'#5a8a5a', intervention:'Překrývej tvary, vytvářej vrstvy. Kontrast černé a bílé, symboly, náznaky.' },
+      { st:180, name:'Asociační', color:'#a85a5a', intervention:'Kresli rychle, automaticky. Chaotické linie, čmáranice, žádný řád.' },
+      { st:210, name:'Introspektivní', color:'#c8a832', intervention:'Soustřeď se na vnitřní strukturu. Opakující se vzory, detailní šrafování, textury.' },
+      { st:240, name:'Ironický', color:'#c8722a', intervention:'Použij kontrast. Kombinuj jemnou linku s hrubou plochou, přeháněj proporce.' },
+      { st:270, name:'Groteskní', color:'#a83060', intervention:'Deformuj, přeháněj. Silné, agresivní linie, přeplácaná kompozice, výrazné šrafování.' },
+      { st:300, name:'Absurdní', color:'#6080a0', intervention:'Kombinuj nesouvisející. Nelogické tvary, záměrně "špatné" šrafování, chaos.' },
+      { st:330, name:'Surrealistický', color:'#8060b0', intervention:'Nech plynout. Měkké, rozmazané linie, snové přechody, nemožná spojení.' }
+    ];
+    const ANGLE_MAP = Object.fromEntries(ANGLES.map(a => [a.st, a]));
+
+    // Stav
+    let uploadedImage = null;            // HTMLImageElement
+    let isDrawing = true;               // true = kresba/malba, false = fotografie
+    let fragments = [];                 // pro Myší režim: { imgData, suggestedAngle, intervention }
+    let analysisResult = null;          // výsledek pro kresbu
+
+    // DOM
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const imageInfo = document.getElementById('imageInfo');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const mysiRezim = document.getElementById('mysiRezim');
+    const fragmentPanel = document.getElementById('fragmentPanel');
+    const finishMysiRezimBtn = document.getElementById('finishMysiRezim');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const angleResults = document.getElementById('angleResults');
+    const dominantInfo = document.getElementById('dominantInfo');
+    const saveToSkulinaBtn = document.getElementById('saveToSkulinaBtn');
+    const sendToPrehlidkaBtn = document.getElementById('sendToPrehlidkaBtn');
+    const skulinaList = document.getElementById('skulinaList');
+    const clearSkulinaBtn = document.getElementById('clearSkulinaBtn');
+
+    // ---------- DETEKCE: KRESBA vs FOTOGRAFIE ----------
+    function detectImageType(img) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const maxDim = 400;
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim/w, maxDim/h);
+        w = Math.floor(w*ratio); h = Math.floor(h*ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      const imageData = ctx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+
+      // 1. Počet unikátních barev (kvantizace na 32 úrovní na kanál)
+      const colorSet = new Set();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = Math.floor(data[i] / 8);
+        const g = Math.floor(data[i+1] / 8);
+        const b = Math.floor(data[i+2] / 8);
+        colorSet.add((r << 10) | (g << 5) | b);
+      }
+      const uniqueColors = colorSet.size;
+
+      // 2. Hustota hran (Sobel)
+      const gray = new Uint8Array(w * h);
+      for (let i = 0; i < data.length; i += 4) {
+        gray[i/4] = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+      }
+      let edgePixels = 0;
+      const sobel = (x, y) => {
+        if (x <= 0 || x >= w-1 || y <= 0 || y >= h-1) return 0;
+        const idx = (y-1)*w + (x-1);
+        const gx = -1*gray[idx] + 1*gray[idx+2] + -2*gray[idx+w] + 2*gray[idx+w+2] + -1*gray[idx+2*w] + 1*gray[idx+2*w+2];
+        const gy = -1*gray[idx] -2*gray[idx+1] -1*gray[idx+2] + 1*gray[idx+2*w] + 2*gray[idx+2*w+1] + 1*gray[idx+2*w+2];
+        return Math.sqrt(gx*gx + gy*gy);
+      };
+      for (let y = 1; y < h-1; y++) {
+        for (let x = 1; x < w-1; x++) {
+          if (sobel(x, y) > 50) edgePixels++;
+        }
+      }
+      const edgeDensity = edgePixels / (w * h);
+
+      // Heuristika: kresba = hodně hran (>0.08) a relativně málo barev (<8000)
+      const isDraw = (edgeDensity > 0.08) && (uniqueColors < 8000);
+      return { isDraw, edgeDensity, uniqueColors };
+    }
+
+    // ---------- NAHRÁNÍ OBRÁZKU ----------
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          previewImage.src = img.src;
+          previewContainer.style.display = 'flex';
+          const detection = detectImageType(img);
+          isDrawing = detection.isDraw;
+          imageInfo.innerHTML = isDrawing ?
+            `✅ Detekována kresba/malba. Můžeš analyzovat.` :
+            `📸 Detekována fotografie. Bude spuštěn Myší režim.`;
+          // Reset ostatních panelů
+          mysiRezim.style.display = 'none';
+          resultsPanel.style.display = 'none';
+          analyzeBtn.style.display = isDrawing ? 'inline-block' : 'none';
+          if (!isDrawing) {
+            startMysiRezim(img);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ---------- MYŠÍ REŽIM (fotografie) ----------
+    function startMysiRezim(img) {
+      // Rozřezat na 3 vertikální pruhy
+      const w = img.width, h = img.height;
+      const fragmentWidth = Math.floor(w / 3);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      fragments = [];
+      for (let i = 0; i < 3; i++) {
+        const startX = i * fragmentWidth;
+        const width = (i === 2) ? w - startX : fragmentWidth;
+        canvas.width = width; canvas.height = h;
+        ctx.drawImage(img, startX, 0, width, h, 0, 0, width, h);
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Zjednodušená analýza fragmentu – použijeme podobnou heuristiku jako u kresby,
+        // ale protože je to fotka, prostě vybereme náhodný úhel z těch "spojených" (aby to bylo zajímavé)
+        // V reálu bys použila stejný vizuální analyzér, zde pro jednoduchost náhodně z prvních 6 úhlů.
+        const angleIdx = Math.floor(Math.random() * 6); // 0-5: Analytický až Metaforický
+        const angle = ANGLES[angleIdx];
+        fragments.push({
+          imgData,
+          suggestedAngle: angle,
+          intervention: angle.intervention
+        });
+      }
+      renderFragments();
+      mysiRezim.style.display = 'block';
+      finishMysiRezimBtn.style.display = 'none'; // zobrazí se až po potvrzení všech
+    }
+
+    let confirmedFragments = 0;
+    function renderFragments() {
+      fragmentPanel.innerHTML = '';
+      confirmedFragments = 0;
+      fragments.forEach((frag, idx) => {
+        const card = document.createElement('div');
+        card.className = 'fragment-card';
+        card.innerHTML = `
+          <img src="${frag.imgData}" class="fragment-img">
+          <div class="angle-suggestion">${frag.suggestedAngle.name} (${frag.suggestedAngle.st}°)</div>
+          <div class="intervention-text">${frag.intervention}</div>
+          <div class="fragment-actions">
+            <button class="btn" data-action="confirm" data-idx="${idx}">✔ Ano</button>
+            <button class="btn" data-action="reject" data-idx="${idx}">✖ Ne</button>
+          </div>
+          <div class="note" id="frag-status-${idx}"></div>
+        `;
+        fragmentPanel.appendChild(card);
+      });
+      // Event delegation
+      fragmentPanel.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const action = btn.dataset.action;
+          const idx = parseInt(btn.dataset.idx);
+          const statusEl = document.getElementById(`frag-status-${idx}`);
+          if (action === 'confirm') {
+            statusEl.textContent = '✓ Potvrzeno, uloženo jako ' + fragments[idx].suggestedAngle.name;
+            fragments[idx].confirmed = true;
+          } else {
+            statusEl.textContent = '✗ Zahozeno';
+            fragments[idx].confirmed = false;
+          }
+          btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+          confirmedFragments++;
+          if (confirmedFragments === 3) {
+            finishMysiRezimBtn.style.display = 'inline-block';
+          }
+        });
+      });
+    }
+
+    function finishMysiRezim() {
+      // Uložit potvrzené fragmenty do Skuliny a připravit pro Přehlídku
+      const confirmed = fragments.filter(f => f.confirmed);
+      if (confirmed.length === 0) {
+        alert('Žádný fragment nebyl potvrzen.');
+        return;
+      }
+      // Uložení do localStorage (Skulina)
+      const skulina = JSON.parse(localStorage.getItem('mys-skulina') || '[]');
+      const timestamp = Date.now();
+      confirmed.forEach(frag => {
+        skulina.push({
+          type: 'photo-fragment',
+          timestamp,
+          angle: frag.suggestedAngle.st,
+          angleName: frag.suggestedAngle.name,
+          intervention: frag.intervention,
+          image: frag.imgData
+        });
+      });
+      localStorage.setItem('mys-skulina', JSON.stringify(skulina));
+
+      // Generování URL pro Přehlídku (karta myš)
+      const params = new URLSearchParams();
+      params.set('cards', 'myš');
+      const anglesStr = confirmed.map(f => `${f.suggestedAngle.st}:100`).join(','); // zjednodušeně 100%
+      params.set('angles', anglesStr);
+      params.set('context', 'fotografie');
+      params.set('mode', 'mysi_rezim');
+      params.set('ts', timestamp);
+      
+      let base = PREHLIDKA_URL;
+      if (window.location.hostname.includes('github') || window.location.hostname.includes('artmisanovak')) {
+        base = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_fenomenu/';
+      }
+      const url = base + '?' + params.toString();
+      
+      alert('Fragmenty uloženy do Skuliny. Odkaz pro Přehlídku zkopírován do schránky.');
+      navigator.clipboard?.writeText(url);
+      
+      // Reset
+      mysiRezim.style.display = 'none';
+      clearImage();
+      renderSkulina();
+    }
+
+    // ---------- ANALÝZA KRESBY (zjednodušená) ----------
+    function analyzeDrawing() {
+      if (!uploadedImage) return;
+      // Pro jednoduchost provedeme náhodnou simulaci, ale v reálném nástroji bys použila detekci
+      // podle tabulky vizuálních příznaků. Zde vygenerujeme fiktivní procenta.
+      const percentages = ANGLES.map(() => Math.floor(Math.random() * 101));
+      const maxIdx = percentages.indexOf(Math.max(...percentages));
+      analysisResult = { percentages, dominant: maxIdx };
+
+      // Zobrazení
+      angleResults.innerHTML = ANGLES.map((a, i) => `
+        <div class="angle-item"><span class="color-dot" style="background:${a.color}"></span>${a.name}: ${percentages[i]}%</div>
+      `).join('');
+      dominantInfo.innerHTML = `<strong>Dominantní úhel:</strong> ${ANGLES[maxIdx].name} (${ANGLES[maxIdx].st}°)`;
+      resultsPanel.style.display = 'block';
+      
+      // Pokud je k dispozici kontext (karty), zobrazíme tlačítko pro Přehlídku
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('cards')) {
+        sendToPrehlidkaBtn.style.display = 'inline-block';
+        sendToPrehlidkaBtn.onclick = () => {
+          const cards = params.get('cards');
+          const anglesStr = percentages.map((p,i) => `${ANGLES[i].st}:${p}`).join(',');
+          const urlParams = new URLSearchParams();
+          urlParams.set('cards', cards);
+          urlParams.set('angles', anglesStr);
+          urlParams.set('context', params.get('context') || 'vizualni_analyzer');
+          let base = PREHLIDKA_URL;
+          if (window.location.hostname.includes('github')) base = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_fenomenu/';
+          const url = base + '?' + urlParams.toString();
+          navigator.clipboard?.writeText(url);
+          alert('Odkaz pro Přehlídku zkopírován.');
+        };
+      }
+    }
+
+    // ---------- SKULINA ----------
+    function renderSkulina() {
+      const skulina = JSON.parse(localStorage.getItem('mys-skulina') || '[]');
+      if (skulina.length === 0) {
+        skulinaList.innerHTML = '<p style="color:rgba(232,224,208,.5);">Zatím prázdná.</p>';
+        return;
+      }
+      skulinaList.innerHTML = skulina.slice().reverse().map(item => `
+        <div style="border-bottom:1px solid rgba(200,144,58,.1); padding:0.5rem 0; display:flex; gap:1rem; align-items:center;">
+          <img src="${item.image}" style="width:60px; height:60px; object-fit:cover; border:1px solid rgba(200,144,58,.2);">
+          <div>
+            <span style="color:#c8903a;">${item.angleName} (${item.angle}°)</span><br>
+            <span style="font-size:0.7rem;">${new Date(item.timestamp).toLocaleString()}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearSkulina() {
+      if (confirm('Smazat všechno ze Skuliny?')) {
+        localStorage.removeItem('mys-skulina');
+        renderSkulina();
+      }
+    }
+
+    function clearImage() {
+      uploadedImage = null;
+      previewContainer.style.display = 'none';
+      mysiRezim.style.display = 'none';
+      resultsPanel.style.display = 'none';
+      fileInput.value = '';
+    }
+
+    // ---------- EVENTY ----------
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#c8903a'; });
+    uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = 'rgba(200,144,58,.4)'; });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(200,144,58,.4)';
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImage(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleImage(file);
+    });
+
+    analyzeBtn.addEventListener('click', analyzeDrawing);
+    clearBtn.addEventListener('click', clearImage);
+    finishMysiRezimBtn.addEventListener('click', finishMysiRezim);
+    saveToSkulinaBtn.addEventListener('click', () => {
+      if (!analysisResult) return;
+      const skulina = JSON.parse(localStorage.getItem('mys-skulina') || '[]');
+      skulina.push({
+        type: 'drawing-analysis',
+        timestamp: Date.now(),
+        percentages: analysisResult.percentages,
+        dominant: ANGLES[analysisResult.dominant].name,
+        image: previewImage.src
+      });
+      localStorage.setItem('mys-skulina', JSON.stringify(skulina));
+      alert('Analýza uložena do Skuliny.');
+      renderSkulina();
+    });
+    clearSkulinaBtn.addEventListener('click', clearSkulina);
+
+    // Inicializace Skuliny
+    renderSkulina();
+
+    // Zpracování URL parametrů (pokud je nástroj otevřen z Ateliéru)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('cards')) {
+      // Můžeme zobrazit informaci o kartách
+      const cards = urlParams.get('cards');
+      const info = document.createElement('div');
+      info.className = 'status-msg';
+      info.textContent = `📇 Karty: ${cards}. Po analýze můžeš odeslat do Přehlídky.`;
+      document.querySelector('.app').insertBefore(info, uploadArea);
+    }
+  })();
+</script>
+</body>
+</html>
