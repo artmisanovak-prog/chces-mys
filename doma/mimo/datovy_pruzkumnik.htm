@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datový průzkumník · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 13px; line-height: 1.7; padding: 1.5rem; min-height: 100vh;
+    }
+    .app { max-width: 1600px; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; margin: 1.5rem 0 1rem; border-bottom: 1px solid rgba(200,144,58,.2); padding-bottom: 0.3rem; }
+    
+    .controls { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; align-items: center; }
+    .btn {
+      padding: 0.4rem 1.2rem; font-family: inherit; font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    select, input { padding: 0.3rem; background: #171410; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; font-family: inherit; font-size: 0.8rem; }
+    
+    .dataset-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .tab-btn { padding: 0.3rem 1rem; background: transparent; border: 1px solid rgba(200,144,58,.3); color: rgba(232,224,208,.7); cursor: pointer; }
+    .tab-btn.active { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    
+    .stats-bar { display: flex; gap: 2rem; margin: 1rem 0; padding: 0.8rem; background: #171410; border: 1px solid rgba(200,144,58,.2); }
+    
+    .table-container { max-height: 600px; overflow: auto; border: 1px solid rgba(200,144,58,.2); background: #171410; }
+    table { width: 100%; border-collapse: collapse; }
+    th { position: sticky; top: 0; background: #1a1612; padding: 0.5rem; text-align: left; border-bottom: 1px solid #c8903a; color: #c8903a; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.7rem; }
+    td { padding: 0.5rem; border-bottom: 1px solid rgba(200,144,58,.1); vertical-align: top; }
+    tr:hover { background: rgba(200,144,58,.05); }
+    
+    .thumbnail { width: 60px; height: 60px; object-fit: cover; border: 1px solid rgba(200,144,58,.2); cursor: pointer; }
+    .angle-badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 12px; font-size: 0.7rem; margin: 0.2rem; }
+    .edit-area { display: flex; gap: 0.5rem; align-items: center; }
+    .edit-area select, .edit-area input { width: auto; }
+    
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #171410; border: 1px solid #c8903a; padding: 1.5rem; max-width: 600px; width: 100%; max-height: 80vh; overflow: auto; }
+    .modal img { max-width: 100%; max-height: 400px; display: block; margin: 0 auto; }
+    
+    .pattern-item { margin-bottom: 1rem; padding: 0.5rem; border-left: 3px solid #c8903a; background: rgba(200,144,58,.05); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Datový <em>průzkumník</em></h1>
+  <p style="margin-bottom:1rem; color:rgba(232,224,208,.7);">Prohlížej, filtruj, edituj a hledej vzory ve svých datasetech</p>
+
+  <div class="dataset-tabs">
+    <button class="tab-btn active" data-dataset="visual">📊 Vizuální laboratoř (anotace)</button>
+    <button class="tab-btn" data-dataset="metrics">📈 Výtvarná laboratoř (metriky)</button>
+  </div>
+
+  <div class="controls">
+    <select id="filterAngle"><option value="">Všechny úhly</option></select>
+    <select id="filterFigure"><option value="">Všechny figury</option></select>
+    <input type="text" id="searchNotes" placeholder="Hledat v poznámkách...">
+    <button class="btn" id="applyFiltersBtn">🔍 Filtrovat</button>
+    <button class="btn" id="resetFiltersBtn">✖ Zrušit filtry</button>
+    <button class="btn btn-primary" id="findPatternsBtn">🔎 Najít opakující se vzory</button>
+    <button class="btn" id="exportCurrentViewBtn">📤 Exportovat aktuální</button>
+  </div>
+
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div class="table-container">
+    <table id="dataTable">
+      <thead id="tableHeader"></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modální okno pro detail obrázku -->
+  <div class="modal" id="imageModal">
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="Detail">
+      <button class="btn" onclick="document.getElementById('imageModal').classList.remove('active')" style="margin-top:1rem;">Zavřít</button>
+    </div>
+  </div>
+
+  <!-- Modální okno pro editaci -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h3>✏️ Upravit záznam</h3>
+      <input type="hidden" id="editIndex">
+      <input type="hidden" id="editDataset">
+      <label>Úhel:</label>
+      <select id="editAngle" style="width:100%; margin-bottom:0.5rem;"></select>
+      <label>Poznámka:</label>
+      <textarea id="editNote" rows="3" style="width:100%; margin-bottom:0.5rem;"></textarea>
+      <div id="editFigureSection" style="display:none;">
+        <label>Figura:</label>
+        <select id="editFigure" style="width:100%; margin-bottom:0.5rem;"></select>
+      </div>
+      <div class="btn-row" style="display:flex; gap:0.5rem;">
+        <button class="btn btn-primary" id="saveEditBtn">Uložit</button>
+        <button class="btn" onclick="document.getElementById('editModal').classList.remove('active')">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel pro vzory -->
+  <div id="patternsPanel" style="margin-top:2rem; display:none;"></div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075' }, { st:30, name:'Kulturní', color:'#6a9e72' },
+      { st:60, name:'Filozofický', color:'#d4a0b0' }, { st:90, name:'Naivní', color:'#5fa8a0' },
+      { st:120, name:'Jazykový', color:'#8e7248' }, { st:150, name:'Metaforický', color:'#5a8a5a' },
+      { st:180, name:'Asociační', color:'#a85a5a' }, { st:210, name:'Introspektivní', color:'#c8a832' },
+      { st:240, name:'Ironický', color:'#c8722a' }, { st:270, name:'Groteskní', color:'#a83060' },
+      { st:300, name:'Absurdní', color:'#6080a0' }, { st:330, name:'Surrealistický', color:'#8060b0' }
+    ];
+    const ANGLE_MAP = Object.fromEntries(ANGLES.map(a => [a.st, a]));
+
+    // Stav
+    let currentDataset = 'visual'; // 'visual' nebo 'metrics'
+    let visualData = [];           // dataset z Vizuální laboratoře
+    let metricsData = [];          // dataset z Výtvarné laboratoře
+    let filteredData = [];
+    let allFigures = new Set();
+
+    // DOM
+    const tableHeader = document.getElementById('tableHeader');
+    const tableBody = document.getElementById('tableBody');
+    const statsBar = document.getElementById('statsBar');
+    const filterAngle = document.getElementById('filterAngle');
+    const filterFigure = document.getElementById('filterFigure');
+    const searchNotes = document.getElementById('searchNotes');
+    const patternsPanel = document.getElementById('patternsPanel');
+
+    // ---------- NAČÍTÁNÍ DAT ----------
+    function loadDatasets() {
+      // Vizuální laboratoř
+      const visual = localStorage.getItem('mys-visual-dataset');
+      visualData = visual ? JSON.parse(visual) : [];
+      
+      // Výtvarná laboratoř
+      const metrics = localStorage.getItem('mys-dataset');
+      metricsData = metrics ? JSON.parse(metrics) : [];
+      
+      // Extrahovat všechny figury z vizuálního datasetu
+      visualData.forEach(record => {
+        if (record.figure) allFigures.add(record.figure.name);
+      });
+      
+      populateFilters();
+      applyFilters();
+    }
+
+    function populateFilters() {
+      // Úhly
+      filterAngle.innerHTML = '<option value="">Všechny úhly</option>';
+      ANGLES.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.st;
+        opt.textContent = `${a.st}° ${a.name}`;
+        filterAngle.appendChild(opt);
+      });
+      
+      // Figury (jen pro vizuální dataset)
+      filterFigure.innerHTML = '<option value="">Všechny figury</option>';
+      [...allFigures].sort().forEach(fig => {
+        const opt = document.createElement('option');
+        opt.value = fig;
+        opt.textContent = fig;
+        filterFigure.appendChild(opt);
+      });
+    }
+
+    // ---------- FILTROVÁNÍ ----------
+    function applyFilters() {
+      const data = currentDataset === 'visual' ? visualData : metricsData;
+      const angleFilter = filterAngle.value;
+      const figureFilter = filterFigure.value;
+      const notesFilter = searchNotes.value.toLowerCase();
+      
+      filteredData = data.filter(record => {
+        // Filtrování podle úhlu
+        if (angleFilter) {
+          const recordAngle = record.angle?.toString();
+          if (recordAngle !== angleFilter) return false;
+        }
+        
+        // Filtrování podle figury (jen pro vizuální)
+        if (currentDataset === 'visual' && figureFilter) {
+          if (!record.figure || record.figure.name !== figureFilter) return false;
+        }
+        
+        // Filtrování v poznámkách
+        if (notesFilter) {
+          const note = (record.note || record.notes || '').toLowerCase();
+          if (!note.includes(notesFilter)) return false;
+        }
+        
+        return true;
+      });
+      
+      renderTable();
+      updateStats();
+    }
+
+    // ---------- VYKRESLENÍ TABULKY ----------
+    function renderTable() {
+      if (currentDataset === 'visual') {
+        renderVisualTable();
+      } else {
+        renderMetricsTable();
+      }
+    }
+
+    function renderVisualTable() {
+      tableHeader.innerHTML = `
+        <tr>
+          <th>Náhled</th><th>Čas</th><th>Úhel</th><th>Figura</th><th>Poznámka</th><th>Akce</th>
+        </tr>
+      `;
+      
+      tableBody.innerHTML = '';
+      filteredData.forEach((record, idx) => {
+        const row = document.createElement('tr');
+        const angle = record.angle ? ANGLE_MAP[record.angle] : null;
+        
+        // Náhled (pokud je uložený thumbnail)
+        let thumbHtml = '—';
+        if (record.thumbnail) {
+          thumbHtml = `<img src="${record.thumbnail}" class="thumbnail" onclick="showImage('${record.thumbnail}')">`;
+        }
+        
+        row.innerHTML = `
+          <td>${thumbHtml}</td>
+          <td>${new Date(record.timestamp).toLocaleString()}</td>
+          <td>${angle ? `<span class="angle-badge" style="background:${angle.color}20; border:1px solid ${angle.color};">${angle.st}° ${angle.name}</span>` : '—'}</td>
+          <td>${record.figure?.name || '—'}</td>
+          <td>${record.note || '—'}</td>
+          <td>
+            <button class="btn" onclick="editRecord(${idx})" style="padding:0.1rem 0.5rem;">✏️</button>
+            <button class="btn" onclick="deleteRecord(${idx})" style="padding:0.1rem 0.5rem;">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderMetricsTable() {
+      tableHeader.innerHTML = `
+        <tr>
+          <th>Náhled</th><th>Čas</th><th>Úhel</th><th>Hustota hran</th><th>Symetrie</th><th>Barvy</th><th>Poznámka</th><th>Akce</th>
+        </tr>
+      `;
+      
+      tableBody.innerHTML = '';
+      filteredData.forEach((record, idx) => {
+        const row = document.createElement('tr');
+        const angle = record.angle ? ANGLE_MAP[record.angle] : null;
+        const m = record.metrics || {};
+        
+        let thumbHtml = '—';
+        if (record.thumbnail) {
+          thumbHtml = `<img src="${record.thumbnail}" class="thumbnail" onclick="showImage('${record.thumbnail}')">`;
+        }
+        
+        row.innerHTML = `
+          <td>${thumbHtml}</td>
+          <td>${new Date(record.timestamp).toLocaleString()}</td>
+          <td>${angle ? `<span class="angle-badge" style="background:${angle.color}20; border:1px solid ${angle.color};">${angle.st}° ${angle.name}</span>` : '—'}</td>
+          <td>${m.edgeDensity ? (m.edgeDensity*100).toFixed(1)+'%' : '—'}</td>
+          <td>${m.symmetry || '—'}</td>
+          <td>${m.uniqueColors || '—'}</td>
+          <td>${record.notes || '—'}</td>
+          <td>
+            <button class="btn" onclick="editRecord(${idx})" style="padding:0.1rem 0.5rem;">✏️</button>
+            <button class="btn" onclick="deleteRecord(${idx})" style="padding:0.1rem 0.5rem;">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updateStats() {
+      const total = filteredData.length;
+      const byAngle = {};
+      filteredData.forEach(r => { if (r.angle) byAngle[r.angle] = (byAngle[r.angle]||0)+1; });
+      const topAngle = Object.entries(byAngle).sort((a,b)=>b[1]-a[1])[0];
+      const topAngleName = topAngle ? ANGLE_MAP[topAngle[0]]?.name : '—';
+      
+      statsBar.innerHTML = `
+        <span>📊 Zobrazeno: ${total} záznamů</span>
+        <span>🏆 Nejčastější úhel: ${topAngleName} (${topAngle ? topAngle[1] : 0}×)</span>
+        ${currentDataset === 'visual' ? `<span>🖌️ Figur: ${allFigures.size}</span>` : ''}
+      `;
+    }
+
+    // ---------- AKCE ----------
+    window.showImage = (src) => {
+      document.getElementById('modalImage').src = src;
+      document.getElementById('imageModal').classList.add('active');
+    };
+
+    window.editRecord = (idx) => {
+      const record = filteredData[idx];
+      const originalIndex = currentDataset === 'visual' ? 
+        visualData.findIndex(r => r.timestamp === record.timestamp && r.figure?.name === record.figure?.name) :
+        metricsData.findIndex(r => r.timestamp === record.timestamp);
+      
+      document.getElementById('editIndex').value = originalIndex;
+      document.getElementById('editDataset').value = currentDataset;
+      
+      // Naplnit select úhlů
+      const angleSelect = document.getElementById('editAngle');
+      angleSelect.innerHTML = '<option value="">— bez úhlu —</option>';
+      ANGLES.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.st;
+        opt.textContent = `${a.st}° ${a.name}`;
+        if (record.angle === a.st) opt.selected = true;
+        angleSelect.appendChild(opt);
+      });
+      
+      document.getElementById('editNote').value = record.note || record.notes || '';
+      
+      // Figury jen pro vizuální
+      const figureSection = document.getElementById('editFigureSection');
+      if (currentDataset === 'visual') {
+        figureSection.style.display = 'block';
+        const figureSelect = document.getElementById('editFigure');
+        figureSelect.innerHTML = '<option value="">— žádná —</option>';
+        [...allFigures].sort().forEach(fig => {
+          const opt = document.createElement('option');
+          opt.value = fig;
+          opt.textContent = fig;
+          if (record.figure?.name === fig) opt.selected = true;
+          figureSelect.appendChild(opt);
+        });
+      } else {
+        figureSection.style.display = 'none';
+      }
+      
+      document.getElementById('editModal').classList.add('active');
+    };
+
+    document.getElementById('saveEditBtn').addEventListener('click', () => {
+      const index = parseInt(document.getElementById('editIndex').value);
+      const dataset = document.getElementById('editDataset').value;
+      const data = dataset === 'visual' ? visualData : metricsData;
+      
+      if (index >= 0 && index < data.length) {
+        data[index].angle = parseInt(document.getElementById('editAngle').value) || null;
+        if (dataset === 'visual') {
+          data[index].note = document.getElementById('editNote').value;
+          const figureName = document.getElementById('editFigure').value;
+          if (figureName && data[index].figure) {
+            data[index].figure.name = figureName;
+          }
+        } else {
+          data[index].notes = document.getElementById('editNote').value;
+        }
+        
+        // Uložit zpět do localStorage
+        if (dataset === 'visual') {
+          localStorage.setItem('mys-visual-dataset', JSON.stringify(visualData));
+        } else {
+          localStorage.setItem('mys-dataset', JSON.stringify(metricsData));
+        }
+        
+        document.getElementById('editModal').classList.remove('active');
+        applyFilters();
+      }
+    });
+
+    window.deleteRecord = (idx) => {
+      const record = filteredData[idx];
+      if (!confirm('Opravdu smazat tento záznam?')) return;
+      
+      if (currentDataset === 'visual') {
+        visualData = visualData.filter(r => r.timestamp !== record.timestamp || r.figure?.name !== record.figure?.name);
+        localStorage.setItem('mys-visual-dataset', JSON.stringify(visualData));
+      } else {
+        metricsData = metricsData.filter(r => r.timestamp !== record.timestamp);
+        localStorage.setItem('mys-dataset', JSON.stringify(metricsData));
+      }
+      
+      applyFilters();
+    };
+
+    // ---------- HLEDÁNÍ VZORŮ ----------
+    document.getElementById('findPatternsBtn').addEventListener('click', () => {
+      patternsPanel.style.display = 'block';
+      let html = '<h2>🔁 Opakující se vzory</h2>';
+      
+      if (currentDataset === 'visual') {
+        // Figury + úhly
+        const combos = {};
+        filteredData.forEach(r => {
+          if (!r.angle || !r.figure) return;
+          const key = `${r.figure.name} + ${ANGLE_MAP[r.angle]?.name}`;
+          combos[key] = (combos[key] || 0) + 1;
+        });
+        const sorted = Object.entries(combos).sort((a,b) => b[1] - a[1]).slice(0, 10);
+        
+        html += '<h3>Nejčastější kombinace figura + úhel</h3>';
+        sorted.forEach(([combo, count]) => {
+          html += `<div class="pattern-item"><strong>${combo}</strong>: ${count}×</div>`;
+        });
+        
+        // Opakující se poznámky?
+        const notes = {};
+        filteredData.forEach(r => { if (r.note) notes[r.note] = (notes[r.note]||0)+1; });
+        const repeatedNotes = Object.entries(notes).filter(([_,c]) => c > 1).sort((a,b)=>b[1]-a[1]);
+        if (repeatedNotes.length) {
+          html += '<h3>Opakující se poznámky</h3>';
+          repeatedNotes.forEach(([note, count]) => {
+            html += `<div class="pattern-item">"${note}": ${count}×</div>`;
+          });
+        }
+      } else {
+        // Metriky – najít shluky podobných hodnot?
+        html += '<p>Pro metriky zatím není detekce vzorů implementována. Můžeš exportovat data a analyzovat je externě.</p>';
+      }
+      
+      patternsPanel.innerHTML = html;
+    });
+
+    // ---------- PŘEPÍNÁNÍ DATASETŮ ----------
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentDataset = btn.dataset.dataset;
+        filterFigure.style.display = currentDataset === 'visual' ? 'inline-block' : 'none';
+        applyFilters();
+      });
+    });
+
+    // ---------- FILTROVÁNÍ ----------
+    document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+      filterAngle.value = '';
+      filterFigure.value = '';
+      searchNotes.value = '';
+      applyFilters();
+    });
+
+    document.getElementById('exportCurrentViewBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(filteredData, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `dataset-export-${Date.now()}.json`;
+      a.click();
+    });
+
+    // Inicializace
+    loadDatasets();
+  })();
+</script>
+</body>
+</html>
