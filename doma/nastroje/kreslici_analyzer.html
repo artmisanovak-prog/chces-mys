@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Kreslící Nástroj · Chceš myš?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #0f0d0a;
+      color: #e8e0d0;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow: hidden;
+      height: 100vh;
+      position: fixed;
+      width: 100%;
+    }
+    
+    .header {
+      background: #171410;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      z-index: 100;
+    }
+    
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    
+    h1 em { color: #c8903a; }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+    
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      font-family: inherit;
+      font-size: 1.2rem;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .main {
+      display: flex;
+      height: calc(100vh - 60px);
+      position: relative;
+    }
+    
+    .panel {
+      background: #171410;
+      border-right: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 200px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 50;
+      max-height: calc(100vh - 60px);
+    }
+    
+    .panel.hidden {
+      transform: translateX(-100%);
+    }
+    
+    .panel h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #c8903a;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    
+    .canvas-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+    
+    .canvas-wrapper.panel-open {
+      margin-left: 200px;
+    }
+    
+    .toggle-panel-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 44px;
+      background: #171410;
+      border: none;
+      color: #c8903a;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 40;
+      display: none;
+    }
+    
+    .toggle-panel-btn.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    canvas {
+      flex: 1;
+      background: white;
+      border: none;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    
+    .timeline {
+      height: 100px;
+      background: #0f0d0a;
+      border-top: 1px solid rgba(200, 144, 58, 0.2);
+      display: flex;
+      gap: 4px;
+      padding: 0.5rem;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    
+    .timeline-item {
+      width: 60px;
+      height: 80px;
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .timeline-item canvas {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+    
+    .timeline-item.active {
+      border-color: #c8903a;
+      border-width: 2px;
+    }
+    
+    .timeline-angle {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      font-size: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f0d0a;
+      font-weight: bold;
+    }
+    
+    .control-group {
+      border-bottom: 1px solid rgba(200, 144, 58, 0.1);
+      padding-bottom: 1rem;
+    }
+    
+    .control-group:last-child {
+      border-bottom: none;
+    }
+    
+    label {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(232, 224, 208, 0.7);
+      margin-bottom: 0.3rem;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+    }
+    
+    input[type="range"] + .value {
+      font-size: 0.75rem;
+      color: #c8903a;
+      text-align: right;
+    }
+    
+    .media-grid, .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.3rem;
+    }
+    
+    .media-btn, .shape-btn {
+      padding: 0.5rem 0.3rem;
+      font-size: 0.6rem;
+      text-align: center;
+      line-height: 1.2;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+    }
+    
+    .media-btn:active, .shape-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .media-btn.active, .shape-btn.active {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    button.action-btn {
+      padding: 0.6rem 0.4rem;
+      font-size: 0.65rem;
+      text-align: center;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+    }
+    
+    button.action-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      padding: 2rem;
+      border-radius: 4px;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: #c8903a;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .step {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.1);
+    }
+    
+    .step:last-child {
+      border-bottom: none;
+    }
+    
+    .step h3 {
+      font-size: 1.1rem;
+      color: #c8903a;
+      margin-bottom: 0.5rem;
+    }
+    
+    .step p {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: rgba(232, 224, 208, 0.8);
+    }
+    
+    .shortcut {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      margin-bottom: 0.4rem;
+      background: rgba(23, 20, 16, 0.5);
+      border-radius: 2px;
+    }
+    
+    .shortcut-key {
+      background: #c8903a;
+      color: #0f0d0a;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2px;
+      font-weight: bold;
+      font-size: 0.75rem;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .shortcut-desc {
+      flex: 1;
+      margin-left: 1rem;
+      font-size: 0.8rem;
+    }
+    
+    .info {
+      font-size: 0.7rem;
+      color: rgba(232, 224, 208, 0.5);
+      line-height: 1.4;
+      padding: 0.5rem;
+      background: rgba(23, 20, 16, 0.5);
+      border-radius: 2px;
+      margin-top: auto;
+    }
+    
+    /* MOBILE OPTIMIZATIONS */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+      
+      .panel {
+        width: 100%;
+        max-width: 100%;
+        z-index: 150;
+        border-right: none;
+        border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      }
+      
+      .toggle-panel-btn.show {
+        display: flex;
+      }
+      
+      .canvas-wrapper {
+        width: 100%;
+      }
+      
+      .media-grid, .shape-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .modal-content {
+        padding: 1.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .step {
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TUTORIAL MODAL (první načení) -->
+<div class="modal show" id="tutorialModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeTutorial()">✕</button>
+    <h2>🎨 Jak kreslíš?</h2>
+    
+    <div class="step">
+      <h3>1️⃣ Vyberi médium</h3>
+      <p>Vlevo nahoře vyber tužku, pero, štětec nebo cokoliv jiného. Každé médium kreslí jinak!</p>
+    </div>
+    
+    <div class="step">
+      <h3>2️⃣ Nastavíš tloušťku</h3>
+      <p>Posuwani jezdec. Malá = tenké čáry. Velká = silné čáry. Zkus od 2px.</p>
+    </div>
+    
+    <div class="step">
+      <h3>3️⃣ Kreslíš prstem (nebo myší)</h3>
+      <p>Prostě drž prst na plátně a tahej! Čáry se kreslí automaticky.</p>
+    </div>
+    
+    <div class="step">
+      <h3>4️⃣ Geometrické tvary (SHIFT + táhnutí)</h3>
+      <p>Vyberi tvar (čtverec, kruh...). Pak drž <strong>SHIFT</strong> a tahej na plátně. Tvar se nakreslí.</p>
+    </div>
+    
+    <div class="step">
+      <h3>5️⃣ Opravy (Undo/Redo)</h3>
+      <p>Klikni na ↶ (Undo) a vrátíš poslední tah. Nebo na ↷ (Redo).</p>
+    </div>
+    
+    <div class="step">
+      <h3>6️⃣ Časová osa (dole)</h3>
+      <p>Každou chvíli když skončíš s čárou se vytvoří snapshot. Klikni na něj a vrátíš se k té verzi.</p>
+    </div>
+    
+    <div class="step">
+      <h3>7️⃣ Analýza (později)</h3>
+      <p>Tlačítko 🔍 pošle kresbu do Analyzéru. Tam se měří jaký úhel je v tvé kresbě.</p>
+    </div>
+    
+    <div style="margin-top: 2rem; text-align: center;">
+      <button class="action-btn" style="width: 100%; padding: 0.8rem; font-size: 0.9rem;" onclick="closeTutorial()">
+        Rozumím ✓
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL (klávesové zkratky) -->
+<div class="modal" id="helpModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeHelp()">✕</button>
+    <h2>⌨️ Klávesové zkratky</h2>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">Z</span>
+      <span class="shortcut-desc">Undo (vrátit zpátky)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">Y</span>
+      <span class="shortcut-desc">Redo (vrátit dopředu)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">E</span>
+      <span class="shortcut-desc">Eraser (guma)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">C</span>
+      <span class="shortcut-desc">Clear all (smazat vše)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">P</span>
+      <span class="shortcut-desc">Pencil (tužka)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">B</span>
+      <span class="shortcut-desc">Brush (štětec)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">S</span>
+      <span class="shortcut-desc">Shapes (tvary)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">T</span>
+      <span class="shortcut-desc">Toggle panel (skrýt/ukázat menu)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">?</span>
+      <span class="shortcut-desc">Help (tato obrazovka)</span>
+    </div>
+    
+    <div class="shortcut">
+      <span class="shortcut-key">SHIFT + táhnutí</span>
+      <span class="shortcut-desc">Kreslení tvarů</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Kreslící <em>nástroj</em></h1>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openHelp()" title="Pomooc (zkratky)">?</button>
+    <button class="icon-btn" onclick="openTutorial()" title="Návod">📖</button>
+    <button class="icon-btn" onclick="clearAll()" title="Smazat vše">🗑️</button>
+    <button class="icon-btn" onclick="analyzeAndOpen()" title="Analyzovat">🔍</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <button class="toggle-panel-btn show" id="togglePanelBtn" onclick="togglePanel()">☰</button>
+  
+  <!-- PANEL -->
+  <div class="panel hidden" id="panel">
+    
+    <!-- MÉDIUM -->
+    <div class="control-group">
+      <h2>✏️ Médium</h2>
+      <div class="media-grid">
+        <button class="media-btn active" onclick="selectMedia('pencil')">Tužka</button>
+        <button class="media-btn" onclick="selectMedia('pen')">Pero</button>
+        <button class="media-btn" onclick="selectMedia('brush')">Štětec</button>
+        <button class="media-btn" onclick="selectMedia('spray')">Sprej</button>
+        <button class="media-btn" onclick="selectMedia('ink')">Tus</button>
+        <button class="media-btn" onclick="selectMedia('linocut')">Linoryt</button>
+        <button class="media-btn" onclick="selectMedia('eraser')">Guma</button>
+        <button class="media-btn" onclick="selectMedia('marker')">Fixsym</button>
+        <button class="media-btn" onclick="selectMedia('chalk')">Křída</button>
+        <button class="media-btn" onclick="selectMedia('charcoal')">Uhlí</button>
+        <button class="media-btn" onclick="selectMedia('dry')">Suchá</button>
+        <button class="media-btn" onclick="selectMedia('wet')">Mokrá</button>
+      </div>
+    </div>
+    
+    <!-- TLOUŠŤKA -->
+    <div class="control-group">
+      <label>📏 Tloušťka</label>
+      <input type="range" id="sizeSlider" min="0.5" max="50" value="2" step="0.5" oninput="updateSize()">
+      <div class="value"><span id="sizeValue">2.0</span> px</div>
+    </div>
+    
+    <!-- TVARY -->
+    <div class="control-group">
+      <h2>◼️ Tvary</h2>
+      <p style="font-size: 0.7rem; color: rgba(232,224,208,0.5); margin-bottom: 0.5rem;">SHIFT + táhnutí</p>
+      <div class="shape-grid">
+        <button class="shape-btn" onclick="selectShape('line')">Čára</button>
+        <button class="shape-btn" onclick="selectShape('circle')">Kruh</button>
+        <button class="shape-btn" onclick="selectShape('rect')">Čtverec</button>
+        <button class="shape-btn" onclick="selectShape('triangle')">Trojúhel</button>
+        <button class="shape-btn" onclick="selectShape('ellipse')">Elipsa</button>
+        <button class="shape-btn" onclick="selectShape('polygon')">Polygon</button>
+      </div>
+    </div>
+    
+    <!-- AKCE -->
+    <div class="control-group">
+      <button class="action-btn" onclick="undo()" style="width: 48%;">↶ Undo</button>
+      <button class="action-btn" onclick="redo()" style="width: 48%; margin-left: 4%;">↷ Redo</button>
+    </div>
+  </div>
+  
+  <!-- CANVAS -->
+  <div class="canvas-wrapper" id="canvasWrapper">
+    <canvas id="canvas"></canvas>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const timeline = document.getElementById('timeline');
+const panel = document.getElementById('panel');
+const canvasWrapper = document.getElementById('canvasWrapper');
+
+function resizeCanvas() {
+  const wrapper = canvasWrapper;
+  canvas.width = wrapper.clientWidth;
+  canvas.height = wrapper.clientHeight - 100;
+  redraw();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+let currentMedia = 'pencil';
+let currentSize = 2;
+let currentShape = null;
+let isDrawing = false;
+let history = [];
+let historyStep = 0;
+let timelineSnapshots = [];
+
+const MEDIA = {
+  pencil: { lineWidth: 1, alpha: 0.8 },
+  pen: { lineWidth: 1.5, alpha: 1 },
+  brush: { lineWidth: 3, alpha: 0.6 },
+  spray: { lineWidth: 2, alpha: 0.4, dotted: true },
+  ink: { lineWidth: 2, alpha: 1 },
+  linocut: { lineWidth: 2, alpha: 1, invert: true },
+  marker: { lineWidth: 4, alpha: 0.7 },
+  chalk: { lineWidth: 2, alpha: 0.5, grainy: true },
+  charcoal: { lineWidth: 3, alpha: 0.6, grainy: true },
+  dry: { lineWidth: 1.5, alpha: 0.7, grainy: true },
+  wet: { lineWidth: 2.5, alpha: 0.5 },
+  eraser: { mode: 'destination-out' }
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// KRESLENÍ
+// ═══════════════════════════════════════════════════════════════════════
+
+function getContextSettings() {
+  const media = MEDIA[currentMedia] || {};
+  ctx.globalAlpha = media.alpha || 1;
+  ctx.lineWidth = currentSize * (media.lineWidth || 1);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.globalCompositeOperation = media.mode || 'source-over';
+  ctx.strokeStyle = '#000';
+}
+
+function startDrawing(e) {
+  saveHistory();
+  isDrawing = true;
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left || e.touches?.[0]?.clientX - rect.left;
+  const y = e.clientY - rect.top || e.touches?.[0]?.clientY - rect.top;
+  
+  if (currentShape && e.shiftKey) {
+    window.shapeStart = { x, y };
+  } else {
+    getContextSettings();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left || e.touches?.[0]?.clientX - rect.left;
+  const y = e.clientY - rect.top || e.touches?.[0]?.clientY - rect.top;
+  
+  if (window.shapeStart) {
+    redraw();
+    drawShape(window.shapeStart.x, window.shapeStart.y, x, y);
+  } else {
+    getContextSettings();
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+}
+
+function stopDrawing() {
+  if (!isDrawing) return;
+  isDrawing = false;
+  delete window.shapeStart;
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  addTimelineSnapshot();
+}
+
+function drawShape(x1, y1, x2, y2) {
+  getContextSettings();
+  ctx.strokeStyle = '#000';
+  
+  const w = x2 - x1;
+  const h = y2 - y1;
+  
+  switch (currentShape) {
+    case 'line':
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      break;
+    case 'rect':
+      ctx.strokeRect(x1, y1, w, h);
+      break;
+    case 'circle':
+      const r = Math.sqrt(w*w + h*h) / 2;
+      ctx.beginPath();
+      ctx.arc(x1, y1, r, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    case 'ellipse':
+      ctx.beginPath();
+      ctx.ellipse(x1 + w/2, y1 + h/2, Math.abs(w)/2, Math.abs(h)/2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    case 'triangle':
+      ctx.beginPath();
+      ctx.moveTo(x1 + w/2, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x1, y2);
+      ctx.closePath();
+      ctx.stroke();
+      break;
+    case 'polygon':
+      const sides = 6;
+      const angle = (Math.PI * 2) / sides;
+      const r2 = Math.sqrt(w*w + h*h) / 2;
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const px = x1 + r2 * Math.cos(i * angle);
+        const py = y1 + r2 * Math.sin(i * angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      break;
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════════════
+
+function selectMedia(media) {
+  currentMedia = media;
+  document.querySelectorAll('.media-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[onclick="selectMedia('${media}')"]`).classList.add('active');
+  closePanel();
+}
+
+function updateSize() {
+  currentSize = parseFloat(document.getElementById('sizeSlider').value);
+  document.getElementById('sizeValue').textContent = currentSize.toFixed(1);
+}
+
+function selectShape(shape) {
+  currentShape = currentShape === shape ? null : shape;
+  document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+  if (currentShape) {
+    document.querySelector(`[onclick="selectShape('${shape}')"]`).classList.add('active');
+  }
+}
+
+function togglePanel() {
+  panel.classList.toggle('hidden');
+  canvasWrapper.classList.toggle('panel-open');
+}
+
+function closePanel() {
+  if (window.innerWidth <= 768) {
+    panel.classList.add('hidden');
+    canvasWrapper.classList.remove('panel-open');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════════════════
+
+function saveHistory() {
+  history = history.slice(0, historyStep + 1);
+  history.push(canvas.toDataURL());
+  historyStep++;
+}
+
+function undo() {
+  if (historyStep > 0) {
+    historyStep--;
+    loadHistoryStep();
+  }
+}
+
+function redo() {
+  if (historyStep < history.length - 1) {
+    historyStep++;
+    loadHistoryStep();
+  }
+}
+
+function loadHistoryStep() {
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = history[historyStep];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════════════════════════════
+
+function addTimelineSnapshot() {
+  const snapshot = {
+    image: canvas.toDataURL(),
+    timestamp: Date.now(),
+    media: currentMedia,
+    angle: 'Analytický'
+  };
+  timelineSnapshots.push(snapshot);
+  renderTimeline();
+}
+
+function renderTimeline() {
+  timeline.innerHTML = '';
+  timelineSnapshots.forEach((snap, idx) => {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 60;
+    thumbCanvas.height = 80;
+    const thumbCtx = thumbCanvas.getContext('2d');
+    
+    const img = new Image();
+    img.onload = () => {
+      thumbCtx.fillStyle = 'white';
+      thumbCtx.fillRect(0, 0, 60, 80);
+      const scale = Math.min(60 / img.width, 80 / img.height);
+      thumbCtx.drawImage(img, 0, 0, img.width * scale, img.height * scale);
+    };
+    img.src = snap.image;
+    
+    item.appendChild(thumbCanvas);
+    
+    const angleDiv = document.createElement('div');
+    angleDiv.className = 'timeline-angle';
+    angleDiv.textContent = snap.angle.charAt(0);
+    angleDiv.style.backgroundColor = getAngleColor(snap.angle);
+    item.appendChild(angleDiv);
+    
+    item.onclick = () => {
+      const restoreImg = new Image();
+      restoreImg.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(restoreImg, 0, 0);
+      };
+      restoreImg.src = snap.image;
+    };
+    
+    timeline.appendChild(item);
+  });
+}
+
+function getAngleColor(angle) {
+  const colors = {
+    'Analytický': '#4a6075',
+    'Filozofický': '#d4a0b0',
+    'Metaforický': '#5a8a5a',
+    'Surrealistický': '#8060b0'
+  };
+  return colors[angle] || '#c8903a';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════════════
+
+function clearAll() {
+  if (confirm('Smazat celou kresbu?')) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    history = [canvas.toDataURL()];
+    historyStep = 0;
+    timelineSnapshots = [];
+    timeline.innerHTML = '';
+    saveHistory();
+  }
+}
+
+function redraw() {
+  if (history.length > 0) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = history[historyStep] || canvas.toDataURL();
+  }
+}
+
+function analyzeAndOpen() {
+  const imageData = canvas.toDataURL();
+  console.log('Kresba pro analýzu:', imageData);
+  alert('Analyzér se bude otevírat zde v `doma/nastroje/vizualni_analyzer.html`');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════════
+
+function openTutorial() {
+  document.getElementById('tutorialModal').classList.add('show');
+}
+
+function closeTutorial() {
+  document.getElementById('tutorialModal').classList.remove('show');
+  localStorage.setItem('tutorialShown', 'true');
+}
+
+function openHelp() {
+  document.getElementById('helpModal').classList.add('show');
+}
+
+function closeHelp() {
+  document.getElementById('helpModal').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  
+  switch (e.key.toUpperCase()) {
+    case 'Z':
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        undo();
+      }
+      break;
+    case 'Y':
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        redo();
+      }
+      break;
+    case 'E':
+      selectMedia('eraser');
+      break;
+    case 'C':
+      if (e.ctrlKey || e.metaKey) return;
+      clearAll();
+      break;
+    case 'P':
+      selectMedia('pencil');
+      break;
+    case 'B':
+      selectMedia('brush');
+      break;
+    case 'S':
+      selectShape(currentShape ? null : 'rect');
+      break;
+    case 'T':
+      togglePanel();
+      break;
+    case '?':
+      openHelp();
+      break;
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// TOUCH & MOUSE EVENTS
+// ═══════════════════════════════════════════════════════════════════════
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
+
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+
+// Ukážeme tutorial jen při prvním otevření
+if (!localStorage.getItem('tutorialShown')) {
+  openTutorial();
+} else {
+  document.getElementById('tutorialModal').classList.remove('show');
+}
+
+saveHistory();
+</script>
+
+</body>
+</html>
