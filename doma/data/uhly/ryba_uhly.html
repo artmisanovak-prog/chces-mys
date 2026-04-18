@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryba — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #050a12;
+            --bg-elevated: #0a141e;
+            --text: #e6f0fa;
+            --text-dim: #3a5a70;
+            --text-mid: #6a8a9a;
+            --accent: #6ab0e0;       /* světle nebesky modrá */
+            --accent-dim: #1a4050;
+            --border: #0f1a24;
+            --highlight: rgba(106,176,224,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní rybky / bubliny */
+        .fish-orb { 
+            position: absolute; 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%;
+            border: 1px solid var(--accent-dim);
+            opacity: 0.3;
+            pointer-events: none; 
+        }
+        .orb-1 { top: 20%; right: 15%; animation: float1 12s ease-in-out infinite; }
+        .orb-2 { bottom: 25%; left: 10%; width: 28px; height: 28px; animation: float2 15s ease-in-out infinite; }
+        .orb-3 { top: 60%; right: 20%; width: 14px; height: 14px; animation: float3 10s infinite; }
+        
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-25px, 15px) scale(1.2); }
+            66% { transform: translate(10px, -20px) scale(0.9); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -25px) scale(1.1); }
+            75% { transform: translate(-15px, 10px) scale(0.8); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.2; }
+            50% { transform: translate(-10px, -30px); opacity: 0.5; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        /* Pohádka – scrollovací okno */
+        .fairy-scroll-wrap {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+        .fairy-scroll-title {
+            text-align: center;
+            font-family: 'Spectral', serif;
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--text-mid);
+            margin-bottom: 0.5rem;
+        }
+        .fairy-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            font-family: 'Spectral', serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #a0c0d0;
+            border-left: 1px solid var(--accent-dim);
+            scroll-behavior: smooth;
+        }
+        .fairy-scroll p { margin-bottom: 1rem; }
+        .fairy-scroll strong { color: var(--accent); font-weight: 500; }
+        .fairy-scroll em { color: #6a9ab0; font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #0a151c, #000);
+            border: 1px solid #1a3038;
+            box-shadow: 0 0 40px rgba(106,176,224,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(106,176,224,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #8ec8e0, #4a90b0);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #1a4050; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Ryba</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="fish-orb orb-1"></div>
+        <div class="fish-orb orb-2"></div>
+        <div class="fish-orb orb-3"></div>
+        <img src="../ilustrace/ryba.jpg" alt="Ilustrace ryby" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtu.be/s0BENxFsOiY?is=W5Y9WuqmikgNbnXD" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <!-- Pohádka – scrollovací okno -->
+    <div class="fairy-scroll-wrap">
+        <div class="fairy-scroll-title">🐟 Pohádka o Rybě</div>
+        <div class="fairy-scroll" id="fairyScroll">
+            <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+            <p><strong>O RYBĚ</strong><br><strong>která rapovala</strong></p>
+            <p>—</p>
+            <p id="ryba-absurdni">Říká se, že ryby mlčí. Že nemají hlas. Že jen plavou, koukají, a občas se nechají chytit. Ale to je omyl. Kec. Suchozemská lež.</p>
+            <p>—</p>
+            <p id="ryba-jazykovy">Ryby totiž nemlčí. <strong>Ryby rapujou.</strong></p>
+            <p>—</p>
+            <p id="ryba-ironicky">Ne tak, jak si to představuješ – žádné mikrofony, žádné beaty z repro beden. Rybí rap je jinej. Je to rytmus proudů. Je to nížka, výška vln a vlnek. Je to tempo vodních kruhů. Je to mezera mezi bublinama.</p>
+            <p>—</p>
+            <p id="ryba-filozoficky">Pod vodou se zvuk jinak šíří. Hlubší. Širší. Pomalejší. A tak ryby neřvou. <strong>Ryby vibrujou.</strong></p>
+            <p>—</p>
+            <p id="ryba-surrealisticky">Každej druh rybí má svůj styl hudební. Kosatky zpívají chansony – dlouhé, nostalgické, ovlivňují směry proudů. Žraloci zpívaj gospel – hluboký a s ozvěnou. Míchají barevné odstíny hladin s tóny hlubin. Velryba si troufne na operu a medúzy jí dělaj vokály nebo se daj na triangly, rolničky, zvonce. Delfin je folklor. Chobotnice strihne jazzove imprivizace. Ryba co se nafukuje zvládá dechovky, ale nemá je ráda. Piraňi balady. A kapr zkouší hrdelní zpěvy. Mušle a lastury pějí lovestory. Ska umí létací ryby. Tučňák se vidí v klasice. Na pop je odbornice bělice. A úhoř nemá hudební ambice.</p>
+            <p>—</p>
+            <p id="ryba-analyticky">Je toho více. Ale tohle všechno není hudba pro uši, Tohle ovlivňuje různé vodní vlastnosti.</p>
+            <p>—</p>
+            <p id="ryba-naivni">A ryba? <strong>Ryba má rap.</strong> Ne kvůli slávě. Kvůli přesnosti.</p>
+            <p>—</p>
+            <p id="ryba-groteskni">Flow je king a king je ryba. Beat jí dělá sea i jezera. Riff kape, flow teče. Přesná slova proudí jak voda. Její punchline je fontána.</p>
+            <p>—</p>
+            <p id="ryba-metaforicky">Každý verš má váhu. A tohle ryby umí. Líp než ptáci.</p>
+            <p>—</p>
+            <p id="ryba-introspektivni">Ptačí zpěv? Křikot je to. Řev, ryk, krákot, jekot. Tempo? Melodie? Text? Ptáci neumí dávat. Ptáci umí jen sprostě nadávat. Píp rýmuje s píp, jinak bez ideje. Cokoli řeknou hned se cenzuruje.</p>
+            <p>—</p>
+            <p id="ryba-betonovy">Zato ryby fakt dávaj. Dávaj rytmus vodě. Dávaj smysl tichu. Dávají beaty proudům.</p>
+            <p>—</p>
+            <p id="ryba-kulturni">A stalo se jednoho dne, že ryba začala rapovat i na hladině. Ne pro ostatní. Pro vodu.</p>
+            <p>—</p>
+            <p id="ryba-asociacni">A voda odpověděla. Jinak se zavlnila. Do rytmu se natřásala. Tvořila verše jako vodní kruhy, v kterých byly další kruhy. Mlha, spadlá do polí, opsala jejich flow. A vytvořila kruhy v obilí. Rybí hudba byla slyšet – ne uchem, ale okem, tělem.</p>
+            <p>—</p>
+            <p id="ryba-zaver">A tak se po kapkách roznáší všude kolem, že prvni místo v hitparádě, vyhrály ryby - nepochybně.</p>
+            <p>—</p>
+            <p>Ne proto, že zpívaj. Ale proto, že ví.. <strong>..kdy mlčet.</strong></p>
+            <p>—</p>
+            <p>Možná je čas, aby se svět dozvěděl o rybím rapu.</p>
+            <p>—</p>
+            <p>Možná je čas, aby se přestalo poslouchat a začalo se vnímat.</p>
+            <p>—</p>
+            <p>Možná je čas, aby se ticho konečně dostalo nad hladinu.</p>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(106,176,224,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Ryby, které rapují? Beat z vodních kruhů, flow z proudů, punchline jako fontána? Ptáci, kteří jen sprostě nadávají? Tahle pohádka staví realitu na hlavu – a přitom v té absurditě je víc pravdy než v suchozemských klepech o mlčících rybách.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">hudba bez plic</span>
+                    <button class="fairy-locate-btn" id="locateBtn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro rybu včetně klíčů a fragmentů v pohádce
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Ryby, které rapují? Beat z vodních kruhů, flow z proudů, punchline jako fontána? Ptáci, kteří jen sprostě nadávají? Tahle pohádka staví realitu na hlavu – a přitom v té absurditě je víc pravdy než v suchozemských klepech o mlčících rybách.", key: "hudba bez plic", fragment: "ryba-absurdni" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "Rybí rap není o slovech, ale o vibracích. O mezerách mezi bublinami, o tempu vln. Jazyk se tady stává fyzikální veličinou – flow teče, riff kape. Pohádka je manifestem toho, že řeč nemusí být slyšet, aby dávala smysl.", key: "rytmus místo slov", fragment: "ryba-jazykovy" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Lidi si myslí, že ryby mlčí, a přitom celá vodní říše žije hudbou. Ptáci, kteří mají být pěvci, jsou jen sprostí nadávkaři. Ironie suchozemského světa: posloucháme ty, co křičí, a nevnímáme ty, co opravdu hrají.", key: "projev slyšitelný jen pod hladinou", fragment: "ryba-ironicky" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je to ticho? Je to nepřítomnost zvuku, nebo jiná forma řeči? Ryby ví, kdy mlčet – a to mlčení je plné rytmu. Pohádka klade otázku: Není náhodou nejhlubší moudrost v tom, nevydávat zbytečné zvuky, ale nechat mluvit proud?", key: "komunikace, která nepotřebuje porozumění", fragment: "ryba-filozoficky" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Kosatky zpívají chansony, žraloci gospel, medúzy hrají na triangly. Ryba rapuje, voda odpovídá kruhy a mlha opisuje flow do obilí. Svět, kde se všechny živly propojují v jednu velkou symfonii – to není pohádka, to je vize.", key: "voda jako notový papír", fragment: "ryba-surrealisticky" },
+            { deg: 150, hour: "4h", name: "Analytický", desc: "Hledá struktury, vztahy, příčiny.", text: "Systém rybího rapu: každý druh má svůj žánr, svou frekvenci, svůj vliv na vodní vlastnosti. Je to ekosystém zvuku, kde každý tón má svou funkci. A mlčení je součást flow – pauza mezi bublinami, která dává rytmu řád.", key: "mlčení je součást flow", fragment: "ryba-analyticky" },
+            { deg: 180, hour: "3h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: žralok zpívá gospel, medúzy cinkají na triangly, a ryba rapuje pod hladinou tak silně, že se dělají kruhy v obilí. Mezitím ptáci nadávaj jak dlaždiči. Je to fraška o tom, že svět je jedna velká nesourodá kapela – a my suchozemci jsme ti nejhlučnější a nejmíň muzikální.", key: "ptačí zpěv redukovaný na chaos", fragment: "ryba-groteskni" },
+            { deg: 210, hour: "2h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Ryba je myšlenka, která koluje v hlubině. Rap je způsob, jak ji vyjádřit – ne nahlas, ale skrze vibrace. Voda je společnost, která tyto myšlenky šíří dál. A kruhy v obilí? Ty jsou otiskem toho, co zůstane, když myšlenka pronikne na povrch.", key: "flow jako vnímání tělem", fragment: "ryba-metaforicky" },
+            { deg: 240, hour: "1h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to, jak jsem jako dítě ležel u potoka a poslouchal šumění vody. Říkal jsem si, že to musí být nějaká řeč. A teď vím – byl to rybí rap. A ty kruhy, co jsem házel kamínky? Ty byly moje beaty.", key: "rap je čin, ne zvuk", fragment: "ryba-asociacni" },
+            { deg: 270, hour: "12h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Vždycky jsem měl pocit, že moje myšlenky jsou jako ryby pod hladinou – nikdo je neslyší, ale uvnitř mě bouří. Tenhle příběh o rybím rapu je o mně. O tom, že i ticho může bejt plný rytmu, když ho nikdo neposlouchá.", key: "pouze podstata rytmu", fragment: "ryba-introspektivni" },
+            { deg: 300, hour: "11h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Ryba jako symbol ticha a hloubky – v mnoha kulturách znamená moudrost. Tady se stává rapperem, tedy hlasem ulice (vody). Ptáci jako symbol vzdušnosti a povrchnosti jsou odsunuti do role křiklounů. Je to převrácení mýtu: to, co je dole, má větší váhu než to, co je nahoře.", key: "underground doslova", fragment: "ryba-kulturni" },
+            { deg: 330, hour: "10h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Ryby rapujou. Ptáci nadávaj. Voda tancuje do rytmu. A kruhy v obilí? Ty dělá rybí hudba. Jednoduchý, ne? Nemusíš tomu rozumět, stačí to vnímat tělem.", key: "prostě to plyne", fragment: "ryba-naivni" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            // Odstraníme předchozí zvýraznění
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Ryba&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            // Odstraníme předchozí zvýraznění
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyScroll');
+            
+            if (element && scrollContainer) {
+                element.classList.add('fairy-highlight');
+                
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const elementRect = element.getBoundingClientRect();
+                const scrollTop = scrollContainer.scrollTop;
+                const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                
+                scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
