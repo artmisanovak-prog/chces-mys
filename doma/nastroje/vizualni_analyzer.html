@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Vizuální analyzér · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 14px; line-height: 1.7; padding: 1.5rem; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .app { max-width: 1000px; width: 100%; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.5rem; color: #e8e0d0; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300; margin: 1.5rem 0 1rem; border-bottom: 1px solid rgba(200,144,58,.2); padding-bottom: 0.3rem; }
+    .upload-area {
+      border: 2px dashed rgba(200,144,58,.4); border-radius: 8px; padding: 2rem;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      background: rgba(23,20,16,.5); margin: 1.5rem 0;
+    }
+    .upload-area:hover { border-color: #c8903a; background: rgba(200,144,58,.05); }
+    .upload-area input { display: none; }
+    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
+    .btn {
+      padding: 0.5rem 1.5rem; font-family: inherit; font-size: 0.8rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary:hover { background: #daa050; }
+    .preview-container { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
+    .preview-box { flex: 1; min-width: 250px; background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 0.5rem; border-radius: 4px; }
+    .preview-box img { width: 100%; height: auto; display: block; border-radius: 2px; }
+    .fragment-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0; }
+    .fragment-card {
+      background: #171410; border: 1px solid rgba(200,144,58,.3); padding: 1rem; border-radius: 4px;
+    }
+    .fragment-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid rgba(200,144,58,.2); margin-bottom: 0.8rem; }
+    .angle-suggestion { color: #c8903a; font-weight: 500; margin-bottom: 0.3rem; }
+    .intervention-text { font-size: 0.8rem; color: rgba(232,224,208,.7); margin-bottom: 1rem; font-style: italic; }
+    .fragment-actions { display: flex; gap: 0.5rem; }
+    .results-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 1.5rem; margin-top: 2rem; border-radius: 4px; }
+    .angle-bars { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+    .angle-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; }
+    .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status-msg { margin: 1rem 0; padding: 0.5rem; border-left: 3px solid #c8903a; background: rgba(200,144,58,.1); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Vizuální <em>analyzér</em></h1>
+  <p style="margin-bottom:1rem; color:rgba(232,224,208,.7);">
+    Nahraj kresbu nebo vyfoť obrázek. Myš pozná, jestli je to kresba, nebo fotografie. Fotografii rozřeže a zeptá se, jak ji zapsat.
+  </p>
+
+  <div class="btn-row">
+    <button class="btn" id="galleryBtn">🖼️ Vybrat z galerie</button>
+    <button class="btn" id="cameraBtn">📸 Vyfotit</button>
+  </div>
+
+  <div class="upload-area" id="uploadArea">
+    <p>📂 Nebo sem přetáhni obrázek</p>
+    <input type="file" id="fileInput" accept="image/*">
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+  </div>
+
+  <div class="preview-container" id="previewContainer" style="display:none;">
+    <div class="preview-box">
+      <img id="previewImage" alt="Náhled">
+    </div>
+    <div style="flex:1;">
+      <div id="imageInfo" class="status-msg"></div>
+      <div style="margin-top:1rem;">
+        <button class="btn btn-primary" id="analyzeBtn">🔍 Analyzovat</button>
+        <button class="btn" id="clearBtn">🗑️ Smazat</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mysiRezim" style="display:none;">
+    <h2>🐭 Myš nerozumí. Rozřeže to na tři kusy.</h2>
+    <p style="margin-bottom:1rem;">Každý kousek musíš potvrdit, nebo zahodit. Myš pak uloží, co jsi odsouhlasil/a.</p>
+    <div class="fragment-panel" id="fragmentPanel"></div>
+    <button class="btn btn-primary" id="finishMysiRezim" style="display:none;">📤 Uložit do Skuliny a Přehlídky</button>
+  </div>
+
+  <div class="results-panel" id="resultsPanel" style="display:none;">
+    <h2>Výsledek analýzy kresby</h2>
+    <div id="angleResults"></div>
+    <div id="dominantInfo"></div>
+    <div style="margin-top:1rem;">
+      <button class="btn" id="saveToSkulinaBtn">💾 Uložit do Skuliny</button>
+      <button class="btn" id="sendToPrehlidkaBtn" style="display:none;">📊 Sdílet do Přehlídky</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- KONFIGURACE ----------
+    const PREHLIDKA_URL = 'prehlidka_fenomenu/';
+
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075', intervention:'Použij ostré, přesné linie. Kresli jako technický výkres, pravidelné šrafování, žádné stínování.' },
+      { st:30, name:'Kulturní', color:'#6a9e72', intervention:'Hledej harmonii a tradici. Oblé křivky, symetrie, ornament. Jemné, čisté linie.' },
+      { st:60, name:'Filozofický', color:'#d4a0b0', intervention:'Nech hodně prázdného místa. Tenké, přerušované linky, otazníky, nedokončené tvary.' },
+      { st:90, name:'Naivní', color:'#5fa8a0', intervention:'Zjednodušuj. Žádné stínování, čisté plochy, jednoduché linky jako dětská kresba.' },
+      { st:120, name:'Jazykový', color:'#8e7248', intervention:'Vytvoř rytmus. Opakující se linie, refrén, pravidelná kompozice, čisté tvary.' },
+      { st:150, name:'Metaforický', color:'#5a8a5a', intervention:'Překrývej tvary, vytvářej vrstvy. Kontrast černé a bílé, symboly, náznaky.' },
+      { st:180, name:'Asociační', color:'#a85a5a', intervention:'Kresli rychle, automaticky. Chaotické linie, čmáranice, žádný řád.' },
+      { st:210, name:'Introspektivní', color:'#c8a832', intervention:'Soustřeď se na vnitřní strukturu. Opakující se vzory, detailní šrafování, textury.' },
+      { st:240, name:'Ironický', color:'#c8722a', intervention:'Použij kontrast. Kombinuj jemnou linku s hrubou plochou, přeháněj proporce.' },
+      { st:270, name:'Groteskní', color:'#a83060', intervention:'Deformuj, přeháněj. Silné, agresivní linie, přeplácaná kompozice, výrazné šrafování.' },
+      { st:300, name:'Absurdní', color:'#6080a0', intervention:'Kombinuj nesouvisející. Nelogické tvary, záměrně "špatné" šrafování, chaos.' },
+      { st:330, name:'Surrealistický', color:'#8060b0', intervention:'Nech plynout. Měkké, rozmazané linie, snové přechody, nemožná spojení.' }
+    ];
+
+    let uploadedImage = null;
+    let isDrawing = true;
+    let fragments = [];
+    let analysisResult = null;
+
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const galleryBtn = document.getElementById('galleryBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const imageInfo = document.getElementById('imageInfo');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const mysiRezim = document.getElementById('mysiRezim');
+    const fragmentPanel = document.getElementById('fragmentPanel');
+    const finishMysiRezimBtn = document.getElementById('finishMysiRezim');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const angleResults = document.getElementById('angleResults');
+    const dominantInfo = document.getElementById('dominantInfo');
+    const saveToSkulinaBtn = document.getElementById('saveToSkulinaBtn');
+    const sendToPrehlidkaBtn = document.getElementById('sendToPrehlidkaBtn');
+
+    // ---------- SKUTEČNÁ DETEKCE KRESBA vs FOTOGRAFIE ----------
+    function detectImageType(img) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      // Zmenšíme pro rychlost
+      const maxDim = 300;
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim/w, maxDim/h);
+        w = Math.floor(w * ratio);
+        h = Math.floor(h * ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      const imageData = ctx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+
+      // 1. Počet unikátních barev (kvantizace na 16 úrovní na kanál)
+      const colorSet = new Set();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = Math.floor(data[i] / 16);
+        const g = Math.floor(data[i+1] / 16);
+        const b = Math.floor(data[i+2] / 16);
+        colorSet.add((r << 10) | (g << 5) | b);
+      }
+      const uniqueColors = colorSet.size;
+
+      // 2. Hustota hran (Sobel)
+      const gray = new Uint8Array(w * h);
+      for (let i = 0; i < data.length; i += 4) {
+        gray[i/4] = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+      }
+      let edgePixels = 0;
+      for (let y = 1; y < h-1; y++) {
+        for (let x = 1; x < w-1; x++) {
+          const idx = (y-1)*w + (x-1);
+          const gx = -1*gray[idx] + 1*gray[idx+2] + -2*gray[idx+w] + 2*gray[idx+w+2] + -1*gray[idx+2*w] + 1*gray[idx+2*w+2];
+          const gy = -1*gray[idx] -2*gray[idx+1] -1*gray[idx+2] + 1*gray[idx+2*w] + 2*gray[idx+2*w+1] + 1*gray[idx+2*w+2];
+          if (Math.sqrt(gx*gx + gy*gy) > 40) edgePixels++;
+        }
+      }
+      const edgeDensity = edgePixels / (w * h);
+
+      // Heuristika: kresba = vysoká hustota hran (>0.06) a relativně málo barev (<8000)
+      const isDraw = (edgeDensity > 0.06) && (uniqueColors < 8000);
+      console.log('Edge density:', edgeDensity, 'Unique colors:', uniqueColors, '→', isDraw ? 'KRESBA' : 'FOTOGRAFIE');
+      return { isDraw, edgeDensity, uniqueColors };
+    }
+
+    // ---------- NAHRÁNÍ OBRÁZKU ----------
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          previewImage.src = img.src;
+          previewContainer.style.display = 'flex';
+          const detection = detectImageType(img);
+          isDrawing = detection.isDraw;
+          imageInfo.innerHTML = isDrawing ?
+            `✅ Detekována kresba/malba (hrany: ${(detection.edgeDensity*100).toFixed(1)}%, barvy: ${detection.uniqueColors}). Můžeš analyzovat.` :
+            `📸 Detekována fotografie (hrany: ${(detection.edgeDensity*100).toFixed(1)}%, barvy: ${detection.uniqueColors}). Myš si neví rady – rozřeže ji.`;
+          mysiRezim.style.display = 'none';
+          resultsPanel.style.display = 'none';
+          analyzeBtn.style.display = isDrawing ? 'inline-block' : 'none';
+          if (!isDrawing) {
+            startMysiRezim(img);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ---------- MYŠÍ REŽIM ----------
+    function startMysiRezim(img) {
+      const w = img.width, h = img.height;
+      const fragW = Math.floor(w / 3);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      fragments = [];
+      for (let i = 0; i < 3; i++) {
+        const sx = i * fragW;
+        const sw = (i === 2) ? w - sx : fragW;
+        canvas.width = sw; canvas.height = h;
+        ctx.drawImage(img, sx, 0, sw, h, 0, 0, sw, h);
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const angle = ANGLES[i % ANGLES.length];
+        fragments.push({ imgData, suggestedAngle: angle, intervention: angle.intervention, confirmed: false });
+      }
+      renderFragments();
+      mysiRezim.style.display = 'block';
+      finishMysiRezimBtn.style.display = 'none';
+    }
+
+    function renderFragments() {
+      fragmentPanel.innerHTML = '';
+      fragments.forEach((frag, idx) => {
+        const card = document.createElement('div');
+        card.className = 'fragment-card';
+        card.innerHTML = `
+          <img src="${frag.imgData}" class="fragment-img">
+          <div class="angle-suggestion">${frag.suggestedAngle.name} (${frag.suggestedAngle.st}°)</div>
+          <div class="intervention-text">${frag.intervention}</div>
+          <div class="fragment-actions">
+            <button class="btn" data-action="confirm" data-idx="${idx}">✔ Ano</button>
+            <button class="btn" data-action="reject" data-idx="${idx}">✖ Ne</button>
+          </div>
+          <div class="status-msg" id="frag-status-${idx}" style="margin-top:0.5rem;"></div>
+        `;
+        fragmentPanel.appendChild(card);
+      });
+      fragmentPanel.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = btn.dataset.idx;
+          const action = btn.dataset.action;
+          const statusEl = document.getElementById(`frag-status-${idx}`);
+          if (action === 'confirm') {
+            fragments[idx].confirmed = true;
+            statusEl.textContent = `✓ Uloženo jako ${fragments[idx].suggestedAngle.name}`;
+          } else {
+            fragments[idx].confirmed = false;
+            statusEl.textContent = '✗ Zahozeno';
+          }
+          btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+          if (fragments.every(f => f.confirmed !== undefined)) {
+            finishMysiRezimBtn.style.display = 'inline-block';
+          }
+        });
+      });
+    }
+
+    function finishMysiRezim() {
+      const confirmed = fragments.filter(f => f.confirmed);
+      if (confirmed.length === 0) {
+        alert('Žádný fragment nebyl potvrzen.');
+        return;
+      }
+      const skulina = JSON.parse(localStorage.getItem('mys-skulina') || '[]');
+      const ts = Date.now();
+      confirmed.forEach(f => {
+        skulina.push({
+          type: 'photo-fragment',
+          timestamp: ts,
+          angle: f.suggestedAngle.st,
+          angleName: f.suggestedAngle.name,
+          intervention: f.intervention,
+          image: f.imgData
+        });
+      });
+      localStorage.setItem('mys-skulina', JSON.stringify(skulina));
+
+      const params = new URLSearchParams();
+      params.set('cards', 'myš');
+      params.set('angles', confirmed.map(f => `${f.suggestedAngle.st}:100`).join(','));
+      params.set('context', 'fotografie');
+      params.set('mode', 'mysi_rezim');
+      params.set('ts', ts);
+      let base = PREHLIDKA_URL;
+      if (window.location.hostname.includes('github')) base = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_fenomenu/';
+      const url = base + '?' + params.toString();
+      navigator.clipboard?.writeText(url);
+      alert('Uloženo do Skuliny. Odkaz pro Přehlídku zkopírován.');
+
+      mysiRezim.style.display = 'none';
+      clearImage();
+    }
+
+    // ---------- ANALÝZA KRESBY (SIMULOVANÁ, PROTOŽE SKUTEČNÝ DETEKTOR JEŠTĚ NENÍ) ----------
+    function analyzeDrawing() {
+      if (!uploadedImage) return;
+      const percentages = ANGLES.map(() => Math.floor(Math.random() * 101));
+      const maxIdx = percentages.indexOf(Math.max(...percentages));
+      analysisResult = { percentages, dominant: maxIdx };
+
+      angleResults.innerHTML = ANGLES.map((a, i) => `
+        <div class="angle-item"><span class="color-dot" style="background:${a.color}"></span>${a.name}: ${percentages[i]}%</div>
+      `).join('');
+      dominantInfo.innerHTML = `<strong>Dominantní úhel:</strong> ${ANGLES[maxIdx].name} (${ANGLES[maxIdx].st}°)`;
+      resultsPanel.style.display = 'block';
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('cards')) {
+        sendToPrehlidkaBtn.style.display = 'inline-block';
+        sendToPrehlidkaBtn.onclick = () => {
+          const anglesStr = percentages.map((p,i) => `${ANGLES[i].st}:${p}`).join(',');
+          const urlParams = new URLSearchParams();
+          urlParams.set('cards', params.get('cards'));
+          urlParams.set('angles', anglesStr);
+          urlParams.set('context', params.get('context') || 'vizualni_analyzer');
+          let base = PREHLIDKA_URL;
+          if (window.location.hostname.includes('github')) base = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_fenomenu/';
+          const url = base + '?' + urlParams.toString();
+          navigator.clipboard?.writeText(url);
+          alert('Odkaz pro Přehlídku zkopírován.');
+        };
+      }
+    }
+
+    function clearImage() {
+      uploadedImage = null;
+      previewContainer.style.display = 'none';
+      mysiRezim.style.display = 'none';
+      resultsPanel.style.display = 'none';
+      fileInput.value = '';
+      cameraInput.value = '';
+    }
+
+    // ---------- EVENTY ----------
+    galleryBtn.addEventListener('click', () => fileInput.click());
+    cameraBtn.addEventListener('click', () => cameraInput.click());
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#c8903a'; });
+    uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = 'rgba(200,144,58,.4)');
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(200,144,58,.4)';
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImage(file);
+    });
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleImage(e.target.files[0]); });
+    cameraInput.addEventListener('change', (e) => { if (e.target.files[0]) handleImage(e.target.files[0]); });
+
+    analyzeBtn.addEventListener('click', analyzeDrawing);
+    clearBtn.addEventListener('click', clearImage);
+    finishMysiRezimBtn.addEventListener('click', finishMysiRezim);
+    saveToSkulinaBtn.addEventListener('click', () => {
+      if (!analysisResult) return;
+      const skulina = JSON.parse(localStorage.getItem('mys-skulina') || '[]');
+      skulina.push({ type: 'drawing', timestamp: Date.now(), percentages: analysisResult.percentages, image: previewImage.src });
+      localStorage.setItem('mys-skulina', JSON.stringify(skulina));
+      alert('Uloženo do Skuliny.');
+    });
+
+    // Načtení parametrů
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('cards')) {
+      const info = document.createElement('div');
+      info.className = 'status-msg';
+      info.textContent = `📇 Karty: ${params.get('cards')}`;
+      document.querySelector('.app').insertBefore(info, document.querySelector('.btn-row'));
+    }
+  })();
+</script>
+</body>
+</html>
