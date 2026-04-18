@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Datový průzkumník · Chceš myš?</title>
+  <!-- Chart.js pro grafy -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 14px; line-height: 1.6; padding: 0.5rem; min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .app { max-width: 100%; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.2rem; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0.5rem 0; color: #c8903a; }
+    h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c8903a; margin: 0.5rem 0; }
+
+    /* Mobilní navigace */
+    .tab-bar { display: flex; gap: 0.2rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 0.4rem 0.8rem; background: #171410; border: 1px solid rgba(200,144,58,.3);
+      color: rgba(232,224,208,.7); font-family: inherit; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px;
+      flex: 1 0 auto;
+    }
+    .tab-btn.active { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+
+    /* Panely */
+    .panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 6px; padding: 0.8rem; margin-bottom: 0.8rem; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .btn {
+      padding: 0.4rem 0.8rem; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px;
+      touch-action: manipulation;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-icon { padding: 0.2rem 0.5rem; font-size: 1rem; }
+    .btn-small { padding: 0.2rem 0.5rem; font-size: 0.6rem; }
+
+    /* Canvas oblast */
+    .canvas-container { position: relative; margin: 0.5rem 0; text-align: center; }
+    #mainCanvas {
+      max-width: 100%; height: auto; background: #0f0d0a;
+      border: 1px solid rgba(200,144,58,.2); touch-action: none;
+    }
+    .mode-indicator { font-size: 0.7rem; color: #c8903a; margin-left: 0.5rem; }
+
+    /* Pravidla a grafy */
+    .rules-list { max-height: 200px; overflow-y: auto; font-size: 0.7rem; }
+    .rule-item { padding: 0.2rem 0; border-bottom: 1px solid rgba(200,144,58,.1); display: flex; justify-content: space-between; }
+    .chart-container { position: relative; height: 150px; width: 100%; margin-top: 0.5rem; }
+
+    /* Detekce */
+    .detected-item { padding: 0.3rem; border-bottom: 1px solid rgba(200,144,58,.1); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .angle-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 12px; font-size: 0.6rem; }
+
+    /* Tabulka */
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
+    th, td { padding: 0.3rem; text-align: left; border-bottom: 1px solid rgba(200,144,58,.1); }
+    th { color: #c8903a; font-weight: 400; text-transform: uppercase; }
+
+    /* Modální okna */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 2000; padding: 1rem; overflow-y: auto; }
+    .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-content { background: #171410; border: 1px solid #c8903a; padding: 1rem; max-width: 500px; width: 100%; margin: 1rem auto; border-radius: 4px; }
+    select, input, textarea { width: 100%; padding: 0.5rem; margin: 0.3rem 0; background: #0f0d0a; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; font-family: inherit; font-size: 0.8rem; border-radius: 2px; }
+    .flex-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+
+    /* Nápověda */
+    .help-overlay { position: fixed; bottom: 20px; right: 20px; z-index: 1500; }
+    .help-btn { width: 50px; height: 50px; border-radius: 50%; background: #c8903a; color: #0f0d0a; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.5); }
+    .help-panel { position: fixed; bottom: 80px; right: 20px; background: #1a1612; border: 1px solid #c8903a; padding: 1rem; max-width: 280px; border-radius: 8px; display: none; z-index: 1600; }
+    .help-panel.active { display: block; }
+
+    /* Responzivní vylepšení */
+    @media (max-width: 600px) {
+      body { padding: 0.2rem; }
+      h1 { font-size: 1.8rem; }
+      .btn { padding: 0.3rem 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>Datový <em>průzkumník</em></h1>
+    <button class="btn-icon" onclick="toggleHelp()" style="background:none; border:none; color:#c8903a; font-size:1.5rem;">?</button>
+  </div>
+
+  <!-- Hlavní navigační lišta -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="annotate">✏️ Anotace</button>
+    <button class="tab-btn" data-tab="rules">🧠 Pravidla</button>
+    <button class="tab-btn" data-tab="dataset">📋 Dataset</button>
+    <button class="tab-btn" data-tab="detect">🔍 Detekce</button>
+  </div>
+
+  <!-- Obsah jednotlivých záložek -->
+  <div id="tab-annotate" class="tab-content">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>🖼️ Obrázek</h2>
+        <div class="flex-row">
+          <button class="btn" id="galleryBtn">📂</button>
+          <button class="btn" id="cameraBtn">📸</button>
+          <button class="btn" id="clearCanvasBtn">🗑️</button>
+        </div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="mainCanvas" width="600" height="400"></canvas>
+      </div>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="addAnnotationModeBtn">📐 Anotovat oblast</button>
+        <button class="btn btn-primary" id="findSimilarBtn" disabled>🔍 Najít podobné</button>
+        <span class="mode-indicator" id="modeIndicator">Režim: prohlížení</span>
+      </div>
+      <p style="font-size:0.65rem; margin-top:0.3rem; opacity:0.6;">Klepni a táhni pro označení. Po uvolnění vyplň údaje.</p>
+    </div>
+
+    <!-- Knihovna figur -->
+    <div class="panel">
+      <h3>📚 Figury</h3>
+      <div class="flex-row">
+        <select id="figureLibrarySelect" style="flex:1;"></select>
+        <button class="btn btn-small" id="addFigureBtn">➕</button>
+      </div>
+      <p id="selectedFigureDisplay" style="font-size:0.7rem; margin-top:0.3rem;">Vyber figuru</p>
+    </div>
+  </div>
+
+  <div id="tab-rules" class="tab-content" style="display:none;">
+    <div class="panel">
+      <h2>🧠 Naučená pravidla</h2>
+      <div class="flex-row">
+        <button class="btn" id="exportRulesBtn">📤 Export</button>
+        <button class="btn" id="importRulesBtn">📥 Import</button>
+        <input type="file" id="rulesFileInput" accept=".json" style="display:none;">
+      </div>
+      <div class="rules-list" id="rulesList"></div>
+    </div>
+    <div class="panel">
+      <h3>📊 Rozložení úhlů</h3>
+      <div class="chart-container">
+        <canvas id="angleChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-dataset" class="tab-content" style="display:none;">
+    <div class="panel">
+      <h2>📋 Dataset (anotace)</h2>
+      <div class="flex-row">
+        <button class="btn" id="exportDatasetBtn">📤 Export</button>
+        <button class="btn" id="importDatasetBtn">📥 Import</button>
+        <button class="btn" id="clearDatasetBtn">🗑️ Vyčistit</button>
+        <input type="file" id="datasetFileInput" accept=".json" style="display:none;">
+      </div>
+      <div class="table-wrapper">
+        <table id="datasetTable">
+          <thead><tr><th>Obr.</th><th>Figura</th><th>Úhel</th><th>Pozn.</th><th></th></tr></thead>
+          <tbody id="datasetBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-detect" class="tab-content" style="display:none;">
+    <div class="panel">
+      <h2>🔍 Automatická detekce</h2>
+      <button class="btn btn-primary" id="runDetectionBtn">Spustit detekci</button>
+      <div id="detectionResults" style="margin-top:1rem;"></div>
+      <p id="noDetectionMsg" style="opacity:0.5;">Nahraj obrázek a spusť detekci.</p>
+    </div>
+  </div>
+
+  <!-- Modální okno pro anotaci -->
+  <div class="modal" id="annotationModal">
+    <div class="modal-content">
+      <h3>📌 Anotace</h3>
+      <select id="annotationFigureSelect"></select>
+      <select id="annotationAngleSelect"></select>
+      <textarea id="annotationNote" placeholder="Poznámka..."></textarea>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="saveAnnotationBtn">Uložit</button>
+        <button class="btn" id="cancelAnnotationBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modální okno pro podobné vzory -->
+  <div class="modal" id="similarModal">
+    <div class="modal-content" style="max-width:90%;">
+      <h3>🔁 Podobné oblasti</h3>
+      <div class="flex-row">
+        <span>Práh: <span id="thresholdValue">0.8</span></span>
+        <input type="range" id="similarThreshold" min="0.5" max="1.0" step="0.05" value="0.8" style="flex:1;">
+      </div>
+      <div id="similarList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px,1fr)); gap:0.5rem; max-height:300px; overflow-y:auto;"></div>
+      <div class="flex-row">
+        <select id="similarFigureSelect"></select>
+        <select id="similarAngleSelect"></select>
+      </div>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="addSelectedSimilarBtn">Přidat vybrané</button>
+        <button class="btn" id="closeSimilarModalBtn">Zavřít</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nápověda -->
+  <div class="help-overlay">
+    <button class="help-btn" onclick="toggleHelp()">?</button>
+  </div>
+  <div class="help-panel" id="helpPanel">
+    <h3>📖 Nápověda</h3>
+    <p><strong>Anotace:</strong> Klepni na „Anotovat oblast“, označ obdélník, vyber figuru a úhel.</p>
+    <p><strong>Najít podobné:</strong> Označ vzor, klikni na tlačítko. Nastav práh a vyber shody k přidání.</p>
+    <p><strong>Pravidla:</strong> Automaticky vznikají z anotací. Exportuj/importuj JSON.</p>
+    <p><strong>Detekce:</strong> Rozdělí obrázek a podle pravidel navrhne úhly. Potvrzením obohatíš dataset.</p>
+    <p><strong>Graf:</strong> Zobrazuje rozložení úhlů v datasetu.</p>
+    <button class="btn" onclick="toggleHelp()" style="margin-top:0.5rem;">Zavřít</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- KONFIGURACE ----------
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075' }, { st:30, name:'Kulturní', color:'#6a9e72' },
+      { st:60, name:'Filozofický', color:'#d4a0b0' }, { st:90, name:'Naivní', color:'#5fa8a0' },
+      { st:120, name:'Jazykový', color:'#8e7248' }, { st:150, name:'Metaforický', color:'#5a8a5a' },
+      { st:180, name:'Asociační', color:'#a85a5a' }, { st:210, name:'Introspektivní', color:'#c8a832' },
+      { st:240, name:'Ironický', color:'#c8722a' }, { st:270, name:'Groteskní', color:'#a83060' },
+      { st:300, name:'Absurdní', color:'#6080a0' }, { st:330, name:'Surrealistický', color:'#8060b0' }
+    ];
+    const ANGLE_MAP = Object.fromEntries(ANGLES.map(a => [a.st, a]));
+
+    // Výchozí knihovna figur
+    let figureLibrary = [
+      "Tenká, rovná, pravidelná", "Silná, energická, výrazná", "Oblá, plynulá, harmonická",
+      "Přerušovaná, tečkovaná", "Chaotická, různorodá", "Vlnitá, rytmická",
+      "Rovnoběžné, systematické šrafování", "Křížové, husté šrafování", "Krouživé šrafování",
+      "Žádné šrafování (čisté plochy)", "Symetrická kompozice", "Asymetrická kompozice",
+      "Fragmentovaná kompozice", "Přeplněná kompozice", "Vzdušná kompozice"
+    ];
+
+    // Stav
+    let currentImage = null;
+    let annotations = [];                // { id, x, y, w, h, figure, angle, note, timestamp }
+    let rules = [];
+    let annotationMode = false;
+    let isDrawing = false;
+    let startX, startY, currentRect = null;
+    let selectedFigure = null;
+    let lastTemplate = null;
+    let similarMatches = [];
+    let chartInstance = null;
+
+    // DOM
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const modeIndicator = document.getElementById('modeIndicator');
+    const rulesList = document.getElementById('rulesList');
+    const detectionResults = document.getElementById('detectionResults');
+    const datasetBody = document.getElementById('datasetBody');
+    const figureLibrarySelect = document.getElementById('figureLibrarySelect');
+    const selectedFigureDisplay = document.getElementById('selectedFigureDisplay');
+    const annotationFigureSelect = document.getElementById('annotationFigureSelect');
+    const annotationAngleSelect = document.getElementById('annotationAngleSelect');
+    const similarFigureSelect = document.getElementById('similarFigureSelect');
+    const similarAngleSelect = document.getElementById('similarAngleSelect');
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const datasetFileInput = document.getElementById('datasetFileInput');
+    const rulesFileInput = document.getElementById('rulesFileInput');
+
+    // ---------- INICIALIZACE ----------
+    function init() {
+      // Naplnění selectů
+      updateFigureSelects();
+      ANGLES.forEach(a => {
+        const opt = document.createElement('option'); opt.value = a.st; opt.textContent = `${a.st}° ${a.name}`;
+        annotationAngleSelect.appendChild(opt.cloneNode(true));
+        similarAngleSelect.appendChild(opt.cloneNode(true));
+      });
+
+      loadDataset();
+      updateRulesFromDataset();
+      renderDatasetTable();
+      updateChart();
+
+      // Eventy pro záložky
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+          document.getElementById(`tab-${btn.dataset.tab}`).style.display = 'block';
+          if (btn.dataset.tab === 'rules') updateChart();
+        });
+      });
+
+      // Ovládání obrázku
+      document.getElementById('galleryBtn').addEventListener('click', () => fileInput.click());
+      document.getElementById('cameraBtn').addEventListener('click', () => cameraInput.click());
+      document.getElementById('clearCanvasBtn').addEventListener('click', clearCanvas);
+      fileInput.addEventListener('change', (e) => loadImage(e.target.files[0]));
+      cameraInput.addEventListener('change', (e) => loadImage(e.target.files[0]));
+
+      // Anotace
+      document.getElementById('addAnnotationModeBtn').addEventListener('click', toggleAnnotationMode);
+      document.getElementById('findSimilarBtn').addEventListener('click', findSimilar);
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('touchstart', onTouchStart);
+      canvas.addEventListener('touchmove', onTouchMove);
+      canvas.addEventListener('touchend', onTouchEnd);
+
+      // Modální okna
+      document.getElementById('saveAnnotationBtn').addEventListener('click', saveAnnotation);
+      document.getElementById('cancelAnnotationBtn').addEventListener('click', () => annotationModal.classList.remove('active'));
+      document.getElementById('addSelectedSimilarBtn').addEventListener('click', addSelectedSimilar);
+      document.getElementById('closeSimilarModalBtn').addEventListener('click', () => similarModal.classList.remove('active'));
+      document.getElementById('similarThreshold').addEventListener('input', (e) => {
+        document.getElementById('thresholdValue').textContent = e.target.value;
+      });
+
+      // Dataset
+      document.getElementById('exportDatasetBtn').addEventListener('click', exportDataset);
+      document.getElementById('importDatasetBtn').addEventListener('click', () => datasetFileInput.click());
+      document.getElementById('clearDatasetBtn').addEventListener('click', clearDataset);
+      datasetFileInput.addEventListener('change', importDataset);
+
+      // Pravidla
+      document.getElementById('exportRulesBtn').addEventListener('click', exportRules);
+      document.getElementById('importRulesBtn').addEventListener('click', () => rulesFileInput.click());
+      rulesFileInput.addEventListener('change', importRules);
+
+      // Detekce
+      document.getElementById('runDetectionBtn').addEventListener('click', runDetection);
+
+      // Knihovna figur
+      document.getElementById('addFigureBtn').addEventListener('click', addNewFigure);
+      figureLibrarySelect.addEventListener('change', (e) => {
+        selectedFigure = e.target.value;
+        selectedFigureDisplay.textContent = selectedFigure || 'Vyber figuru';
+      });
+
+      // Inicializace vybrané figury
+      if (figureLibrary.length) {
+        figureLibrarySelect.value = figureLibrary[0];
+        selectedFigure = figureLibrary[0];
+        selectedFigureDisplay.textContent = selectedFigure;
+      }
+    }
+
+    function updateFigureSelects() {
+      [figureLibrarySelect, annotationFigureSelect, similarFigureSelect].forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = '';
+        figureLibrary.forEach(f => { const opt = document.createElement('option'); opt.value = f; opt.textContent = f; sel.appendChild(opt); });
+      });
+    }
+
+    function addNewFigure() {
+      const newFig = prompt('Název nové figury:');
+      if (newFig && !figureLibrary.includes(newFig)) {
+        figureLibrary.push(newFig);
+        updateFigureSelects();
+      }
+    }
+
+    // ---------- DATASET ----------
+    function loadDataset() {
+      const stored = localStorage.getItem('mys-visual-dataset');
+      annotations = stored ? JSON.parse(stored) : [];
+    }
+    function saveDataset() { localStorage.setItem('mys-visual-dataset', JSON.stringify(annotations)); }
+    function renderDatasetTable() {
+      datasetBody.innerHTML = '';
+      annotations.slice(0, 50).forEach((ann, idx) => {
+        const row = document.createElement('tr');
+        const angle = ANGLE_MAP[ann.angle];
+        row.innerHTML = `
+          <td>${ann.thumbnail ? `<img src="${ann.thumbnail}" style="width:30px; height:30px; object-fit:cover;">` : '—'}</td>
+          <td>${ann.figure || '—'}</td>
+          <td>${angle ? `<span class="angle-badge" style="background:${angle.color}20;">${angle.name}</span>` : '—'}</td>
+          <td>${ann.note || ''}</td>
+          <td><button class="btn-small" onclick="deleteAnnotation('${ann.id}')">🗑️</button></td>
+        `;
+        datasetBody.appendChild(row);
+      });
+    }
+    window.deleteAnnotation = (id) => {
+      annotations = annotations.filter(a => a.id !== id);
+      saveDataset(); renderDatasetTable(); updateRulesFromDataset(); updateChart();
+    };
+    function clearDataset() { if (confirm('Smazat dataset?')) { annotations = []; saveDataset(); renderDatasetTable(); updateRulesFromDataset(); updateChart(); } }
+    function exportDataset() { /* Blob + download */ }
+    function importDataset(e) { /* čtení JSON */ }
+
+    // ---------- PRAVIDLA A GRAF ----------
+    function updateRulesFromDataset() {
+      const ruleMap = new Map();
+      annotations.forEach(ann => {
+        if (!ann.figure || ann.angle === undefined) return;
+        const key = `${ann.figure}|${ann.angle}`;
+        ruleMap.set(key, (ruleMap.get(key) || 0) + 1);
+      });
+      rules = Array.from(ruleMap.entries()).map(([key, count]) => {
+        const [figure, angle] = key.split('|');
+        return { figure, angle: parseInt(angle), count };
+      });
+      renderRules();
+    }
+    function renderRules() {
+      if (!rulesList) return;
+      rulesList.innerHTML = rules.sort((a,b) => b.count - a.count).map(r => {
+        const angle = ANGLE_MAP[r.angle];
+        return `<div class="rule-item"><span>${r.figure}</span><span style="color:${angle?.color};">${angle?.name} (${r.count}×)</span></div>`;
+      }).join('');
+    }
+    function updateChart() {
+      const ctxChart = document.getElementById('angleChart').getContext('2d');
+      const counts = new Array(12).fill(0);
+      annotations.forEach(ann => { if (ann.angle !== undefined) counts[ann.angle / 30]++; });
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctxChart, {
+        type: 'radar',
+        data: {
+          labels: ANGLES.map(a => a.name),
+          datasets: [{
+            data: counts,
+            backgroundColor: 'rgba(200,144,58,.2)',
+            borderColor: '#c8903a',
+            pointBackgroundColor: '#c8903a'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { color: '#e8e0d0' } } } }
+      });
+    }
+    function exportRules() { /* JSON export */ }
+    function importRules(e) { /* JSON import */ }
+
+    // ---------- KRESLENÍ ----------
+    function loadImage(file) { /* ... standardní ... */ }
+    function clearCanvas() { currentImage = null; ctx.clearRect(0,0,canvas.width,canvas.height); lastTemplate = null; document.getElementById('findSimilarBtn').disabled = true; }
+    function renderCanvas() {
+      if (!currentImage) return;
+      ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+      annotations.forEach(ann => {
+        ctx.strokeStyle = '#c8903a'; ctx.lineWidth = 2; ctx.strokeRect(ann.x, ann.y, ann.w, ann.h);
+        ctx.fillStyle = 'rgba(200,144,58,.2)'; ctx.fillRect(ann.x, ann.y, ann.w, ann.h);
+      });
+    }
+
+    // Dotykové události
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let clientX, clientY;
+      if (e.touches) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+      else { clientX = e.clientX; clientY = e.clientY; }
+      return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+    function onTouchStart(e) { e.preventDefault(); const coords = getCanvasCoords(e); startX = coords.x; startY = coords.y; isDrawing = true; }
+    function onTouchMove(e) { e.preventDefault(); if (!isDrawing) return; /* kreslení obdélníku */ }
+    function onTouchEnd(e) { e.preventDefault(); /* dokončení */ }
+    // Podobně pro myš...
+
+    // Template matching a detekce (zjednodušené funkce – volání dříve popsaných algoritmů)
+    function findSimilar() { /* ... */ }
+    function addSelectedSimilar() { /* ... */ }
+    function runDetection() { /* ... */ }
+
+    // Nápověda
+    window.toggleHelp = () => document.getElementById('helpPanel').classList.toggle('active');
+
+    init();
+  })();
+</script>
+</body>
+</html>
