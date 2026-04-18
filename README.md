@@ -58,10 +58,9 @@ ilustrace:
 - [pavouk](doma/ilustrace/pavouk.jpg)
 
 ---
-### mimo 
-## myš 
+### mimo ## myš 
 
-[generator fontu](doma/mimo/generator_fontu.html)
+[generátor fontů](doma/mimo/generator_fontu.html)
 
 ---
 
