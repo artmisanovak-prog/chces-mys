@@ -58,6 +58,12 @@ ilustrace:
 - [pavouk](doma/ilustrace/pavouk.jpg)
 
 ---
+### mimo 
+## myš 
+
+[generator fontu](doma/mimo/generator_fontu.html)
+
+---
 
 <!-- Onboarding banner: vložte do <body> nahoře -->
 <section id="onboarding-banner" style="background:#fff9f0;border-left:6px solid #ff8c42;padding:18px;margin:12px 0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;">
