@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vizuální laboratoř · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 13px; line-height: 1.7; padding: 1rem; min-height: 100vh;
+    }
+    .app { max-width: 1600px; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; margin: 0.5rem 0; color: #c8903a; }
+    
+    .main-layout { display: grid; grid-template-columns: 280px 1fr 300px; gap: 1rem; margin-top: 1rem; }
+    @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+    
+    /* Knihovna (levý panel) */
+    .library-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 4px; padding: 0.8rem; height: fit-content; max-height: 80vh; overflow-y: auto; }
+    .library-search { width: 100%; padding: 0.3rem; background: #0f0d0a; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; margin-bottom: 0.8rem; }
+    .lib-category { margin-bottom: 0.8rem; }
+    .lib-cat-title { color: #c8903a; font-weight: 500; margin-bottom: 0.2rem; cursor: pointer; }
+    .lib-items { margin-left: 0.5rem; display: none; }
+    .lib-category.open .lib-items { display: block; }
+    .lib-item { padding: 0.2rem 0; cursor: pointer; border-bottom: 1px solid rgba(200,144,58,.1); display: flex; justify-content: space-between; }
+    .lib-item:hover { background: rgba(200,144,58,.1); }
+    .lib-item-name { color: #e8e0d0; }
+    .lib-item-desc { font-size: 0.7rem; color: rgba(232,224,208,.6); }
+    .add-figure-btn { margin-top: 0.5rem; font-size: 0.7rem; }
+    
+    /* Canvas (střed) */
+    .canvas-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 4px; padding: 0.8rem; }
+    .canvas-container { position: relative; margin: 0.5rem 0; }
+    #mainCanvas { display: block; max-width: 100%; height: auto; background: #0f0d0a; border: 1px solid rgba(200,144,58,.2); cursor: crosshair; }
+    .upload-area { margin-bottom: 0.5rem; }
+    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .btn {
+      padding: 0.3rem 0.8rem; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary:hover { background: #daa050; }
+    .mode-indicator { font-size: 0.7rem; color: #c8903a; margin-left: 0.5rem; }
+    
+    /* Anotace (pravý panel) */
+    .annotations-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 4px; padding: 0.8rem; max-height: 80vh; overflow-y: auto; }
+    .annotation-item { border-bottom: 1px solid rgba(200,144,58,.1); padding: 0.5rem 0; }
+    .annotation-header { display: flex; justify-content: space-between; }
+    .annotation-figure { color: #c8903a; }
+    .annotation-angle { font-size: 0.7rem; }
+    .annotation-note { font-size: 0.7rem; color: rgba(232,224,208,.6); }
+    .annotation-actions { margin-top: 0.2rem; }
+    .annotation-actions button { font-size: 0.6rem; padding: 0.1rem 0.4rem; margin-right: 0.3rem; }
+    
+    /* Dataset panel (spodní) */
+    .dataset-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 4px; padding: 0.8rem; margin-top: 1rem; }
+    .dataset-stats { margin-bottom: 0.5rem; }
+    
+    /* Modální okno pro přidání figury */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #171410; border: 1px solid #c8903a; padding: 1.5rem; max-width: 400px; width: 100%; }
+    .modal input, .modal select, .modal textarea { width: 100%; padding: 0.3rem; margin: 0.3rem 0; background: #0f0d0a; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Vizuální <em>laboratoř</em></h1>
+  <p style="margin-bottom:1rem; color:rgba(232,224,208,.7);">Knihovna vizuálních figur · Anotace obrázků · Tvorba datasetu pro 12 úhlů</p>
+
+  <div class="main-layout">
+    <!-- LEVÝ PANEL: KNIHOVNA FIGUR -->
+    <div class="library-panel">
+      <h2>📚 Knihovna figur</h2>
+      <input type="text" class="library-search" id="libSearch" placeholder="Filtrovat...">
+      <div id="libraryContainer"></div>
+      <button class="btn add-figure-btn" id="addFigureBtn">➕ Přidat figuru</button>
+      <p style="font-size:0.65rem; margin-top:0.5rem; color:rgba(232,224,208,.4);">Klikni na figuru – vybereš ji pro anotaci.</p>
+    </div>
+
+    <!-- STŘEDNÍ PANEL: CANVAS A NAHRÁVÁNÍ -->
+    <div class="canvas-panel">
+      <h2>🖼️ Pracovní plocha</h2>
+      <div class="upload-area">
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+        <div class="btn-row">
+          <button class="btn" id="galleryBtn">📂 Galerie</button>
+          <button class="btn" id="cameraBtn">📸 Fotoaparát</button>
+          <button class="btn" id="clearCanvasBtn">🗑️ Smazat obrázek</button>
+        </div>
+      </div>
+      <div class="canvas-container">
+        <canvas id="mainCanvas" width="600" height="400"></canvas>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="addAnnotationModeBtn" data-mode="rect">📐 Přidat anotaci</button>
+        <span class="mode-indicator" id="modeIndicator">Režim: prohlížení</span>
+      </div>
+      <p style="font-size:0.7rem; margin-top:0.3rem;">Klikni a táhni pro nakreslení obdélníku. Po uvolnění vyplň anotaci.</p>
+    </div>
+
+    <!-- PRAVÝ PANEL: ANOTACE -->
+    <div class="annotations-panel">
+      <h2>📝 Anotace</h2>
+      <div id="annotationsList"></div>
+      <p id="noAnnotationsMsg" style="color:rgba(232,224,208,.4);">Žádné anotace.</p>
+    </div>
+  </div>
+
+  <!-- SPODNÍ PANEL: DATASET -->
+  <div class="dataset-panel">
+    <h2>📊 Dataset</h2>
+    <div class="dataset-stats" id="datasetStats"></div>
+    <div class="btn-row">
+      <button class="btn" id="saveCurrentToDatasetBtn">💾 Uložit aktuální anotace do datasetu</button>
+      <button class="btn" id="exportDatasetBtn">📤 Exportovat dataset (JSON)</button>
+      <button class="btn" id="importDatasetBtn">📥 Importovat dataset</button>
+      <button class="btn" id="clearDatasetBtn">🗑️ Vyčistit dataset</button>
+    </div>
+    <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;">
+  </div>
+
+  <!-- MODÁLNÍ OKNO PRO PŘIDÁNÍ FIGURY -->
+  <div class="modal" id="figureModal">
+    <div class="modal-content">
+      <h3>➕ Nová figura</h3>
+      <select id="figureCategorySelect"></select>
+      <input type="text" id="figureName" placeholder="Název figury">
+      <textarea id="figureDesc" placeholder="Popis stylu (neutrální)"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="saveFigureBtn">Uložit</button>
+        <button class="btn" id="closeModalBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODÁLNÍ OKNO PRO ANOTACI -->
+  <div class="modal" id="annotationModal">
+    <div class="modal-content">
+      <h3>📌 Nová anotace</h3>
+      <p>Vybraná figura: <strong id="selectedFigureDisplay"></strong></p>
+      <select id="angleSelect"></select>
+      <textarea id="annotationNote" placeholder="Poznámka..."></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="saveAnnotationBtn">Uložit anotaci</button>
+        <button class="btn" id="cancelAnnotationBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- 12 ÚHLŮ ----------
+    const ANGLES = [
+      { st:0, name:'Analytický' }, { st:30, name:'Kulturní' }, { st:60, name:'Filozofický' },
+      { st:90, name:'Naivní' }, { st:120, name:'Jazykový' }, { st:150, name:'Metaforický' },
+      { st:180, name:'Asociační' }, { st:210, name:'Introspektivní' }, { st:240, name:'Ironický' },
+      { st:270, name:'Groteskní' }, { st:300, name:'Absurdní' }, { st:330, name:'Surrealistický' }
+    ];
+
+    // ---------- VÝCHOZÍ KNIHOVNA FIGUR (neutrální popisy stylu) ----------
+    let figureLibrary = [
+      { category:"Linie", name:"Tenká, rovná, pravidelná", desc:"Přesnost, technický ráz, struktura. Odpovídá analytickému přístupu." },
+      { category:"Linie", name:"Silná, energická, výrazná", desc:"Důraz, exprese, energie. Odpovídá grotesknímu nebo expresivnímu přístupu." },
+      { category:"Linie", name:"Oblá, plynulá, harmonická", desc:"Harmonie, estetika, tradice. Odpovídá kulturnímu přístupu." },
+      { category:"Linie", name:"Přerušovaná, tečkovaná", desc:"Otevřenost, nedokončenost, otázky. Odpovídá filozofickému přístupu." },
+      { category:"Linie", name:"Chaotická, různorodá", desc:"Asociace, tok myšlenek, nefiltrovaný výraz." },
+      { category:"Linie", name:"Vlnitá, rytmická", desc:"Rytmus, opakování, jazyková hravost." },
+      { category:"Šrafování", name:"Rovnoběžné, systematické", desc:"Systematičnost, technický přístup, analýza." },
+      { category:"Šrafování", name:"Křížové, husté", desc:"Intenzita, vrstvení, dramatičnost." },
+      { category:"Šrafování", name:"Krouživé, nepravidelné", desc:"Meditativnost, vnitřní svět, introspekce." },
+      { category:"Šrafování", name:"Žádné (čisté plochy)", desc:"Přímost, jednoduchost, naivita." },
+      { category:"Šrafování", name:"Tečkování", desc:"Trpělivost, detail, textura." },
+      { category:"Kompozice", name:"Symetrická, centrovaná", desc:"Řád, vyváženost, analytický nebo kulturní přístup." },
+      { category:"Kompozice", name:"Asymetrická, dynamická", desc:"Pohyb, napětí, ironie nebo groteska." },
+      { category:"Kompozice", name:"Fragmentovaná, rozptýlená", desc:"Asociace, chaos, absurdita." },
+      { category:"Kompozice", name:"Přeplněná, bez prázdna", desc:"Intenzita, exprese, groteskno." },
+      { category:"Kompozice", name:"Vzdušná, s prázdnými plochami", desc:"Otevřenost, filozofie, minimalismus." },
+      { category:"Tlak", name:"Lehký, jemný", desc:"Křehkost, preciznost, introspekce." },
+      { category:"Tlak", name:"Silný, výrazný", desc:"Energie, důraz, exprese." },
+      { category:"Tlak", name:"Proměnlivý", desc:"Dynamika, kontrast, ironie." },
+      { category:"Tvary", name:"Geometrické, přesné", desc:"Analytický, technický přístup." },
+      { category:"Tvary", name:"Organické, oblé", desc:"Harmonie, kulturnost, metaforičnost." },
+      { category:"Tvary", name:"Deformované, přehnané", desc:"Groteskno, ironie, absurdita." },
+      { category:"Tvary", name:"Jednoduché, zjednodušené", desc:"Naivita, přímost." },
+      { category:"Tvary", name:"Abstraktní, nefigurativní", desc:"Surrealita, snovost, asociace." },
+      { category:"Médium", name:"Tužka – jemná linka", desc:"Kontrola, preciznost, možnost detailu." },
+      { category:"Médium", name:"Pero – ostrá, čistá linka", desc:"Jistota, definitivnost, grafický výraz." },
+      { category:"Médium", name:"Štětec – plynulé tahy", desc:"Malířskost, exprese, proměnlivá tloušťka." },
+      { category:"Médium", name:"Uhel / rudka – měkké přechody", desc:"Atmosféra, stínování, dramatičnost." }
+    ];
+
+    // Stav aplikace
+    let currentImage = null;                 // HTMLImageElement
+    let annotations = [];                   // { id, x, y, w, h, figure, angle, note }
+    let selectedFigure = null;              // aktuálně vybraná figura z knihovny
+    let annotationMode = false;
+    let isDrawing = false;
+    let startX, startY;
+    let currentRect = null;
+    let dataset = [];
+
+    // DOM prvky
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const libraryContainer = document.getElementById('libraryContainer');
+    const libSearch = document.getElementById('libSearch');
+    const annotationsList = document.getElementById('annotationsList');
+    const noAnnotationsMsg = document.getElementById('noAnnotationsMsg');
+    const modeIndicator = document.getElementById('modeIndicator');
+    const figureModal = document.getElementById('figureModal');
+    const annotationModal = document.getElementById('annotationModal');
+    const selectedFigureDisplay = document.getElementById('selectedFigureDisplay');
+    const angleSelect = document.getElementById('angleSelect');
+    const annotationNote = document.getElementById('annotationNote');
+    const datasetStats = document.getElementById('datasetStats');
+    const importFileInput = document.getElementById('importFileInput');
+    const figureCategorySelect = document.getElementById('figureCategorySelect');
+
+    // ---------- INICIALIZACE ----------
+    function init() {
+      renderLibrary();
+      renderAngleSelect();
+      loadDataset();
+      updateDatasetStats();
+      
+      // Eventy pro knihovnu
+      libSearch.addEventListener('input', renderLibrary);
+      
+      // Eventy pro canvas
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      
+      // Tlačítka
+      document.getElementById('galleryBtn').addEventListener('click', () => fileInput.click());
+      document.getElementById('cameraBtn').addEventListener('click', () => cameraInput.click());
+      document.getElementById('clearCanvasBtn').addEventListener('click', clearCanvas);
+      document.getElementById('addAnnotationModeBtn').addEventListener('click', toggleAnnotationMode);
+      document.getElementById('saveCurrentToDatasetBtn').addEventListener('click', saveCurrentToDataset);
+      document.getElementById('exportDatasetBtn').addEventListener('click', exportDataset);
+      document.getElementById('importDatasetBtn').addEventListener('click', () => importFileInput.click());
+      document.getElementById('clearDatasetBtn').addEventListener('click', clearDataset);
+      document.getElementById('addFigureBtn').addEventListener('click', openFigureModal);
+      document.getElementById('closeModalBtn').addEventListener('click', () => figureModal.classList.remove('active'));
+      document.getElementById('saveFigureBtn').addEventListener('click', saveNewFigure);
+      document.getElementById('cancelAnnotationBtn').addEventListener('click', () => annotationModal.classList.remove('active'));
+      document.getElementById('saveAnnotationBtn').addEventListener('click', saveAnnotation);
+      
+      fileInput.addEventListener('change', (e) => loadImage(e.target.files[0]));
+      cameraInput.addEventListener('change', (e) => loadImage(e.target.files[0]));
+      importFileInput.addEventListener('change', importDataset);
+    }
+
+    // ---------- KNIHOVNA FIGUR ----------
+    function renderLibrary() {
+      const filter = libSearch.value.toLowerCase();
+      const categories = {};
+      figureLibrary.forEach(fig => {
+        if (filter && !fig.name.toLowerCase().includes(filter) && !fig.category.toLowerCase().includes(filter)) return;
+        if (!categories[fig.category]) categories[fig.category] = [];
+        categories[fig.category].push(fig);
+      });
+      
+      let html = '';
+      Object.keys(categories).sort().forEach(cat => {
+        html += `<div class="lib-category open"><div class="lib-cat-title">${cat}</div><div class="lib-items">`;
+        categories[cat].forEach(fig => {
+          html += `<div class="lib-item" data-figure='${JSON.stringify(fig)}'>
+            <span class="lib-item-name">${fig.name}</span>
+            <span class="lib-item-desc" title="${fig.desc}">ℹ️</span>
+          </div>`;
+        });
+        html += '</div></div>';
+      });
+      libraryContainer.innerHTML = html || '<p style="color:rgba(232,224,208,.4);">Žádné figury.</p>';
+      
+      // Eventy na kategorie
+      document.querySelectorAll('.lib-cat-title').forEach(el => {
+        el.addEventListener('click', () => el.closest('.lib-category').classList.toggle('open'));
+      });
+      // Eventy na položky
+      document.querySelectorAll('.lib-item').forEach(el => {
+        el.addEventListener('click', () => {
+          selectedFigure = JSON.parse(el.dataset.figure);
+          selectedFigureDisplay.textContent = `${selectedFigure.category}: ${selectedFigure.name}`;
+          document.querySelectorAll('.lib-item').forEach(i => i.style.background = '');
+          el.style.background = 'rgba(200,144,58,.2)';
+        });
+      });
+    }
+
+    function openFigureModal() {
+      // Naplnit kategorie
+      const cats = [...new Set(figureLibrary.map(f => f.category))];
+      figureCategorySelect.innerHTML = cats.map(c => `<option>${c}</option>`).join('');
+      figureModal.classList.add('active');
+    }
+
+    function saveNewFigure() {
+      const category = figureCategorySelect.value;
+      const name = document.getElementById('figureName').value.trim();
+      const desc = document.getElementById('figureDesc').value.trim();
+      if (!category || !name) return;
+      figureLibrary.push({ category, name, desc });
+      renderLibrary();
+      figureModal.classList.remove('active');
+      document.getElementById('figureName').value = '';
+      document.getElementById('figureDesc').value = '';
+    }
+
+    // ---------- NAHRÁVÁNÍ OBRÁZKU ----------
+    function loadImage(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          currentImage = img;
+          annotations = [];
+          renderCanvas();
+          renderAnnotationsList();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearCanvas() {
+      currentImage = null;
+      annotations = [];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      renderAnnotationsList();
+    }
+
+    function renderCanvas() {
+      if (!currentImage) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      // Přizpůsobit canvas rozměrům obrázku
+      const maxW = 800, maxH = 600;
+      let w = currentImage.width, h = currentImage.height;
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW/w, maxH/h);
+        w = Math.floor(w * ratio); h = Math.floor(h * ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(currentImage, 0, 0, w, h);
+      
+      // Vykreslit anotace
+      annotations.forEach(ann => {
+        ctx.strokeStyle = '#c8903a';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(ann.x, ann.y, ann.w, ann.h);
+        ctx.fillStyle = 'rgba(200,144,58,.2)';
+        ctx.fillRect(ann.x, ann.y, ann.w, ann.h);
+      });
+    }
+
+    // ---------- KRESLENÍ ANOTACÍ ----------
+    function toggleAnnotationMode() {
+      annotationMode = !annotationMode;
+      modeIndicator.textContent = annotationMode ? 'Režim: KRESLENÍ ANOTACE' : 'Režim: prohlížení';
+      canvas.style.cursor = annotationMode ? 'crosshair' : 'default';
+    }
+
+    function onMouseDown(e) {
+      if (!annotationMode || !currentImage) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      startX = (e.clientX - rect.left) * scaleX;
+      startY = (e.clientY - rect.top) * scaleY;
+      isDrawing = true;
+    }
+
+    function onMouseMove(e) {
+      if (!isDrawing || !annotationMode) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const currentX = (e.clientX - rect.left) * scaleX;
+      const currentY = (e.clientY - rect.top) * scaleY;
+      
+      renderCanvas();
+      ctx.strokeStyle = '#c8903a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+      currentRect = { x: startX, y: startY, w: currentX - startX, h: currentY - startY };
+    }
+
+    function onMouseUp(e) {
+      if (!isDrawing || !annotationMode) return;
+      isDrawing = false;
+      annotationMode = false;
+      modeIndicator.textContent = 'Režim: prohlížení';
+      canvas.style.cursor = 'default';
+      
+      if (!currentRect || currentRect.w === 0 || currentRect.h === 0) return;
+      if (!selectedFigure) { alert('Nejprve vyber figuru z knihovny.'); return; }
+      
+      // Otevřít modální okno pro doplnění
+      openAnnotationModal(currentRect);
+    }
+
+    function openAnnotationModal(rect) {
+      annotationModal.classList.add('active');
+      annotationModal.dataset.rect = JSON.stringify(rect);
+    }
+
+    function saveAnnotation() {
+      const rect = JSON.parse(annotationModal.dataset.rect);
+      const angle = angleSelect.value ? parseInt(angleSelect.value) : null;
+      const note = annotationNote.value;
+      
+      annotations.push({
+        id: Date.now() + '-' + Math.random().toString(36),
+        ...rect,
+        figure: selectedFigure,
+        angle: angle,
+        note: note
+      });
+      
+      renderCanvas();
+      renderAnnotationsList();
+      annotationModal.classList.remove('active');
+      annotationNote.value = '';
+      angleSelect.value = '';
+    }
+
+    // ---------- ANOTACE SEZNAM ----------
+    function renderAnnotationsList() {
+      if (annotations.length === 0) {
+        annotationsList.innerHTML = '';
+        noAnnotationsMsg.style.display = 'block';
+        return;
+      }
+      noAnnotationsMsg.style.display = 'none';
+      let html = '';
+      annotations.forEach((ann, idx) => {
+        html += `<div class="annotation-item">
+          <div class="annotation-header">
+            <span class="annotation-figure">${ann.figure.name}</span>
+            <span class="annotation-angle">${ann.angle ? ANGLES.find(a=>a.st===ann.angle)?.name : '—'}</span>
+          </div>
+          <div class="annotation-note">${ann.note || 'bez poznámky'}</div>
+          <div class="annotation-actions">
+            <button class="btn" onclick="deleteAnnotation('${ann.id}')">Smazat</button>
+          </div>
+        </div>`;
+      });
+      annotationsList.innerHTML = html;
+    }
+
+    window.deleteAnnotation = function(id) {
+      annotations = annotations.filter(a => a.id !== id);
+      renderCanvas();
+      renderAnnotationsList();
+    };
+
+    // ---------- DATASET ----------
+    function loadDataset() {
+      const stored = localStorage.getItem('mys-visual-dataset');
+      if (stored) dataset = JSON.parse(stored);
+      else dataset = [];
+    }
+
+    function saveDataset() {
+      localStorage.setItem('mys-visual-dataset', JSON.stringify(dataset));
+      updateDatasetStats();
+    }
+
+    function updateDatasetStats() {
+      const total = dataset.length;
+      const byAngle = {};
+      dataset.forEach(r => { if (r.angle) byAngle[r.angle] = (byAngle[r.angle]||0)+1; });
+      datasetStats.innerHTML = `Celkem záznamů: ${total} · ` + 
+        ANGLES.map(a => `${a.name}: ${byAngle[a.st]||0}`).join(' · ');
+    }
+
+    function saveCurrentToDataset() {
+      if (annotations.length === 0) { alert('Žádné anotace.'); return; }
+      annotations.forEach(ann => {
+        if (!ann.angle) { alert('Některé anotace nemají přiřazený úhel.'); return; }
+      });
+      const records = annotations.map(ann => ({
+        timestamp: Date.now(),
+        figure: ann.figure,
+        angle: ann.angle,
+        note: ann.note,
+        bbox: { x: ann.x, y: ann.y, w: ann.w, h: ann.h }
+      }));
+      dataset.push(...records);
+      saveDataset();
+      alert(`Přidáno ${records.length} záznamů do datasetu.`);
+    }
+
+    function exportDataset() {
+      const blob = new Blob([JSON.stringify(dataset, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `vizualni-dataset-${Date.now()}.json`;
+      a.click();
+    }
+
+    function importDataset(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          if (Array.isArray(imported)) {
+            dataset = imported;
+            saveDataset();
+            alert('Dataset naimportován.');
+          }
+        } catch(ex) { alert('Neplatný JSON.'); }
+      };
+      reader.readAsText(file);
+      importFileInput.value = '';
+    }
+
+    function clearDataset() {
+      if (confirm('Smazat celý dataset?')) {
+        dataset = [];
+        saveDataset();
+      }
+    }
+
+    function renderAngleSelect() {
+      angleSelect.innerHTML = '<option value="">— bez úhlu —</option>' +
+        ANGLES.map(a => `<option value="${a.st}">${a.st}° ${a.name}</option>`).join('');
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
