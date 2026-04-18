@@ -9,14 +9,23 @@
 ---
 
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
+  hra perspektiv = mezi vztahy
 
 - [vizualni_analyzer](doma/nastroje/vizualni_analyzer.html)
+ hra perspektiv = mezi vztahy
 
 - [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
+  denik - temata - nepouzit
 
 - [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
+ galerie, nastenka, url stooy v case a prostoru, sdileni otisku
+ ODKUDKOLI POKUD URL METADATA - FENOMENY 
 
 - [analyzér](doma/nastroje/analyzer.html)
+  analyzer figur v textu prirazene k uhlum
+kreativita, fyzika jazyka, metadenik
+  mezi-vztahy, forenzni mapovani struktur, benchmarky, dataset multimedialnich bloku pro dalsi generatory, ...
+
   
 ---
 
