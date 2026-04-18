@@ -8,9 +8,9 @@
 
 ---
 
-- [kreslici_analyzer](doma/nastroje/kreslici_uzivatel.html)
+- [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
 
-- [vizualni_analyzer](doma/nastroje/vizualni_analyzer.htm)
+- [vizualni_analyzer](doma/nastroje/vizualni_analyzer.html)
 
 - [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
 
