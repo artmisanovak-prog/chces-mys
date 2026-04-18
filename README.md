@@ -69,7 +69,10 @@ ilustrace:
 ---
 ### mimo ## myš 
 
-[generátor fontů](doma/mimo/generator_fontu.html)
+- [vizualni laborator](doma/mimo/vytvarna_laborator.html)
+- [vytvarna laborator](doma/mimo/vytvarna_labirator.html)
+- [datovy pruzkumnik](doma/mimo/datovy_pruzkumnik.html)
+- [generátor fontů](doma/mimo/generator_fontu.html)
 
 ---
 
