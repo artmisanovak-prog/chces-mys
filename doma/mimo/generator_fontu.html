@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Google Fonts generátor | 1–3 fonty</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: system-ui, 'Segoe UI', sans-serif;
+        }
+        body {
+            background: #f6f9fc;
+            padding: 24px;
+            min-height: 100vh;
+        }
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-weight: 500;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+        .sub {
+            color: #475569;
+            margin-bottom: 24px;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 28px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        label {
+            font-weight: 500;
+            color: #334155;
+        }
+        select, button {
+            padding: 10px 18px;
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        button {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        button:hover {
+            background: #0f172a;
+            transform: scale(0.98);
+        }
+        button.secondary {
+            background: #eef2ff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+        }
+        button.secondary:hover {
+            background: #e0e7ff;
+        }
+        .export-area {
+            margin-left: auto;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .font-card {
+            background: white;
+            border-radius: 28px;
+            padding: 22px 20px 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            border: 2px solid #eef2f6;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+        .font-card.locked {
+            border-color: #3b82f6;
+            background: #f8fafc;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+        }
+        .lock-indicator {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 1.6rem;
+            line-height: 1;
+            opacity: 0.6;
+            transition: 0.1s;
+        }
+        .font-card.locked .lock-indicator {
+            opacity: 1;
+        }
+        .sample {
+            margin: 12px 0 6px;
+            padding-right: 30px;
+        }
+        .sample-heading {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .sample-sub {
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        .sample-meta {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+        .font-details {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+        }
+        .badge {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-family: monospace;
+        }
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+        .export-modal {
+            margin-top: 30px;
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        .export-modal textarea {
+            width: 100%;
+            height: 180px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            padding: 16px;
+            border-radius: 20px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+        .flex-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+    </style>
+    <!-- Google Fonts se budou načítat dynamicky -->
+</head>
+<body>
+<div class="app">
+    <h1>🔤 Google Fonts · náhodný mix</h1>
+    <div class="sub">1, 2 nebo 3 fonty · klikni na kartu = zamknout/odemknout 🔒</div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>🎚️ Počet fontů:</label>
+            <select id="fontCountSelect">
+                <option value="1">1 font</option>
+                <option value="2" selected>2 fonty (nadpis + podnadpis)</option>
+                <option value="3">3 fonty (+ doplňkový text)</option>
+            </select>
+        </div>
+        <button id="addCardBtn">➕ Nová kombinace</button>
+        <button id="regenerateUnlockedBtn" class="secondary">🔄 Přegenerovat odemčené</button>
+        <button id="exportBtn" class="secondary" style="margin-left:auto;">📋 Exportovat CSS</button>
+        <button id="clearAllBtn" class="secondary" style="background:#fee2e2; border-color:#fecaca;">🗑️ Vše smazat</button>
+    </div>
+
+    <!-- kontejner na karty -->
+    <div id="cardsContainer" class="cards-grid"></div>
+
+    <!-- export panel -->
+    <div id="exportPanel" class="export-modal" style="display: none;">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-weight: 600;">📦 Vygenerované CSS (zkopíruj si)</span>
+            <button id="closeExportBtn" style="background: #334155; padding: 6px 16px;">Zavřít</button>
+        </div>
+        <textarea id="cssOutput" readonly></textarea>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ---------- KONFIGURACE ----------
+        const MAX_CARDS = 10;
+
+        // Rozšířený seznam oblíbených Google Fonts (podporujeme 400 a 700)
+        const GOOGLE_FONTS = [
+            'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald', 'Raleway', 
+            'Poppins', 'Nunito', 'Inter', 'Manrope', 'Work Sans', 'Quicksand',
+            'Playfair Display', 'Merriweather', 'PT Sans', 'Ubuntu', 'Fira Sans',
+            'Source Sans Pro', 'Noto Sans', 'DM Sans', 'Cabin', 'Rubik',
+            'Barlow', 'Titillium Web', 'Hind', 'Mukta', 'Karla', 'Libre Franklin'
+        ];
+
+        // váhy, které budeme používat (400 = regular, 700 = bold)
+        const WEIGHTS = [400, 700];
+
+        // textové ukázky podle počtu fontů
+        const SAMPLE_TEXTS = {
+            1: ['Nadpis / Hlavní text'],
+            2: ['Výrazný nadpis', 'Podnadpis s jemnějším stylem'],
+            3: ['Nadpis stránky', 'Podnadpis / perex', 'menu · patička · doplněk']
+        };
+
+        // Stav aplikace
+        let cards = [];                 // pole objektů karet
+        let nextId = 1000;
+        let loadedFonts = new Set();    // klíč "family:wght@400;700"
+
+        // DOM elementy
+        const container = document.getElementById('cardsContainer');
+        const fontCountSelect = document.getElementById('fontCountSelect');
+        const addBtn = document.getElementById('addCardBtn');
+        const regenUnlockedBtn = document.getElementById('regenerateUnlockedBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const exportPanel = document.getElementById('exportPanel');
+        const cssOutput = document.getElementById('cssOutput');
+        const closeExportBtn = document.getElementById('closeExportBtn');
+
+        // ---------- POMOCNÉ FUNKCE ----------
+
+        // Náhodné celé číslo v rozsahu
+        function rand(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Náhodná barva (HSL pro příjemnější odstíny)
+        function randomColor() {
+            const h = rand(0, 360);
+            const s = rand(40, 85);
+            const l = rand(35, 70);
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        }
+
+        // Vygeneruje náhodnou konfiguraci pro jeden font (family, weight, size, color)
+        function generateFontConfig(isHeading = false, isSub = false) {
+            const family = GOOGLE_FONTS[Math.floor(Math.random() * GOOGLE_FONTS.length)];
+            const weight = WEIGHTS[Math.floor(Math.random() * WEIGHTS.length)];
+            let size;
+            if (isHeading) size = rand(28, 48);
+            else if (isSub) size = rand(18, 28);
+            else size = rand(14, 20);  // doplňkový text
+
+            const color = randomColor();
+            return { family, weight, size, color };
+        }
+
+        // Vytvoří objekt nové kombinace podle zvoleného počtu fontů (count 1-3)
+        function createRandomCombo(count) {
+            const fonts = [];
+            const samples = SAMPLE_TEXTS[count] || SAMPLE_TEXTS[2];
+            
+            if (count >= 1) {
+                fonts.push(generateFontConfig(true, false)); // nadpis
+            }
+            if (count >= 2) {
+                fonts.push(generateFontConfig(false, true)); // podnadpis
+            }
+            if (count >= 3) {
+                fonts.push(generateFontConfig(false, false)); // doplňkový
+            }
+            
+            return {
+                id: nextId++,
+                locked: false,
+                count: count,
+                fonts: fonts,
+                samples: samples,
+            };
+        }
+
+        // Načtení Google Fontu (pokud ještě není) – načítáme vždy 400 i 700
+        function loadGoogleFont(family) {
+            const familyKey = family.replace(/\s+/g, '+');
+            const weightsParam = '400;700';   // podpora obou vah
+            const key = `${familyKey}:wght@${weightsParam}`;
+            if (loadedFonts.has(key)) return;
+            
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${familyKey}:wght@${weightsParam}&display=swap`;
+            document.head.appendChild(link);
+            loadedFonts.add(key);
+        }
+
+        // Před použitím fontů v kartě je načteme
+        function preloadFontsForCard(card) {
+            card.fonts.forEach(f => loadGoogleFont(f.family));
+        }
+
+        // Vykreslení jedné karty
+        function renderCard(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `font-card ${card.locked ? 'locked' : ''}`;
+            cardDiv.dataset.id = card.id;
+            
+            // indikátor zámku
+            const lockSpan = document.createElement('span');
+            lockSpan.className = 'lock-indicator';
+            lockSpan.textContent = card.locked ? '🔒' : '🔓';
+            cardDiv.appendChild(lockSpan);
+
+            // vytvoříme ukázkové bloky podle počtu fontů
+            const samples = card.samples;
+            const fonts = card.fonts;
+
+            // Hlavní nadpis (vždy)
+            const headingDiv = document.createElement('div');
+            headingDiv.className = 'sample-heading';
+            headingDiv.textContent = samples[0] || 'Nadpis';
+            if (fonts[0]) {
+                headingDiv.style.fontFamily = `'${fonts[0].family}', sans-serif`;
+                headingDiv.style.fontWeight = fonts[0].weight;
+                headingDiv.style.fontSize = fonts[0].size + 'px';
+                headingDiv.style.color = fonts[0].color;
+            }
+            cardDiv.appendChild(headingDiv);
+
+            // Podnadpis (pokud existuje)
+            if (fonts.length >= 2) {
+                const subDiv = document.createElement('div');
+                subDiv.className = 'sample-sub';
+                subDiv.textContent = samples[1] || 'Podnadpis';
+                subDiv.style.fontFamily = `'${fonts[1].family}', sans-serif`;
+                subDiv.style.fontWeight = fonts[1].weight;
+                subDiv.style.fontSize = fonts[1].size + 'px';
+                subDiv.style.color = fonts[1].color;
+                cardDiv.appendChild(subDiv);
+            }
+
+            // Doplňkový text / meta (třetí font)
+            if (fonts.length >= 3) {
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'sample-meta';
+                metaDiv.textContent = samples[2] || 'doplňkový text · patička';
+                metaDiv.style.fontFamily = `'${fonts[3]?.family || fonts[2].family}', sans-serif`;
+                metaDiv.style.fontWeight = fonts[2].weight;
+                metaDiv.style.fontSize = fonts[2].size + 'px';
+                metaDiv.style.color = fonts[2].color;
+                cardDiv.appendChild(metaDiv);
+            }
+
+            // Detailní informace o fontech
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'font-details';
+            fonts.forEach((f, idx) => {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = `${idx+1}. ${f.family} ${f.weight} · ${f.size}px`;
+                detailsDiv.appendChild(badge);
+            });
+            cardDiv.appendChild(detailsDiv);
+
+            // Kliknutí na kartu = přepnutí zámku
+            cardDiv.addEventListener('click', (e) => {
+                // nechceme reagovat na kliknutí na tlačítka uvnitř (nejsou), ale prevent default není potřeba
+                toggleLock(card.id);
+            });
+
+            return cardDiv;
+        }
+
+        // Překreslení všech karet
+        function renderAllCards() {
+            container.innerHTML = '';
+            if (cards.length === 0) {
+                container.innerHTML = '<div class="empty-message">✨ Zatím žádné kombinace. Klikni na "Nová kombinace" ✨</div>';
+                return;
+            }
+            cards.forEach(card => {
+                preloadFontsForCard(card);
+                const cardEl = renderCard(card);
+                container.appendChild(cardEl);
+            });
+        }
+
+        // Přepnutí zámku karty
+        function toggleLock(cardId) {
+            const card = cards.find(c => c.id === cardId);
+            if (card) {
+                card.locked = !card.locked;
+                renderAllCards();
+            }
+        }
+
+        // Přidání nové karty (respektuje max)
+        function addNewCard() {
+            if (cards.length >= MAX_CARDS) {
+                alert(`Maximálně ${MAX_CARDS} kombinací. Smaž nějakou nebo použij export.`);
+                return;
+            }
+            const count = parseInt(fontCountSelect.value, 10);
+            const newCard = createRandomCombo(count);
+            cards.push(newCard);
+            renderAllCards();
+        }
+
+        // Regenerování odemčených karet (zachová count z původní karty)
+        function regenerateUnlocked() {
+            let changed = false;
+            cards.forEach(card => {
+                if (!card.locked) {
+                    const count = card.count;  // zachováme počet fontů
+                    const fresh = createRandomCombo(count);
+                    // zachováme id a lock (false)
+                    card.fonts = fresh.fonts;
+                    card.samples = fresh.samples;
+                    // count zůstává
+                    changed = true;
+                }
+            });
+            if (changed) renderAllCards();
+        }
+
+        // Smazání všech karet
+        function clearAllCards() {
+            if (cards.length === 0) return;
+            if (confirm('Opravdu smazat všechny kombinace?')) {
+                cards = [];
+                renderAllCards();
+                exportPanel.style.display = 'none';
+            }
+        }
+
+        // Export do CSS (ukázkové třídy)
+        function generateCSS() {
+            let css = `/* Vygenerované Google Fonts kombinace – ${new Date().toLocaleString()} */\n\n`;
+            cards.forEach((card, index) => {
+                const cardId = card.id;
+                css += `/* --- Karta ${index+1} (${card.locked ? 'zamčeno' : 'odemčeno'}) --- */\n`;
+                card.fonts.forEach((f, i) => {
+                    const role = i === 0 ? 'heading' : (i === 1 ? 'subheading' : 'meta');
+                    css += `.card-${cardId}-${role} {\n`;
+                    css += `  font-family: '${f.family}', sans-serif;\n`;
+                    css += `  font-weight: ${f.weight};\n`;
+                    css += `  font-size: ${f.size}px;\n`;
+                    css += `  color: ${f.color};\n`;
+                    css += `}\n`;
+                });
+                css += '\n';
+            });
+            return css;
+        }
+
+        function showExport() {
+            const css = generateCSS();
+            cssOutput.value = css;
+            exportPanel.style.display = 'block';
+        }
+
+        // ---------- INICIALIZACE ----------
+        function init() {
+            // pár výchozích karet pro inspiraci (2 karty)
+            cards.push(createRandomCombo(2));
+            cards.push(createRandomCombo(3));
+            cards[0].locked = false;
+            cards[1].locked = true;  // druhá zamčená pro ukázku
+            renderAllCards();
+
+            // Event listenery
+            addBtn.addEventListener('click', addNewCard);
+            regenUnlockedBtn.addEventListener('click', regenerateUnlocked);
+            clearAllBtn.addEventListener('click', clearAllCards);
+            exportBtn.addEventListener('click', showExport);
+            closeExportBtn.addEventListener('click', () => {
+                exportPanel.style.display = 'none';
+            });
+
+            // Změna selectu počtu fontů neovlivní existující karty, jen nově vytvořené.
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
