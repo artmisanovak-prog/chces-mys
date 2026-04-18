@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Výtvarná laboratoř · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace;
+      font-size: 13px; line-height: 1.7; padding: 1.5rem; min-height: 100vh;
+    }
+    .app { max-width: 1400px; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; margin: 1.5rem 0 1rem; border-bottom: 1px solid rgba(200,144,58,.2); padding-bottom: 0.3rem; }
+    h3 { font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase; color: #c8903a; margin: 1rem 0 0.5rem; }
+    .layout { display: grid; grid-template-columns: 1fr 400px; gap: 2rem; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    
+    /* Nahrávání */
+    .upload-area {
+      border: 2px dashed rgba(200,144,58,.4); border-radius: 8px; padding: 2rem;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      background: rgba(23,20,16,.5); margin: 1rem 0;
+    }
+    .upload-area:hover { border-color: #c8903a; background: rgba(200,144,58,.05); }
+    .upload-area input { display: none; }
+    .btn-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1rem 0; }
+    .btn {
+      padding: 0.4rem 1.2rem; font-family: inherit; font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; transition: all 0.15s; border-radius: 2px;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    .btn-primary:hover { background: #daa050; }
+    
+    /* Náhled */
+    .preview-box { background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 0.5rem; border-radius: 4px; }
+    .preview-box img { width: 100%; height: auto; display: block; border-radius: 2px; max-height: 400px; object-fit: contain; }
+    
+    /* Panel s výsledky */
+    .results-panel { background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 1rem; border-radius: 4px; max-height: 600px; overflow-y: auto; }
+    .metric-group { margin-bottom: 1.5rem; }
+    .metric-item { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid rgba(200,144,58,.1); }
+    .metric-label { color: rgba(232,224,208,.7); }
+    .metric-value { color: #e8e0d0; font-weight: 500; }
+    .metric-hint { font-size: 0.7rem; color: rgba(200,144,58,.6); margin-top: 0.1rem; }
+    
+    /* Poznámky */
+    .notes-area { margin-top: 1rem; }
+    textarea { width: 100%; background: #1a1612; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; padding: 0.8rem; font-family: inherit; font-size: 0.8rem; resize: vertical; min-height: 80px; }
+    .angle-select { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .angle-btn { padding: 0.2rem 0.6rem; border: 1px solid rgba(200,144,58,.3); background: transparent; color: rgba(232,224,208,.7); border-radius: 12px; cursor: pointer; font-size: 0.7rem; }
+    .angle-btn.selected { background: #c8903a; color: #0f0d0a; border-color: #c8903a; }
+    
+    /* Legenda */
+    .legend-box { background: #171410; border: 1px solid rgba(200,144,58,.2); padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+    .legend-box details { cursor: pointer; }
+    .legend-box summary { color: #c8903a; margin-bottom: 0.5rem; }
+    .legend-box p { font-size: 0.75rem; color: rgba(232,224,208,.6); margin-bottom: 0.3rem; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>Výtvarná <em>laboratoř</em></h1>
+  <p style="margin-bottom:1rem; color:rgba(232,224,208,.7);">Nahraj kresbu. Nástroj extrahuje měřitelné grafické příznaky. Ty sama pak přiřadíš úhel a vytvoříš si tak vlastní dataset.</p>
+
+  <div class="legend-box">
+    <details>
+      <summary>📖 Co která metrika znamená (grafologický tahák)</summary>
+      <p><strong>Hustota hran:</strong> Kolik ostrých přechodů (kontur) je v obraze. Vysoká = detailní kresba, nízká = měkké přechody nebo prázdné plochy.</p>
+      <p><strong>Počet barev:</strong> Kolik unikátních odstínů šedi/barev. Kresba tužkou jich má málo, fotografie tisíce.</p>
+      <p><strong>Průměrná tloušťka čáry:</strong> Síla tahu. Silné čáry = důraz, energie; tenké = preciznost, křehkost.</p>
+      <p><strong>Zakřivení linií:</strong> 0 = rovné, vyšší číslo = oblouky/vlnovky. Rovné = analytika, oblouky = kulturnost/harmonie.</p>
+      <p><strong>Variabilita směru:</strong> Nízká = tahy jedním směrem (systematičnost), vysoká = chaos, asociace.</p>
+      <p><strong>Symetrie:</strong> 1 = dokonale symetrické, 0 = asymetrické. Vysoká = řád, nízká = uvolněnost.</p>
+      <p><strong>Poměr černá/bílá:</strong> Kolik plochy je pokryto kresbou. Vysoký = hutná, přeplácaná kresba; nízký = vzdušná, minimalistická.</p>
+      <p><strong>Počet izolovaných objektů:</strong> Málo = spojená kompozice, mnoho = fragmentované, nespojené prvky.</p>
+      <p><strong>Pravidelnost (FFT):</strong> Síla periodických vzorů. Vysoká = opakující se motivy, rytmus.</p>
+    </details>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="btn-row">
+        <button class="btn" id="galleryBtn">🖼️ Vybrat z galerie</button>
+        <button class="btn" id="cameraBtn">📸 Vyfotit</button>
+        <button class="btn btn-primary" id="analyzeBtn" disabled>🔍 Extrahovat příznaky</button>
+      </div>
+      <div class="upload-area" id="uploadArea">
+        <p>📂 Nebo sem přetáhni obrázek</p>
+        <input type="file" id="fileInput" accept="image/*">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+      </div>
+      <div class="preview-box" id="previewBox" style="display:none;">
+        <img id="previewImage" alt="Náhled">
+      </div>
+    </div>
+    <div>
+      <div class="results-panel" id="resultsPanel">
+        <p style="color:rgba(232,224,208,.5);">Po nahrání obrázku klikni na "Extrahovat příznaky".</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel pro ruční přiřazení úhlu -->
+  <div id="assignmentPanel" style="display:none; margin-top:2rem; padding:1rem; background:#171410; border:1px solid rgba(200,144,58,.2); border-radius:4px;">
+    <h3>📝 Přiřaď úhel</h3>
+    <div class="angle-select" id="angleSelect"></div>
+    <textarea id="angleNotes" placeholder="Poznámky (proč zrovna tento úhel, co tě k tomu vedlo)..."></textarea>
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn btn-primary" id="saveToDatasetBtn">💾 Uložit do datasetu</button>
+      <button class="btn" id="exportDatasetBtn">📤 Exportovat dataset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075' }, { st:30, name:'Kulturní', color:'#6a9e72' },
+      { st:60, name:'Filozofický', color:'#d4a0b0' }, { st:90, name:'Naivní', color:'#5fa8a0' },
+      { st:120, name:'Jazykový', color:'#8e7248' }, { st:150, name:'Metaforický', color:'#5a8a5a' },
+      { st:180, name:'Asociační', color:'#a85a5a' }, { st:210, name:'Introspektivní', color:'#c8a832' },
+      { st:240, name:'Ironický', color:'#c8722a' }, { st:270, name:'Groteskní', color:'#a83060' },
+      { st:300, name:'Absurdní', color:'#6080a0' }, { st:330, name:'Surrealistický', color:'#8060b0' }
+    ];
+
+    let uploadedImage = null;
+    let currentMetrics = null;
+    let selectedAngle = null;
+
+    const galleryBtn = document.getElementById('galleryBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const previewBox = document.getElementById('previewBox');
+    const previewImage = document.getElementById('previewImage');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const assignmentPanel = document.getElementById('assignmentPanel');
+    const angleSelect = document.getElementById('angleSelect');
+    const angleNotes = document.getElementById('angleNotes');
+    const saveToDatasetBtn = document.getElementById('saveToDatasetBtn');
+    const exportDatasetBtn = document.getElementById('exportDatasetBtn');
+
+    // ---------- Vykreslení tlačítek úhlů ----------
+    function renderAngleButtons() {
+      angleSelect.innerHTML = '';
+      ANGLES.forEach(angle => {
+        const btn = document.createElement('button');
+        btn.className = 'angle-btn';
+        btn.textContent = `${angle.st}° ${angle.name}`;
+        btn.style.borderColor = angle.color;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedAngle = angle.st;
+        });
+        angleSelect.appendChild(btn);
+      });
+    }
+    renderAngleButtons();
+
+    // ---------- Nahrání obrázku ----------
+    function handleImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          uploadedImage = img;
+          previewImage.src = img.src;
+          previewBox.style.display = 'block';
+          analyzeBtn.disabled = false;
+          resultsPanel.innerHTML = '<p style="color:rgba(232,224,208,.5);">Obrázek načten. Klikni na "Extrahovat příznaky".</p>';
+          assignmentPanel.style.display = 'none';
+          currentMetrics = null;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ---------- Extrakce měřitelných příznaků ----------
+    function extractMetrics(img) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const maxDim = 500;
+      let w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        const ratio = Math.min(maxDim/w, maxDim/h);
+        w = Math.floor(w * ratio); h = Math.floor(h * ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      const imageData = ctx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+
+      // 1. Počet unikátních barev
+      const colorSet = new Set();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = Math.floor(data[i] / 16);
+        const g = Math.floor(data[i+1] / 16);
+        const b = Math.floor(data[i+2] / 16);
+        colorSet.add((r << 10) | (g << 5) | b);
+      }
+
+      // 2. Převod na šedotón a detekce hran (Sobel)
+      const gray = new Uint8Array(w * h);
+      for (let i = 0; i < data.length; i += 4) {
+        gray[i/4] = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+      }
+      let edgePixels = 0;
+      const edges = new Uint8Array(w * h);
+      for (let y = 1; y < h-1; y++) {
+        for (let x = 1; x < w-1; x++) {
+          const idx = (y-1)*w + (x-1);
+          const gx = -1*gray[idx] + 1*gray[idx+2] + -2*gray[idx+w] + 2*gray[idx+w+2] + -1*gray[idx+2*w] + 1*gray[idx+2*w+2];
+          const gy = -1*gray[idx] -2*gray[idx+1] -1*gray[idx+2] + 1*gray[idx+2*w] + 2*gray[idx+2*w+1] + 1*gray[idx+2*w+2];
+          const mag = Math.sqrt(gx*gx + gy*gy);
+          if (mag > 40) { edges[y*w+x] = 1; edgePixels++; }
+        }
+      }
+
+      // 3. Detekce kontur pro tloušťku a zakřivení
+      const contours = [];
+      const visited = new Uint8Array(w * h);
+      for (let y = 1; y < h-1; y++) {
+        for (let x = 1; x < w-1; x++) {
+          if (edges[y*w+x] && !visited[y*w+x]) {
+            const contour = [];
+            const stack = [[x,y]];
+            while (stack.length) {
+              const [cx, cy] = stack.pop();
+              const idx = cy*w + cx;
+              if (visited[idx]) continue;
+              visited[idx] = 1;
+              contour.push([cx, cy]);
+              for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                  const nx = cx + dx, ny = cy + dy;
+                  if (nx >= 0 && nx < w && ny >= 0 && ny < h && edges[ny*w+nx] && !visited[ny*w+nx]) {
+                    stack.push([nx, ny]);
+                  }
+                }
+              }
+            }
+            if (contour.length > 5) contours.push(contour);
+          }
+        }
+      }
+
+      // 4. Tloušťka čar
+      let totalThickness = 0, thickCount = 0;
+      contours.forEach(contour => {
+        let minX = w, maxX = 0, minY = h, maxY = 0;
+        contour.forEach(([x,y]) => { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); });
+        const area = (maxX - minX + 1) * (maxY - minY + 1);
+        const thickness = contour.length / area;
+        totalThickness += thickness; thickCount++;
+      });
+      const avgThickness = thickCount > 0 ? totalThickness / thickCount : 0;
+
+      // 5. Zakřivení linií
+      let totalCurvature = 0, curveCount = 0;
+      contours.forEach(contour => {
+        for (let i = 2; i < contour.length - 2; i++) {
+          const [x1,y1] = contour[i-2], [x2,y2] = contour[i], [x3,y3] = contour[i+2];
+          const dx1 = x2 - x1, dy1 = y2 - y1, dx2 = x3 - x2, dy2 = y3 - y2;
+          const len1 = Math.sqrt(dx1*dx1 + dy1*dy1), len2 = Math.sqrt(dx2*dx2 + dy2*dy2);
+          if (len1 > 1e-6 && len2 > 1e-6) {
+            const dot = (dx1*dx2 + dy1*dy2) / (len1 * len2);
+            const angle = Math.acos(Math.max(-1, Math.min(1, dot)));
+            totalCurvature += angle; curveCount++;
+          }
+        }
+      });
+      const avgCurvature = curveCount > 0 ? totalCurvature / curveCount : 0;
+
+      // 6. Variabilita směru
+      const dirHist = new Array(8).fill(0);
+      contours.forEach(contour => {
+        for (let i = 1; i < contour.length; i++) {
+          const dx = contour[i][0] - contour[i-1][0], dy = contour[i][1] - contour[i-1][1];
+          if (Math.abs(dx) + Math.abs(dy) < 2) continue;
+          const angle = Math.atan2(dy, dx);
+          const idx = Math.floor(((angle + Math.PI) / (2 * Math.PI)) * 8) % 8;
+          dirHist[idx]++;
+        }
+      });
+      const dirSum = dirHist.reduce((a,b) => a+b, 0);
+      let dirEntropy = 0;
+      if (dirSum > 0) {
+        dirHist.forEach(c => { if (c > 0) { const p = c / dirSum; dirEntropy -= p * Math.log2(p); } });
+      }
+      const maxDirEntropy = Math.log2(8);
+      const dirVariability = maxDirEntropy > 0 ? dirEntropy / maxDirEntropy : 0;
+
+      // 7. Symetrie
+      const left = new Uint8Array(w * h), right = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w/2; x++) {
+          left[y*w+x] = edges[y*w+x]; right[y*w+(w-1-x)] = edges[y*w+(w-1-x)];
+        }
+      }
+      let symScore = 0, symCount = 0;
+      for (let i = 0; i < left.length; i++) {
+        if (left[i] === right[i]) symScore++;
+        symCount++;
+      }
+      const symmetry = symCount > 0 ? symScore / symCount : 0;
+
+      // 8. Poměr černá/bílá
+      let blackPixels = 0;
+      for (let i = 0; i < gray.length; i++) if (gray[i] < 128) blackPixels++;
+      const blackRatio = blackPixels / (w * h);
+
+      // 9. Počet izolovaných komponent
+      const visitedComp = new Uint8Array(w * h);
+      let components = 0;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          if (edges[y*w+x] && !visitedComp[y*w+x]) {
+            components++;
+            const stack = [[x,y]];
+            while (stack.length) {
+              const [cx, cy] = stack.pop();
+              const idx = cy*w + cx;
+              if (visitedComp[idx]) continue;
+              visitedComp[idx] = 1;
+              for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                  const nx = cx + dx, ny = cy + dy;
+                  if (nx >= 0 && nx < w && ny >= 0 && ny < h && edges[ny*w+nx] && !visitedComp[ny*w+nx]) {
+                    stack.push([nx, ny]);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // 10. Pravidelnost (FFT) – zjednodušená
+      let periodicity = 0;
+      const sampleRow = gray.slice(0, w);
+      let transitions = 0;
+      for (let i = 1; i < sampleRow.length; i++) {
+        if (Math.abs(sampleRow[i] - sampleRow[i-1]) > 30) transitions++;
+      }
+      periodicity = transitions / w;
+
+      return {
+        uniqueColors: colorSet.size,
+        edgeDensity: edgePixels / (w * h),
+        avgThickness: avgThickness.toFixed(3),
+        avgCurvature: avgCurvature.toFixed(3),
+        dirVariability: dirVariability.toFixed(3),
+        symmetry: symmetry.toFixed(3),
+        blackRatio: blackRatio.toFixed(3),
+        components: components,
+        periodicity: periodicity.toFixed(3),
+        dimensions: `${w}×${h}`
+      };
+    }
+
+    // ---------- Zobrazení výsledků ----------
+    function displayMetrics(metrics) {
+      let html = '<h3 style="margin-top:0;">📊 Extrahované příznaky</h3>';
+      html += '<div class="metric-group">';
+      html += `<div class="metric-item"><span class="metric-label">Rozměry:</span><span class="metric-value">${metrics.dimensions}</span></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Unikátních barev:</span><span class="metric-value">${metrics.uniqueColors}</span><div class="metric-hint">Málo = kresba, hodně = fotografie</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Hustota hran:</span><span class="metric-value">${(metrics.edgeDensity*100).toFixed(1)}%</span><div class="metric-hint">Vysoká = detailní kresba</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Průměrná tloušťka čáry:</span><span class="metric-value">${metrics.avgThickness}</span><div class="metric-hint">Silné = energie, tenké = preciznost</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Zakřivení linií:</span><span class="metric-value">${metrics.avgCurvature}</span><div class="metric-hint">0 = rovné, vyšší = oblouky</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Variabilita směru:</span><span class="metric-value">${metrics.dirVariability}</span><div class="metric-hint">Nízká = jednotný směr, vysoká = chaos</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Symetrie:</span><span class="metric-value">${metrics.symmetry}</span><div class="metric-hint">1 = dokonale symetrické</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Poměr černá/bílá:</span><span class="metric-value">${metrics.blackRatio}</span><div class="metric-hint">Vysoký = hutná kresba</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Počet izolovaných objektů:</span><span class="metric-value">${metrics.components}</span><div class="metric-hint">Málo = spojené, mnoho = fragmentované</div></div>`;
+      html += `<div class="metric-item"><span class="metric-label">Pravidelnost (rytmus):</span><span class="metric-value">${metrics.periodicity}</span><div class="metric-hint">Vysoká = opakující se vzory</div></div>`;
+      html += '</div>';
+      resultsPanel.innerHTML = html;
+    }
+
+    analyzeBtn.addEventListener('click', () => {
+      if (!uploadedImage) return;
+      currentMetrics = extractMetrics(uploadedImage);
+      displayMetrics(currentMetrics);
+      assignmentPanel.style.display = 'block';
+    });
+
+    // ---------- Ukládání do datasetu ----------
+    function getDataset() {
+      return JSON.parse(localStorage.getItem('mys-dataset') || '[]');
+    }
+    function saveDataset(dataset) {
+      localStorage.setItem('mys-dataset', JSON.stringify(dataset));
+    }
+
+    saveToDatasetBtn.addEventListener('click', () => {
+      if (!currentMetrics) { alert('Nejprve extrahuj příznaky.'); return; }
+      if (!selectedAngle) { alert('Vyber úhel.'); return; }
+      
+      const dataset = getDataset();
+      const record = {
+        timestamp: Date.now(),
+        angle: selectedAngle,
+        notes: angleNotes.value,
+        metrics: currentMetrics,
+        thumbnail: previewImage.src
+      };
+      dataset.push(record);
+      saveDataset(dataset);
+      
+      alert('Uloženo do datasetu!');
+      angleNotes.value = '';
+      document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('selected'));
+      selectedAngle = null;
+    });
+
+    exportDatasetBtn.addEventListener('click', () => {
+      const dataset = getDataset();
+      const blob = new Blob([JSON.stringify(dataset, null, 2)], {type: 'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `mys-dataset-${Date.now()}.json`;
+      a.click();
+    });
+
+    // ---------- Eventy pro nahrávání ----------
+    galleryBtn.addEventListener('click', () => fileInput.click());
+    cameraBtn.addEventListener('click', () => cameraInput.click());
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#c8903a'; });
+    uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = 'rgba(200,144,58,.4)');
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(200,144,58,.4)';
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImage(file);
+    });
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleImage(e.target.files[0]); });
+    cameraInput.addEventListener('change', (e) => { if (e.target.files[0]) handleImage(e.target.files[0]); });
+  })();
+</script>
+</body>
+</html>
