@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Kreslící Nástroj · Chceš myš?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #0f0d0a;
+      color: #e8e0d0;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow: hidden;
+      height: 100vh;
+      position: fixed;
+      width: 100%;
+    }
+    
+    .header {
+      background: #171410;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+      z-index: 100;
+    }
+    
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    
+    h1 em { color: #c8903a; }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+    
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      font-family: inherit;
+      font-size: 1rem;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .main {
+      display: flex;
+      height: calc(100vh - 56px - 80px);
+      position: relative;
+    }
+    
+    /* SIDE PANEL */
+    .side-panel {
+      width: 60px;
+      background: #171410;
+      border-right: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 0.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      z-index: 40;
+      position: relative;
+    }
+    
+    .side-panel-item {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.15s;
+      position: relative;
+    }
+    
+    .side-panel-item:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .side-panel-item.active {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    /* POPOVER MENU */
+    .popover {
+      position: absolute;
+      left: 65px;
+      top: 0;
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      border-radius: 4px;
+      padding: 1rem;
+      min-width: 250px;
+      z-index: 50;
+      max-height: calc(100vh - 56px - 100px);
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+    
+    .popover.show {
+      display: block;
+    }
+    
+    .popover h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #c8903a;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .popover label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(232, 224, 208, 0.7);
+      margin: 0.8rem 0 0.3rem 0;
+    }
+    
+    .popover input[type="range"] {
+      width: 100%;
+      margin-bottom: 0.3rem;
+    }
+    
+    .popover input[type="range"] + .value {
+      font-size: 0.7rem;
+      color: #c8903a;
+      text-align: right;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .color-swatch {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+    }
+    
+    .color-swatch.active {
+      border-color: #c8903a;
+      border-width: 2px;
+    }
+    
+    .popover button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+    
+    .popover button:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .popover button.danger {
+      border-color: #a83060;
+      color: #a83060;
+    }
+    
+    .popover button.danger:active {
+      background: #a83060;
+      color: #0f0d0a;
+    }
+    
+    .canvas-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    canvas {
+      flex: 1;
+      background: white;
+      border: none;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    
+    .timeline {
+      height: 80px;
+      background: #0f0d0a;
+      border-top: 1px solid rgba(200, 144, 58, 0.2);
+      display: flex;
+      gap: 3px;
+      padding: 0.5rem;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    
+    .timeline-item {
+      height: 100%;
+      min-width: 40px;
+      background: linear-gradient(90deg, #171410 0%, #0f0d0a 100%);
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.15s;
+      display: flex;
+      align-items: stretch;
+    }
+    
+    .timeline-item:hover {
+      border-color: #c8903a;
+    }
+    
+    .timeline-bars {
+      display: flex;
+      height: 100%;
+      flex: 1;
+      gap: 1px;
+      padding: 2px;
+    }
+    
+    .timeline-bar {
+      flex: 1;
+      border-radius: 1px;
+      opacity: 0.8;
+      transition: all 0.15s;
+    }
+    
+    .timeline-item.active {
+      border-color: #c8903a;
+      border-width: 2px;
+    }
+    
+    .footer {
+      background: #171410;
+      border-top: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 0.6rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      height: 80px;
+      flex-wrap: wrap;
+      align-content: center;
+    }
+    
+    .footer-btn {
+      padding: 0.6rem 1rem;
+      font-family: inherit;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.5);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    
+    .footer-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      padding: 2rem;
+      border-radius: 4px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: #c8903a;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .modal input, .modal select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 0.5rem;
+      background: #0f0d0a;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      font-family: inherit;
+      border-radius: 2px;
+    }
+    
+    .modal button {
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      background: #c8903a;
+      color: #0f0d0a;
+      border: 1px solid #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      font-family: inherit;
+      font-weight: bold;
+    }
+    
+    .modal button:active {
+      background: #daa050;
+    }
+    
+    /* ANALYSIS RESULT */
+    .analysis-result {
+      background: rgba(200, 144, 58, 0.1);
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+    
+    .analysis-result h4 {
+      color: #c8903a;
+      margin-bottom: 0.5rem;
+    }
+    
+    .angle-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.7rem;
+    }
+    
+    .angle-name {
+      width: 100px;
+      color: rgba(232, 224, 208, 0.7);
+    }
+    
+    .angle-progress {
+      flex: 1;
+      height: 8px;
+      background: rgba(200, 144, 58, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .angle-progress-fill {
+      height: 100%;
+      background: #c8903a;
+    }
+    
+    .angle-percent {
+      width: 40px;
+      text-align: right;
+      color: #c8903a;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TUTORIAL -->
+<div class="modal show" id="tutorialModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeTutorial()">✕</button>
+    <h2>🎨 Jak začít?</h2>
+    <p style="margin-bottom: 1rem; color: rgba(232,224,208,0.8);">
+      1. Vyber médium vlevo (ikonky)<br>
+      2. Kreslíš prstem na bílou plochu<br>
+      3. Dole: 💾 uloží, 🔍 analyzuje, 🔗 sdílí<br>
+      4. Pokud analyzuješ → dostaneš otisk barev<br>
+      5. Můžeš říct svůj úhel vs. AI
+    </p>
+    <button onclick="closeTutorial()" style="width: 100%; padding: 0.8rem;">OK ✓</button>
+  </div>
+</div>
+
+<!-- SAVE DIALOG -->
+<div class="modal" id="saveModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('saveModal')">✕</button>
+    <h2>💾 Uložit kresku</h2>
+    
+    <label>Název (volitelné):</label>
+    <input type="text" id="saveName" placeholder="Moje kresba...">
+    
+    <div id="analysisResultDiv"></div>
+    
+    <label>Tvůj úhel (volitelné):</label>
+    <select id="userAngle">
+      <option value="">-- Nechám si pro sebe --</option>
+      <option value="Analytický">Analytický (přesnost, řád)</option>
+      <option value="Kulturní">Kulturní (harmonie, tradice)</option>
+      <option value="Filozofický">Filozofický (otázka, absence)</option>
+      <option value="Naivní">Naivní (jednoduchost, radost)</option>
+      <option value="Jazykový">Jazykový (rytmus, opakování)</option>
+      <option value="Metaforický">Metaforický (vrstvy, symboly)</option>
+      <option value="Asociační">Asociační (chaos, automatismus)</option>
+      <option value="Introspektivní">Introspektivní (reflexe, detail)</option>
+      <option value="Ironický">Ironický (paradox, kontrast)</option>
+      <option value="Groteskní">Groteskní (deformace, преувеличение)</option>
+      <option value="Absurdní">Absurdní (rozpor, nesmysl)</option>
+      <option value="Surrealistický">Surrealistický (sen, plynulost)</option>
+    </select>
+    
+    <button onclick="saveDrawing()">Uložit ✓</button>
+  </div>
+</div>
+
+<!-- ANALYSIS DIALOG (počkej výsledek) -->
+<div class="modal" id="analysisModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('analysisModal')">✕</button>
+    <h2>🔍 Analýza</h2>
+    <p style="margin-bottom: 1rem; color: rgba(232,224,208,0.8);">Analyzuji tvou kresbu...</p>
+    <div id="analysisContent"></div>
+  </div>
+</div>
+
+<!-- SHARE DIALOG -->
+<div class="modal" id="shareModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('shareModal')">✕</button>
+    <h2>🔗 Sdílet otisk</h2>
+    
+    <label>Přezdívka (volitelné):</label>
+    <input type="text" id="shareNickname" placeholder="Anonym">
+    
+    <p style="margin: 1rem 0; font-size: 0.8rem; color: rgba(232,224,208,0.7);">
+      Otisk (bez textu, jen struktura) se pošle do Přehlídky fenoménů.
+    </p>
+    
+    <button onclick="shareFingerprint()">Sdílet jako otisk ✓</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Kreslící <em>nástroj</em></h1>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openTutorial()" title="Návod">📖</button>
+    <button class="icon-btn" onclick="undo()" title="Undo">↶</button>
+    <button class="icon-btn" onclick="redo()" title="Redo">↷</button>
+    <button class="icon-btn" onclick="clearAll()" title="Smazat">🗑️</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- SIDE PANEL S MÉDII -->
+  <div class="side-panel" id="sidePanel">
+    <button class="side-panel-item active" data-media="pencil" onclick="selectMedia('pencil')" title="Tužka">✏️</button>
+    <button class="side-panel-item" data-media="brush" onclick="selectMedia('brush')" title="Štětec">🖌️</button>
+    <button class="side-panel-item" data-media="spray" onclick="selectMedia('spray')" title="Sprej">💨</button>
+    <button class="side-panel-item" data-media="marker" onclick="selectMedia('marker')" title="Fixsym">🖍️</button>
+    <button class="side-panel-item" data-media="ink" onclick="selectMedia('ink')" title="Tus">🖊️</button>
+    <button class="side-panel-item" data-media="eraser" onclick="selectMedia('eraser')" title="Guma">🧹</button>
+  </div>
+  
+  <!-- POPOVER MENU -->
+  <div class="popover" id="popover">
+    <h3 id="popoverTitle">Tužka</h3>
+    
+    <label>Tloušťka:</label>
+    <input type="range" id="thicknessSlider" min="0.5" max="30" value="2" step="0.5" oninput="updateThickness()">
+    <div class="value"><span id="thicknessValue">2.0</span> px</div>
+    
+    <label>Průhlednost:</label>
+    <input type="range" id="opacitySlider" min="0" max="100" value="100" step="5" oninput="updateOpacity()">
+    <div class="value"><span id="opacityValue">100</span>%</div>
+    
+    <label>Barva (odstíny šedé):</label>
+    <div class="color-grid" id="colorGrid"></div>
+    
+    <button class="danger" onclick="resetMediaSettings()">↻ Reset</button>
+  </div>
+  
+  <!-- CANVAS -->
+  <div class="canvas-wrapper">
+    <canvas id="canvas"></canvas>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <button class="footer-btn" onclick="openModal('saveModal')">💾 Uložit</button>
+  <button class="footer-btn" onclick="analyze()">🔍 Analyzovat</button>
+  <button class="footer-btn" onclick="openModal('shareModal')">🔗 Sdílet otisk</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const timeline = document.getElementById('timeline');
+const popover = document.getElementById('popover');
+
+function resizeCanvas() {
+  const wrapper = canvas.parentElement;
+  canvas.width = wrapper.clientWidth;
+  canvas.height = wrapper.clientHeight - 80;
+  redraw();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+let state = {
+  currentMedia: 'pencil',
+  thickness: 2,
+  opacity: 100,
+  color: '#000000',
+  isDrawing: false,
+  history: [],
+  historyStep: 0,
+  snapshots: [],
+  currentAnalysis: null
+};
+
+const MEDIA_NAMES = {
+  pencil: 'Tužka',
+  pen: 'Pero',
+  brush: 'Štětec',
+  spray: 'Sprej',
+  ink: 'Tus',
+  linocut: 'Linoryt',
+  eraser: 'Guma',
+  marker: 'Fixsym',
+  chalk: 'Křída',
+  charcoal: 'Uhlí',
+  dry: 'Suchá',
+  wet: 'Mokrá'
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// COLOR GRID
+// ═══════════════════════════════════════════════════════════════════════
+
+function initColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = '';
+  
+  const grays = [
+    '#000000', '#333333', '#666666', '#999999', '#cccccc'
+  ];
+  
+  grays.forEach(gray => {
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    if (gray === state.color) swatch.classList.add('active');
+    swatch.style.backgroundColor = gray;
+    swatch.onclick = () => {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      swatch.classList.add('active');
+      state.color = gray;
+    };
+    grid.appendChild(swatch);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SIDE PANEL & POPOVER
+// ═══════════════════════════════════════════════════════════════════════
+
+function selectMedia(media) {
+  state.currentMedia = media;
+  
+  document.querySelectorAll('.side-panel-item').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-media="${media}"]`).classList.add('active');
+  
+  document.getElementById('popoverTitle').textContent = MEDIA_NAMES[media];
+  
+  popover.classList.add('show');
+  initColorGrid();
+}
+
+function closePopover() {
+  popover.classList.remove('show');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.popover') && !e.target.closest('.side-panel-item')) {
+    closePopover();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════════════════════
+
+function updateThickness() {
+  state.thickness = parseFloat(document.getElementById('thicknessSlider').value);
+  document.getElementById('thicknessValue').textContent = state.thickness.toFixed(1);
+}
+
+function updateOpacity() {
+  state.opacity = parseInt(document.getElementById('opacitySlider').value);
+  document.getElementById('opacityValue').textContent = state.opacity;
+}
+
+function resetMediaSettings() {
+  document.getElementById('thicknessSlider').value = 2;
+  document.getElementById('opacitySlider').value = 100;
+  document.querySelector('[style*="background: #000000"]')?.click();
+  updateThickness();
+  updateOpacity();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// KRESLENÍ
+// ═══════════════════════════════════════════════════════════════════════
+
+function getDrawContext() {
+  ctx.globalAlpha = state.opacity / 100;
+  ctx.lineWidth = state.thickness;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = state.color;
+  
+  if (state.currentMedia === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+function startDrawing(e) {
+  saveHistory();
+  state.isDrawing = true;
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left || e.touches?.[0]?.clientX - rect.left;
+  const y = e.clientY - rect.top || e.touches?.[0]?.clientY - rect.top;
+  
+  getDrawContext();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+function draw(e) {
+  if (!state.isDrawing) return;
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left || e.touches?.[0]?.clientX - rect.left;
+  const y = e.clientY - rect.top || e.touches?.[0]?.clientY - rect.top;
+  
+  getDrawContext();
+  ctx.lineTo(x, y);
+  ctx.stroke();
+}
+
+function stopDrawing() {
+  if (!state.isDrawing) return;
+  state.isDrawing = false;
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  addSnapshot();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════════════════════════════
+
+function addSnapshot() {
+  const snapshot = {
+    image: canvas.toDataURL(),
+    timestamp: Date.now(),
+    analysis: null, // bude vyplněno při analýze
+    userAngle: null,
+    name: null
+  };
+  state.snapshots.push(snapshot);
+  renderTimeline();
+}
+
+function renderTimeline() {
+  timeline.innerHTML = '';
+  state.snapshots.forEach((snap, idx) => {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    
+    const barsDiv = document.createElement('div');
+    barsDiv.className = 'timeline-bars';
+    
+    if (snap.analysis) {
+      // Vykreslení úhlů jako barevné proužky
+      const angles = [
+        { name: 'Analytický', color: '#4a6075', percent: snap.analysis.angles[0] },
+        { name: 'Filozofický', color: '#d4a0b0', percent: snap.analysis.angles[60] },
+        { name: 'Metaforický', color: '#5a8a5a', percent: snap.analysis.angles[150] },
+        { name: 'Surrealistický', color: '#8060b0', percent: snap.analysis.angles[330] }
+      ];
+      
+      angles.forEach(angle => {
+        if (angle.percent > 0) {
+          const bar = document.createElement('div');
+          bar.className = 'timeline-bar';
+          bar.style.backgroundColor = angle.color;
+          bar.style.width = (angle.percent / 100) * 100 + '%';
+          barsDiv.appendChild(bar);
+        }
+      });
+    } else {
+      // Bez analýzy = šedá
+      const bar = document.createElement('div');
+      bar.className = 'timeline-bar';
+      bar.style.backgroundColor = '#666';
+      bar.style.width = '100%';
+      barsDiv.appendChild(bar);
+    }
+    
+    item.appendChild(barsDiv);
+    
+    item.onclick = () => {
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = snap.image;
+    };
+    
+    timeline.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════════════════
+
+function saveHistory() {
+  state.history = state.history.slice(0, state.historyStep + 1);
+  state.history.push(canvas.toDataURL());
+  state.historyStep++;
+}
+
+function undo() {
+  if (state.historyStep > 0) {
+    state.historyStep--;
+    loadHistoryStep();
+  }
+}
+
+function redo() {
+  if (state.historyStep < state.history.length - 1) {
+    state.historyStep++;
+    loadHistoryStep();
+  }
+}
+
+function loadHistoryStep() {
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = state.history[state.historyStep];
+}
+
+function redraw() {
+  if (state.history.length > 0) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = state.history[state.historyStep] || canvas.toDataURL();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════════════════════════════
+
+function clearAll() {
+  if (confirm('Smazat celou kresbu?')) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    state.history = [canvas.toDataURL()];
+    state.historyStep = 0;
+    state.snapshots = [];
+    timeline.innerHTML = '';
+    saveHistory();
+  }
+}
+
+function analyze() {
+  const imageData = canvas.toDataURL();
+  
+  // Odeslání do analyzéru
+  // Zatím: simulace odpovědi
+  setTimeout(() => {
+    state.currentAnalysis = {
+      angles: {
+        0: 75,    // Analytický
+        30: 15,   // Kulturní
+        60: 8,    // Filozofický
+        90: 5,
+        120: 12,
+        150: 18,  // Metaforický
+        180: 10,
+        210: 14,
+        240: 9,
+        270: 8,
+        300: 11,
+        330: 22   // Surrealistický
+      }
+    };
+    
+    displayAnalysis();
+    openModal('analysisModal');
+    
+    // Aktualizuj poslední snapshot
+    if (state.snapshots.length > 0) {
+      state.snapshots[state.snapshots.length - 1].analysis = state.currentAnalysis;
+      renderTimeline();
+    }
+  }, 500);
+}
+
+function displayAnalysis() {
+  const analysisDiv = document.getElementById('analysisContent');
+  let html = '<div class="analysis-result"><h4>Detekované úhly:</h4>';
+  
+  const angleNames = {
+    0: 'Analytický', 30: 'Kulturní', 60: 'Filozofický', 90: 'Naivní',
+    120: 'Jazykový', 150: 'Metaforický', 180: 'Asociační', 210: 'Introspektivní',
+    240: 'Ironický', 270: 'Groteskní', 300: 'Absurdní', 330: 'Surrealistický'
+  };
+  
+  Object.entries(state.currentAnalysis.angles).forEach(([angle, percent]) => {
+    html += `
+      <div class="angle-bar">
+        <div class="angle-name">${angleNames[angle]}</div>
+        <div class="angle-progress">
+          <div class="angle-progress-fill" style="width: ${percent}%"></div>
+        </div>
+        <div class="angle-percent">${percent}%</div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  analysisDiv.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SAVE & SHARE
+// ═══════════════════════════════════════════════════════════════════════
+
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function saveDrawing() {
+  const name = document.getElementById('saveName').value;
+  const userAngle = document.getElementById('userAngle').value;
+  
+  if (state.snapshots.length > 0) {
+    const lastSnapshot = state.snapshots[state.snapshots.length - 1];
+    lastSnapshot.name = name;
+    lastSnapshot.userAngle = userAngle;
+  }
+  
+  closeModal('saveModal');
+  alert('Uloženo! Barvy ve timeline ukazují úhly z analýzy.');
+}
+
+function shareFingerprint() {
+  const nickname = document.getElementById('shareNickname').value || 'Anonym';
+  
+  if (state.currentAnalysis) {
+    const params = new URLSearchParams();
+    params.set('nickname', nickname);
+    
+    // Přidej úhly jako parametry
+    Object.entries(state.currentAnalysis.angles).forEach(([angle, percent]) => {
+      params.set(`angle_${angle}`, percent);
+    });
+    
+    const url = `${window.location.origin}/doma/nastroje/prehlidka_fenomenu.html?${params.toString()}`;
+    
+    navigator.clipboard?.writeText(url);
+    alert('URL zkopírován v schránce!\n\n' + url);
+  } else {
+    alert('Nejdřív analyzuj kresbu!');
+  }
+  
+  closeModal('shareModal');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════════
+
+function openTutorial() {
+  openModal('tutorialModal');
+}
+
+function closeTutorial() {
+  closeModal('tutorialModal');
+  localStorage.setItem('tutorialShown', 'true');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════════════════════════════
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
+
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+
+if (!localStorage.getItem('tutorialShown')) {
+  openTutorial();
+}
+
+saveHistory();
+initColorGrid();
+</script>
+
+</body>
+</html>
