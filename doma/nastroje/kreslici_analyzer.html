@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kreslený Analyzér · Chceš myš?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #0f0d0a;
+      color: #e8e0d0;
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    
+    h1 em { color: #c8903a; font-style: italic; }
+    
+    .subtitle {
+      color: rgba(232, 224, 208, 0.6);
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .panel {
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 1.5rem;
+      border-radius: 4px;
+    }
+    
+    .panel h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+      color: #c8903a;
+    }
+    
+    canvas {
+      width: 100%;
+      max-width: 500px;
+      height: 400px;
+      background: white;
+      border: 2px dashed rgba(200, 144, 58, 0.4);
+      cursor: crosshair;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    button {
+      padding: 0.6rem 1.2rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.5);
+      color: #c8903a;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+    }
+    
+    button:hover {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    button.primary {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    button.primary:hover {
+      background: #daa050;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+    
+    .metric-item {
+      background: rgba(23, 20, 16, 0.7);
+      padding: 0.8rem;
+      border-left: 3px solid #c8903a;
+      border-radius: 2px;
+    }
+    
+    .metric-label {
+      color: rgba(232, 224, 208, 0.7);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+    
+    .metric-value {
+      font-size: 1.2rem;
+      color: #c8903a;
+      font-weight: 500;
+    }
+    
+    .angles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    
+    .angle-box {
+      background: rgba(23, 20, 16, 0.7);
+      padding: 1rem;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 4px;
+      text-align: center;
+    }
+    
+    .angle-degree {
+      font-size: 0.75rem;
+      color: rgba(232, 224, 208, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+    
+    .angle-name {
+      font-size: 0.8rem;
+      color: #c8903a;
+      margin-bottom: 0.5rem;
+      min-height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .angle-percent {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #e8e0d0;
+    }
+    
+    .angle-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(200, 144, 58, 0.2);
+      margin-top: 0.5rem;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .angle-fill {
+      height: 100%;
+      background: #c8903a;
+      transition: width 0.3s ease;
+    }
+    
+    .no-results {
+      color: rgba(232, 224, 208, 0.5);
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading {
+      color: #c8903a;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      
+      .angles-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Kreslený <em>Analyzér</em></h1>
+  <p class="subtitle">📐 Nakresli • 🔍 Analyzuj • 👁️ Vidíme strukturu, ne obsah</p>
+  
+  <div class="main-layout">
+    <!-- LEVÁ STRANA: CANVAS -->
+    <div class="panel">
+      <h2>✏️ Kresli</h2>
+      <canvas id="canvas" width="500" height="400"></canvas>
+      
+      <div class="controls">
+        <button class="primary" onclick="analyzeDrawing()">🔍 Analyzovat</button>
+        <button onclick="clearCanvas()">🗑️ Smazat</button>
+      </div>
+      
+      <div id="metricsPanel" class="metrics-grid" style="display: none;">
+        <div class="metric-item">
+          <div class="metric-label">Vyplnění</div>
+          <div class="metric-value" id="fillRatio">0%</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Barvy</div>
+          <div class="metric-value" id="colorCount">0</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Symetrie</div>
+          <div class="metric-value" id="symmetry">0%</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Entropie</div>
+          <div class="metric-value" id="entropy">0</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PRAVÁ STRANA: VÝSLEDKY -->
+    <div class="panel">
+      <h2>📊 Úhly (12 pohledů)</h2>
+      <div id="resultsPanel" class="no-results">
+        Nakresli něco a klikni "Analyzovat"
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// CANVAS SETUP
+// ═══════════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+let isDrawing = false;
+
+// Inicijalizuj canvas (bílé pozadí)
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 2;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+// EVENT: Kreslení myší
+canvas.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  const rect = canvas.getBoundingClientRect();
+  ctx.beginPath();
+  ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDrawing) return;
+  const rect = canvas.getBoundingClientRect();
+  ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  ctx.stroke();
+});
+
+canvas.addEventListener('mouseup', () => {
+  isDrawing = false;
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// DETEKČNÍ FUNKCE
+// ═══════════════════════════════════════════════════════════════════════
+
+function extractMetrics() {
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+  
+  // 1. VYPLNĚNÍ (kolik % je nakresleno)
+  let blackPixels = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i+1], b = data[i+2];
+    if (r < 128 || g < 128 || b < 128) blackPixels++;
+  }
+  const fillRatio = (blackPixels / (canvas.width * canvas.height)) * 100;
+  
+  // 2. BARVY (kolik unique barev?)
+  const colorSet = new Set();
+  for (let i = 0; i < data.length; i += 4) {
+    const rgb = `${data[i]},${data[i+1]},${data[i+2]}`;
+    colorSet.add(rgb);
+  }
+  const colorCount = colorSet.size;
+  
+  // 3. SYMETRIE (horizontální flip a porovnání)
+  let symmetryMatch = 0;
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width / 2; x++) {
+      const idx1 = (y * canvas.width + x) * 4;
+      const idx2 = (y * canvas.width + (canvas.width - x - 1)) * 4;
+      if (data[idx1] === data[idx2] && data[idx1+1] === data[idx2+1] && data[idx1+2] === data[idx2+2]) {
+        symmetryMatch++;
+      }
+    }
+  }
+  const symmetry = (symmetryMatch / ((canvas.width / 2) * canvas.height)) * 100;
+  
+  // 4. ENTROPIE (náhodnost rozptýlení)
+  const entropy = calculateEntropy(data);
+  
+  // 5. FRAGMENTACE (kolik přerušení v liniích)
+  const fragmentation = calculateFragmentation(imageData);
+  
+  // 6. HUSTOTA V CENTRU vs. OKRAJÍCH
+  const centerDensity = calculateCenterDensity(imageData);
+  
+  return {
+    fillRatio: Math.round(fillRatio),
+    colorCount: Math.min(colorCount, 100), // cap at 100
+    symmetry: Math.round(symmetry),
+    entropy: entropy.toFixed(2),
+    fragmentation: fragmentation.toFixed(2),
+    centerDensity: centerDensity.toFixed(2)
+  };
+}
+
+function calculateEntropy(data) {
+  // Shannon entropy na luminozi
+  const histogram = {};
+  for (let i = 0; i < data.length; i += 4) {
+    const luminosity = (data[i] + data[i+1] + data[i+2]) / 3;
+    const bucket = Math.floor(luminosity / 25);
+    histogram[bucket] = (histogram[bucket] || 0) + 1;
+  }
+  
+  let entropy = 0;
+  const total = data.length / 4;
+  for (let key in histogram) {
+    const p = histogram[key] / total;
+    entropy -= p * Math.log2(p);
+  }
+  return entropy;
+}
+
+function calculateFragmentation(imageData) {
+  // Počet izolovaných černých pixelů (fragmenty)
+  const data = imageData.data;
+  let fragments = 0;
+  
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i+1], b = data[i+2];
+    if (r < 128 || g < 128 || b < 128) {
+      // Je to část linie?
+      const pixelIndex = i / 4;
+      const x = pixelIndex % canvas.width;
+      const y = Math.floor(pixelIndex / canvas.width);
+      
+      let neighbors = 0;
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          if (dx === 0 && dy === 0) continue;
+          const nx = x + dx, ny = y + dy;
+          if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
+            const nIdx = (ny * canvas.width + nx) * 4;
+            const nr = data[nIdx], ng = data[nIdx+1], nb = data[nIdx+2];
+            if (nr < 128 || ng < 128 || nb < 128) neighbors++;
+          }
+        }
+      }
+      if (neighbors <= 1) fragments++;
+    }
+  }
+  return fragments / 100; // normalize
+}
+
+function calculateCenterDensity(imageData) {
+  // Jaký % nakreslení je v centru vs. okrajích?
+  const data = imageData.data;
+  const centerW = canvas.width / 3, centerH = canvas.height / 3;
+  const centerX = canvas.width / 2, centerY = canvas.height / 2;
+  
+  let centerPixels = 0, totalPixels = 0;
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const idx = (y * canvas.width + x) * 4;
+      const r = data[idx], g = data[idx+1], b = data[idx+2];
+      if (r < 128 || g < 128 || b < 128) {
+        totalPixels++;
+        if (Math.abs(x - centerX) < centerW/2 && Math.abs(y - centerY) < centerH/2) {
+          centerPixels++;
+        }
+      }
+    }
+  }
+  return totalPixels === 0 ? 0 : (centerPixels / totalPixels) * 100;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MAPOVÁNÍ NA 12 ÚHLŮ
+// ═══════════════════════════════════════════════════════════════════════
+
+const ANGLES = [
+  { deg: 0, name: 'Analytický' },
+  { deg: 30, name: 'Kulturní' },
+  { deg: 60, name: 'Filozofický' },
+  { deg: 90, name: 'Naivní' },
+  { deg: 120, name: 'Jazykový' },
+  { deg: 150, name: 'Metaforický' },
+  { deg: 180, name: 'Asociační' },
+  { deg: 210, name: 'Introspektivní' },
+  { deg: 240, name: 'Ironický' },
+  { deg: 270, name: 'Groteskní' },
+  { deg: 300, name: 'Absurdní' },
+  { deg: 330, name: 'Surrealistický' }
+];
+
+function calculateAngles(metrics) {
+  const angles = {};
+  
+  const fill = metrics.fillRatio / 100;
+  const colors = metrics.colorCount / 100;
+  const sym = metrics.symmetry / 100;
+  const ent = parseFloat(metrics.entropy) / 8; // normalize (0-8)
+  const frag = parseFloat(metrics.fragmentation) / 100;
+  const center = parseFloat(metrics.centerDensity) / 100;
+  
+  // 0° ANALYTICKÝ: Pravidelnost, symetrie, malé barvy
+  angles[0] = (sym * 0.4 + (1 - colors) * 0.3 + (1 - ent) * 0.2 + (1 - frag) * 0.1) * 100;
+  
+  // 30° KULTURNÍ: Symetrie, barvy, středové zaměření
+  angles[30] = (sym * 0.3 + colors * 0.25 + center * 0.25 + fill * 0.2) * 100;
+  
+  // 60° FILOZOFICKÝ: Málo vyplnění, vysoká fragmentace, málo barev
+  angles[60] = ((1 - fill) * 0.4 + frag * 0.3 + (1 - colors) * 0.2 + (1 - center) * 0.1) * 100;
+  
+  // 90° NAIVNÍ: Nízká symetrie, jednoduchost (málo barev), vyplnění
+  angles[90] = ((1 - sym) * 0.3 + (1 - colors) * 0.3 + fill * 0.2 + center * 0.2) * 100;
+  
+  // 120° JAZYKOVÝ: Vysoká symetrie, opakování (entropie), středové zaměření
+  angles[120] = (sym * 0.3 + (1 - ent) * 0.3 + center * 0.25 + colors * 0.15) * 100;
+  
+  // 150° METAFORICKÝ: Vrstvy (barvy), asymetrie, středové zaměření
+  angles[150] = (colors * 0.35 + (1 - sym) * 0.25 + center * 0.25 + frag * 0.15) * 100;
+  
+  // 180° ASOCIAČNÍ: Entropie, fragmentace, neřád
+  angles[180] = (ent * 0.35 + frag * 0.35 + (1 - sym) * 0.2 + (1 - center) * 0.1) * 100;
+  
+  // 210° INTROSPEKTIVNÍ: Vyplnění, detaily (барvy), se zaměřením na střed
+  angles[210] = (fill * 0.35 + colors * 0.3 + center * 0.2 + (1 - frag) * 0.15) * 100;
+  
+  // 240° IRONICKÝ: Kontrast, asymetrie, rozpor
+  angles[240] = ((1 - sym) * 0.3 + Math.abs(0.5 - center) * 0.3 + frag * 0.2 + (Math.abs(colors - 0.5) * 2) * 0.2) * 100;
+  
+  // 270° GROTESKNÍ: Vysoké vyplnění, silná přítomnost, asymetrie
+  angles[270] = (fill * 0.35 + (1 - sym) * 0.35 + (1 - center) * 0.2 + colors * 0.1) * 100;
+  
+  // 300° ABSURDNÍ: Vysoká entropie, rozpor, fragmentace
+  angles[300] = (ent * 0.35 + frag * 0.3 + Math.abs(sym - 0.5) * 0.2 + (Math.abs(fill - 0.5) * 2) * 0.15) * 100;
+  
+  // 330° SURREALISTICKÝ: Barvy, měkké přechody (nízká entropie ale s barvami)
+  angles[330] = (colors * 0.35 + (1 - ent) * 0.25 + fill * 0.2 + center * 0.2) * 100;
+  
+  // Normalizuj aby součet byl 1200% (každý úhel má max 100%)
+  const sum = Object.values(angles).reduce((a, b) => a + b, 0);
+  for (let key in angles) {
+    angles[key] = Math.min(100, (angles[key] / sum) * 100);
+  }
+  
+  return angles;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// UI: ANALÝZA A ZOBRAZENÍ
+// ═══════════════════════════════════════════════════════════════════════
+
+function analyzeDrawing() {
+  const resultsPanel = document.getElementById('resultsPanel');
+  resultsPanel.innerHTML = '<div class="loading">⏳ Analyzuji...</div>';
+  
+  // Malá prodleva aby se uživatel viděl loading
+  setTimeout(() => {
+    const metrics = extractMetrics();
+    const angles = calculateAngles(metrics);
+    displayMetrics(metrics);
+    displayResults(angles);
+  }, 300);
+}
+
+function displayMetrics(metrics) {
+  const metricsPanel = document.getElementById('metricsPanel');
+  metricsPanel.style.display = 'grid';
+  
+  document.getElementById('fillRatio').textContent = metrics.fillRatio + '%';
+  document.getElementById('colorCount').textContent = metrics.colorCount;
+  document.getElementById('symmetry').textContent = metrics.symmetry + '%';
+  document.getElementById('entropy').textContent = metrics.entropy;
+}
+
+function displayResults(angles) {
+  const resultsPanel = document.getElementById('resultsPanel');
+  
+  let html = '<div class="angles-grid">';
+  ANGLES.forEach(angle => {
+    const percent = angles[angle.deg] || 0;
+    html += `
+      <div class="angle-box">
+        <div class="angle-degree">${angle.deg}°</div>
+        <div class="angle-name">${angle.name}</div>
+        <div class="angle-percent">${percent.toFixed(0)}%</div>
+        <div class="angle-bar">
+          <div class="angle-fill" style="width: ${percent}%"></div>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  resultsPanel.innerHTML = html;
+}
+
+function clearCanvas() {
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('resultsPanel').innerHTML = 'Nakresli něco a klikni "Analyzovat"';
+  document.getElementById('metricsPanel').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
