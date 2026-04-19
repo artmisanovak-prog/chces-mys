@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netopýr — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0a0810;
+            --bg-elevated: #120e1a;
+            --text: #e8e0f0;
+            --text-dim: #5a4a6a;
+            --text-mid: #8a7a9a;
+            --accent: #9050c0;       /* tmavě fialová, zářivější */
+            --accent-dim: #3a2060;
+            --border: #1a1028;
+            --highlight: rgba(144,80,192,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Cinzel', serif; 
+            font-size: clamp(1.4rem, 5vw, 2.2rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        /* dekorativní prvky – netopýří siluety / sonar */
+        .bat { 
+            position: absolute; 
+            width: 28px; 
+            height: 28px; 
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cpath fill="%239050c0" opacity="0.3" d="M50 20 L30 10 L20 30 L10 40 L20 50 L30 45 L50 55 L70 45 L80 50 L90 40 L80 30 L70 10 Z"/%3E%3C/svg%3E') center/contain no-repeat;
+            opacity: 0.35;
+            pointer-events: none; 
+        }
+        .bat-1 { top: 20%; right: 10%; animation: fly1 10s ease-in-out infinite, sonar 3s ease-out infinite; }
+        .bat-2 { bottom: 25%; left: 10%; animation: fly2 12s ease-in-out infinite, sonar 3s ease-out infinite 1.5s; }
+        
+        @keyframes fly1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-30px, 20px) rotate(-15deg); }
+            50% { transform: translate(-60px, 0) rotate(0deg); }
+            75% { transform: translate(-30px, -20px) rotate(15deg); }
+        }
+        @keyframes fly2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(40px, -30px) rotate(20deg); }
+            66% { transform: translate(20px, 10px) rotate(-10deg); }
+        }
+        @keyframes sonar {
+            0% { box-shadow: 0 0 0 0 rgba(144,80,192,0.1); }
+            100% { box-shadow: 0 0 0 20px rgba(144,80,192,0); }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        /* Pohádka – scrollovací okno */
+        .fairy-scroll-wrap {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+        }
+        .fairy-scroll-title {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--text-mid);
+            margin-bottom: 0.5rem;
+        }
+        .fairy-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            line-height: 1.9;
+            color: #b0a0c0;
+            border-left: 1px solid var(--accent-dim);
+            scroll-behavior: smooth;
+        }
+        .fairy-scroll p { margin-bottom: 1.2rem; }
+        .fairy-scroll strong { color: var(--accent); font-weight: 500; }
+        .fairy-scroll em { color: #8a7a9a; font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 5vw, 2.6rem); 
+            font-weight: 400; 
+            letter-spacing: 0.3em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.45em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #12121a, #000);
+            border: 1px solid #2a1a30;
+            box-shadow: 0 0 40px rgba(144,80,192,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(144,80,192,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 200px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Cinzel', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Cinzel', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Inter', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #b090d0, #7050a0);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #3a2060; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Netopýr</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="bat bat-1"></div>
+        <div class="bat bat-2"></div>
+        <img src="../ilustrace/netopyr.jpg" alt="Ilustrace netopýra" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="#" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <!-- Pohádka – scrollovací okno -->
+    <div class="fairy-scroll-wrap">
+        <div class="fairy-scroll-title">🦇 Pohádka o Netopýrovi</div>
+        <div class="fairy-scroll" id="fairyScroll">
+            <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+            <p><strong>O NETOPÝROVI</strong><br><strong>a kráse která ráno se [už] nehodí</strong></p>
+            <p>—</p>
+            <p id="netopyr-absurdni">Netopýr žil v noci. Ne jen fyzicky. Esteticky. Filozoficky. V noci bylo všechno správně. Stíny měly tvar. Zvuky měly smysl. Lidé byli krásní, protože nebyli vidět.</p>
+            <p>—</p>
+            <p id="netopyr-jazykovy">Každý večer se probudil, natáhl křídla, protáhl zobák a vyletěl. Ne za potravou. Za atmosférou. Za tím, co se děje jenom ve chvílích, kdy svět zapomene na pravidla.</p>
+            <p>—</p>
+            <p id="netopyr-ironicky">Letěl nad městem, kde se světla třpytila jako sliby. A všechno bylo možné. Všechno bylo krásné. Všechno bylo trochu nepravdivé – ale o dost pravdivější.</p>
+            <p>—</p>
+            <p id="netopyr-filozoficky">A pak přišlo ráno. A všechno se nehodilo. Tváře, co v noci zářily, byly najednou unavené. Slova, co zněla jako poezie, se změnila v trapné poznámky. Doteky, co vibrovaly, se změnily v rozpaky.</p>
+            <p>—</p>
+            <p id="netopyr-surrealisticky">A netopýr se schoval. Do stropu. Do tmy. Do snu.</p>
+            <p>—</p>
+            <p id="netopyr-naivni">„V noci krása, co ráno už se nehodí," šeptal si. A nebyl v tom sám. Všichni, kdo v noci žili, to znali. Básníci. Barmani. Ztracenci. Zamilovaní. A ti, co si ráno říkají: „Tohle jsem neřekl. Tohle jsem necítil. Tohle jsem nebyl."</p>
+            <p>—</p>
+            <p id="netopyr-introspektivni">Ale netopýr věděl, že byl. Že noc není lež. Je to jiný jazyk. Jiný smysl. Jiný druh pravdy, která se nehodí do denního světla.</p>
+            <p>—</p>
+            <p id="netopyr-betonovy">A tak se začalo říkat, že netopýr je tvor, který nosí krásu, co se nehodí. A že jeho pohádky jsou jako kocovina. Bolí. Ale připomínají, že jsme žili.</p>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(144,80,192,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Netopýr, který nelétá za potravou, ale za atmosférou. Krása, která je v noci pravdivá a ráno trapná. Lidé, kteří jsou krásní, protože nejsou vidět. Paradox noci a dne – obojí je pravda, ale jen jedna se hodí.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">krása co se nehodí</span>
+                    <button class="fairy-locate-btn" id="locateBtn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro netopýra včetně klíčů a fragmentů v pohádce
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Netopýr, který nelétá za potravou, ale za atmosférou. Krása, která je v noci pravdivá a ráno trapná. Lidé, kteří jsou krásní, protože nejsou vidět. Paradox noci a dne – obojí je pravda, ale jen jedna se hodí.", key: "krása co se nehodí", fragment: "netopyr-absurdni" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "‚Krása, která ráno se už nehodí‘ – věta, která drhne, jako by sama patřila do noci. Netopýr ‚žil v noci esteticky, filozoficky‘ – jazyk se tady pokouší popsat něco, co se vymyká denní logice. A nakonec přirovnání ke kocovině: bolí to, ale víš, že jsi žil.", key: "noc jako jazyk", fragment: "netopyr-jazykovy" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Netopýr chce najít krásu noci, ale ráno je ta krása k ničemu. Ironie: to nejcennější, co prožiješ, se nedá použít ve světle dne. A ti, co v noci žijí (básníci, barmani, ztracenci), to vědí – a přesto v tom pokračují.", key: "krása k ničemu", fragment: "netopyr-ironicky" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co je pravda? Je to to, co vidíme ve dne, nebo to, co cítíme v noci? Netopýr tvrdí, že noc není lež, ale jiný jazyk. Jiný druh pravdy. Pohádka klade otázku: Máme dvě identity – denní a noční? A která z nich je ta pravá? Nebo jsou obě, jen se jedna nehodí?", key: "dvě pravdy", fragment: "netopyr-filozoficky" },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Netopýr letí nad městem, kde se světla třpytí jako sliby. Tváře září, slova jsou poezie, doteky vibrují. A pak ráno – unavené tváře, trapné poznámky, rozpaky. Dva světy vedle sebe, které se nesnášejí. A netopýr je spojuje, i když v tom sám létá.", key: "sliby jako světla", fragment: "netopyr-surrealisticky" },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Netopýr má rád noc. V noci je všechno hezký. Lidi jsou hezký, protože nejsou vidět. Ráno je všechno blbý. On se schová. A ví, že noc byla pravda, i když si to ráno nikdo nepamatuje. Jednoduchý, ne?", key: "noc je pravda", fragment: "netopyr-naivni" },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. V noci jsem básník, milenec, filosof. Píšu, cítím, žiju. A ráno? Ráno se na to dívám a říkám si: ‚To jsem nebyl já.‘ Ale ten netopýr má pravdu – byl jsem. A ta kocovina? Ta je důkaz, že to bylo skutečný.", key: "básník v noci", fragment: "netopyr-introspektivni" },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o netopýrovi, který je aktivní v noci, kdy vnímá svět jako esteticky a filozoficky hodnotný. Létá nad městem, pozoruje světla, lidi, zvuky. Po ránu se ukrývá, protože noční realita se neslučuje s denní. Konstatuje, že existuje skupina lidí (básníci, barmani, ztracenci, zamilovaní), kteří zažívají stejný rozpor. Noční prožitky přirovnává ke kocovině – bolí, ale připomínají, že k nim došlo.", key: "noční aktivita", fragment: "netopyr-betonovy" },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Netopýr jako symbol noci, tajemna, přechodu. V mnoha kulturách je spojován s podsvětím, sny, magií. Tady je to bytost, která nese krásu noci – tu, kterou znají všichni, kdo žijí na okraji dne. Je to archetyp poutníka mezi světy, který ví, že každá pravda má svůj čas a místo.", key: "symbol noci a tajemna", fragment: "netopyr-absurdni" },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: netopýr, co létá nad městem a hledá atmosféru. Dole lidi, co v noci září a ráno jsou unavený. A všichni si říkají: ‚To jsem nebyl já.‘ Je to fraška o tom, že každý máme dvě tváře – a ta noční je sice krásná, ale ráno se na ni vykašleme. A kocovina? Ta je směšná i bolestná zároveň.", key: "tváře v noci", fragment: "netopyr-groteskni" },
+            { deg: 300, hour: "11h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to všechny ty noci, kdy jsem s přáteli mluvil o životě, vesmíru a všem, a ráno jsme si to nepamatovali. Ale věděli jsme, že to bylo důležitý. A ta kocovina – ta nás ujišťovala, že jsme nebyli sami. Netopýr má pravdu: bolí to, ale je to důkaz.", key: "noci s přáteli", fragment: "netopyr-asociacni" },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Netopýr je duše, která žije v noci – v říši snů, fantazie, opravdových pocitů. Den je realita, role, maska. Krása, co se ráno nehodí, je všechno, co v životě opravdu prožijeme, ale nemůžeme to ukázat světu. A kocovina? Ta je metaforou pro cenu, kterou platíme za to, že jsme skuteční.", key: "kocovina jako cena", fragment: "netopyr-metaforicky" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            // Odstraníme předchozí zvýraznění
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Netopýr&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            // Odstraníme předchozí zvýraznění
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyScroll');
+            
+            if (element && scrollContainer) {
+                element.classList.add('fairy-highlight');
+                
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const elementRect = element.getBoundingClientRect();
+                const scrollTop = scrollContainer.scrollTop;
+                const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                
+                scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
