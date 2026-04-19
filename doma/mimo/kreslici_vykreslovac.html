@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Kreslící Nástroj · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #0f0d0a;
+      color: #e8e0d0;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow: hidden;
+      height: 100vh;
+      position: fixed;
+      width: 100%;
+    }
+    
+    .header {
+      background: #171410;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: auto;
+      z-index: 100;
+    }
+    
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    
+    h1 em { color: #c8903a; }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .animal-info {
+      text-align: right;
+      font-size: 0.9rem;
+    }
+    
+    .animal-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: #c8903a;
+    }
+    
+    .animal-desc {
+      font-size: 0.7rem;
+      color: rgba(232, 224, 208, 0.6);
+      margin-top: 0.3rem;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      font-family: inherit;
+      font-size: 1.2rem;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.4);
+      color: #c8903a;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon-btn:hover {
+      border-color: #c8903a;
+      background: rgba(200, 144, 58, 0.1);
+    }
+    
+    .icon-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .main {
+      display: flex;
+      height: calc(100vh - 100px - 100px);
+      gap: 1.5rem;
+      padding: 1.5rem;
+      position: relative;
+    }
+    
+    /* TOOLS PANEL */
+    .tools-panel {
+      width: 180px;
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 4px;
+      padding: 1.5rem;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+    
+    .tools-panel h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #c8903a;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    
+    .tool-btn {
+      aspect-ratio: 1;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      font-size: 1.5rem;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .tool-btn:hover {
+      border-color: #c8903a;
+      background: rgba(200, 144, 58, 0.1);
+    }
+    
+    .tool-btn.active {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    
+    .slider-group label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(232, 224, 208, 0.7);
+    }
+    
+    .slider-group input[type="range"] {
+      width: 100%;
+    }
+    
+    .slider-value {
+      font-size: 0.75rem;
+      color: #c8903a;
+      text-align: right;
+    }
+    
+    /* CANVAS */
+    .canvas-area {
+      flex: 1;
+      background: #0f0d0a;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    canvas {
+      flex: 1;
+      background: white;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    
+    /* TIMELINE */
+    .timeline {
+      background: #171410;
+      border-top: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 0.8rem;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    
+    .timeline h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: rgba(232, 224, 208, 0.6);
+      margin-bottom: 0.5rem;
+    }
+    
+    .timeline-items {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+    
+    .timeline-item {
+      min-width: 50px;
+      height: 50px;
+      background: #0f0d0a;
+      border: 1px solid rgba(200, 144, 58, 0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+    }
+    
+    .timeline-item:hover {
+      border-color: #c8903a;
+    }
+    
+    .timeline-item.active {
+      border-color: #c8903a;
+      border-width: 2px;
+    }
+    
+    .timeline-bars {
+      display: flex;
+      height: 100%;
+      flex: 1;
+      gap: 1px;
+      padding: 2px;
+    }
+    
+    .timeline-bar {
+      flex: 1;
+      border-radius: 1px;
+      opacity: 0.8;
+    }
+    
+    /* FOOTER */
+    .footer {
+      background: #171410;
+      border-top: 1px solid rgba(200, 144, 58, 0.2);
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      height: auto;
+      flex-wrap: wrap;
+      align-content: center;
+    }
+    
+    .footer-btn {
+      padding: 0.8rem 1.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.5);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    
+    .footer-btn:hover {
+      border-color: #c8903a;
+      background: rgba(200, 144, 58, 0.1);
+    }
+    
+    .footer-btn:active {
+      background: #c8903a;
+      color: #0f0d0a;
+    }
+    
+    .footer-btn.primary {
+      background: #c8903a;
+      color: #0f0d0a;
+      border-color: #c8903a;
+    }
+    
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #171410;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      padding: 2rem;
+      border-radius: 4px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: #c8903a;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(200, 144, 58, 0.2);
+      padding-bottom: 0.5rem;
+    }
+    
+    .modal input, .modal select {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+      background: #0f0d0a;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      color: #c8903a;
+      font-family: inherit;
+      border-radius: 2px;
+    }
+    
+    .modal-input-group {
+      margin-bottom: 1rem;
+    }
+    
+    .modal-input-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: rgba(232, 224, 208, 0.7);
+      margin-bottom: 0.4rem;
+    }
+    
+    .modal button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      background: #c8903a;
+      color: #0f0d0a;
+      border: 1px solid #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    
+    .modal button:hover {
+      background: #daa050;
+    }
+    
+    .modal-info {
+      background: rgba(200, 144, 58, 0.1);
+      border-left: 3px solid #c8903a;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 2px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    
+    .share-url {
+      background: #0f0d0a;
+      border: 1px solid rgba(200, 144, 58, 0.3);
+      padding: 1rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      word-break: break-all;
+      color: #c8903a;
+    }
+    
+    .copy-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: transparent;
+      border: 1px solid rgba(200, 144, 58, 0.5);
+      color: #c8903a;
+      cursor: pointer;
+      border-radius: 2px;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .main {
+        gap: 1rem;
+        padding: 1rem;
+      }
+      
+      .tools-panel {
+        width: 140px;
+        padding: 1rem;
+      }
+      
+      .header {
+        padding: 0.8rem 1rem;
+      }
+      
+      .footer {
+        padding: 0.8rem 1rem;
+        gap: 0.5rem;
+      }
+      
+      .footer-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Kreslící <em>nástroj</em></h1>
+  <div class="header-right">
+    <div class="animal-info">
+      <div class="animal-name" id="animalName">Myš</div>
+      <div class="animal-desc" id="animalDesc">Začátek. Vidíš strukturu.</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="undo()" title="Undo">↶</button>
+      <button class="icon-btn" onclick="redo()" title="Redo">↷</button>
+      <button class="icon-btn" onclick="clearAll()" title="Smazat">🗑️</button>
+      <button class="icon-btn" onclick="openTutorial()" title="Návod">📖</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOOLS -->
+  <div class="tools-panel">
+    <h3>✏️ Nástroje</h3>
+    <div class="tool-grid">
+      <button class="tool-btn active" id="pencilBtn" onclick="selectTool('pencil')" title="Tužka">✏️</button>
+      <button class="tool-btn" id="brushBtn" onclick="selectTool('brush')" title="Štětec">🖌️</button>
+      <button class="tool-btn" id="sprayBtn" onclick="selectTool('spray')" title="Sprej">💨</button>
+      <button class="tool-btn" id="eraserBtn" onclick="selectTool('eraser')" title="Guma">🧹</button>
+      <button class="tool-btn" id="markerBtn" onclick="selectTool('marker')" title="Fixsym">🖍️</button>
+      <button class="tool-btn" id="inkBtn" onclick="selectTool('ink')" title="Tus">🖊️</button>
+    </div>
+    
+    <div>
+      <h3>📏 Tloušťka</h3>
+      <div class="slider-group">
+        <input type="range" id="thicknessSlider" min="0.5" max="30" value="2" step="0.5" oninput="updateThickness()">
+        <div class="slider-value"><span id="thicknessValue">2.0</span> px</div>
+      </div>
+    </div>
+    
+    <div>
+      <h3>👁️ Průhlednost</h3>
+      <div class="slider-group">
+        <input type="range" id="opacitySlider" min="0" max="100" value="100" step="10" oninput="updateOpacity()">
+        <div class="slider-value"><span id="opacityValue">100</span>%</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CANVAS -->
+  <div class="canvas-area">
+    <canvas id="canvas"></canvas>
+    <div class="timeline">
+      <h4>⏱️ Timeline (snímky)</h4>
+      <div class="timeline-items" id="timeline"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <button class="footer-btn" onclick="openModal('saveModal')">💾 Uložit</button>
+  <button class="footer-btn" onclick="analyze()">🔍 Analyzovat</button>
+  <button class="footer-btn primary" onclick="openModal('shareModal')">🔗 Sdílit otisk</button>
+</div>
+
+<!-- MODALS -->
+<!-- TUTORIAL -->
+<div class="modal show" id="tutorialModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('tutorialModal')">✕</button>
+    <h2>🎨 Jak kreslíš?</h2>
+    <p style="margin-bottom: 1.5rem; line-height: 1.8; color: rgba(232,224,208,0.85);">
+      1️⃣ <strong>Vyberi nástroj</strong> vlevo (tužka, štětec, guma...)<br>
+      2️⃣ <strong>Kreslíš prstem</strong> (nebo myší) na bílé plátno<br>
+      3️⃣ <strong>Měníš tloušťku a průhlednost</strong> v levém panelu<br>
+      4️⃣ <strong>Snímky se ukládají</strong> automaticky do timelineu dole<br>
+      5️⃣ <strong>Klikneš 🔍 Analyzovat</strong> → zjistíš strukturu tvé kresby<br>
+      6️⃣ <strong>Klikneš 🔗 Sdílit otisk</strong> → generuje se URL s tajným klíčem<br>
+    </p>
+    <button onclick="closeModal('tutorialModal')" style="width: 100%; padding: 1rem;">OK ✓</button>
+  </div>
+</div>
+
+<!-- SAVE DIALOG -->
+<div class="modal" id="saveModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('saveModal')">✕</button>
+    <h2>💾 Uložit kresbu</h2>
+    
+    <div class="modal-input-group">
+      <label>Název (volitelné):</label>
+      <input type="text" id="saveName" placeholder="Moje kresba...">
+    </div>
+    
+    <div class="modal-input-group">
+      <label>Tvůj úhel (volitelné):</label>
+      <select id="userAngle">
+        <option value="">-- Nechám si pro sebe --</option>
+        <option value="Analytický">Analytický</option>
+        <option value="Filozofický">Filozofický</option>
+        <option value="Metaforický">Metaforický</option>
+        <option value="Surrealistický">Surrealistický</option>
+      </select>
+    </div>
+    
+    <button onclick="saveDrawing()">Uložit ✓</button>
+  </div>
+</div>
+
+<!-- ANALYSIS RESULT -->
+<div class="modal" id="analysisModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('analysisModal')">✕</button>
+    <h2>🔍 Analýza</h2>
+    <div id="analysisContent"></div>
+  </div>
+</div>
+
+<!-- SHARE DIALOG -->
+<div class="modal" id="shareModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('shareModal')">✕</button>
+    <h2>🔗 Sdílit otisk</h2>
+    
+    <div class="modal-info">
+      Otisk se pošle do Přehlídky fenoménů. Bez textu, jen struktura (úhly). 
+      Dostaneš <strong>tajný klíč</strong> pro skupinu.
+    </div>
+    
+    <div class="modal-input-group">
+      <label>Přezdívka (volitelné):</label>
+      <input type="text" id="shareNickname" placeholder="Anonym">
+    </div>
+    
+    <button onclick="shareFingerprint()">🔗 Generovat odkaz</button>
+    
+    <div id="shareUrlDiv" style="display: none; margin-top: 1.5rem;">
+      <label style="display: block; margin-bottom: 0.5rem; font-size: 0.75rem; color: rgba(232,224,208,0.7);">
+        Tvůj odkaz (zkopíruj a sdílej):
+      </label>
+      <div class="share-url" id="shareUrl"></div>
+      <button class="copy-btn" onclick="copyToClipboard()">📋 Zkopírovat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════
+
+const state = {
+  tool: 'pencil',
+  thickness: 2,
+  opacity: 100,
+  isDrawing: false,
+  history: [],
+  historyStep: 0,
+  snapshots: [],
+  analysis: null
+};
+
+const TOOLS = {
+  pencil: { name: 'Tužka', composite: 'source-over' },
+  brush: { name: 'Štětec', composite: 'source-over' },
+  spray: { name: 'Sprej', composite: 'source-over' },
+  eraser: { name: 'Guma', composite: 'destination-out' },
+  marker: { name: 'Fixsym', composite: 'source-over' },
+  ink: { name: 'Tus', composite: 'source-over' }
+};
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+// INIT CANVAS
+function initCanvas() {
+  const wrapper = canvas.parentElement;
+  canvas.width = wrapper.clientWidth;
+  canvas.height = wrapper.clientHeight - 160;
+  
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  saveHistory();
+}
+
+window.addEventListener('resize', initCanvas);
+initCanvas();
+
+// ═══════════════════════════════════════════════════════════════════════
+// DRAWING
+// ═══════════════════════════════════════════════════════════════════════
+
+function getDrawContext() {
+  ctx.globalAlpha = state.opacity / 100;
+  ctx.lineWidth = state.thickness;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#000000';
+  ctx.globalCompositeOperation = TOOLS[state.tool]?.composite || 'source-over';
+}
+
+function startDrawing(e) {
+  state.isDrawing = true;
+  saveHistory();
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX || e.touches[0].clientX) - rect.left;
+  const y = (e.clientY || e.touches[0].clientY) - rect.top;
+  
+  getDrawContext();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+function draw(e) {
+  if (!state.isDrawing) return;
+  e.preventDefault();
+  
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX || e.touches[0].clientX) - rect.left;
+  const y = (e.clientY || e.touches[0].clientY) - rect.top;
+  
+  getDrawContext();
+  ctx.lineTo(x, y);
+  ctx.stroke();
+}
+
+function stopDrawing() {
+  if (!state.isDrawing) return;
+  state.isDrawing = false;
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  addSnapshot();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TOOLS
+// ═══════════════════════════════════════════════════════════════════════
+
+function selectTool(tool) {
+  state.tool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tool + 'Btn').classList.add('active');
+}
+
+function updateThickness() {
+  state.thickness = parseFloat(document.getElementById('thicknessSlider').value);
+  document.getElementById('thicknessValue').textContent = state.thickness.toFixed(1);
+}
+
+function updateOpacity() {
+  state.opacity = parseInt(document.getElementById('opacitySlider').value);
+  document.getElementById('opacityValue').textContent = state.opacity;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════════════════
+
+function saveHistory() {
+  state.history = state.history.slice(0, state.historyStep + 1);
+  state.history.push(canvas.toDataURL());
+  state.historyStep++;
+}
+
+function undo() {
+  if (state.historyStep > 0) {
+    state.historyStep--;
+    loadHistoryStep();
+  }
+}
+
+function redo() {
+  if (state.historyStep < state.history.length - 1) {
+    state.historyStep++;
+    loadHistoryStep();
+  }
+}
+
+function loadHistoryStep() {
+  const img = new Image();
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = state.history[state.historyStep];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════════════════════════════
+
+function addSnapshot() {
+  const snapshot = {
+    image: canvas.toDataURL(),
+    timestamp: Date.now(),
+    analysis: null
+  };
+  state.snapshots.push(snapshot);
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const timeline = document.getElementById('timeline');
+  timeline.innerHTML = '';
+  
+  state.snapshots.forEach((snap, idx) => {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    
+    const barsDiv = document.createElement('div');
+    barsDiv.className = 'timeline-bars';
+    
+    if (snap.analysis) {
+      const angles = [
+        { color: '#4a6075', percent: snap.analysis[0] },
+        { color: '#d4a0b0', percent: snap.analysis[60] },
+        { color: '#5a8a5a', percent: snap.analysis[150] },
+        { color: '#8060b0', percent: snap.analysis[330] }
+      ];
+      
+      angles.forEach(a => {
+        if (a.percent > 0) {
+          const bar = document.createElement('div');
+          bar.className = 'timeline-bar';
+          bar.style.backgroundColor = a.color;
+          bar.style.width = (a.percent) + '%';
+          barsDiv.appendChild(bar);
+        }
+      });
+    } else {
+      const bar = document.createElement('div');
+      bar.className = 'timeline-bar';
+      bar.style.backgroundColor = '#666';
+      bar.style.width = '100%';
+      barsDiv.appendChild(bar);
+    }
+    
+    item.appendChild(barsDiv);
+    item.onclick = () => {
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = snap.image;
+    };
+    
+    timeline.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════════════════════════════════
+
+function analyze() {
+  const imageData = canvas.toDataURL();
+  
+  // Placeholder: později se pošle do /doma/nastroje/vizualni_analyzer.html
+  setTimeout(() => {
+    state.analysis = {
+      0: 65,    // Analytický
+      30: 12,
+      60: 18,   // Filozofický
+      90: 8,
+      120: 14,
+      150: 22,  // Metaforický
+      180: 11,
+      210: 16,
+      240: 9,
+      270: 7,
+      300: 10,
+      330: 28   // Surrealistický
+    };
+    
+    displayAnalysis();
+    openModal('analysisModal');
+    
+    if (state.snapshots.length > 0) {
+      state.snapshots[state.snapshots.length - 1].analysis = state.analysis;
+      renderTimeline();
+    }
+  }, 500);
+}
+
+function displayAnalysis() {
+  const names = {
+    0: 'Analytický', 30: 'Kulturní', 60: 'Filozofický', 90: 'Naivní',
+    120: 'Jazykový', 150: 'Metaforický', 180: 'Asociační', 210: 'Introspektivní',
+    240: 'Ironický', 270: 'Groteskní', 300: 'Absurdní', 330: 'Surrealistický'
+  };
+  
+  let html = '';
+  Object.entries(state.analysis).forEach(([angle, percent]) => {
+    html += `
+      <div style="margin-bottom: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+          <span>${names[angle]}</span>
+          <span style="color: #c8903a;">${percent}%</span>
+        </div>
+        <div style="background: rgba(200,144,58,0.1); height: 6px; border-radius: 2px; overflow: hidden;">
+          <div style="background: #c8903a; height: 100%; width: ${percent}%;"></div>
+        </div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('analysisContent').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SHARE
+// ═══════════════════════════════════════════════════════════════════════
+
+function shareFingerprint() {
+  if (!state.analysis) {
+    alert('Nejdřív analyzuj kresbu!');
+    return;
+  }
+  
+  const nickname = document.getElementById('shareNickname').value || 'Anonym';
+  const params = new URLSearchParams();
+  params.set('nick', nickname);
+  
+  Object.entries(state.analysis).forEach(([angle, percent]) => {
+    params.set(`a${angle}`, Math.round(percent));
+  });
+  
+  const shareUrl = `${window.location.origin}/doma/nastroje/prehlidka_fenomenu.html?${params.toString()}`;
+  
+  document.getElementById('shareUrl').textContent = shareUrl;
+  document.getElementById('shareUrlDiv').style.display = 'block';
+}
+
+function copyToClipboard() {
+  const text = document.getElementById('shareUrl').textContent;
+  navigator.clipboard?.writeText(text);
+  alert('Zkopírováno! 📋');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════════
+
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function openTutorial() {
+  openModal('tutorialModal');
+}
+
+function saveDrawing() {
+  const name = document.getElementById('saveName').value;
+  const userAngle = document.getElementById('userAngle').value;
+  
+  if (state.snapshots.length > 0) {
+    state.snapshots[state.snapshots.length - 1].name = name;
+    state.snapshots[state.snapshots.length - 1].userAngle = userAngle;
+  }
+  
+  closeModal('saveModal');
+  alert('Uloženo! ✓');
+}
+
+function clearAll() {
+  if (confirm('Smazat celou kresbu?')) {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    state.history = [canvas.toDataURL()];
+    state.historyStep = 0;
+    state.snapshots = [];
+    document.getElementById('timeline').innerHTML = '';
+    saveHistory();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════════════════════════════
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
+
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+// Tutorial na prvním otevření
+if (!localStorage.getItem('tutorialShown')) {
+  openModal('tutorialModal');
+  localStorage.setItem('tutorialShown', 'true');
+}
+</script>
+
+</body>
+</html>
