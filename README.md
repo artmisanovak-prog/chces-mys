@@ -52,6 +52,8 @@ kreativita, fyzika jazyka, metadenik
 - [zralok](doma/data/uhly/zralok_uhly.html)
 - [plamenak](doma/data/uhly/plamenak_uhly.html)
 
+- [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html
+- )
 ---
 
 ilustrace:
