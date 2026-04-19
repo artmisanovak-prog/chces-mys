@@ -72,6 +72,11 @@ ilustrace:
 - [vizualni laborator](doma/mimo/vytvarna_laborator.html)
 - [vytvarna laborator](doma/mimo/vytvarna_laborator.html)
 - [datovy pruzkumnik](doma/mimo/datovy_pruzkumnik.html)
+
+- [kreslící vykreslovač](doma/mimo/kreslici_vykreslovac.html)
+
+ ---
+ 
 - [generátor fontů](doma/mimo/generator_fontu.html)
 
 ---
