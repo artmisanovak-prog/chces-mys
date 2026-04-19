@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Vizuální laboratoř · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.6; padding: 0.5rem; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+    .app { max-width: 100%; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300; margin: 0.2rem 0; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0.5rem 0; color: #c8903a; }
+    .panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.8rem; }
+    .flex-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .btn {
+      padding: 0.4rem 0.8rem; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; border-radius: 2px; touch-action: manipulation;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; }
+    .btn-small { padding: 0.2rem 0.5rem; font-size: 0.6rem; }
+    .canvas-container { position: relative; margin: 0.5rem 0; overflow: auto; max-height: 70vh; border: 1px solid rgba(200,144,58,.2); }
+    #mainCanvas { display: block; width: 100%; height: auto; background: #0f0d0a; touch-action: none; }
+    .mode-indicator { font-size: 0.7rem; color: #c8903a; margin-left: 0.5rem; }
+    .library-list { max-height: 200px; overflow-y: auto; font-size: 0.7rem; border: 1px solid rgba(200,144,58,.2); padding: 0.3rem; }
+    .lib-item { padding: 0.2rem; border-bottom: 1px solid rgba(200,144,58,.1); display: flex; justify-content: space-between; }
+    .lib-item.selected { background: rgba(200,144,58,.2); }
+    .annotation-item { padding: 0.3rem; border-bottom: 1px solid rgba(200,144,58,.1); font-size: 0.7rem; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 2000; padding: 1rem; overflow-y: auto; }
+    .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-content { background: #171410; border: 1px solid #c8903a; padding: 1rem; width: 100%; max-width: 500px; border-radius: 4px; }
+    select, input, textarea { width: 100%; padding: 0.5rem; margin: 0.3rem 0; background: #0f0d0a; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; font-family: inherit; }
+    .zoom-controls { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 5px; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div style="display: flex; justify-content: space-between;">
+    <h1>Vizuální <em>laboratoř</em></h1>
+    <button class="btn" id="helpBtn" style="font-size:1.2rem;">?</button>
+  </div>
+
+  <!-- Ovládání obrázku -->
+  <div class="panel">
+    <div class="flex-row">
+      <input type="file" id="fileInput" accept="image/*" style="display:none;">
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+      <button class="btn" id="galleryBtn">📂 Galerie</button>
+      <button class="btn" id="cameraBtn">📸 Fotoaparát</button>
+      <button class="btn" id="clearBtn">🗑️ Nový</button>
+      <button class="btn" id="zoomInBtn">➕ Lupa</button>
+      <button class="btn" id="zoomOutBtn">➖ Lupa</button>
+      <button class="btn" id="resetZoomBtn">🔄 1:1</button>
+    </div>
+    <div class="canvas-container" id="canvasContainer">
+      <canvas id="mainCanvas" width="600" height="400"></canvas>
+    </div>
+    <div class="flex-row">
+      <button class="btn btn-primary" id="annotateModeBtn">📐 Anotovat</button>
+      <span class="mode-indicator" id="modeIndicator">Režim: prohlížení</span>
+      <span style="margin-left:auto; font-size:0.7rem;" id="coordDisplay"></span>
+    </div>
+  </div>
+
+  <!-- Knihovna figur (vlevo) a Anotace (vpravo) na desktopu, pod sebou na mobilu -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+    <!-- Knihovna -->
+    <div class="panel">
+      <h2>📚 Knihovna figur</h2>
+      <div class="flex-row">
+        <input type="text" id="libSearch" placeholder="Filtrovat..." style="flex:1;">
+        <button class="btn btn-small" id="addFigureBtn">➕ Nová</button>
+      </div>
+      <div class="library-list" id="libraryContainer"></div>
+      <p style="font-size:0.6rem; margin-top:0.3rem;">Kliknutím vybereš figuru pro anotaci.</p>
+    </div>
+
+    <!-- Anotace -->
+    <div class="panel">
+      <h2>📝 Anotace na obrázku</h2>
+      <div id="annotationsList" style="max-height:200px; overflow-y:auto;"></div>
+      <button class="btn btn-small" id="clearAnnotationsBtn" style="margin-top:0.5rem;">🗑️ Smazat všechny</button>
+    </div>
+  </div>
+
+  <!-- Dataset -->
+  <div class="panel">
+    <h2>📊 Dataset</h2>
+    <div class="flex-row">
+      <button class="btn" id="saveToDatasetBtn">💾 Uložit anotace do datasetu</button>
+      <button class="btn" id="exportDatasetBtn">📤 Export JSON</button>
+      <button class="btn" id="importDatasetBtn">📥 Import JSON</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+    <p id="datasetStats" style="font-size:0.7rem;"></p>
+  </div>
+
+  <!-- Modální okno pro vytvoření/úpravu figury -->
+  <div class="modal" id="figureModal">
+    <div class="modal-content">
+      <h3>✏️ Figurka</h3>
+      <input type="text" id="figureNameInput" placeholder="Název (např. Tenká, rovná)">
+      <select id="figureCategorySelect"></select>
+      <input type="text" id="newCategoryInput" placeholder="Nebo nová kategorie...">
+      <textarea id="figureDescInput" placeholder="Popis stylu (co vyjadřuje)"></textarea>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="saveFigureBtn">Uložit</button>
+        <button class="btn" id="cancelFigureBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modální okno pro anotaci -->
+  <div class="modal" id="annotationModal">
+    <div class="modal-content">
+      <h3>📌 Anotace vybrané oblasti</h3>
+      <p>Vyber figuru nebo <button class="btn-small" id="createFigureFromAnnotBtn">➕ Vytvoř novou</button></p>
+      <select id="annotationFigureSelect" size="5" style="height:auto;"></select>
+      <select id="annotationAngleSelect"></select>
+      <textarea id="annotationNoteInput" placeholder="Poznámka..."></textarea>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="saveAnnotationBtn">Uložit anotaci</button>
+        <button class="btn" id="cancelAnnotationBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- DATA ----------
+    const ANGLES = [
+      { st:0, name:'Analytický' }, { st:30, name:'Kulturní' }, { st:60, name:'Filozofický' },
+      { st:90, name:'Naivní' }, { st:120, name:'Jazykový' }, { st:150, name:'Metaforický' },
+      { st:180, name:'Asociační' }, { st:210, name:'Introspektivní' }, { st:240, name:'Ironický' },
+      { st:270, name:'Groteskní' }, { st:300, name:'Absurdní' }, { st:330, name:'Surrealistický' }
+    ];
+
+    // Knihovna figur (uložena v localStorage pod 'figureLibrary')
+    let figureLibrary = [];
+
+    // Anotace na aktuálním obrázku
+    let annotations = [];
+    // Dataset (všechny anotace)
+    let dataset = [];
+
+    // Obrázek a canvas
+    let currentImage = null;
+    let canvas = document.getElementById('mainCanvas');
+    let ctx = canvas.getContext('2d');
+    let container = document.getElementById('canvasContainer');
+    
+    // Stav kreslení
+    let annotationMode = false;
+    let isDrawing = false;
+    let startX, startY, currentRect = null;
+    let selectedFigure = null; // pro anotaci
+    let zoom = 1;
+    let offsetX = 0, offsetY = 0;
+
+    // DOM
+    const modeIndicator = document.getElementById('modeIndicator');
+    const coordDisplay = document.getElementById('coordDisplay');
+    const libraryContainer = document.getElementById('libraryContainer');
+    const annotationsList = document.getElementById('annotationsList');
+    const datasetStats = document.getElementById('datasetStats');
+    const figureModal = document.getElementById('figureModal');
+    const annotationModal = document.getElementById('annotationModal');
+    const figureNameInput = document.getElementById('figureNameInput');
+    const figureCategorySelect = document.getElementById('figureCategorySelect');
+    const newCategoryInput = document.getElementById('newCategoryInput');
+    const figureDescInput = document.getElementById('figureDescInput');
+    const annotationFigureSelect = document.getElementById('annotationFigureSelect');
+    const annotationAngleSelect = document.getElementById('annotationAngleSelect');
+    const annotationNoteInput = document.getElementById('annotationNoteInput');
+
+    // ---------- INICIALIZACE ----------
+    function init() {
+      loadFigureLibrary();
+      loadDataset();
+      renderLibrary();
+      renderAngleSelects();
+      updateDatasetStats();
+
+      // Eventy
+      document.getElementById('galleryBtn').addEventListener('click', ()=>fileInput.click());
+      document.getElementById('cameraBtn').addEventListener('click', ()=>cameraInput.click());
+      document.getElementById('clearBtn').addEventListener('click', clearCanvas);
+      document.getElementById('zoomInBtn').addEventListener('click', ()=>{ zoom*=1.2; renderCanvas(); });
+      document.getElementById('zoomOutBtn').addEventListener('click', ()=>{ zoom/=1.2; renderCanvas(); });
+      document.getElementById('resetZoomBtn').addEventListener('click', ()=>{ zoom=1; offsetX=offsetY=0; renderCanvas(); });
+      document.getElementById('annotateModeBtn').addEventListener('click', toggleAnnotationMode);
+      document.getElementById('addFigureBtn').addEventListener('click', ()=>openFigureModal());
+      document.getElementById('saveFigureBtn').addEventListener('click', saveFigure);
+      document.getElementById('cancelFigureBtn').addEventListener('click', ()=>figureModal.classList.remove('active'));
+      document.getElementById('createFigureFromAnnotBtn').addEventListener('click', ()=>{ annotationModal.classList.remove('active'); openFigureModal(); });
+      document.getElementById('saveAnnotationBtn').addEventListener('click', saveAnnotation);
+      document.getElementById('cancelAnnotationBtn').addEventListener('click', ()=>annotationModal.classList.remove('active'));
+      document.getElementById('clearAnnotationsBtn').addEventListener('click', ()=>{ annotations=[]; renderCanvas(); renderAnnotationsList(); });
+      document.getElementById('saveToDatasetBtn').addEventListener('click', saveCurrentToDataset);
+      document.getElementById('exportDatasetBtn').addEventListener('click', exportDataset);
+      document.getElementById('importDatasetBtn').addEventListener('click', ()=>importFileInput.click());
+      document.getElementById('libSearch').addEventListener('input', renderLibrary);
+      
+      fileInput.addEventListener('change', (e)=>loadImage(e.target.files[0]));
+      cameraInput.addEventListener('change', (e)=>loadImage(e.target.files[0]));
+      importFileInput.addEventListener('change', importDataset);
+
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('touchstart', onTouchStart, {passive: false});
+      canvas.addEventListener('touchmove', onTouchMove, {passive: false});
+      canvas.addEventListener('touchend', onTouchEnd);
+    }
+
+    // ---------- KNIHOVNA FIGUR ----------
+    function loadFigureLibrary() {
+      const stored = localStorage.getItem('figureLibrary');
+      if (stored) figureLibrary = JSON.parse(stored);
+      else {
+        figureLibrary = [
+          { category:"Linie", name:"Tenká, rovná, pravidelná", desc:"Přesnost, technický ráz." },
+          { category:"Linie", name:"Oblá, plynulá", desc:"Harmonie, kulturnost." },
+          { category:"Tlak", name:"Lehký, jemný", desc:"Křehkost, introspekce." },
+          { category:"Tvary", name:"Geometrické", desc:"Analytický přístup." }
+        ];
+        saveFigureLibrary();
+      }
+    }
+    function saveFigureLibrary() { localStorage.setItem('figureLibrary', JSON.stringify(figureLibrary)); }
+    
+    function renderLibrary() {
+      const filter = document.getElementById('libSearch').value.toLowerCase();
+      const filtered = figureLibrary.filter(f => 
+        f.name.toLowerCase().includes(filter) || f.category.toLowerCase().includes(filter)
+      );
+      let html = '';
+      const categories = {};
+      filtered.forEach(f => { if(!categories[f.category]) categories[f.category]=[]; categories[f.category].push(f); });
+      Object.keys(categories).sort().forEach(cat => {
+        html += `<div style="font-weight:bold; margin-top:0.3rem;">${cat}</div>`;
+        categories[cat].forEach(f => {
+          html += `<div class="lib-item" data-figure='${JSON.stringify(f)}' onclick="selectFigure(this)">
+            <span>${f.name}</span><span style="font-size:0.6rem;" title="${f.desc}">ℹ️</span>
+          </div>`;
+        });
+      });
+      libraryContainer.innerHTML = html || '<p>Žádné figury.</p>';
+    }
+
+    window.selectFigure = function(el) {
+      document.querySelectorAll('.lib-item').forEach(i=>i.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedFigure = JSON.parse(el.dataset.figure);
+    };
+
+    function openFigureModal(figure=null) {
+      const cats = [...new Set(figureLibrary.map(f=>f.category))];
+      figureCategorySelect.innerHTML = cats.map(c=>`<option>${c}</option>`).join('');
+      newCategoryInput.value = '';
+      if (figure) {
+        figureNameInput.value = figure.name;
+        figureCategorySelect.value = figure.category;
+        figureDescInput.value = figure.desc;
+      } else {
+        figureNameInput.value = '';
+        figureDescInput.value = '';
+      }
+      figureModal.classList.add('active');
+    }
+
+    function saveFigure() {
+      const name = figureNameInput.value.trim();
+      let category = figureCategorySelect.value;
+      if (!category && newCategoryInput.value.trim()) category = newCategoryInput.value.trim();
+      const desc = figureDescInput.value.trim();
+      if (!name || !category) return;
+      const existing = figureLibrary.findIndex(f=>f.name===name && f.category===category);
+      if (existing>=0) figureLibrary[existing] = {category, name, desc};
+      else figureLibrary.push({category, name, desc});
+      saveFigureLibrary();
+      renderLibrary();
+      figureModal.classList.remove('active');
+      populateAnnotationFigureSelect();
+    }
+
+    function populateAnnotationFigureSelect() {
+      annotationFigureSelect.innerHTML = '';
+      figureLibrary.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.name;
+        opt.textContent = `${f.category}: ${f.name}`;
+        annotationFigureSelect.appendChild(opt);
+      });
+    }
+
+    // ---------- OBRÁZEK A KRESLENÍ ----------
+    function loadImage(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          currentImage = img;
+          annotations = [];
+          zoom = 1; offsetX = offsetY = 0;
+          renderCanvas();
+          renderAnnotationsList();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearCanvas() {
+      currentImage = null;
+      annotations = [];
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      renderAnnotationsList();
+    }
+
+    function renderCanvas() {
+      if (!currentImage) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+      const w = currentImage.width * zoom;
+      const h = currentImage.height * zoom;
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(currentImage, 0, 0, w, h);
+      
+      // Vykreslit anotace
+      annotations.forEach(ann => {
+        const x = ann.x * zoom, y = ann.y * zoom, w = ann.w * zoom, h = ann.h * zoom;
+        ctx.strokeStyle = '#c8903a'; ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = 'rgba(200,144,58,.2)'; ctx.fillRect(x, y, w, h);
+      });
+    }
+
+    function renderAnnotationsList() {
+      if (annotations.length===0) { annotationsList.innerHTML='<p>Žádné anotace.</p>'; return; }
+      let html = '';
+      annotations.forEach((ann,i)=>{
+        const fig = ann.figureName;
+        const angle = ANGLES.find(a=>a.st===ann.angle)?.name || '—';
+        html += `<div class="annotation-item">
+          <b>${fig}</b> (${angle}) ${ann.note?': '+ann.note:''}
+          <button class="btn-small" onclick="deleteAnnotation(${i})">🗑️</button>
+        </div>`;
+      });
+      annotationsList.innerHTML = html;
+    }
+    window.deleteAnnotation = (idx) => { annotations.splice(idx,1); renderCanvas(); renderAnnotationsList(); };
+
+    // Souřadnice vzhledem k původnímu obrázku (bez zoomu)
+    function getImageCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let clientX, clientY;
+      if (e.touches) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+      else { clientX = e.clientX; clientY = e.clientY; }
+      const canvasX = (clientX - rect.left) * scaleX;
+      const canvasY = (clientY - rect.top) * scaleY;
+      return { x: canvasX / zoom, y: canvasY / zoom };
+    }
+
+    function toggleAnnotationMode() {
+      annotationMode = !annotationMode;
+      modeIndicator.textContent = annotationMode ? 'Režim: KRESLENÍ' : 'Režim: prohlížení';
+      canvas.style.cursor = annotationMode ? 'crosshair' : 'default';
+    }
+
+    function onMouseDown(e) { if(!annotationMode||!currentImage) return; startDraw(getImageCoords(e)); }
+    function onTouchStart(e) { e.preventDefault(); if(!annotationMode||!currentImage) return; startDraw(getImageCoords(e)); }
+    function startDraw(coord) { startX = coord.x; startY = coord.y; isDrawing = true; currentRect = null; }
+    
+    function onMouseMove(e) { if(!isDrawing) return; drawRect(getImageCoords(e)); }
+    function onTouchMove(e) { e.preventDefault(); if(!isDrawing) return; drawRect(getImageCoords(e)); }
+    function drawRect(coord) {
+      const w = coord.x - startX, h = coord.y - startY;
+      currentRect = { x: startX, y: startY, w, h };
+      renderCanvas();
+      ctx.strokeStyle = '#c8903a'; ctx.lineWidth = 2/zoom;
+      ctx.strokeRect(startX*zoom, startY*zoom, w*zoom, h*zoom);
+      coordDisplay.textContent = `${Math.abs(w).toFixed(0)} x ${Math.abs(h).toFixed(0)}`;
+    }
+
+    function onMouseUp(e) { if(!isDrawing) return; finishDraw(getImageCoords(e)); }
+    function onTouchEnd(e) { e.preventDefault(); if(!isDrawing) return; finishDraw(getImageCoords({x:startX+currentRect.w, y:startY+currentRect.h})); }
+    function finishDraw(coord) {
+      isDrawing = false; annotationMode = false;
+      modeIndicator.textContent = 'Režim: prohlížení';
+      if (!currentRect || Math.abs(currentRect.w)<5 || Math.abs(currentRect.h)<5) return;
+      // Normalizovat na kladné rozměry
+      const rect = {
+        x: Math.min(startX, coord.x), y: Math.min(startY, coord.y),
+        w: Math.abs(currentRect.w), h: Math.abs(currentRect.h)
+      };
+      openAnnotationModal(rect);
+    }
+
+    function openAnnotationModal(rect) {
+      if (!selectedFigure) { alert('Nejprve vyber figuru z knihovny.'); return; }
+      populateAnnotationFigureSelect();
+      annotationFigureSelect.value = selectedFigure.name;
+      annotationModal.classList.add('active');
+      annotationModal.dataset.rect = JSON.stringify(rect);
+    }
+
+    function saveAnnotation() {
+      const rect = JSON.parse(annotationModal.dataset.rect);
+      const figureName = annotationFigureSelect.value;
+      const angle = parseInt(annotationAngleSelect.value) || null;
+      const note = annotationNoteInput.value;
+      if (!figureName) return;
+      const figure = figureLibrary.find(f=>f.name===figureName);
+      annotations.push({
+        id: Date.now()+'-'+Math.random(),
+        ...rect,
+        figureName,
+        figureCategory: figure?.category,
+        angle,
+        note
+      });
+      renderCanvas();
+      renderAnnotationsList();
+      annotationModal.classList.remove('active');
+      annotationNoteInput.value = '';
+    }
+
+    // ---------- DATASET ----------
+    function loadDataset() { const s=localStorage.getItem('visualDataset'); dataset=s?JSON.parse(s):[]; }
+    function saveDataset() { localStorage.setItem('visualDataset', JSON.stringify(dataset)); updateDatasetStats(); }
+    function updateDatasetStats() { datasetStats.textContent = `Celkem záznamů: ${dataset.length}`; }
+    function saveCurrentToDataset() {
+      if (annotations.length===0) return alert('Žádné anotace.');
+      const records = annotations.map(ann => ({
+        timestamp: Date.now(),
+        figure: { category: ann.figureCategory, name: ann.figureName },
+        angle: ann.angle,
+        note: ann.note,
+        bbox: { x: ann.x, y: ann.y, w: ann.w, h: ann.h }
+      }));
+      dataset.push(...records);
+      saveDataset();
+      alert(`Přidáno ${records.length} záznamů.`);
+    }
+    function exportDataset() { /* Blob download */ }
+    function importDataset(e) { /* JSON parse */ }
+
+    function renderAngleSelects() {
+      annotationAngleSelect.innerHTML = '<option value="">— bez úhlu —</option>';
+      ANGLES.forEach(a => { const opt = document.createElement('option'); opt.value=a.st; opt.textContent=`${a.st}° ${a.name}`; annotationAngleSelect.appendChild(opt); });
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
