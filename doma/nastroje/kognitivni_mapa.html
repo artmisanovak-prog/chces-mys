@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kognitivní mapa — Chceš myš? Slovník mezer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0f0d0a;--s:#171410;--s2:#1e1a14;--s3:#252018;
+      --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.2);
+      --accent:#a89880;--accent2:#786858;
+      --border:rgba(168,152,128,.14);--border-hi:rgba(168,152,128,.3);
+      --serif:'Cormorant Garamond',Georgia,serif;--mono:'DM Mono',monospace;
+      --c0:#5a7fa8;--c30:#6a9e72;--c60:#9b72b5;--c90:#5fa8a0;
+      --c120:#8e7248;--c150:#5a8a5a;--c180:#a85a5a;--c210:#c8a832;
+      --c240:#c8722a;--c270:#a83060;--c300:#6080a0;--c330:#8060b0;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+
+    nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(15,13,10,.94);backdrop-filter:blur(14px);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .nav-brand{font-family:var(--serif);font-size:.88rem;font-weight:300;letter-spacing:.04em}
+    .nav-brand em{font-style:italic;color:var(--accent)}
+    .nav-links{display:flex;gap:20px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+    .nav-links a{color:var(--dim);transition:color .15s}
+    .nav-links a:hover{color:var(--cream)}
+
+    /* HERO */
+    .hero{padding:48px 0 36px;border-bottom:1px solid var(--border)}
+    .hero-label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+    .hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:300;line-height:1.05;margin-bottom:8px}
+    .hero h1 em{font-style:italic;color:var(--accent)}
+    .hero-desc{font-size:.8rem;color:var(--dim);max-width:480px;line-height:1.9;margin-top:10px}
+
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:220px 1fr;gap:0;min-height:60vh}
+    @media(max-width:680px){.layout{grid-template-columns:1fr}}
+
+    /* SIDEBAR — kategorie */
+    .sidebar{border-right:1px solid var(--border);padding:24px 0;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto}
+    @media(max-width:680px){.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);padding:16px 0}}
+    .sidebar::-webkit-scrollbar{width:2px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--accent2)}
+    .sb-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);padding:0 16px;margin-bottom:8px}
+    .sb-item{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;transition:background .1s;border-left:2px solid transparent}
+    .sb-item:hover{background:var(--s)}
+    .sb-item.active{background:var(--s);border-left-color:var(--accent);color:var(--cream)}
+    .sb-item-name{font-size:.76rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sb-item-count{font-size:.62rem;color:var(--dim2)}
+    .sb-new{margin:12px 16px 0;padding:8px 14px;background:transparent;border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:calc(100% - 32px);transition:all .12s;text-align:left}
+    .sb-new:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* MAIN */
+    .main{padding:24px 0 24px 32px}
+    @media(max-width:680px){.main{padding:16px 0}}
+
+    /* MAPA HEADER */
+    .mapa-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+    .mapa-title{font-family:var(--serif);font-size:1.4rem;font-weight:300}
+    .mapa-title em{font-style:italic;color:var(--accent)}
+    .mapa-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .btn{padding:7px 16px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:all .12s}
+    .btn-p{background:var(--accent);color:var(--bg)}
+    .btn-p:hover{background:#c0a888}
+    .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border)}
+    .btn-g:hover{color:var(--cream);border-color:var(--border-hi)}
+    .btn-d{background:transparent;color:rgba(168,80,80,.6);border:1px solid rgba(168,80,80,.2);font-size:.62rem}
+    .btn-d:hover{color:#e88;border-color:rgba(168,80,80,.5)}
+
+    /* KOLEČKO */
+    .mapa-viz{display:flex;gap:32px;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap}
+    canvas{cursor:pointer;display:block}
+    .mapa-legenda{flex:1;min-width:180px}
+    .leg-item{display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;opacity:.5;transition:opacity .15s}
+    .leg-item:hover,.leg-item.active{opacity:1}
+    .leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .leg-name{font-size:.72rem;color:var(--cream)}
+    .leg-count{font-size:.62rem;color:var(--dim);margin-left:auto}
+
+    /* ČASOVÁ OSA */
+    .timeline-sec{margin-bottom:24px}
+    .sec-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+    .timeline-bar{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:6px}
+    .tl-dot{width:10px;height:10px;border-radius:50%;cursor:pointer;transition:transform .1s}
+    .tl-dot:hover{transform:scale(1.5)}
+    .tl-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--dim2)}
+
+    /* ZÁZNAMY */
+    .entries-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .entries-filter{display:flex;gap:4px;flex-wrap:wrap}
+    .f-btn{padding:4px 10px;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .1s}
+    .f-btn:hover,.f-btn.active{border-color:var(--accent);color:var(--accent)}
+
+    .entry{border:1px solid var(--border);background:var(--s);margin-bottom:4px;overflow:hidden}
+    .entry-head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:10px 14px;cursor:pointer;align-items:center;transition:background .1s}
+    .entry-head:hover{background:var(--s2)}
+    .entry.open .entry-head{background:var(--s2);border-bottom:1px solid var(--border)}
+    .entry-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .entry-meta{display:flex;flex-direction:column;gap:2px}
+    .entry-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .entry-uhel{font-size:.72rem;color:var(--cream)}
+    .entry-karta{font-size:.62rem;color:var(--dim);padding:1px 6px;border:1px solid var(--border)}
+    .entry-anomalie{font-size:.6rem;color:var(--accent);padding:1px 5px;background:rgba(168,152,128,.08)}
+    .entry-datum{font-size:.6rem;color:var(--dim2)}
+    .entry-preview{font-size:.7rem;color:var(--dim);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px}
+    .entry-toggle{font-size:.7rem;color:var(--dim);transition:transform .2s}
+    .entry.open .entry-toggle{transform:rotate(180deg)}
+
+    .entry-body{display:none;padding:14px 16px 16px 32px}
+    .entry.open .entry-body{display:block}
+    .entry-text{font-family:var(--serif);font-size:.88rem;color:rgba(232,224,208,.8);line-height:1.9;margin-bottom:12px;white-space:pre-wrap}
+    .entry-analysis{font-size:.72rem;color:var(--dim);border-left:1px solid var(--border);padding-left:12px;margin-bottom:12px;line-height:1.8}
+    .entry-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+    /* POROVNÁNÍ */
+    .compare-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;overflow-y:auto}
+    .compare-modal.open{display:flex;align-items:flex-start;justify-content:center;padding:40px 16px}
+    .compare-box{background:var(--s);border:1px solid var(--border-hi);max-width:900px;width:100%;padding:28px}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    @media(max-width:560px){.compare-grid{grid-template-columns:1fr}}
+    .compare-col h4{font-family:var(--serif);font-size:.9rem;font-weight:300;margin-bottom:8px;color:var(--accent)}
+    .compare-text{font-family:var(--serif);font-size:.82rem;color:rgba(232,224,208,.75);line-height:1.9;white-space:pre-wrap;border-left:1px solid var(--border);padding-left:12px}
+
+    /* NOVÁ KATEGORIE modal */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:24px}
+    .modal.open{display:flex}
+    .modal-box{background:var(--s);border:1px solid var(--border-hi);padding:24px;width:100%;max-width:400px}
+    .modal-box h3{font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:16px}
+    .modal-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--cream);padding:10px 12px;font-family:var(--mono);font-size:.8rem;margin-bottom:10px}
+    .modal-input:focus{outline:1px solid var(--accent)}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+    /* PRÁZDNÝ STAV */
+    .empty{padding:40px 0;text-align:center;color:var(--dim2);font-size:.8rem;font-style:italic}
+
+    /* EXPORT */
+    .export-info{font-size:.7rem;color:var(--dim2);margin-top:4px;font-style:italic}
+
+    footer{padding:24px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:32px}
+    footer p{font-size:.7rem;color:var(--dim2)}
+    footer a{color:var(--accent)}
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand"><em>Chceš myš?</em> — kognitivní mapa</span>
+  <div class="nav-links">
+    <a href="../../../index.html">← Zvířata</a>
+    <a href="../nastroje/analyzer.html">Analyzátor</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section class="hero">
+  <p class="hero-label">Slovník mezer · Fenomény fyzika jazyka</p>
+  <h1>Kognitivní <em>mapa</em></h1>
+  <p class="hero-desc">Zápisník myši. Zapisuje samo — do skulin, do mezer, do ticha. Každý text který uložíte ze cvičení se objeví zde a mapa se mění. Zkuste různé karty, různé úhly — uvidíte kde přirozeně stojíte.</p>
+</section>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <p class="sb-label">Vaše mapy</p>
+    <div id="sb-list"></div>
+    <button class="sb-new" onclick="openNewModal()">+ Nová mapa</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="mapa-header">
+      <div>
+        <div class="mapa-title" id="mapa-nazev">Výběr mapy</div>
+        <div style="font-size:.72rem;color:var(--dim);margin-top:4px" id="mapa-popis"></div>
+      </div>
+      <div class="mapa-actions" id="mapa-actions" style="display:none">
+        <button class="btn btn-g" onclick="exportovat()">Exportovat ↓</button>
+        <button class="btn btn-g" onclick="openCompare()">Porovnat</button>
+        <button class="btn btn-d" onclick="smazatMapu()">Smazat mapu</button>
+      </div>
+    </div>
+
+    <!-- VIZUALIZACE -->
+    <div id="viz-wrap" style="display:none">
+      <div class="mapa-viz">
+        <canvas id="wheel" width="220" height="220"></canvas>
+        <div class="mapa-legenda" id="legenda"></div>
+      </div>
+
+      <!-- ČASOVÁ OSA -->
+      <div class="timeline-sec">
+        <p class="sec-label">Časová osa</p>
+        <div class="timeline-bar" id="timeline-bar"></div>
+        <div class="tl-labels" id="tl-labels"></div>
+      </div>
+
+      <!-- FILTR + ZÁZNAMY -->
+      <div class="entries-header">
+        <p class="sec-label" style="margin:0">Záznamy</p>
+        <div class="entries-filter" id="filter-bar"></div>
+      </div>
+      <div id="entries-list"></div>
+    </div>
+
+    <div id="empty-state" class="empty">← Vyberte nebo vytvořte mapu</div>
+  </div>
+</div>
+
+<footer>
+  <p>Kognitivní mapa · Chceš myš? Slovník mezer · © 2026 Michaela Nováková</p>
+  <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+</footer>
+</div>
+
+<!-- MODAL: nová mapa -->
+<div class="modal" id="modal-new">
+  <div class="modal-box">
+    <h3>Nová kognitivní mapa</h3>
+    <input class="modal-input" id="new-name" placeholder="Název mapy — třída 3B, osobní, projekt..." maxlength="40">
+    <input class="modal-input" id="new-popis" placeholder="Popis (nepovinný)..." maxlength="100">
+    <div class="modal-actions">
+      <button class="btn btn-g" onclick="closeModals()">Zrušit</button>
+      <button class="btn btn-p" onclick="vytvorMapu()">Vytvořit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: porovnání -->
+<div class="compare-modal" id="modal-compare">
+  <div class="compare-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span style="font-family:var(--serif);font-size:1.1rem;font-weight:300">Porovnání záznamů</span>
+      <button class="btn btn-g" onclick="closeModals()">Zavřít</button>
+    </div>
+    <p style="font-size:.76rem;color:var(--dim);margin-bottom:12px">Vyberte dva záznamy ze seznamu ke srovnání — klikněte na záznam a pak na tlačítko Přidat do porovnání.</p>
+    <div id="compare-selectors" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"></div>
+    <div class="compare-grid" id="compare-grid"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+
+const UHLY = [
+  {st:0,  n:'Analytický',   b:'#5a7fa8'},
+  {st:30, n:'Kulturní',     b:'#6a9e72'},
+  {st:60, n:'Filozofický',  b:'#9b72b5'},
+  {st:90, n:'Naivní',       b:'#5fa8a0'},
+  {st:120,n:'Jazykový',     b:'#8e7248'},
+  {st:150,n:'Metaforický',  b:'#5a8a5a'},
+  {st:180,n:'Asociační',    b:'#a85a5a'},
+  {st:210,n:'Introspektivní',b:'#c8a832'},
+  {st:240,n:'Ironický',     b:'#c8722a'},
+  {st:270,n:'Groteskní',    b:'#a83060'},
+  {st:300,n:'Absurdní',     b:'#6080a0'},
+  {st:330,n:'Surrealistický',b:'#8060b0'}
+];
+const byDeg = {};
+UHLY.forEach(u => byDeg[u.st] = u);
+
+const KEY = 'chcesmys_kogmapa';
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { return {}; }
+}
+function save(data) {
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════════
+// STAV
+// ═══════════════════════════════════════════
+
+let activeMap = null;
+let compareSlots = [null, null];
+let filterUhel = null;
+
+// ═══════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════
+
+function renderSidebar() {
+  const data = load();
+  const list = document.getElementById('sb-list');
+  const maps = Object.keys(data);
+  list.innerHTML = '';
+  if (maps.length === 0) {
+    list.innerHTML = '<div style="padding:8px 16px;font-size:.7rem;color:var(--dim2);font-style:italic">Zatím žádné mapy</div>';
+    return;
+  }
+  maps.forEach(id => {
+    const m = data[id];
+    const count = (m.entries||[]).length;
+    const div = document.createElement('div');
+    div.className = 'sb-item' + (activeMap === id ? ' active' : '');
+    div.innerHTML = `<span class="sb-item-name">${m.name}</span><span class="sb-item-count">${count}</span>`;
+    div.onclick = () => selectMap(id);
+    list.appendChild(div);
+  });
+}
+
+function selectMap(id) {
+  activeMap = id;
+  filterUhel = null;
+  renderSidebar();
+  renderMain();
+}
+
+// ═══════════════════════════════════════════
+// HLAVNÍ OBSAH
+// ═══════════════════════════════════════════
+
+function renderMain() {
+  const data = load();
+  if (!activeMap || !data[activeMap]) {
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('viz-wrap').style.display = 'none';
+    document.getElementById('mapa-nazev').textContent = 'Výběr mapy';
+    document.getElementById('mapa-popis').textContent = '';
+    document.getElementById('mapa-actions').style.display = 'none';
+    return;
+  }
+  const m = data[activeMap];
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('viz-wrap').style.display = 'block';
+  document.getElementById('mapa-nazev').innerHTML = `<em>${m.name}</em>`;
+  document.getElementById('mapa-popis').textContent = m.popis || '';
+  document.getElementById('mapa-actions').style.display = 'flex';
+
+  renderWheel(m.entries || []);
+  renderLegenda(m.entries || []);
+  renderTimeline(m.entries || []);
+  renderFilterBar(m.entries || []);
+  renderEntries(m.entries || []);
+}
+
+// ═══════════════════════════════════════════
+// KOLEČKO
+// ═══════════════════════════════════════════
+
+function renderWheel(entries) {
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,220,220);
+  const CX=110,CY=110,R=100,IR=36;
+  const seg = (Math.PI*2)/12;
+  const counts = {};
+  UHLY.forEach(u => counts[u.st]=0);
+  entries.forEach(e => { if(counts[e.uhel]!==undefined) counts[e.uhel]++; });
+  const maxC = Math.max(...Object.values(counts),1);
+
+  UHLY.forEach((u,i) => {
+    const sa = -Math.PI/2+i*seg, ea = sa+seg;
+    const intensity = counts[u.st]/maxC;
+    const isActive = filterUhel===u.st;
+    ctx.beginPath();
+    ctx.moveTo(CX,CY);
+    ctx.arc(CX,CY,R,sa,ea);
+    ctx.closePath();
+    if (counts[u.st]>0||isActive) {
+      const alpha = isActive ? 'e0' : Math.round(30+intensity*140).toString(16).padStart(2,'0');
+      ctx.fillStyle = u.b+alpha;
+    } else {
+      ctx.fillStyle='#1a1610';
+    }
+    ctx.fill();
+    ctx.strokeStyle='rgba(168,152,128,.1)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+
+    // label
+    const midA=sa+seg/2;
+    const lr=(R+IR)/2+6;
+    ctx.save();
+    ctx.translate(CX+Math.cos(midA)*lr,CY+Math.sin(midA)*lr);
+    ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle=counts[u.st]>0?u.b:'rgba(168,152,128,.2)';
+    ctx.font='300 7.5px DM Mono,monospace';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(u.n,0,0);
+    ctx.restore();
+
+    if (counts[u.st]>0) {
+      ctx.beginPath();
+      ctx.arc(CX,CY,IR+3,sa+.06,ea-.06);
+      ctx.strokeStyle=u.b;
+      ctx.lineWidth=Math.max(1.5,intensity*4);
+      ctx.globalAlpha=0.5+intensity*.5;
+      ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+  });
+
+  ctx.beginPath();
+  ctx.arc(CX,CY,IR,0,Math.PI*2);
+  ctx.fillStyle='#0f0d0a';
+  ctx.fill();
+  ctx.strokeStyle='rgba(168,152,128,.15)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+
+  const total = entries.length;
+  ctx.fillStyle='rgba(168,152,128,.3)';
+  ctx.font='300 9px DM Mono';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(total===0?'prázdná':`${total} záz.`,CX,CY);
+
+  // click
+  canvas.onclick = e => {
+    const rect=canvas.getBoundingClientRect();
+    const scale=220/rect.width;
+    const mx=(e.clientX-rect.left)*scale-CX;
+    const my=(e.clientY-rect.top)*scale-CY;
+    const dist=Math.sqrt(mx*mx+my*my);
+    if(dist<IR||dist>R) { filterUhel=null; renderMain(); return; }
+    let angle=Math.atan2(my,mx)+Math.PI/2;
+    if(angle<0)angle+=Math.PI*2;
+    const idx=Math.floor(angle/(Math.PI*2/12));
+    const u=UHLY[idx];
+    if(u){ filterUhel=filterUhel===u.st?null:u.st; renderMain(); }
+  };
+}
+
+function renderLegenda(entries) {
+  const counts={};
+  UHLY.forEach(u=>counts[u.st]=0);
+  entries.forEach(e=>{if(counts[e.uhel]!==undefined)counts[e.uhel]++;});
+  const sorted=[...UHLY].sort((a,b)=>counts[b.st]-counts[a.st]);
+  const container=document.getElementById('legenda');
+  container.innerHTML=sorted.filter(u=>counts[u.st]>0).map(u=>`
+    <div class="leg-item${filterUhel===u.st?' active':''}" onclick="filterUhel=filterUhel===${u.st}?null:${u.st};renderMain()">
+      <span class="leg-dot" style="background:${u.b}"></span>
+      <span class="leg-name">${u.n}</span>
+      <span class="leg-count">${counts[u.st]}×</span>
+    </div>`).join('');
+  if(!container.innerHTML) container.innerHTML='<div style="font-size:.72rem;color:var(--dim2);font-style:italic">Přidejte záznamy ze cvičení</div>';
+}
+
+// ═══════════════════════════════════════════
+// ČASOVÁ OSA
+// ═══════════════════════════════════════════
+
+function renderTimeline(entries) {
+  const bar=document.getElementById('timeline-bar');
+  const labels=document.getElementById('tl-labels');
+  if(entries.length===0){bar.innerHTML='';labels.innerHTML='';return;}
+  const sorted=[...entries].sort((a,b)=>a.ts-b.ts);
+  bar.innerHTML=sorted.map(e=>{
+    const u=byDeg[e.uhel]||{b:'#888'};
+    const d=new Date(e.ts).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit'});
+    return `<div class="tl-dot" style="background:${u.b}" title="${u.n||e.uhel}° · ${d} · ${e.karta}" onclick="scrollToEntry('${e.id}')"></div>`;
+  }).join('');
+  if(sorted.length>1){
+    const first=new Date(sorted[0].ts).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const last=new Date(sorted[sorted.length-1].ts).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    labels.innerHTML=`<span>${first}</span><span>${last}</span>`;
+  } else labels.innerHTML='';
+}
+
+// ═══════════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════════
+
+function renderFilterBar(entries) {
+  const used=new Set(entries.map(e=>e.uhel));
+  const bar=document.getElementById('filter-bar');
+  bar.innerHTML=`<button class="f-btn${!filterUhel?' active':''}" onclick="filterUhel=null;renderMain()">Vše</button>`;
+  UHLY.filter(u=>used.has(u.st)).forEach(u=>{
+    bar.innerHTML+=`<button class="f-btn${filterUhel===u.st?' active':''}" style="${filterUhel===u.st?`border-color:${u.b};color:${u.b}`:''}" onclick="filterUhel=filterUhel===${u.st}?null:${u.st};renderMain()">${u.n}</button>`;
+  });
+}
+
+// ═══════════════════════════════════════════
+// ZÁZNAMY
+// ═══════════════════════════════════════════
+
+function renderEntries(entries) {
+  const list=document.getElementById('entries-list');
+  let filtered=filterUhel?entries.filter(e=>e.uhel===filterUhel):entries;
+  filtered=[...filtered].sort((a,b)=>b.ts-a.ts);
+  if(filtered.length===0){list.innerHTML='<div class="empty">Žádné záznamy'+(filterUhel?' pro tento úhel':'')+'. Cvičte na kartách zvířat a ukládejte texty.</div>';return;}
+  list.innerHTML=filtered.map(e=>{
+    const u=byDeg[e.uhel]||{n:e.uhel+'°',b:'#888'};
+    const d=new Date(e.ts).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const preview=e.text.slice(0,80)+(e.text.length>80?'…':'');
+    return `<div class="entry" id="entry-${e.id}">
+      <div class="entry-head" onclick="toggleEntry('${e.id}')">
+        <span class="entry-dot" style="background:${u.b}"></span>
+        <div class="entry-meta">
+          <div class="entry-top">
+            <span class="entry-uhel">${u.st}° ${u.n}</span>
+            ${e.karta?`<span class="entry-karta">${e.karta}</span>`:''}
+            ${e.anomalie?`<span class="entry-anomalie">${e.anomalie}</span>`:''}
+          </div>
+          <div class="entry-preview">${preview}</div>
+          <div class="entry-datum">${d}</div>
+        </div>
+        <span class="entry-toggle">▾</span>
+      </div>
+      <div class="entry-body">
+        <div class="entry-text">${escHtml(e.text)}</div>
+        ${e.analysis?`<div class="entry-analysis"><strong>Analýza:</strong> ${e.analysis}</div>`:''}
+        <div class="entry-actions">
+          <button class="btn btn-g" onclick="addToCompare('${e.id}')">Přidat do porovnání</button>
+          <button class="btn btn-g" onclick="kopirovat('${e.id}')">Kopírovat text</button>
+          <button class="btn btn-d" onclick="smazatZaznam('${e.id}')">Smazat</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function toggleEntry(id) {
+  const el=document.getElementById('entry-'+id);
+  el.classList.toggle('open');
+}
+
+function scrollToEntry(id) {
+  const el=document.getElementById('entry-'+id);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.add('open');}
+}
+
+// ═══════════════════════════════════════════
+// MAPY — CRUD
+// ═══════════════════════════════════════════
+
+function openNewModal(){document.getElementById('modal-new').classList.add('open');document.getElementById('new-name').focus();}
+function closeModals(){document.querySelectorAll('.modal,.compare-modal').forEach(m=>m.classList.remove('open'));}
+
+function vytvorMapu() {
+  const name=document.getElementById('new-name').value.trim();
+  if(!name)return;
+  const popis=document.getElementById('new-popis').value.trim();
+  const data=load();
+  const id='map_'+Date.now();
+  data[id]={name,popis,entries:[],created:Date.now()};
+  save(data);
+  activeMap=id;
+  document.getElementById('new-name').value='';
+  document.getElementById('new-popis').value='';
+  closeModals();
+  renderSidebar();
+  renderMain();
+}
+
+function smazatMapu() {
+  if(!activeMap)return;
+  const data=load();
+  const name=data[activeMap]?.name||'tuto mapu';
+  if(!confirm(`Smazat mapu „${name}" i se všemi záznamy?`))return;
+  delete data[activeMap];
+  activeMap=null;
+  save(data);
+  renderSidebar();
+  renderMain();
+}
+
+// ═══════════════════════════════════════════
+// ZÁZNAMY — CRUD
+// ═══════════════════════════════════════════
+
+function smazatZaznam(id) {
+  if(!activeMap)return;
+  if(!confirm('Smazat tento záznam?'))return;
+  const data=load();
+  data[activeMap].entries=data[activeMap].entries.filter(e=>e.id!==id);
+  save(data);
+  renderMain();
+}
+
+function kopirovat(id) {
+  const data=load();
+  const entry=data[activeMap]?.entries?.find(e=>e.id===id);
+  if(entry&&navigator.clipboard)navigator.clipboard.writeText(entry.text);
+}
+
+// ═══════════════════════════════════════════
+// GLOBÁLNÍ ULOŽENÍ (volá se z karet)
+// ═══════════════════════════════════════════
+
+function ulozitZaznam(zaznam) {
+  // zaznam = { uhel, karta, anomalie, text, analysis }
+  const data=load();
+  if(!activeMap){
+    // pokud žádná mapa — vytvořit defaultní
+    const id='map_default';
+    if(!data[id]) data[id]={name:'Moje mapa',popis:'',entries:[],created:Date.now()};
+    activeMap=id;
+  }
+  const entry={
+    id:'e_'+Date.now(),
+    ts:Date.now(),
+    ...zaznam
+  };
+  data[activeMap].entries.unshift(entry);
+  save(data);
+  renderSidebar();
+  renderMain();
+  return entry.id;
+}
+window.kogMapaUlozit=ulozitZaznam;
+
+// ═══════════════════════════════════════════
+// POROVNÁNÍ
+// ═══════════════════════════════════════════
+
+function addToCompare(id) {
+  const data=load();
+  const entry=data[activeMap]?.entries?.find(e=>e.id===id);
+  if(!entry)return;
+  if(!compareSlots[0]){compareSlots[0]=entry;}
+  else if(!compareSlots[1]){compareSlots[1]=entry;}
+  else{compareSlots=[entry,null];}
+  openCompare();
+}
+
+function openCompare() {
+  document.getElementById('modal-compare').classList.add('open');
+  renderCompare();
+}
+
+function renderCompare() {
+  const u0=compareSlots[0]?byDeg[compareSlots[0].uhel]:null;
+  const u1=compareSlots[1]?byDeg[compareSlots[1].uhel]:null;
+  const grid=document.getElementById('compare-grid');
+  if(!compareSlots[0]&&!compareSlots[1]){grid.innerHTML='<div style="grid-column:1/-1;font-size:.76rem;color:var(--dim2);font-style:italic">Klikněte na záznam → Přidat do porovnání</div>';return;}
+  grid.innerHTML=`
+    <div class="compare-col">
+      <h4 style="color:${u0?.b||'var(--accent)'}">${u0?u0.st+'° '+u0.n:'—'}</h4>
+      ${compareSlots[0]?`<div class="compare-text">${escHtml(compareSlots[0].text)}</div>`:'<div style="font-size:.76rem;color:var(--dim2);font-style:italic">Přidejte první záznam</div>'}
+    </div>
+    <div class="compare-col">
+      <h4 style="color:${u1?.b||'var(--accent)'}">${u1?u1.st+'° '+u1.n:'—'}</h4>
+      ${compareSlots[1]?`<div class="compare-text">${escHtml(compareSlots[1].text)}</div>`:'<div style="font-size:.76rem;color:var(--dim2);font-style:italic">Přidejte druhý záznam</div>'}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════
+
+function exportovat() {
+  const data=load();
+  if(!activeMap||!data[activeMap])return;
+  const m=data[activeMap];
+  let txt=`Kognitivní mapa — ${m.name}\n`;
+  txt+=`Exportováno: ${new Date().toLocaleDateString('cs-CZ')}\n`;
+  txt+=`Počet záznamů: ${m.entries.length}\n\n`;
+  txt+='─'.repeat(40)+'\n\n';
+  [...m.entries].sort((a,b)=>a.ts-b.ts).forEach((e,i)=>{
+    const u=byDeg[e.uhel];
+    const d=new Date(e.ts).toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric'});
+    txt+=`${i+1}. ${d} · ${u?u.st+'° '+u.n:e.uhel}`;
+    if(e.karta) txt+=` · ${e.karta}`;
+    if(e.anomalie) txt+=` · ${e.anomalie}`;
+    txt+='\n'+e.text+'\n';
+    if(e.analysis) txt+=`[Analýza: ${e.analysis}]\n`;
+    txt+='\n';
+  });
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`kogmapa_${m.name.replace(/\s+/g,'_')}.txt`;
+  a.click();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+
+// Enter v modalu
+document.getElementById('new-name').addEventListener('keydown',e=>{if(e.key==='Enter')vytvorMapu();});
+document.getElementById('modal-new').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModals();});
+document.getElementById('modal-compare').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModals();});
+
+// Načíst první mapu
+(function init(){
+  const data=load();
+  const maps=Object.keys(data);
+  if(maps.length>0) activeMap=maps[0];
+  renderSidebar();
+  renderMain();
+})();
+</script>
+</body>
+</html>
