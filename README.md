@@ -56,11 +56,23 @@ kreativita, fyzika jazyka, metadenik
 - [zralok](doma/data/uhly/zralok_uhly.html)
 - [plamenak](doma/data/uhly/plamenak_uhly.html)
 
-- [osel](doma/data/uhly/zelva_uhly.html)
-- [parohy](doma/data/uhly/vravec_uhly.html)
-- [hyeny](doma/data/uhly/zralok_uhly.html)
-- [kravy](doma/data/uhly/plamenak_uhly.html) - [hvezdice](doma/data/uhly/hvezdice_uhly.html)
-
+- [osel](doma/data/uhly/osel_uhly.html)
+- [parohy](doma/data/uhly/parohy_uhly.html)
+- [hyeny](doma/data/uhly/hyeny_uhly.html)
+- [kravy](doma/data/uhly/kravy_uhly.html)
+- [hvezdice](doma/data/uhly/hvezdice_uhly.html)
+- [prase](doma/data/uhly/prase_uhly.html)
+- [tygr](doma/data/uhly/tygr_uhly.html)
+- [drak](doma/data/uhly/drak_uhly.html)
+- [had](doma/data/uhly/had_uhly.html)
+- [husy](doma/data/uhly/husy_uhly.html)
+- [moucha](doma/data/uhly/moucha_uhly.html)
+- [beran](doma/data/uhly/beran_uhly.html)
+- [vrabec](doma/data/uhly/vrabec_uhly.html)
+- [veverka](doma/data/uhly/veverka_uhly.html)
+- [panda](doma/data/uhly/panda_uhly.html)
+- [vlk](doma/data/uhly/vlk_uhly.html)
+  
 - [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html)
 
 
