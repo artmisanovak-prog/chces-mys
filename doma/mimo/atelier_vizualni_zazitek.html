@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Ateliér vizuálních pravidel · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0d0a; color: #e8e0d0; font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.6; padding: 0.5rem; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+    .app { max-width: 100%; margin: 0 auto; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300; margin: 0.2rem 0; }
+    h1 em { font-style: italic; color: #c8903a; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; margin: 0.5rem 0; color: #c8903a; }
+    h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c8903a; margin: 0.5rem 0; }
+    .panel { background: #171410; border: 1px solid rgba(200,144,58,.2); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.8rem; }
+    .flex-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .btn {
+      padding: 0.4rem 0.8rem; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; background: transparent; border: 1px solid rgba(200,144,58,.5);
+      color: #c8903a; cursor: pointer; border-radius: 2px; touch-action: manipulation;
+    }
+    .btn:hover { background: #c8903a; color: #0f0d0a; }
+    .btn-primary { background: #c8903a; color: #0f0d0a; }
+    .btn-small { padding: 0.2rem 0.5rem; font-size: 0.6rem; }
+    .tab-bar { display: flex; gap: 0.2rem; margin: 0.5rem 0; }
+    .tab-btn { flex: 1; padding: 0.4rem; background: #171410; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; font-family: inherit; text-transform: uppercase; cursor: pointer; }
+    .tab-btn.active { background: #c8903a; color: #0f0d0a; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .angle-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+    .angle-btn { padding: 0.2rem 0.6rem; border: 1px solid rgba(200,144,58,.3); background: transparent; color: rgba(232,224,208,.7); border-radius: 12px; cursor: pointer; font-size: 0.7rem; }
+    .angle-btn.selected { background: #c8903a; color: #0f0d0a; }
+    .rule-item { background: #1a1612; padding: 0.5rem; margin: 0.3rem 0; border-left: 3px solid; border-radius: 2px; }
+    .category-tree { margin-left: 1rem; }
+    .category-item { cursor: pointer; padding: 0.2rem 0; display: flex; align-items: center; gap: 0.3rem; }
+    .category-item:hover { color: #c8903a; }
+    .category-children { margin-left: 1.5rem; display: none; }
+    .category-children.open { display: block; }
+    .search-highlight { background: rgba(200,144,58,.3); outline: 2px solid #c8903a; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 2000; padding: 1rem; overflow-y: auto; }
+    .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-content { background: #171410; border: 1px solid #c8903a; padding: 1rem; width: 100%; max-width: 500px; border-radius: 4px; }
+    select, input, textarea { width: 100%; padding: 0.5rem; margin: 0.3rem 0; background: #0f0d0a; border: 1px solid rgba(200,144,58,.3); color: #e8e0d0; font-family: inherit; }
+    .canvas-container { margin: 0.5rem 0; border: 1px solid rgba(200,144,58,.2); }
+    #previewCanvas { width: 100%; height: auto; background: #0f0d0a; }
+    .detected-list { max-height: 200px; overflow-y: auto; }
+    .help-text { font-size: 0.65rem; color: rgba(232,224,208,.5); margin-top: 0.2rem; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div style="display: flex; justify-content: space-between;">
+    <h1>Ateliér <em>vizuálních pravidel</em></h1>
+    <button class="btn" id="helpBtn" style="font-size:1.2rem;">?</button>
+  </div>
+  <p style="margin-bottom:1rem; font-size:0.8rem;">Definuj pravidla pro úhly, spravuj knihovnu figur a hned testuj detekci.</p>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="rules">🧠 Pravidla úhlů</button>
+    <button class="tab-btn" data-tab="library">📚 Knihovna figur</button>
+    <button class="tab-btn" data-tab="detect">🔍 Detekce</button>
+  </div>
+
+  <!-- Záložka Pravidla -->
+  <div id="tab-rules" class="tab-content active">
+    <div class="panel">
+      <h2>Vyber úhel a definuj jeho pravidla</h2>
+      <div class="angle-selector" id="angleSelector"></div>
+      <div id="currentAngleDisplay" style="margin:0.5rem 0;"></div>
+      
+      <h3>Pravidla pro <span id="selectedAngleName">Analytický</span> úhel</h3>
+      <div id="rulesContainer"></div>
+      <button class="btn btn-small" id="addRuleBtn">➕ Přidat pravidlo</button>
+      
+      <div style="margin-top:1rem;">
+        <button class="btn" id="exportRulesBtn">📤 Exportovat všechna pravidla</button>
+        <button class="btn" id="importRulesBtn">📥 Importovat</button>
+        <input type="file" id="rulesFileInput" accept=".json" style="display:none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Záložka Knihovna -->
+  <div id="tab-library" class="tab-content">
+    <div class="panel">
+      <h2>📚 Knihovna vizuálních figur</h2>
+      <div class="flex-row">
+        <input type="text" id="libSearch" placeholder="Filtrovat..." style="flex:1;">
+        <button class="btn btn-small" id="addFigureBtn">➕ Nová figura</button>
+      </div>
+      <div id="libraryTree" style="max-height:400px; overflow-y:auto;"></div>
+      <p class="help-text">Kliknutím na kategorii ji rozbalíš. Kliknutím na figuru ji přidáš do aktuálního pravidla.</p>
+    </div>
+  </div>
+
+  <!-- Záložka Detekce -->
+  <div id="tab-detect" class="tab-content">
+    <div class="panel">
+      <h2>🔍 Test detekce</h2>
+      <div class="flex-row">
+        <input type="file" id="detectFileInput" accept="image/*" style="display:none;">
+        <button class="btn" id="loadDetectImageBtn">📂 Nahrát obrázek</button>
+        <button class="btn btn-primary" id="runDetectionBtn" disabled>Spustit detekci</button>
+        <button class="btn" id="clearDetectBtn">🗑️ Smazat</button>
+      </div>
+      <div class="canvas-container">
+        <canvas id="previewCanvas" width="600" height="400"></canvas>
+      </div>
+      <h3>Nalezené figury</h3>
+      <div class="detected-list" id="detectedList"></div>
+      <p class="help-text">Kliknutím na položku se zvýrazní v obrázku.</p>
+    </div>
+  </div>
+
+  <!-- Modální okno pro přidání/editaci pravidla -->
+  <div class="modal" id="ruleModal">
+    <div class="modal-content">
+      <h3>✏️ Pravidlo</h3>
+      <select id="ruleCategorySelect"></select>
+      <input type="text" id="ruleNameInput" placeholder="Název pravidla (např. pracuje s perspektivou)">
+      <select id="ruleOperatorSelect">
+        <option value="contains">obsahuje</option>
+        <option value="not_contains">neobsahuje</option>
+        <option value="high">vysoká hodnota</option>
+        <option value="low">nízká hodnota</option>
+      </select>
+      <input type="text" id="ruleValueInput" placeholder="Hodnota (volitelné)">
+      <textarea id="ruleNoteInput" placeholder="Poznámka / vysvětlení..."></textarea>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="saveRuleBtn">Uložit</button>
+        <button class="btn" id="cancelRuleBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modální okno pro přidání figury -->
+  <div class="modal" id="figureModal">
+    <div class="modal-content">
+      <h3>➕ Nová figura</h3>
+      <select id="figureCategorySelect"></select>
+      <input type="text" id="newCategoryInput" placeholder="Nebo nová kategorie...">
+      <input type="text" id="figureNameInput" placeholder="Název figury">
+      <textarea id="figureDescInput" placeholder="Popis (co vyjadřuje, jak se pozná)"></textarea>
+      <div class="flex-row">
+        <button class="btn btn-primary" id="saveFigureBtn">Uložit</button>
+        <button class="btn" id="cancelFigureBtn">Zrušit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const ANGLES = [
+      { st:0, name:'Analytický', color:'#4a6075' }, { st:30, name:'Kulturní', color:'#6a9e72' },
+      { st:60, name:'Filozofický', color:'#d4a0b0' }, { st:90, name:'Naivní', color:'#5fa8a0' },
+      { st:120, name:'Jazykový', color:'#8e7248' }, { st:150, name:'Metaforický', color:'#5a8a5a' },
+      { st:180, name:'Asociační', color:'#a85a5a' }, { st:210, name:'Introspektivní', color:'#c8a832' },
+      { st:240, name:'Ironický', color:'#c8722a' }, { st:270, name:'Groteskní', color:'#a83060' },
+      { st:300, name:'Absurdní', color:'#6080a0' }, { st:330, name:'Surrealistický', color:'#8060b0' }
+    ];
+
+    // Knihovna figur
+    let figureLibrary = [];
+    // Pravidla pro úhly: { angleSt: [ { category, name, operator, value, note } ] }
+    let angleRules = {};
+    // Aktuálně vybraný úhel
+    let selectedAngle = 0;
+    // Obrázek pro detekci
+    let detectImage = null;
+
+    // DOM
+    const angleSelector = document.getElementById('angleSelector');
+    const selectedAngleName = document.getElementById('selectedAngleName');
+    const rulesContainer = document.getElementById('rulesContainer');
+    const libraryTree = document.getElementById('libraryTree');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const ctx = previewCanvas.getContext('2d');
+    const detectedList = document.getElementById('detectedList');
+    const ruleModal = document.getElementById('ruleModal');
+    const figureModal = document.getElementById('figureModal');
+
+    // ---------- INICIALIZACE ----------
+    function init() {
+      loadFigureLibrary();
+      loadAngleRules();
+      renderAngleSelector();
+      renderRules();
+      renderLibraryTree();
+
+      // Záložky
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        });
+      });
+
+      // Pravidla
+      document.getElementById('addRuleBtn').addEventListener('click', () => openRuleModal());
+      document.getElementById('saveRuleBtn').addEventListener('click', saveRule);
+      document.getElementById('cancelRuleBtn').addEventListener('click', () => ruleModal.classList.remove('active'));
+      document.getElementById('exportRulesBtn').addEventListener('click', exportRules);
+      document.getElementById('importRulesBtn').addEventListener('click', () => rulesFileInput.click());
+      rulesFileInput.addEventListener('change', importRules);
+
+      // Knihovna
+      document.getElementById('addFigureBtn').addEventListener('click', () => openFigureModal());
+      document.getElementById('saveFigureBtn').addEventListener('click', saveFigure);
+      document.getElementById('cancelFigureBtn').addEventListener('click', () => figureModal.classList.remove('active'));
+      document.getElementById('libSearch').addEventListener('input', renderLibraryTree);
+
+      // Detekce
+      document.getElementById('loadDetectImageBtn').addEventListener('click', () => detectFileInput.click());
+      detectFileInput.addEventListener('change', (e) => loadDetectImage(e.target.files[0]));
+      document.getElementById('runDetectionBtn').addEventListener('click', runDetection);
+      document.getElementById('clearDetectBtn').addEventListener('click', clearDetect);
+    }
+
+    // ---------- KNIHOVNA FIGUR ----------
+    function loadFigureLibrary() {
+      const stored = localStorage.getItem('figureLibrary');
+      figureLibrary = stored ? JSON.parse(stored) : [
+        { category:"Perspektiva", name:"Lineární perspektiva", desc:"Sbíhající se linie, úběžníky." },
+        { category:"Perspektiva", name:"Atmosférická perspektiva", desc:"Vzdálenější objekty jsou méně kontrastní." },
+        { category:"Pozadí", name:"Propracované pozadí", desc:"Kresba obsahuje detailní pozadí." },
+        { category:"Pozadí", name:"Žádné pozadí", desc:"Objekt se vznáší v prázdnu." },
+        { category:"Kontrast", name:"Vysoký kontrast", desc:"Velké rozdíly mezi světlými a tmavými plochami." },
+        { category:"Kontrast", name:"Nízký kontrast", desc:"Jemné přechody, málo výrazných rozdílů." },
+        { category:"Kontrast", name:"Kontrast velikostí", desc:"Vedle sebe jsou výrazně velké a malé prvky." },
+        { category:"Kontrast", name:"Kontrast tloušťky čar", desc:"Střídání tenkých a silných linií." },
+        { category:"Kompozice", name:"Symetrická kompozice", desc:"Prvky jsou vyvážené kolem osy." },
+        { category:"Kompozice", name:"Asymetrická kompozice", desc:"Nevyvážené rozložení prvků." }
+      ];
+      saveFigureLibrary();
+    }
+    function saveFigureLibrary() { localStorage.setItem('figureLibrary', JSON.stringify(figureLibrary)); }
+
+    function renderLibraryTree() {
+      const filter = document.getElementById('libSearch').value.toLowerCase();
+      const filtered = figureLibrary.filter(f => 
+        f.name.toLowerCase().includes(filter) || f.category.toLowerCase().includes(filter)
+      );
+      const tree = {};
+      filtered.forEach(f => { if(!tree[f.category]) tree[f.category]=[]; tree[f.category].push(f); });
+      
+      let html = '';
+      Object.keys(tree).sort().forEach(cat => {
+        html += `<div class="category-item" onclick="toggleCategory(this)">📁 ${cat}</div>`;
+        html += `<div class="category-children">`;
+        tree[cat].forEach(f => {
+          html += `<div class="category-item" style="margin-left:1rem;" onclick="addFigureToRule('${f.name}')">📄 ${f.name} <span style="font-size:0.6rem; opacity:0.6;" title="${f.desc}">ℹ️</span></div>`;
+        });
+        html += `</div>`;
+      });
+      libraryTree.innerHTML = html || '<p>Žádné figury.</p>';
+    }
+
+    window.toggleCategory = function(el) {
+      el.nextElementSibling.classList.toggle('open');
+    };
+
+    window.addFigureToRule = function(figureName) {
+      const figure = figureLibrary.find(f => f.name === figureName);
+      if (!figure) return;
+      // Přidat jako pravidlo do aktuálního úhlu
+      if (!angleRules[selectedAngle]) angleRules[selectedAngle] = [];
+      angleRules[selectedAngle].push({
+        category: figure.category,
+        name: figure.name,
+        operator: 'contains',
+        value: '',
+        note: figure.desc
+      });
+      saveAngleRules();
+      renderRules();
+      // Přepnout na záložku Pravidla
+      document.querySelector('[data-tab="rules"]').click();
+    };
+
+    // ---------- PRAVIDLA ÚHLŮ ----------
+    function loadAngleRules() {
+      const stored = localStorage.getItem('angleRules');
+      angleRules = stored ? JSON.parse(stored) : {};
+    }
+    function saveAngleRules() { localStorage.setItem('angleRules', JSON.stringify(angleRules)); }
+
+    function renderAngleSelector() {
+      angleSelector.innerHTML = '';
+      ANGLES.forEach(a => {
+        const btn = document.createElement('button');
+        btn.className = 'angle-btn' + (a.st === selectedAngle ? ' selected' : '');
+        btn.textContent = `${a.st}° ${a.name}`;
+        btn.style.borderColor = a.color;
+        btn.addEventListener('click', () => {
+          selectedAngle = a.st;
+          renderAngleSelector();
+          selectedAngleName.textContent = a.name;
+          renderRules();
+        });
+        angleSelector.appendChild(btn);
+      });
+      const a = ANGLES.find(a => a.st === selectedAngle);
+      if (a) selectedAngleName.textContent = a.name;
+    }
+
+    function renderRules() {
+      const rules = angleRules[selectedAngle] || [];
+      if (rules.length === 0) {
+        rulesContainer.innerHTML = '<p style="opacity:0.5;">Zatím žádná pravidla. Přidej nové nebo klikni na figuru v knihovně.</p>';
+        return;
+      }
+      const angle = ANGLES.find(a => a.st === selectedAngle);
+      let html = '';
+      rules.forEach((rule, idx) => {
+        html += `<div class="rule-item" style="border-left-color: ${angle?.color || '#c8903a'};">
+          <div style="display:flex; justify-content:space-between;">
+            <strong>${rule.category}: ${rule.name}</strong>
+            <span>
+              <button class="btn-small" onclick="editRule(${idx})">✏️</button>
+              <button class="btn-small" onclick="deleteRule(${idx})">🗑️</button>
+            </span>
+          </div>
+          <div style="font-size:0.7rem;">${rule.operator} ${rule.value || ''}</div>
+          ${rule.note ? `<div style="font-size:0.65rem; opacity:0.7;">${rule.note}</div>` : ''}
+        </div>`;
+      });
+      rulesContainer.innerHTML = html;
+    }
+
+    function openRuleModal(rule=null) {
+      const cats = [...new Set(figureLibrary.map(f => f.category))];
+      ruleCategorySelect.innerHTML = cats.map(c => `<option>${c}</option>`).join('');
+      if (rule) {
+        ruleCategorySelect.value = rule.category;
+        ruleNameInput.value = rule.name;
+        ruleOperatorSelect.value = rule.operator;
+        ruleValueInput.value = rule.value;
+        ruleNoteInput.value = rule.note || '';
+        ruleModal.dataset.editIndex = rule.index;
+      } else {
+        ruleNameInput.value = '';
+        ruleOperatorSelect.value = 'contains';
+        ruleValueInput.value = '';
+        ruleNoteInput.value = '';
+      }
+      ruleModal.classList.add('active');
+    }
+
+    function saveRule() {
+      const category = ruleCategorySelect.value;
+      const name = ruleNameInput.value.trim();
+      const operator = ruleOperatorSelect.value;
+      const value = ruleValueInput.value.trim();
+      const note = ruleNoteInput.value.trim();
+      if (!category || !name) return;
+      
+      if (!angleRules[selectedAngle]) angleRules[selectedAngle] = [];
+      const rule = { category, name, operator, value, note };
+      
+      const editIndex = ruleModal.dataset.editIndex;
+      if (editIndex !== undefined) angleRules[selectedAngle][editIndex] = rule;
+      else angleRules[selectedAngle].push(rule);
+      
+      saveAngleRules();
+      renderRules();
+      ruleModal.classList.remove('active');
+    }
+
+    window.editRule = (idx) => {
+      const rule = angleRules[selectedAngle][idx];
+      rule.index = idx;
+      openRuleModal(rule);
+    };
+    window.deleteRule = (idx) => {
+      angleRules[selectedAngle].splice(idx, 1);
+      saveAngleRules();
+      renderRules();
+    };
+
+    function exportRules() { /* blob download */ }
+    function importRules(e) { /* JSON parse */ }
+
+    // ---------- FIGURE MODAL ----------
+    function openFigureModal() {
+      const cats = [...new Set(figureLibrary.map(f => f.category))];
+      figureCategorySelect.innerHTML = cats.map(c => `<option>${c}</option>`).join('');
+      newCategoryInput.value = '';
+      figureNameInput.value = '';
+      figureDescInput.value = '';
+      figureModal.classList.add('active');
+    }
+
+    function saveFigure() {
+      let cat = figureCategorySelect.value;
+      if (!cat && newCategoryInput.value.trim()) cat = newCategoryInput.value.trim();
+      const name = figureNameInput.value.trim();
+      const desc = figureDescInput.value.trim();
+      if (!cat || !name) return;
+      const idx = figureLibrary.findIndex(f => f.name === name && f.category === cat);
+      if (idx >= 0) figureLibrary[idx] = { category:cat, name, desc };
+      else figureLibrary.push({ category:cat, name, desc });
+      saveFigureLibrary();
+      renderLibraryTree();
+      figureModal.classList.remove('active');
+    }
+
+    // ---------- DETEKCE ----------
+    function loadDetectImage(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          detectImage = img;
+          previewCanvas.width = img.width;
+          previewCanvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          document.getElementById('runDetectionBtn').disabled = false;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function runDetection() {
+      if (!detectImage) return;
+      if (!angleRules[selectedAngle] || angleRules[selectedAngle].length === 0) {
+        alert('Nejdřív definuj pravidla pro tento úhel.');
+        return;
+      }
+
+      const rules = angleRules[selectedAngle];
+      const detections = [];
+      
+      // Pro každé pravidlo prohledáme obrázek (zjednodušená simulace)
+      // V reálné verzi bys použila template matching nebo segmentaci
+      rules.forEach(rule => {
+        // Simulace: náhodně najdeme 1-3 výskyty
+        const count = Math.floor(Math.random() * 3) + 1;
+        for (let i = 0; i < count; i++) {
+          detections.push({
+            rule: rule,
+            x: Math.random() * (detectImage.width - 100),
+            y: Math.random() * (detectImage.height - 100),
+            w: 80, h: 60
+          });
+        }
+      });
+
+      // Vykreslit detekce
+      ctx.drawImage(detectImage, 0, 0);
+      const angle = ANGLES.find(a => a.st === selectedAngle);
+      detections.forEach(d => {
+        ctx.strokeStyle = angle?.color || '#c8903a';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(d.x, d.y, d.w, d.h);
+      });
+
+      // Zobrazit seznam
+      detectedList.innerHTML = detections.map((d, i) => `
+        <div class="rule-item" style="border-left-color:${angle?.color}; cursor:pointer;" onclick="highlightDetection(${i})">
+          ${d.rule.name} (${d.rule.category})<br>
+          <span style="font-size:0.6rem;">nalezeno na pozici (${Math.round(d.x)}, ${Math.round(d.y)})</span>
+        </div>
+      `).join('');
+      
+      window.detections = detections;
+    }
+
+    window.highlightDetection = (idx) => {
+      const d = window.detections[idx];
+      if (!d) return;
+      ctx.drawImage(detectImage, 0, 0);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(d.x, d.y, d.w, d.h);
+      ctx.strokeStyle = ANGLES.find(a => a.st === selectedAngle)?.color || '#c8903a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(d.x, d.y, d.w, d.h);
+    };
+
+    function clearDetect() {
+      detectImage = null;
+      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      detectedList.innerHTML = '';
+      document.getElementById('runDetectionBtn').disabled = true;
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
