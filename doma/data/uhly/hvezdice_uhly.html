@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mořská hvězdice — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0c0a06;
+            --bg-elevated: #14120c;
+            --text: #f5f0e0;
+            --text-dim: #706848;
+            --text-mid: #a09870;
+            --accent: #c9a84c;       /* zlatá / písková */
+            --accent-dim: #5a4a28;
+            --border: #1e1a10;
+            --highlight: rgba(201,168,76,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        .ring { 
+            position: absolute; 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%;
+            border: 1px solid var(--accent);
+            opacity: 0.25;
+            pointer-events: none; 
+        }
+        .ring-1 { top: 20%; right: 15%; animation: ringFloat1 12s ease-in-out infinite; }
+        .ring-2 { bottom: 25%; left: 12%; width: 18px; height: 18px; animation: ringFloat2 14s ease-in-out infinite; }
+        .ring-3 { top: 60%; right: 20%; width: 8px; height: 8px; animation: ringFloat3 10s infinite; }
+        .ring-4 { top: 40%; left: 18%; width: 14px; height: 14px; animation: ringFloat4 16s infinite; }
+        
+        @keyframes ringFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(-15px, -20px) scale(1.3); opacity: 0.4; }
+        }
+        @keyframes ringFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(20px, -15px) scale(1.2); opacity: 0.15; }
+        }
+        @keyframes ringFloat3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+            50% { transform: translate(-25px, -10px); opacity: 0.35; }
+        }
+        @keyframes ringFloat4 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+            33% { transform: translate(10px, 20px) scale(0.9); opacity: 0.4; }
+            66% { transform: translate(-15px, 5px) scale(1.1); opacity: 0.15; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .fairy-toggle .arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+        .fairy-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; scroll-behavior: smooth; }
+        .fairy-content.open { max-height: 8000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #c0b898;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(201,168,76,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #a09870; font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+        .fairy-close {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .fairy-close:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1a1610, #050200);
+            border: 1px solid #3a3018;
+            box-shadow: 0 0 40px rgba(201,168,76,0.06);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(201,168,76,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.05;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #d4c080, #b0a050);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #5a4a28; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Mořská hvězdice</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="ring ring-4"></div>
+        <img src="../../ilustrace/hvezdice.jpg" alt="Ilustrace mořské hvězdice" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtube.com/shorts/2o_BEZGqadc?is=vw0pD4qSwGTSI42f" target="_blank" class="audio-btn" title="Audio verze pohádky (odkaz bude doplněn)">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <div class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">
+            <span>Pohádka o Mořské hvězdici</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner" id="fairyScroll">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O MOŘSKÉ HVĚZDICI</strong></p>
+                <p><strong>Kruhy na vodě jsou jizvy po kamenech</strong></p>
+                <p>—</p>
+                <p id="hvezdice-absurdni">Mořská hvězdice ležela na dně. Tichá. Plochá. Nerozhodná.</p>
+                <p>—</p>
+                <p id="hvezdice-jazykovy">Nad ní se voda vlnila. Kruhy se šířily. Jeden za druhým. Dokonalé. Pomíjivé. Krásné.</p>
+                <p>—</p>
+                <p id="hvezdice-ironicky">„To je poezie,“ řekla ryba, co rapuje proudem. „To je geometrie,“ řekla chobotnice, co improvizuje jazz. „To je náhoda,“ řekla medúza, co hraje na triangl.</p>
+                <p>—</p>
+                <p id="hvezdice-filozoficky">Ale hvězdice mlčela. A pak řekla: „Ne. To jsou jizvy.“</p>
+                <p>—</p>
+                <p id="hvezdice-surrealisticky">„Jizvy?“ „Po kamenech.“ „Po věcech, co dopadly.“ „Po rozhodnutích, co se nedaly vzít zpět.“</p>
+                <p>—</p>
+                <p id="hvezdice-psychologicky">Každý kruh začínal nárazem. Kámen. Kapka. Pád. A pak se šířil. Do dálky. Do šířky. Do jiných životů.</p>
+                <p>—</p>
+                <p id="hvezdice-kulturni">„Ale vždyť se voda zase uklidní,“ řekla sova, co přiletěla omylem. „Ano,“ řekla hvězdice. „Ale to neznamená, že se nic nestalo.“</p>
+                <p>—</p>
+                <p id="hvezdice-naivni">Mořská hvězdice znala dno. Znala ticho po dopadu. Znala chvíli, kdy se kámen dotkne písku a už není jen kámen — je vzpomínka.</p>
+                <p>—</p>
+                <p id="hvezdice-introspektivni">„A co s tím?“ ptala se myš, co zapisuje do skulin. „Nic,“ řekla hvězdice. „Jen to vidět. Jen to vědět. Jen to neplést s krásou.“</p>
+                <p>—</p>
+                <p id="hvezdice-groteskni">A tak se začalo říkat, že někde na dně žije hvězdice, která ví, že kruhy na vodě nejsou jen obraz. Jsou to jizvy. Po kamenech. Po slovech. Po činech.</p>
+                <p>—</p>
+                <p id="hvezdice-archetypalni">A že když vidíš kruh, můžeš se ptát: „Co dopadlo?“ „Co se změnilo?“ „Co už nejde vzít zpět?“</p>
+                <p>—</p>
+                <p id="hvezdice-metaforicky">A možná zjistíš, že i ticho má paměť. A že voda si pamatuje všechno. I když to neřekne.</p>
+                <p>—</p>
+                <p>KONEC</p>
+                <div class="fairy-close" onclick="toggleFairy()">✕ zavřít pohádku</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Mořská hvězdice, která tvrdí, že kruhy na vodě nejsou krása, ale jizvy. Zatímco ostatní vidí poezii, geometrii, náhodu, ona vidí následky. Absurdní? Možná. Ale právě v tom je hlubší pravda o stopách, které zanecháváme.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">voda pamatuje</span>
+                    <button class="fairy-locate-btn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Mořská hvězdice, která tvrdí, že kruhy na vodě nejsou krása, ale jizvy. Zatímco ostatní vidí poezii, geometrii, náhodu, ona vidí následky. Absurdní? Možná. Ale právě v tom je hlubší pravda o stopách, které zanecháváme.", key: "voda pamatuje", fragment: "hvezdice-absurdni" },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "Kruhy jako poezie, geometrie, náhoda – a nakonec jako jizvy. Jazyk se snaží pojmenovat nepojmenovatelné. Hvězdice dává slovům nový význam: krása je jen povrch, jizva je hloubka. Otisk události jako poezie.", key: "otisk události jako poezie", fragment: "hvezdice-jazykovy" },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Všichni obdivují kruhy na vodě, ale nikdo nevidí kámen, který je způsobil. Ironie: krása, kterou opěvujeme, je často jen následkem něčeho bolestivého. Neviditelná bolest je vidět jen v kruzích.", key: "neviditelná bolest je vidět jen v kruzích", fragment: "hvezdice-ironicky" },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Každý pohyb zanechává stopu. Každý čin, i ten nejmenší, se šíří dál. Hvězdice ví, že následky nelze vzít zpět. Ale můžeme je vidět. A to je začátek moudrosti.", key: "každý pohyb zanechává stopu", fragment: "hvezdice-filozoficky" },
+            { deg: 120, hour: "5h", name: "Psychologický", desc: "Zkoumá vnitřní prožívání a paměť.", text: "Minulost je tady, i když ji nevidíme. Kruhy na vodě jsou jako vzpomínky – šíří se, slábnou, ale nikdy úplně nezmizí. Hvězdice to ví, a proto mlčí.", key: "minulost je tady, i když ji nevidíme", fragment: "hvezdice-psychologicky" },
+            { deg: 150, hour: "4h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Ryba rapující proudem, chobotnice improvizující jazz, medúza hrající na triangl. A uprostřed toho hvězdice, která vidí jizvy. Vlny jako jizvy – obraz, který spojuje bolest s krásou.", key: "vlny jako jizvy", fragment: "hvezdice-surrealisticky" },
+            { deg: 180, hour: "3h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Mořská hvězdice jako symbol přežití a regenerace. Ale tady je to bytost, která nese paměť. Kruhy na vodě jsou symboly – nejen krásy, ale i následků. Symboly přežití.", key: "symboly přežití", fragment: "hvezdice-kulturni" },
+            { deg: 210, hour: "2h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Hvězdice leží na dně. Voda dělá kruhy. Ona ví, že to jsou jizvy po kamenech. Ostatní to nevidí. Ale ona jo. Prostě se to stalo.", key: "prostě se to stalo", fragment: "hvezdice-naivni" },
+            { deg: 240, hour: "1h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Každý kámen má příběh. Každá jizva na vodě je důkazem, že se něco stalo. I já mám své kruhy, které se šíří. Hvězdice mi připomíná, že je mám vidět, ale neplést si je s krásou.", key: "každý kámen má příběh", fragment: "hvezdice-introspektivni" },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: ryba rapuje, chobotnice jazzuje, medúza cinká, a hvězdice suše konstatuje: „To jsou jizvy.“ Všichni ztichnou. Kruhy se smějí a bolí zároveň. Je to groteska o tom, že pravda je často nepohodlná.", key: "kruhy se smějí a bolí zároveň", fragment: "hvezdice-groteskni" },
+            { deg: 300, hour: "11h", name: "Archetypální", desc: "Hledá univerzální vzorce.", text: "Stopu nese každý život. Každý čin je kamenem, který dopadne do vody. Hvězdice je archetypem tichého svědka, který vidí následky a nese paměť.", key: "stopu nese každý život", fragment: "hvezdice-archetypalni" },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Mořská hvězdice je naše svědomí. Voda je čas. Kruhy jsou následky našich činů. A jizvy? To je paměť, kterou si neseme. I ticho má paměť. A voda si pamatuje všechno.", key: "ticho má paměť", fragment: "hvezdice-metaforicky" }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Hvězdice&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyContent');
+            const isOpen = scrollContainer.classList.contains('open');
+            
+            if (element) {
+                element.classList.add('fairy-highlight');
+                
+                if (isOpen) {
+                    const fairyInner = document.getElementById('fairyScroll');
+                    const containerRect = fairyInner.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    const scrollTop = fairyInner.scrollTop;
+                    const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                    
+                    fairyInner.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                }
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        window.toggleFairy = toggleFairy;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
