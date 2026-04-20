@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zpětná vazba & Licence | [NÁSTROJ]</title>
+    <style>
+        /* ----- ZÁKLADNÍ STYL (čistý, černobílý) ----- */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            background: white;
+        }
+        h1, h2 {
+            font-weight: 400;
+            border-bottom: 2px solid #000;
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 0;
+            border-bottom-width: 3px;
+        }
+        h2 {
+            font-size: 1.6rem;
+        }
+        h3 {
+            font-weight: 500;
+            margin: 1.5rem 0 0.5rem;
+        }
+        a {
+            color: #000;
+            text-underline-offset: 2px;
+        }
+        button, .btn {
+            background: black;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 0;
+            transition: background 0.2s;
+            display: inline-block;
+            text-decoration: none;
+            font-family: inherit;
+        }
+        button:hover, .btn:hover {
+            background: #333;
+        }
+        .btn-outline {
+            background: transparent;
+            color: black;
+            border: 1.5px solid black;
+        }
+        .btn-outline:hover {
+            background: black;
+            color: white;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 1rem;
+            background: white;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            font-size: 1.05rem;
+        }
+        .helper {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 0.25rem;
+        }
+        .blok {
+            margin-bottom: 2.2rem;
+        }
+        hr {
+            margin: 2.5rem 0;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+        .box {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 550px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .licence-card {
+            border: 1px solid #ccc;
+            padding: 1.2rem;
+            background: white;
+        }
+        .licence-card h4 {
+            margin: 0 0 0.5rem;
+            font-weight: 600;
+        }
+        .badge {
+            background: #eee;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        .platba-box {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .ucet {
+            font-family: monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            background: #f0f0f0;
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+        .copy-btn {
+            margin-left: 0.5rem;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+        }
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+        }
+        /* upload zóna */
+        .upload-zona {
+            border: 2px dashed #aaa;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .upload-zona input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .nahled-grid {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .nahled-item {
+            width: 70px;
+            height: 70px;
+            position: relative;
+        }
+        .nahled-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ******************** KONFIGURACE NÁSTROJE ******************** -->
+<!-- Změň hodnotu podle aktuálního nástroje (Kocour, Myš, Deník...) -->
+<script>
+    const NAZEV_NASTROJE = "Kocour";  // <------ TADY ZMĚŇ NÁZEV
+    document.title = `Zpětná vazba & Licence | ${NAZEV_NASTROJE}`;
+</script>
+
+<!-- ******************** HLAVIČKA ******************** -->
+<h1>🐾 <span id="nazev-nastroje">Kocour</span> – zpětná vazba & licence</h1>
+<p style="font-size:1.1rem;">Dataset, nástroj, karty. Používej, remixuj, podpoř.</p>
+
+<script>
+    document.getElementById('nazev-nastroje').textContent = NAZEV_NASTROJE;
+</script>
+
+<!-- ******************** ZPĚTNÁ VAZBA ******************** -->
+<h2>📬 Zpětná vazba</h2>
+<div class="box">
+    <p><strong>Pomáhá to?</strong> Napiš mi upřímně – každá věta je mapa. (Nepovinné, ale velmi cenné.)</p>
+
+    <form action="https://formsubmit.co/chcesmys@gmail.com" method="POST" enctype="multipart/form-data">
+        <!-- Skrytá pole -->
+        <input type="hidden" name="_subject" id="feedback-subject" value="Zpětná vazba – Kocour">
+        <input type="hidden" name="_next" value="https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/dekujeme.html">
+        <input type="hidden" name="_captcha" value="false">
+
+        <!-- Dynamicky předvyplněný název nástroje -->
+        <input type="hidden" name="nastroj" id="nastroj-hidden" value="Kocour">
+
+        <div class="blok">
+            <label for="cas">1. ⏱️ Čas / efekt</label>
+            <textarea id="cas" name="cas" placeholder="O kolik dřív jste se dostali k jádru? Pomohlo to otevřít komunikaci?"></textarea>
+            <div class="helper">Např.: „hned na začátku“, „po 10 minutách ticha“</div>
+        </div>
+
+        <div class="blok">
+            <label for="srozumitelnost">2. 🗣️ Srozumitelnost</label>
+            <textarea id="srozumitelnost" name="srozumitelnost" placeholder="Bylo zadání / karta jasná hned?"></textarea>
+        </div>
+
+        <div class="blok">
+            <label for="pouzitelnost">3. 🧩 Použitelnost úhlů</label>
+            <textarea id="pouzitelnost" name="pouzitelnost" placeholder="Šlo přiřadit úhly intuitivně?"></textarea>
+        </div>
+
+        <div class="blok">
+            <label for="aha">4. 💡 Aha moment</label>
+            <textarea id="aha" name="aha" placeholder="Objevil se nečekaný úhel pohledu?"></textarea>
+        </div>
+
+        <div class="blok">
+            <label for="cokoliv">✏️ Cokoli dalšího</label>
+            <textarea id="cokoliv" name="cokoliv" placeholder="Co funguje skvěle? Co chybí?"></textarea>
+        </div>
+
+        <!-- Upload fotek -->
+        <div class="blok">
+            <label>📸 Fotky (nepovinné, max. 3)</label>
+            <div class="upload-zona" id="uploadZona">
+                <input type="file" name="foto" id="fotoInput" accept="image/*" multiple>
+                <div>🖼️ Klikni nebo přetáhni fotky</div>
+                <div class="helper">max. 3 fotky, každá do 5 MB</div>
+            </div>
+            <div class="nahled-grid" id="nahledGrid"></div>
+        </div>
+
+        <!-- Video odkaz -->
+        <div class="blok">
+            <label for="video">🎥 Odkaz na video (nepovinné)</label>
+            <input type="url" id="video" name="video_odkaz" placeholder="https://drive.google.com/...">
+            <div class="helper">Google Drive, YouTube (neveřejné), Dropbox...</div>
+        </div>
+
+        <!-- Email -->
+        <div class="blok">
+            <label for="email">📧 Tvůj email (nepovinný)</label>
+            <input type="email" id="email" name="email" placeholder="jen pokud chceš odpověď">
+        </div>
+
+        <button type="submit">Odeslat zpětnou vazbu</button>
+        <p class="helper" style="margin-top:0.8rem;">Odesláním souhlasíš se zpracováním údajů pro účely zpětné vazby.</p>
+    </form>
+</div>
+
+<!-- ******************** LICENCE ******************** -->
+<h2>📜 Licence datasetu</h2>
+<p><strong>Dataset je určen k použití, nikoli k replikaci.</strong> Prodáván jako datový produkt. Vyber si variantu, která odpovídá tvému záměru.</p>
+
+<div class="grid-2">
+    <!-- Basic -->
+    <div class="licence-card">
+        <h4>🧑‍🎨 Basic</h4>
+        <p><span class="badge">osobní · nekomerční</span></p>
+        <ul style="padding-left:1.2rem;">
+            <li>Osobní a umělecké projekty</li>
+            <li>Remix, transformace</li>
+            <li>Nesmí být dále prodáván</li>
+            <li>Není vyžadováno uvádění autorství</li>
+        </ul>
+        <p><a href="#" class="btn-outline" style="padding:0.4rem 1rem;">Zobrazit plné znění</a></p>
+    </div>
+    <!-- Pro -->
+    <div class="licence-card">
+        <h4>💼 Pro</h4>
+        <p><span class="badge">komerční · aplikační</span></p>
+        <ul style="padding-left:1.2rem;">
+            <li>Komerční projekty, aplikace, hry</li>
+            <li>Nutné uvést kredit</li>
+            <li>Nesmí být dále šířen jako dataset</li>
+        </ul>
+        <p><a href="#" class="btn-outline" style="padding:0.4rem 1rem;">Zobrazit plné znění</a></p>
+    </div>
+    <!-- Research -->
+    <div class="licence-card" style="grid-column: span 2;">
+        <h4>🔬 Research</h4>
+        <p><span class="badge">výzkum · trénování modelů</span></p>
+        <ul style="padding-left:1.2rem;">
+            <li>Akademický výzkum, experimentální AI</li>
+            <li>Nutná citace zdroje</li>
+            <li>Dataset nesmí být extrahovatelný z modelu</li>
+        </ul>
+        <p><a href="#" class="btn-outline" style="padding:0.4rem 1rem;">Zobrazit plné znění</a></p>
+    </div>
+</div>
+
+<p class="helper">Úplná znění licencí jsou k dispozici v samostatných souborech (LICENSE_BASIC.md, LICENSE_PRO.md, LICENSE_RESEARCH.md). Kontakt: <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+
+<!-- ******************** DOBROVOLNÁ PLATBA ******************** -->
+<h2>❤️ Podpořit tvorbu</h2>
+<div class="platba-box">
+    <p style="font-size:1.2rem; margin-top:0;">Částka je <strong>dobrovolná</strong> – pošli, kolik uznáš za vhodné.</p>
+    <div style="font-size:1rem; margin:1rem 0;">Číslo účtu:</div>
+    <div class="ucet" id="cisloUctu">123-4567890/0100</div>
+    <button class="copy-btn" onclick="kopirovatUcet()">📋 Kopírovat číslo účtu</button>
+    <p style="margin: 1.5rem 0 0.5rem;">nebo přes QR kód:</p>
+    <!-- Můžeš vložit vlastní QR obrázek -->
+    <div style="background:#eee; width:150px; height:150px; margin:0 auto; display:flex; align-items:center; justify-content:center; border:1px solid #ccc;">
+        <span style="color:#555;">[ QR kód ]</span>
+    </div>
+    <p class="helper" style="margin-top:1rem;">Do zprávy pro příjemce uveď „<span id="zprava-vzor">Kocour-podpora</span>“</p>
+</div>
+
+<script>
+    function kopirovatUcet() {
+        const cislo = document.getElementById('cisloUctu').textContent;
+        navigator.clipboard?.writeText(cislo).then(() => {
+            alert('Číslo účtu zkopírováno.');
+        }).catch(() => {
+            prompt('Zkopíruj ručně:', cislo);
+        });
+    }
+    // Aktualizace názvu ve skrytých polích a předmětu
+    window.addEventListener('DOMContentLoaded', () => {
+        const nazev = NAZEV_NASTROJE;
+        document.getElementById('nastroj-hidden').value = nazev;
+        document.getElementById('feedback-subject').value = `Zpětná vazba – ${nazev}`;
+        document.getElementById('zprava-vzor').textContent = nazev + '-podpora';
+        // Titulek stránky už nastaven
+    });
+</script>
+
+<!-- ******************** PATIČKA ******************** -->
+<div class="footer">
+    <hr>
+    <p>
+        <strong>Semantic Gap Generative Dataset v1.0</strong> — Phenomena / Situations / Curated<br>
+        Vytvořila Michaela Nováková · <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a><br>
+        Systém „Chceš myš? Slovník mezer“<br>
+        Datum: 1/2026
+    </p>
+</div>
+
+<!-- Jednoduchý náhled fotek (základní funkce) -->
+<script>
+    (function() {
+        const input = document.getElementById('fotoInput');
+        const grid = document.getElementById('nahledGrid');
+        const MAX_FOTO = 3;
+
+        input.addEventListener('change', function(e) {
+            const files = Array.from(this.files).slice(0, MAX_FOTO);
+            grid.innerHTML = '';
+            files.forEach((file, i) => {
+                if (!file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    const div = document.createElement('div');
+                    div.className = 'nahled-item';
+                    div.innerHTML = `<img src="${ev.target.result}" alt="náhled">`;
+                    grid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            if (files.length === 0) grid.innerHTML = '';
+        });
+
+        // Drag & drop vizuál (jednoduchý)
+        const zona = document.getElementById('uploadZona');
+        zona.addEventListener('dragover', e => { e.preventDefault(); zona.style.borderColor = '#000'; });
+        zona.addEventListener('dragleave', () => zona.style.borderColor = '#aaa');
+        zona.addEventListener('drop', e => {
+            e.preventDefault();
+            zona.style.borderColor = '#aaa';
+            const dt = e.dataTransfer;
+            if (dt.files.length) {
+                input.files = dt.files;
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+    })();
+</script>
+
+<!-- Skript pro předvyplnění názvu v textu (volitelné) -->
+</body>
+</html>
