@@ -15,8 +15,6 @@
 - [vizualni_analyzer](doma/nastroje/vizualni_analyzer.html)
  hra perspektiv = mezi vztahy
 
-- [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
-  denik - temata - nepouzit
 
 - [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
  galerie, nastenka, url stooy v case a prostoru, sdileni otisku
@@ -30,8 +28,9 @@ kreativita, fyzika jazyka, metadenik
 - [knihovna_figur](doma/nastroje/knihovna_figur.html)
 
 - [metadeník](doma/nastroje/metadenik.html)
-  
 
+- [licence a zpetna vazba](licence_a_zpetna_vazba.html)
+  
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
@@ -84,6 +83,11 @@ ilustrace:
  ---
  
 - [generátor fontů](doma/mimo/generator_fontu.html)
+
+---
+
+- - [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
+  denik - temata - nepouzit
 
 ---
 
