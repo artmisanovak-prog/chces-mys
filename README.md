@@ -27,7 +27,11 @@
 kreativita, fyzika jazyka, metadenik
   mezi-vztahy, forenzni mapovani struktur, benchmarky, dataset multimedialnich bloku pro dalsi generatory, ...
 
+- [knihovna_figur](doma/nastroje/knihovna_figur.html)
+
+- [metadeník](doma/nastroje/metadenik.html)
   
+
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
@@ -55,9 +59,6 @@ kreativita, fyzika jazyka, metadenik
 
 - [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html)
 
-- [metadeník](doma/nastroje/metadenik.html)
-  
----
 
 ilustrace:
 
