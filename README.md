@@ -8,8 +8,7 @@
 
 ---
 
-- [kognitivni_mapa](domalnastroje/kognitivni_mapa.html
-- )
+- [kognitivni_mapa](domalnastroje/kognitivni_mapa.html)
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
 
@@ -54,8 +53,10 @@ kreativita, fyzika jazyka, metadenik
 - [zralok](doma/data/uhly/zralok_uhly.html)
 - [plamenak](doma/data/uhly/plamenak_uhly.html)
 
-- [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html
-- )
+- [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html)
+
+- [metadeník](doma/nastroje/metadenik.html)
+  
 ---
 
 ilustrace:
