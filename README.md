@@ -8,6 +8,8 @@
 
 ---
 
+- [kognitivni_mapa](domalnastroje/kognitivni_mapa.html
+- )
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
 
