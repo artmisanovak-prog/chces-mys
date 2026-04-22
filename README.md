@@ -27,9 +27,9 @@ kreativita, fyzika jazyka, metadenik
 
 - [knihovna_figur](doma/nastroje/knihovna_figur.html)
 
-- [metadeník](doma/nastroje/metadenik.html)
+- [metadeník](doma/nastroje/denik_minimal.html)
 
-- [licence a zpetna vazba](licence_a_zpetna_vazba.html)
+- [licence a zpetna vazba](doma/licence_a_zpetna_vazba.html)
   
 ---
 
