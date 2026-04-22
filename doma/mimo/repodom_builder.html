@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repo dům Builder — Tvůrce webu bez serveru</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f0d0a;
+      --text: #f0ede8;
+      --accent: #d4a574;
+      --subtle: #3a3530;
+      --hover: #4a4540;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--subtle);
+      padding: 2rem;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--subtle);
+      padding-top: 1.5rem;
+      overflow-x: auto;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+      white-space: nowrap;
+    }
+
+    nav button:hover {
+      color: var(--accent);
+    }
+
+    nav button.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: calc(0.5rem - 2px);
+    }
+
+    section {
+      display: none;
+      padding: 2rem;
+      border-bottom: 1px solid var(--subtle);
+      min-height: 100vh;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    section > h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 13, 10, 0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg);
+      border: 1px solid var(--subtle);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    .collapsible {
+      background: var(--subtle);
+      border: 1px solid var(--subtle);
+      margin: 1rem 0;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .collapsible:hover {
+      background: var(--hover);
+    }
+
+    .collapsible-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .collapsible-toggle {
+      display: inline-block;
+      transition: transform 0.3s;
+      font-size: 1.2rem;
+    }
+
+    .collapsible.collapsed .collapsible-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .collapsible-content {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--subtle);
+    }
+
+    .collapsible:not(.collapsed) .collapsible-content {
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0 1rem 0;
+      background: var(--subtle);
+      border: 1px solid var(--subtle);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: 'DM Mono', monospace;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      color: var(--bg);
+      cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: opacity 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    button.secondary {
+      background: var(--subtle);
+      color: var(--text);
+      border: 1px solid var(--subtle);
+    }
+
+    button.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .file-tree {
+      background: var(--subtle);
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      border: 1px solid var(--subtle);
+      overflow-x: auto;
+    }
+
+    .file-item {
+      padding: 0.5rem 0;
+      padding-left: 1rem;
+    }
+
+    .file-item.folder::before {
+      content: "📁 ";
+      margin-right: 0.5rem;
+    }
+
+    .file-item.file::before {
+      content: "📄 ";
+      margin-right: 0.5rem;
+    }
+
+    .file-item.folder-title {
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 1rem;
+      padding-left: 0;
+    }
+
+    .code-block {
+      background: var(--subtle);
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      border: 1px solid var(--subtle);
+    }
+
+    .preview {
+      background: var(--subtle);
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border: 1px solid var(--subtle);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      nav {
+        flex-wrap: wrap;
+      }
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--subtle);
+      border: 1px solid var(--subtle);
+      margin: 0.5rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+
+    .example-card {
+      background: var(--subtle);
+      border: 1px solid var(--subtle);
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .example-card h4 {
+      color: var(--accent);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .example-card p {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .example-card .use-case {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 0.5rem;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--subtle);
+      padding: 2rem;
+      text-align: center;
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Repo dům</h1>
+    <p class="subtitle">Builder — tvůrce webu bez serveru</p>
+    <nav id="nav">
+      <button class="nav-btn active" data-section="novy-projekt">➕ Nový projekt</button>
+      <button class="nav-btn" data-section="sprava">📁 Správa</button>
+      <button class="nav-btn" data-section="vyuziti">💡 Využití</button>
+      <button class="nav-btn" data-section="dokumentace">📖 Jak to funguje</button>
+      <button class="nav-btn" data-section="export">💾 Export</button>
+    </nav>
+  </header>
+
+  <!-- NOVÝ PROJEKT -->
+  <section id="novy-projekt" class="active">
+    <h2>Vytvoř nový Repo dům projekt</h2>
+    
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>🏗️ Základní nastavení</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Název projektu</label>
+        <input type="text" id="projekt-nazev" placeholder="např. muj-eshop, katalog-ptak, rodinny-archiv">
+        
+        <label>Popis</label>
+        <textarea id="projekt-popis" placeholder="Krátký popis projektu..."></textarea>
+        
+        <label>Typ projektu</label>
+        <select id="projekt-typ">
+          <option value="">-- Vyber typ --</option>
+          <option value="eshop">E-shop</option>
+          <option value="katalog">Vědecký katalog</option>
+          <option value="archiv">Rodinný archiv</option>
+          <option value="kurz">Vzdělávací kurz</option>
+          <option value="portfolio">Portfolio</option>
+          <option value="vlastni">Vlastní</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>🎨 Design</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Barva pozadí (hex)</label>
+        <input type="text" id="barva-bg" value="#0f0d0a" placeholder="#0f0d0a">
+        
+        <label>Barva textu (hex)</label>
+        <input type="text" id="barva-text" value="#f0ede8" placeholder="#f0ede8">
+        
+        <label>Barva akcent (hex)</label>
+        <input type="text" id="barva-accent" value="#d4a574" placeholder="#d4a574">
+        
+        <label>Font nadpisů</label>
+        <select id="font-nazvy">
+          <option value="Cormorant Garamond">Cormorant Garamond</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+        
+        <label>Font obsahu</label>
+        <select id="font-text">
+          <option value="Georgia">Georgia</option>
+          <option value="Lora">Lora</option>
+          <option value="Garamond">Garamond</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>📁 Struktura složek</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Chceš přidat vlastní složky? (seznam oddělený čárkou)</label>
+        <input type="text" id="vlastni-slozky" placeholder="data, scripts, assets">
+        
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--accent);">
+          Výchozí struktura:<br>
+          <code style="display: block; margin-top: 0.5rem;">
+            projekt/<br>
+            ├── index.html<br>
+            ├── doma/<br>
+            │   ├── ilustrace/<br>
+            │   ├── nastroje/<br>
+            │   └── data/<br>
+            └── README.md
+          </code>
+        </p>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button onclick="vytvorProjekt()">✓ Vytvořit projekt</button>
+      <button class="secondary" onclick="vymazVsechny()">🗑 Vymazat vše</button>
+    </div>
+
+    <div id="zprava"></div>
+  </section>
+
+  <!-- SPRÁVA -->
+  <section id="sprava">
+    <h2>📁 Správa projektů</h2>
+    
+    <div id="projekty-seznam"></div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>➕ Přidat do projektu</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Vyber projekt</label>
+        <select id="vyber-projekt">
+          <option value="">-- Žádný projekt --</option>
+        </select>
+
+        <div style="margin-top: 1rem;">
+          <h3>Přidat složku</h3>
+          <input type="text" id="nova-slozka" placeholder="jméno nové složky">
+          <input type="text" id="nova-slozka-cesta" placeholder="cesta (např. doma/data)">
+          <button onclick="pridejSlozku()">➕ Přidat složku</button>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <h3>Přidat soubor</h3>
+          <input type="text" id="novy-soubor-jmeno" placeholder="jméno souboru (bez přípony)">
+          <select id="novy-soubor-typ">
+            <option value="html">HTML</option>
+            <option value="js">JavaScript</option>
+            <option value="css">CSS</option>
+            <option value="json">JSON</option>
+            <option value="md">Markdown</option>
+          </select>
+          <button onclick="pridejSoubor()">➕ Přidat soubor</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VYUŽITÍ -->
+  <section id="vyuziti">
+    <h2>💡 Jak se Repo dům používá?</h2>
+    
+    <div class="example-card">
+      <h4>🛍️ E-shop bez serveru</h4>
+      <p>Prodej produkty bez Shopify, bez měsíčních poplatků. Katalog je HTML, data v JSON, košík v localStorage.</p>
+      <div class="use-case">
+        doma/data/produkty.json → seznam<br>
+        doma/nastroje/kosik.html → nákupní logika<br>
+        export jako CSV → pro payment gateway
+      </div>
+      <button onclick="generujTemplate('eshop')" class="secondary" style="margin-top: 1rem;">Zobrazit template</button>
+    </div>
+
+    <div class="example-card">
+      <h4>📚 Vědecký katalog</h4>
+      <p>Katalog ptáků, rostlin, hmyzu s offline vyhledáváním. Badatel si jej stáhne, pracuje bez internetu.</p>
+      <div class="use-case">
+        doma/data/druhy.json → taxonomická data<br>
+        doma/nastroje/vyhledavac.html → fultext search<br>
+        doma/ilustrace/foto/ → fotografie druhů
+      </div>
+      <button onclick="generujTemplate('katalog')" class="secondary" style="margin-top: 1rem;">Zobrazit template</button>
+    </div>
+
+    <div class="example-card">
+      <h4>📷 Rodinný archiv fotografií</h4>
+      <p>Rodinné fotografie s metadaty. Všechny generace mohou přidávat poznámky offline, pak se synchronizují.</p>
+      <div class="use-case">
+        doma/ilustrace/archiv/ → fotky<br>
+        doma/data/fotografie.json → metadata (datum, osoby, tags)<br>
+        localStorage → osobní poznámky
+      </div>
+      <button onclick="generujTemplate('archiv')" class="secondary" style="margin-top: 1rem;">Zobrazit template</button>
+    </div>
+
+    <div class="example-card">
+      <h4>🎓 Interaktivní kurz</h4>
+      <p>Student si stáhne kurz, pracuje offline. Odpovědi se hromadí lokálně, pak si stáhne report.</p>
+      <div class="use-case">
+        doma/data/kapitoly.json → obsah<br>
+        doma/data/cviceni.json → otázky a řešení<br>
+        localStorage → progress studenta
+      </div>
+      <button onclick="generujTemplate('kurz')" class="secondary" style="margin-top: 1rem;">Zobrazit template</button>
+    </div>
+
+    <div id="template-preview"></div>
+  </section>
+
+  <!-- DOKUMENTACE -->
+  <section id="dokumentace">
+    <h2>📖 Jak Repo dům funguje?</h2>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>🎯 URL otisk — jak sdílíš bez serveru?</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <p>URL otisk je tvůj supermoc. Místo toho aby si data uložila na server, jsou v URL:</p>
+        <div class="code-block">
+https://tvuj-projekt.github.io/katalog.html?typ=ptak&habitat=les&barva=modra
+        </div>
+        <p style="margin-top: 1rem;">Když pošleš tohle URL:
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li>Nikdo si data nemusí pamatovat na serveru</li>
+            <li>Přítele vidí přesně to co ty</li>
+            <li>Je to permanentní odkaz bez databáze</li>
+            <li>Offline? Funguje stejně (jen URL bez nových dat)</li>
+          </ul>
+        </p>
+
+        <h3 style="margin-top: 1.5rem;">Jak to udělat v kódu:</h3>
+        <div class="code-block">
+// Přečti URL parametry
+const params = new URLSearchParams(window.location.search);
+const typ = params.get('typ') || 'vsechny';
+const habitat = params.get('habitat') || '';
+
+// Postav URL otisk
+const url = new URL(window.location);
+url.searchParams.set('typ', vybranyTyp);
+url.searchParams.set('habitat', vybranyHabitat);
+window.history.replaceState(null, '', url);
+
+// Pošli lidem tento odkaz — je permanentní a nesdílí data
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>💾 localStorage — tvůj offline úschovný</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <p>localStorage je místo v tvém prohlížeči kde si můžeš uchovávat až 5-10 MB dat.</p>
+        
+        <h3 style="margin-top: 1rem;">Uložit data:</h3>
+        <div class="code-block">
+const moje_data = { jmeno: 'Jan', poznamka: 'Zajímavý ptáček' };
+localStorage.setItem('zaznam_5', JSON.stringify(moje_data));
+        </div>
+
+        <h3 style="margin-top: 1rem;">Přečíst data:</h3>
+        <div class="code-block">
+const data = JSON.parse(localStorage.getItem('zaznam_5'));
+console.log(data.jmeno); // Jan
+        </div>
+
+        <h3 style="margin-top: 1rem;">Smazat data:</h3>
+        <div class="code-block">
+localStorage.removeItem('zaznam_5');
+localStorage.clear(); // Všechno
+        </div>
+
+        <p style="margin-top: 1rem; background: var(--subtle); padding: 1rem;">
+          <strong>⚠️ Důležité:</strong> localStorage je jen pro tvůj počítač. Když si stránku otevřeš na jiném počítači, data tam nejsou. Proto musíš uživateli umožnit <strong>exportovat data jako JSON/CSV</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>📐 Konzistentní cesty — proč je to důležité?</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <p>Všechny tvé projekty mají stejnou strukturu. Proč?</p>
+        <ul style="margin: 1rem 0 1rem 1.5rem;">
+          <li><strong>Přenositelnost:</strong> Vezmeš si projekt, dáš na jiný server, funguje</li>
+          <li><strong>Sdílení assetů:</strong> Ilustrace jsou v doma/ilustrace/ — všechny projekty je najdou</li>
+          <li><strong>Bez zmatení:</strong> Vždy víš kde co je</li>
+          <li><strong>Modulárnost:</strong> Můžeš kopírovat nástroje mezi projekty</li>
+        </ul>
+
+        <div class="code-block">
+projekt-1/
+├── doma/
+│   ├── ilustrace/
+│   ├── nastroje/
+│   └── data/
+
+projekt-2/
+├── doma/
+│   ├── ilustrace/
+│   ├── nastroje/
+│   └── data/
+
+Cesty jsou **stejné**, takže když si vezmeš obrázek z projektu-1,
+stačí zkopírovat URL — projekt-2 jej najde na stejném místě.
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>🔄 Export a synchronizace</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <p>Jak uživatel exportuje svá data bez serveru?</p>
+
+        <h3 style="margin-top: 1rem;">Stažení jako JSON:</h3>
+        <div class="code-block">
+function exportJson() {
+  const data = localStorage.getItem('moje_data');
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'backup_' + new Date().toISOString() + '.json';
+  a.click();
+}
+        </div>
+
+        <h3 style="margin-top: 1rem;">Stažení jako CSV:</h3>
+        <div class="code-block">
+function exportCsv() {
+  const data = JSON.parse(localStorage.getItem('moje_data'));
+  const csv = Object.keys(data[0]).join(',') + '\n' +
+    data.map(row => Object.values(row).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'export.csv';
+  a.click();
+}
+        </div>
+
+        <h3 style="margin-top: 1rem;">Import zpátky:</h3>
+        <div class="code-block">
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const data = JSON.parse(event.target.result);
+    localStorage.setItem('moje_data', JSON.stringify(data));
+    location.reload(); // Znovu načti UI
+  };
+  reader.readAsText(file);
+});
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPORT -->
+  <section id="export">
+    <h2>💾 Export a stažení</h2>
+    
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>📦 Stáhni svůj projekt</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Vyber projekt</label>
+        <select id="export-projekt">
+          <option value="">-- Žádný projekt --</option>
+        </select>
+
+        <div class="button-group" style="margin-top: 1rem;">
+          <button onclick="exportAsJson()">📄 JSON (metadata)</button>
+          <button class="secondary" onclick="exportAsZip()">📦 ZIP (struktura)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>🔄 Importuj projekt</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <label>Vyber JSON soubor projektu</label>
+        <input type="file" id="import-file" accept=".json">
+        <button onclick="importZSouboru()">📥 Importovat</button>
+      </div>
+    </div>
+
+    <div id="export-status"></div>
+  </section>
+
+  <footer>
+    Repo dům Builder © 2026 · Michaelov metoda stavby webu bez serveru<br>
+    chcesmys@gmail.com
+  </footer>
+
+  <!-- MODÁLY -->
+  <div id="template-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="zavriBrowser()">✕</button>
+      <h3 style="margin-bottom: 1rem;">Template struktura</h3>
+      <div id="template-modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // ================== DATA ==================
+    const stateKey = 'repo-dum-projekty';
+
+    function nactiProjekty() {
+      return JSON.parse(localStorage.getItem(stateKey) || '{}');
+    }
+
+    function ulozProjekty(projekty) {
+      localStorage.setItem(stateKey, JSON.stringify(projekty));
+    }
+
+    // ================== NAVIGACE ==================
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
+        const section = document.getElementById(btn.dataset.section);
+        section.classList.add('active');
+        btn.classList.add('active');
+        section.scrollIntoView();
+      });
+    });
+
+    // ================== VYTVÁŘENÍ PROJEKTU ==================
+    function vytvorProjekt() {
+      const nazev = document.getElementById('projekt-nazev').value.trim();
+      const popis = document.getElementById('projekt-popis').value.trim();
+      const typ = document.getElementById('projekt-typ').value;
+
+      if (!nazev) {
+        alert('Zadej název projektu');
+        return;
+      }
+
+      const projekty = nactiProjekty();
+      
+      if (projekty[nazev]) {
+        alert('Projekt s tímto názvem už existuje');
+        return;
+      }
+
+      const novy = {
+        nazev,
+        popis,
+        typ,
+        vytvoreno: new Date().toISOString(),
+        barvaFg: document.getElementById('barva-bg').value,
+        barvaText: document.getElementById('barva-text').value,
+        barvaAccent: document.getElementById('barva-accent').value,
+        struktura: {
+          'index.html': { typ: 'file', obsah: generujIndexHtml(nazev) },
+          'README.md': { typ: 'file', obsah: generujReadme(nazev, popis) },
+          'LICENSE.md': { typ: 'file', obsah: licenceMit },
+          'doma': {
+            'ilustrace': {
+              'style.css': { typ: 'file', obsah: generujCss(nazev) }
+            },
+            'nastroje': {
+              'app.html': { typ: 'file', obsah: generujAppHtml(nazev) },
+              'script.js': { typ: 'file', obsah: generujJs(nazev) }
+            },
+            'data': {
+              'data.json': { typ: 'file', obsah: '{}' }
+            }
+          }
+        }
+      };
+
+      projekty[nazev] = novy;
+      ulozProjekty(projekty);
+
+      document.getElementById('zprava').innerHTML = `
+        <div class="preview" style="margin-top: 2rem; background: var(--accent); color: var(--bg); padding: 1.5rem;">
+          ✓ Projekt "<strong>${nazev}</strong>" byl vytvořen!<br>
+          Teď jej můžeš spravovat v sekci <strong>Správa</strong>.
+        </div>
+      `;
+
+      aktualzujSelekty();
+      vykresliProjekty();
+    }
+
+    // ================== SPRÁVA PROJEKTŮ ==================
+    function vykresliProjekty() {
+      const projekty = nactiProjekty();
+      const seznam = document.getElementById('projekty-seznam');
+      seznam.innerHTML = '';
+
+      Object.keys(projekty).forEach(nazev => {
+        const p = projekty[nazev];
+        const collapsible = document.createElement('div');
+        collapsible.className = 'collapsible';
+        collapsible.innerHTML = `
+          <div class="collapsible-header">
+            <span>📦 ${nazev}</span>
+            <span class="collapsible-toggle">▼</span>
+          </div>
+          <div class="collapsible-content">
+            <p><strong>Typ:</strong> ${p.typ || 'vlastní'}</p>
+            <p><strong>Popis:</strong> ${p.popis || '—'}</p>
+            <p><strong>Vytvořeno:</strong> ${new Date(p.vytvoreno).toLocaleDateString('cs')}</p>
+            
+            <h4 style="margin-top: 1rem;">Struktura:</h4>
+            <div class="file-tree">${renderStruktura(p.struktura)}</div>
+            
+            <div class="button-group" style="margin-top: 1rem;">
+              <button onclick="smazProjekt('${nazev}')" class="secondary">🗑 Smazat</button>
+              <button onclick="duplikujProjekt('${nazev}')" class="secondary">📋 Duplikovat</button>
+            </div>
+          </div>
+        `;
+
+        collapsible.addEventListener('click', (e) => {
+          if (e.target.closest('.collapsible-header')) {
+            collapsible.classList.toggle('collapsed');
+          }
+        });
+
+        seznam.appendChild(collapsible);
+      });
+
+      if (Object.keys(projekty).length === 0) {
+        seznam.innerHTML = '<p style="color: var(--accent);">Zatím žádné projekty. Vytvoř si nový! ➕</p>';
+      }
+    }
+
+    function renderStruktura(struktura, indent = '') {
+      let html = '';
+      Object.entries(struktura).forEach(([jmeno, obsah]) => {
+        if (obsah.typ === 'file') {
+          html += `<div class="file-item file">${jmeno}</div>`;
+        } else {
+          html += `<div class="file-item folder-title" style="padding-left: ${indent};">${jmeno}/</div>`;
+          html += renderStruktura(obsah, indent + '  ');
+        }
+      });
+      return html;
+    }
+
+    function smazProjekt(nazev) {
+      if (!confirm(`Opravdu chceš smazat projekt "${nazev}"?`)) return;
+      const projekty = nactiProjekty();
+      delete projekty[nazev];
+      ulozProjekty(projekty);
+      vykresliProjekty();
+      aktualzujSelekty();
+    }
+
+    function duplikujProjekt(nazev) {
+      const projekty = nactiProjekty();
+      const original = projekty[nazev];
+      const noveJmeno = nazev + '_kopie_' + Date.now().toString(36);
+      projekty[noveJmeno] = JSON.parse(JSON.stringify(original));
+      projekty[noveJmeno].vytvoreno = new Date().toISOString();
+      ulozProjekty(projekty);
+      vykresliProjekty();
+      aktualzujSelekty();
+    }
+
+    function vymazVsechny() {
+      if (!confirm('⚠️ Opravdu chceš smazat VŠECHNY projekty?')) return;
+      localStorage.removeItem(stateKey);
+      document.getElementById('zprava').innerHTML = '<div class="preview" style="background: var(--subtle);">Všechny projekty byly smazány.</div>';
+      vykresliProjekty();
+      aktualzujSelekty();
+    }
+
+    // ================== SELEKTY ==================
+    function aktualzujSelekty() {
+      const projekty = Object.keys(nactiProjekty());
+      ['vyber-projekt', 'export-projekt'].forEach(id => {
+        const select = document.getElementById(id);
+        const vybrany = select.value;
+        select.innerHTML = '<option value="">-- Vyber projekt --</option>';
+        projekty.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p;
+          opt.textContent = p;
+          select.appendChild(opt);
+        });
+        select.value = vybrany;
+      });
+    }
+
+    // ================== GENERÁTORY KÓDU ==================
+    function generujIndexHtml(nazev) {
+      return `<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${nazev} — Repo dům</title>
+  <link rel="stylesheet" href="doma/ilustrace/style.css">
+</head>
+<body>
+  <header>
+    <h1>${nazev}</h1>
+    <nav>
+      <a href="doma/nastroje/app.html">Aplikace</a>
+    </nav>
+  </header>
+  
+  <main>
+    <p>Vítej! To je tvůj Repo dům projekt.</p>
+  </main>
+  
+  <script src="doma/nastroje/script.js"></script>
+</body>
+</html>`;
+    }
+
+    function generujReadme(nazev, popis) {
+      return `# ${nazev}
+
+${popis ? `${popis}\n\n` : ''}## Repo dům projekt
+
+Web bez serveru. Všechna data jsou tvá, offline je dostupný.
+
+### Struktura
+
+\`\`\`
+doma/
+├── ilustrace/    (fotky, CSS)
+├── nastroje/     (HTML aplikace)
+└── data/         (JSON data)
+\`\`\`
+
+### Jak spustit
+
+1. Otevři \`index.html\` v prohlížeči
+2. Pracuj offline nebo online — stejně funguje
+3. Data se ukládají v \`localStorage\`
+4. Exportuj si backup kdykoliv
+
+### Export
+
+Klikni na tlačítko export v aplikaci a stáhni si svá data jako JSON.
+
+---
+
+**Repo dům** — stavby webů bez vendor lock-in.
+`;
+    }
+
+    function generujCss(nazev) {
+      return `* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0f0d0a;
+  --text: #f0ede8;
+  --accent: #d4a574;
+  --subtle: #3a3530;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+header {
+  border-bottom: 1px solid var(--subtle);
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+`;
+    }
+
+    function generujAppHtml(nazev) {
+      return `<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${nazev} — Aplikace</title>
+  <link rel="stylesheet" href="../ilustrace/style.css">
+  <style>
+    #app { padding: 2rem; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="./script.js"></script>
+</body>
+</html>`;
+    }
+
+    function generujJs(nazev) {
+      return `class App {
+  constructor() {
+    this.state = this.loadState();
+    this.render();
+    this.attachListeners();
+  }
+  
+  loadState() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      items: JSON.parse(localStorage.getItem('items') || '[]'),
+      filter: params.get('filter') || ''
+    };
+  }
+  
+  saveState() {
+    localStorage.setItem('items', JSON.stringify(this.state.items));
+    const params = new URLSearchParams();
+    params.set('filter', this.state.filter);
+    window.history.replaceState(null, '', \`?\${params}\`);
+  }
+  
+  render() {
+    const app = document.getElementById('app');
+    app.innerHTML = \`
+      <h1>${nazev}</h1>
+      <p>Aplikace běží. Tady můžeš psát svůj kód.</p>
+    \`;
+  }
+  
+  attachListeners() {
+    // Listenery zde
+  }
+}
+
+new App();
+`;
+    }
+
+    const licenceMit = `MIT License
+
+Copyright (c) 2026
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files...
+
+(úplná MIT licence...)
+`;
+
+    // ================== TEMPLATES ==================
+    function generujTemplate(typ) {
+      const templates = {
+        eshop: {
+          nazev: 'E-shop template',
+          struktura: `projekt-eshop/
+├── index.html
+├── doma/
+│   ├── ilustrace/
+│   │   ├── produkty/
+│   │   │   ├── produkt-1.jpg
+│   │   │   └── produkt-2.jpg
+│   │   └── style.css
+│   ├── nastroje/
+│   │   ├── katalog.html
+│   │   ├── kosik.html
+│   │   └── script.js
+│   └── data/
+│       └── produkty.json
+└── README.md`,
+          dataPriklad: `{
+  "produkty": [
+    {
+      "id": 1,
+      "nazev": "Produkt 1",
+      "cena": 299,
+      "popis": "Popis produktu",
+      "foto": "../ilustrace/produkty/produkt-1.jpg"
+    }
+  ]
+}`,
+          html: `<div id="katalog"></div>
+<script>
+  // Načti produkty
+  fetch('../data/produkty.json')
+    .then(r => r.json())
+    .then(data => {
+      // Vykresluj produkty
+      const html = data.produkty.map(p => \`
+        <div style="padding: 1rem; margin: 1rem 0; border: 1px solid #ccc;">
+          <img src="\${p.foto}" style="width: 100%; max-width: 300px;">
+          <h3>\${p.nazev}</h3>
+          <p>\${p.popis}</p>
+          <strong>\${p.cena} Kč</strong>
+          <button onclick="pridejDoKosiku(\${p.id})">Přidat do košíku</button>
+        </div>
+      \`).join('');
+      document.getElementById('katalog').innerHTML = html;
+    });
+  
+  function pridejDoKosiku(id) {
+    let kosik = JSON.parse(localStorage.getItem('kosik') || '[]');
+    kosik.push(id);
+    localStorage.setItem('kosik', JSON.stringify(kosik));
+    alert('Přidáno do košíku');
+  }
+</script>`
+        },
+        katalog: {
+          nazev: 'Vědecký katalog template',
+          struktura: `katalog-ptak/
+├── index.html
+├── doma/
+│   ├── ilustrace/
+│   │   ├── ptaci/
+│   │   │   ├── (fotografie)
+│   │   └── style.css
+│   ├── nastroje/
+│   │   ├── vyhledavac.html
+│   │   ├── detail.html
+│   │   └── search.js
+│   └── data/
+│       ├── druhy.json
+│       └── klice.json
+└── README.md`,
+          dataPriklad: `{
+  "druhy": [
+    {
+      "id": 1,
+      "latinskaNazev": "Corvus corax",
+      "ceska": "Havran černý",
+      "habitat": "les, skály",
+      "foto": "../ilustrace/ptaci/havran.jpg",
+      "popis": "Největší evropský vrána..."
+    }
+  ]
+}`,
+          html: `<input type="text" id="hledej" placeholder="Hledej druh...">
+<div id="vysledky"></div>
+<script>
+  const hledejInput = document.getElementById('hledej');
+  let druhy = [];
+  
+  fetch('../data/druhy.json').then(r => r.json()).then(d => {
+    druhy = d.druhy;
+  });
+  
+  hledejInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const vysledky = druhy.filter(d => 
+      d.ceska.toLowerCase().includes(query) ||
+      d.latinskaNazev.toLowerCase().includes(query)
+    );
+    
+    document.getElementById('vysledky').innerHTML = vysledky
+      .map(d => \`
+        <div style="margin: 1rem 0; padding: 1rem; border: 1px solid #ccc;">
+          <h3>\${d.ceska}</h3>
+          <p><em>\${d.latinskaNazev}</em></p>
+          <p>Habitat: \${d.habitat}</p>
+        </div>
+      \`).join('');
+  });
+</script>`
+        },
+        archiv: {
+          nazev: 'Rodinný archiv template',
+          struktura: `archiv-foto/
+├── index.html
+├── doma/
+│   ├── ilustrace/
+│   │   ├── archiv/
+│   │   │   ├── (fotografie ze scanů)
+│   │   └── style.css
+│   ├── nastroje/
+│   │   ├── galerie.html
+│   │   ├── editor.html
+│   │   └── photos.js
+│   └── data/
+│       └── fotografie.json
+└── README.md`,
+          dataPriklad: `{
+  "fotografie": [
+    {
+      "id": 1,
+      "foto": "../ilustrace/archiv/foto_1.jpg",
+      "datum": "1995-06-15",
+      "osoby": ["Jan", "Marie"],
+      "popis": "Polibek u vody",
+      "tags": ["svatba", "léto"]
+    }
+  ]
+}`,
+          html: `<div id="galerie"></div>
+<script>
+  fetch('../data/fotografie.json')
+    .then(r => r.json())
+    .then(d => {
+      const html = d.fotografie.map(f => \`
+        <div style="margin: 1rem 0;">
+          <img src="\${f.foto}" style="width: 100%; max-width: 500px;">
+          <p><strong>\${f.datum}</strong></p>
+          <p>\${f.popis}</p>
+          <small>Osoby: \${f.osoby.join(', ')}</small>
+        </div>
+      \`).join('');
+      document.getElementById('galerie').innerHTML = html;
+    });
+</script>`
+        },
+        kurz: {
+          nazev: 'Interaktivní kurz template',
+          struktura: `kurz-lingvistika/
+├── index.html
+├── doma/
+│   ├── ilustrace/
+│   │   └── style.css
+│   ├── nastroje/
+│   │   ├── kapitola.html
+│   │   ├── cviceni.html
+│   │   └── course.js
+│   └── data/
+│       ├── kapitoly.json
+│       └── cviceni.json
+└── README.md`,
+          dataPriklad: `{
+  "kapitoly": [
+    {
+      "id": 1,
+      "nazev": "Úvod do lingvistiky",
+      "obsah": "Lingvistika je věda o jazyku...",
+      "poznamky": ""
+    }
+  ],
+  "cviceni": [
+    {
+      "id": 1,
+      "kapitola": 1,
+      "otazka": "Jaké jsou hlavní vědy o jazyku?",
+      "odpovedi": ["Fonologie", "Morfologie", "Syntax"],
+      "spravna": 0
+    }
+  ]
+}`,
+          html: `<div id="kurz"></div>
+<script>
+  let kapitoly = [];
+  let progress = JSON.parse(localStorage.getItem('progress') || '{}');
+  
+  fetch('../data/kapitoly.json')
+    .then(r => r.json())
+    .then(d => {
+      kapitoly = d.kapitoly;
+      renderKapitoly();
+    });
+  
+  function renderKapitoly() {
+    const html = kapitoly.map(k => \`
+      <div style="padding: 1rem; margin: 1rem 0; background: #f0ede8; color: #0f0d0a;">
+        <h3>\${k.nazev}</h3>
+        <p>\${k.obsah}</p>
+        <button onclick="ulozProgress(\${k.id})">✓ Hotovo</button>
+      </div>
+    \`).join('');
+    document.getElementById('kurz').innerHTML = html;
+  }
+  
+  function ulozProgress(id) {
+    progress[id] = true;
+    localStorage.setItem('progress', JSON.stringify(progress));
+  }
+</script>`
+        }
+      };
+
+      const t = templates[typ];
+      document.getElementById('template-modal-content').innerHTML = `
+        <h4>${t.nazev}</h4>
+        <p style="margin-top: 1rem;"><strong>Struktura:</strong></p>
+        <div class="code-block">${t.struktura}</div>
+        
+        <p style="margin-top: 1rem;"><strong>Příklad dat (data.json):</strong></p>
+        <div class="code-block">${t.dataPriklad}</div>
+        
+        <p style="margin-top: 1rem;"><strong>HTML příklad:</strong></p>
+        <div class="code-block">${t.html}</div>
+      `;
+
+      document.getElementById('template-modal').classList.add('active');
+    }
+
+    function zavriBrowser() {
+      document.getElementById('template-modal').classList.remove('active');
+    }
+
+    // ================== EXPORT ==================
+    function exportAsJson() {
+      const nazev = document.getElementById('export-projekt').value;
+      if (!nazev) {
+        alert('Vyber projekt');
+        return;
+      }
+
+      const projekty = nactiProjekty();
+      const p = projekty[nazev];
+      const json = JSON.stringify({ nazev: p.nazev, popis: p.popis, typ: p.typ, vytvoreno: p.vytvoreno }, null, 2);
+
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${nazev}_export.json`;
+      a.click();
+
+      document.getElementById('export-status').innerHTML = `<div class="preview" style="background: var(--accent); color: var(--bg); margin-top: 1rem;">✓ Projekt exportován jako JSON</div>`;
+    }
+
+    function exportAsZip() {
+      alert('ZIP export vyžaduje knihovnu JSZip — je potřeba přidat. Zatím můžeš exportovat jako JSON.');
+    }
+
+    function importZSouboru() {
+      const file = document.getElementById('import-file').files[0];
+      if (!file) {
+        alert('Vyber soubor');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = JSON.parse(e.target.result);
+        const projekty = nactiProjekty();
+        projekty[data.nazev] = data;
+        ulozProjekty(projekty);
+        document.getElementById('export-status').innerHTML = `<div class="preview" style="background: var(--accent); color: var(--bg); margin-top: 1rem;">✓ Projekt importován</div>`;
+        vykresliProjekty();
+        aktualzujSelekty();
+      };
+      reader.readAsText(file);
+    }
+
+    // INIT
+    vykresliProjekty();
+    aktualzujSelekty();
+  </script>
+</body>
+</html>
