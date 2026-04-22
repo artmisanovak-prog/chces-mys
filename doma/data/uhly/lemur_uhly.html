@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lemur — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0e0e10;
+            --bg-elevated: #161618;
+            --text: #eeeeee;
+            --text-dim: #5a5a60;
+            --text-mid: #8a8a8a;
+            --accent: #9a9a9a;       /* středně šedá */
+            --accent-dim: #3a3a3a;
+            --border: #1e1e20;
+            --highlight: rgba(154,154,154,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        .ring { 
+            position: absolute; 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%;
+            border: 1px solid var(--accent-dim);
+            opacity: 0.3;
+            pointer-events: none; 
+        }
+        .ring-1 { top: 20%; right: 15%; animation: ringFloat1 10s ease-in-out infinite; }
+        .ring-2 { bottom: 25%; left: 12%; width: 28px; height: 28px; animation: ringFloat2 12s ease-in-out infinite; }
+        .ring-3 { top: 60%; right: 20%; width: 14px; height: 14px; animation: ringFloat3 8s infinite; }
+        .ring-4 { top: 40%; left: 18%; width: 22px; height: 22px; animation: ringFloat4 14s infinite; }
+        
+        @keyframes ringFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(-15px, -25px) scale(1.2); opacity: 0.4; }
+        }
+        @keyframes ringFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+            50% { transform: translate(20px, -15px) scale(1.1); opacity: 0.15; }
+        }
+        @keyframes ringFloat3 {
+            0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+            50% { transform: translate(-25px, -10px); opacity: 0.35; }
+        }
+        @keyframes ringFloat4 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            33% { transform: translate(10px, 20px) scale(0.9); opacity: 0.4; }
+            66% { transform: translate(-15px, 5px) scale(1.1); opacity: 0.15; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .fairy-toggle .arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+        .fairy-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; scroll-behavior: smooth; }
+        .fairy-content.open { max-height: 7000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #b0b0b0;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(154,154,154,0.03), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #8a8a8a; font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+        .fairy-close {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .fairy-close:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Panel výběru úhlu – úzké karty */
+        .angle-selector {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+            text-align: center;
+        }
+        .selector-grid {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .selector-grid::-webkit-scrollbar {
+            height: 2px;
+            background: transparent;
+        }
+        .selector-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-dim);
+        }
+        .selector-card {
+            flex: 0 0 auto;
+            width: 100px;
+            border: 1px solid var(--border);
+            padding: 0.8rem 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-elevated);
+        }
+        .selector-card:hover {
+            border-color: var(--accent);
+            background: var(--bg);
+        }
+        .selector-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        .selector-title {
+            font-family: 'Spectral', serif;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 0.2rem;
+        }
+        .selector-desc {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+        @media (min-width: 480px) {
+            .selector-card {
+                width: 130px;
+                padding: 1rem 0.6rem;
+            }
+            .selector-icon {
+                font-size: 1.4rem;
+            }
+            .selector-title {
+                font-size: 0.9rem;
+            }
+            .selector-desc {
+                font-size: 0.6rem;
+            }
+        }
+
+        .diagnostic-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 0;
+        }
+        .diagnostic-panel.open {
+            max-height: 300px;
+            margin-top: 1rem;
+        }
+        .diagnostic-inner {
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            text-align: left;
+        }
+        .diag-question {
+            font-family: 'Spectral', serif;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+        }
+        .diag-input {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            margin-bottom: 0.8rem;
+        }
+        .diag-submit {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.65rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1a1a1a, #000);
+            border: 1px solid #3a3a3a;
+            box-shadow: 0 0 40px rgba(154,154,154,0.05);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(154,154,154,0.4);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.04;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #c0c0c0, #808080);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #3a3a3a; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Lemur</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="ring ring-4"></div>
+        <img src="../../ilustrace/lemur.jpg" alt="Ilustrace lemura" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtube.com/shorts/137mjk7w5Qs?is=2JgnUuJ-M8Aq22Hj" target="_blank" class="audio-btn" title="Audio verze pohádky (odkaz bude doplněn)">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <!-- Sbalovací pohádka -->
+    <div class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">
+            <span>Pohádka o Lemurovi</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner" id="fairyScroll">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O LEMUROVI</strong></p>
+                <p><strong>který nebyl nápadný</strong></p>
+                <p>—</p>
+                <p id="lemur-absurdni">Lemur se narodil v koutku.<br>V koutku místnosti, v koutku světa, v koutku oka.<br>Tam, kde se věci obvykle nechávají být.<br>Tam, kde se neptá.<br>Tam, kde se neukazuje.</p>
+                <p>—</p>
+                <p id="lemur-jazykovy">A tak si řekl:<br>„Budu nenápadný.“<br>„Budu tak nenápadný, že mě ani moje vlastní stín nepozná.“<br>„Budu tak tichý, že i ticho bude hlasité vedle mě.“</p>
+                <p>—</p>
+                <p id="lemur-ironicky">Jenže měl oči jak lampy.<br>Ocas vztyčený jak vykřičník.<br>A srst jako výkladní skříň, co se snaží být tapetou.</p>
+                <p>—</p>
+                <p id="lemur-filozoficky">Vedle něj seděla postava.<br>Klidná.<br>Tichá.<br>Bez barvy.<br>Bez pohybu.<br>Bez potřeby být.</p>
+                <p>—</p>
+                <p id="lemur-surrealisticky">Řekla:<br>„Nejlepší je nechat to být. Vše ostatní je moc nápadné.“<br>A lemur se snažil.</p>
+                <p>—</p>
+                <p id="lemur-naivni">Zhasl oči.<br>Zlomil si ocas (jen obrazně).<br>Přikryl se dekou z nezájmu.</p>
+                <p>—</p>
+                <p id="lemur-introspektivni">Ale oči mu svítily i pod dekou.<br>Ocas mu trčel i bez svolení.<br>A srst mu zářila jako reklama na klid, co bliká.</p>
+                <p>—</p>
+                <p id="lemur-betonovy">„Nejsem nápadný,“ šeptal.<br>„Jsem jen… výrazně nenápadný.“<br>„Jsem jen… ticho, co má barvy.“<br>„Jsem jen… pozadí, co se nedá přehlédnout.“</p>
+                <p>—</p>
+                <p id="lemur-kulturni">Postava vedle něj neřekla nic.<br>Jen se dívala.<br>A to bylo horší než slova.</p>
+                <p>—</p>
+                <p id="lemur-groteskni">Lemur se pokusil být stínem.<br>Ale jeho stín měl vlastní názor.<br>Lemur se pokusil být flekem na zdi.<br>Ale flek ho odmítl, protože byl moc výrazný.</p>
+                <p>—</p>
+                <p id="lemur-asociacni">Nakonec si sedl.<br>Přestal se snažit.<br>Oči mu svítily.<br>Ocas mu trčel.<br>Srst mu zářila.</p>
+                <p>—</p>
+                <p id="lemur-metaforicky">A postava vedle něj řekla:<br>„Teď jsi konečně neviditelný.“<br>„Jak to?“ zeptal se lemur.<br>„Protože už se nesnažíš.“</p>
+                <p>—</p>
+                <p>A tak se lemur stal mistrem nenápadnosti.<br>Ne tím, že zmizel.<br>Ale tím, že přestal křičet, že nechce být vidět.</p>
+                <p>—</p>
+                <p>Od té doby sedí v koutku.<br>Oči mu svítí.<br>Ocas mu trčí.<br>Srst mu září.</p>
+                <p>—</p>
+                <p>A každý, kdo ho uvidí, řekne:<br>„To je ten nenápadný lemur.“<br>A pak se tváří, že ho nevidí.<br>A to je přesně to, co chtěl.</p>
+                <div class="fairy-close" onclick="toggleFairy()">✕ zavřít pohádku</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel výběru úhlu -->
+    <div class="angle-selector">
+        <div class="selector-grid">
+            <div class="selector-card" onclick="randomAngle()">
+                <div class="selector-icon">🎲</div>
+                <div class="selector-title">Náhodně</div>
+                <div class="selector-desc">systém vybere úhel,<br>označí a odscrolluje</div>
+            </div>
+            <div class="selector-card" onclick="moodAngle()">
+                <div class="selector-icon">🧭</div>
+                <div class="selector-title">Podle nálady</div>
+                <div class="selector-desc">odscrolluje k úhlům,<br>žádný nevybírá</div>
+            </div>
+            <div class="selector-card" onclick="toggleDiagPanel()">
+                <div class="selector-icon">🔍</div>
+                <div class="selector-title">Diagnosticky</div>
+                <div class="selector-desc">odpovězte na otázku,<br>systém navrhne úhel</div>
+            </div>
+        </div>
+        <div class="diagnostic-panel" id="diagPanel">
+            <div class="diagnostic-inner">
+                <div class="diag-question">Která část vás v pohádce nejvíc zaujala?</div>
+                <textarea class="diag-input" id="diagInput" placeholder="Napište větu, moment nebo obraz..."></textarea>
+                <button class="diag-submit" onclick="runDiagnostic()">Najít úhel</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(154,154,154,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Lemur, který chce být nenápadný, ale má oči jak lampy, ocas jak vykřičník a srst jak výkladní skříň. Snaží se zhasnout oči, zlomit si ocas, přikrýt se dekou – a pořád je vidět. Paradox: čím víc se snaží nebýt vidět, tím víc je nápadný. A řešení? Přestat se snažit.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">výrazně nenápadný</span>
+                    <button class="fairy-locate-btn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro lemura – upravené generativní věty
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Lemur, který chce být nenápadný, ale má oči jak lampy, ocas jak vykřičník a srst jak výkladní skříň. Snaží se zhasnout oči, zlomit si ocas, přikrýt se dekou – a pořád je vidět. Paradox: čím víc se snaží nebýt vidět, tím víc je nápadný. A řešení? Přestat se snažit.", key: "výrazně nenápadný", fragment: "lemur-absurdni", keywords: ["absurdní", "nenápadný", "oči", "lampy", "ocas", "výkladní skříň"] },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "‚Výrazně nenápadný‘ – oxymóron, který vystihuje celého lemura. ‚Ticho, co má barvy‘ – další spojení protikladů. ‚Pozadí, co se nedá přehlédnout‘ – věta, která popírá sama sebe. Jazyk selhává, když má popsat lemura, a proto vytváří nová slovní spojení, která jediná fungují.", key: "oxymóron nenápadnosti", fragment: "lemur-jazykovy", keywords: ["jazyk", "oxymóron", "výrazně nenápadný", "ticho", "barvy", "pozadí"] },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Lemur chce být neviditelný, a čím víc se snaží, tím víc ho je vidět. Ironie: jeho snaha o nenápadnost je to nejnápadnější na něm. A když konečně přestane, stane se neviditelným – ale jen proto, že ho všichni vidí a tváří se, že ne.", key: "snaha o neviditelnost", fragment: "lemur-ironicky", keywords: ["ironie", "neviditelný", "snaha", "nápadný", "přestane", "tváří"] },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co to znamená ‚být‘? Lemur existuje, i když se snaží nebýt. Jeho bytí je tak intenzivní, že ho nejde skrýt. Postava vedle něj představuje moudrost: pravda není v tom, co děláš, ale v tom, co jsi. A lemur je – ať chce nebo ne.", key: "bytí nelze skrýt", fragment: "lemur-filozoficky", keywords: ["filozofie", "být", "existuje", "moudrost", "pravda", "postava"] },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Lemur se snaží být stínem, ale stín má vlastní názor. Chce být flekem na zdi, ale flek ho odmítne. Postava bez barvy, bez pohybu, bez potřeby být. Svět, kde věci mají vlastní vůli a kde se nenápadnost stává viditelnou. To není realita – to je obraz.", key: "stín s názorem", fragment: "lemur-surrealisticky", keywords: ["surrealistický", "stín", "názor", "flek", "postava", "obraz"] },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Lemur chtěl bejt nenápadnej. Ale měl velký oči a chlupatej ocas. Zkoušel všecko možný, ale furt byl vidět. Pak přestal a zjistil, že je neviditelnej, protože se nesnaží. A lidi ho vidí, ale tvářej se, že ne. A to chtěl.", key: "prostě být", fragment: "lemur-naivni", keywords: ["naivní", "jednoduchý", "oči", "ocas", "neviditelnej", "lidi"] },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle jsem já. Pořád se snažím zapadnout, být nenápadný, nevyčnívat. Ale ať dělám, co dělám, jsem pořád vidět. Moje oči, můj hlas, moje názory – všechno křičí. Až teď chápu: nemám přestat být vidět, mám přestat chtít nebýt vidět. Pak se uklidním.", key: "osobní lemur", fragment: "lemur-introspektivni", keywords: ["já", "zapadnout", "vyčnívat", "oči", "hlas", "uklidním"] },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o lemurovi, který se narodil v koutku a rozhodl se být nenápadný. Přesto má výrazné fyzické znaky (zářící oči, vztyčený ocas, nápadnou srst). Snaží se je potlačit, ale nedaří se mu to. Po rozhovoru s anonymní postavou zjistí, že nenápadnosti dosáhne, když se přestane snažit. Od té doby ho lidé vnímají jako ‚nenápadného lemura‘ a tváří se, že ho nevidí.", key: "doslovný popis", fragment: "lemur-betonovy", keywords: ["doslovně", "fakticky", "lemur", "koutek", "znaky", "postava"] },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Lemur jako archetyp toho, kdo chce zapadnout, ale nemůže. Připomíná postavy z existenciálních románů – člověka, který bojuje se svou podstatou. Postava vedle něj je jako zenový mistr – mlčí a svou přítomností učí. A pointa: ‚přestat se snažit‘ je východní filozofie v kostce.", key: "zenový lemur", fragment: "lemur-kulturni", keywords: ["kulturní", "archetyp", "existenciální", "zenový", "mistr", "filozofie"] },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: lemur s očima jak reflektory se snaží schovat pod deku. Jeho ocas trčí ven a svítí. Zkouší být stínem, ale stín se ohrazuje. Chce být flekem, ale flek ho vyhodí. Je to fraška o tom, že když se moc snažíš nebýt vidět, jsi vidět nejvíc. A když to vzdáš, najednou jsi neviditelnej – ale všichni tě furt vidí.", key: "groteska neviditelnosti", fragment: "lemur-groteskni", keywords: ["groteskní", "přehnaný", "komický", "reflektory", "deka", "fraška"] },
+            { deg: 300, hour: "11h", name: "Analytický", desc: "Hledá struktury, vztahy, příčiny.", text: "Lemurova viditelnost není dána jeho fyzickými vlastnostmi, ale společenskou dohodou. Ostatní ho vidí, protože očekávají, že bude vidět. Když přestane signalizovat snahu být neviditelný, společnost přestane jeho viditelnost registrovat jako ‚nápadnou‘. Je to sociální konstrukt, nikoli fyzikální fakt.", key: "viditelnost je sociální dohoda, ne fyzický fakt", fragment: "lemur-asociacni", keywords: ["analytický", "viditelnost", "sociální", "dohoda", "konstrukt", "společnost"] },
+            { deg: 330, hour: "10h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to spolužáka, který chtěl být ‚cool‘ a nenápadný, ale měl na sobě vždycky něco křiklavého. A čím víc se snažil, tím víc byl terčem. Až jednou to vzdal a najednou byl v pohodě. Přesně jako lemur. A ta postava? Ta by mohla být moje babička, která říkávala: ‚Nesnaž se, buď.‘", key: "zářivá bytost zakrytá dekou nezájmu", fragment: "lemur-metaforicky", keywords: ["asociace", "vzpomínka", "spolužák", "cool", "křiklavý", "babička"] },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Lemur je každý, kdo se snaží zapadnout do společnosti. Oči, ocas, srst – to jsou jeho vlastnosti, kterých se nemůže zbavit. Postava je pravda – tichá, klidná, neměnná. A ponaučení: nejsi neviditelný tím, že zmizíš, ale tím, že přestaneš bojovat s tím, kdo jsi. Pak tě sice vidí, ale už tě to netrápí.", key: "ticho, které má barvy", fragment: "lemur-absurdni", keywords: ["metafora", "společnost", "vlastnosti", "pravda", "bojovat", "neviditelný"] }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        // ========== DIAGNOSTICKÉ FUNKCE ==========
+        function toggleDiagPanel() {
+            const panel = document.getElementById('diagPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                document.getElementById('diagInput').focus();
+            }
+        }
+
+        function randomAngle() {
+            const randomIndex = Math.floor(Math.random() * angles.length);
+            selectAngle(randomIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function moodAngle() {
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function runDiagnostic() {
+            const input = document.getElementById('diagInput').value.trim().toLowerCase();
+            if (!input) return;
+
+            const scores = angles.map((angle, idx) => {
+                let score = 0;
+                angle.keywords.forEach(keyword => {
+                    if (input.includes(keyword.toLowerCase())) {
+                        score += 1;
+                    }
+                });
+                return { index: idx, score };
+            });
+
+            scores.sort((a, b) => b.score - a.score);
+            const bestIndex = scores[0].score > 0 ? scores[0].index : 0;
+            
+            toggleDiagPanel();
+            selectAngle(bestIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========== PŮVODNÍ FUNKCE ==========
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Lemur&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyContent');
+            const isOpen = scrollContainer.classList.contains('open');
+            
+            if (element) {
+                element.classList.add('fairy-highlight');
+                
+                if (isOpen) {
+                    const fairyInner = document.getElementById('fairyScroll');
+                    const containerRect = fairyInner.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    const scrollTop = fairyInner.scrollTop;
+                    const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                    
+                    fairyInner.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                }
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        window.toggleFairy = toggleFairy;
+        window.toggleDiagPanel = toggleDiagPanel;
+        window.randomAngle = randomAngle;
+        window.moodAngle = moodAngle;
+        window.runDiagnostic = runDiagnostic;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
