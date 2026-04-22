@@ -98,7 +98,8 @@ ilustrace:
 - [kreslící vykreslovač](doma/mimo/kreslici_vykreslovac.html)
 
  ---
- 
+
+ -[REPODOM SABLONA prazdna](doma/mimo/repodom_sablona.html)
 - [generátor fontů](doma/mimo/generator_fontu.html)
 
 ---
