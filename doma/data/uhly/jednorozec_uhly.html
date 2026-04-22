@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Čáp — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0a0a0a;
+            --bg-elevated: #121212;
+            --text: #e0e0e0;
+            --text-dim: #5a5a5a;
+            --text-mid: #9a9a9a;
+            --accent: #ffffff;
+            --accent-dim: #3a3a3a;
+            --border: #1e1e1e;
+            --highlight: rgba(255,255,255,0.1);
+            --red-touch: #c0392b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Spectral', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.4em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.1) brightness(0.9); 
+            opacity: 0.85;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.15) brightness(0.95);
+        }
+        
+        .feather { 
+            position: absolute; 
+            width: 2px; 
+            height: 24px; 
+            background: var(--accent);
+            opacity: 0.2;
+            pointer-events: none; 
+            transform-origin: center;
+            border-radius: 1px;
+        }
+        .feather-1 { top: 20%; right: 15%; transform: rotate(30deg); animation: featherFloat1 12s ease-in-out infinite; }
+        .feather-2 { bottom: 25%; left: 12%; transform: rotate(-20deg); animation: featherFloat2 14s ease-in-out infinite; }
+        .feather-3 { top: 60%; right: 20%; width: 1px; height: 16px; transform: rotate(60deg); animation: featherFloat3 10s infinite; }
+        .feather-4 { top: 40%; left: 18%; width: 3px; height: 28px; transform: rotate(-45deg); animation: featherFloat4 16s infinite; }
+        
+        @keyframes featherFloat1 {
+            0%, 100% { transform: translate(0, 0) rotate(30deg) scale(1); opacity: 0.15; }
+            50% { transform: translate(-15px, -25px) rotate(45deg) scale(1.2); opacity: 0.3; }
+        }
+        @keyframes featherFloat2 {
+            0%, 100% { transform: translate(0, 0) rotate(-20deg) scale(1); opacity: 0.2; }
+            50% { transform: translate(20px, -15px) rotate(-5deg) scale(1.1); opacity: 0.1; }
+        }
+        @keyframes featherFloat3 {
+            0%, 100% { transform: translate(0, 0) rotate(60deg); opacity: 0.1; }
+            50% { transform: translate(-25px, -10px) rotate(80deg); opacity: 0.25; }
+        }
+        @keyframes featherFloat4 {
+            0%, 100% { transform: translate(0, 0) rotate(-45deg) scale(1); opacity: 0.15; }
+            33% { transform: translate(10px, 20px) rotate(-30deg) scale(0.9); opacity: 0.3; }
+            66% { transform: translate(-15px, 5px) rotate(-60deg) scale(1.1); opacity: 0.1; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .fairy-toggle .arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+        .fairy-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; scroll-behavior: smooth; }
+        .fairy-content.open { max-height: 8000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Spectral', serif; 
+            font-size: 1.05rem; 
+            line-height: 1.9; 
+            color: #b0b0b0;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(255,255,255,0.02), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: var(--text-mid); font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+        .fairy-close {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .fairy-close:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Panel výběru úhlu – úzké karty */
+        .angle-selector {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+            text-align: center;
+        }
+        .selector-grid {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .selector-grid::-webkit-scrollbar {
+            height: 2px;
+            background: transparent;
+        }
+        .selector-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-dim);
+        }
+        .selector-card {
+            flex: 0 0 auto;
+            width: 100px;
+            border: 1px solid var(--border);
+            padding: 0.8rem 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-elevated);
+        }
+        .selector-card:hover {
+            border-color: var(--accent);
+            background: var(--bg);
+        }
+        .selector-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        .selector-title {
+            font-family: 'Spectral', serif;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 0.2rem;
+        }
+        .selector-desc {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+        @media (min-width: 480px) {
+            .selector-card {
+                width: 130px;
+                padding: 1rem 0.6rem;
+            }
+            .selector-icon {
+                font-size: 1.4rem;
+            }
+            .selector-title {
+                font-size: 0.9rem;
+            }
+            .selector-desc {
+                font-size: 0.6rem;
+            }
+        }
+
+        .diagnostic-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 0;
+        }
+        .diagnostic-panel.open {
+            max-height: 300px;
+            margin-top: 1rem;
+        }
+        .diagnostic-inner {
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            text-align: left;
+        }
+        .diag-question {
+            font-family: 'Spectral', serif;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+        }
+        .diag-input {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            margin-bottom: 0.8rem;
+        }
+        .diag-submit {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.65rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Spectral', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1a1a1a, #000);
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 0 40px rgba(255,255,255,0.04);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.04;
+            animation: spin 35s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Spectral', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Spectral', serif; 
+            font-size: 1.15rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #d0d0d0, var(--red-touch));
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #2a2a2a; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Čáp</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="feather feather-1"></div>
+        <div class="feather feather-2"></div>
+        <div class="feather feather-3"></div>
+        <div class="feather feather-4"></div>
+        <img src="../../ilustrace/cap.jpg" alt="Ilustrace čápa" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtu.be/U71Ax7aMiqM?is=_x7Cc2Hw6UaTUwWZ" target="_blank" class="audio-btn" title="Audio verze pohádky (odkaz bude doplněn)">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <div class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">
+            <span>Pohádka o Čápovi</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner" id="fairyScroll">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O ČÁPOVI</strong></p>
+                <p>1, 2 čáp letí. 3, 4 nemá děti. 5, 6 my je máme. 7, 8 NEprodáme.</p>
+                <p>—</p>
+                <p id="cap-absurdni">Jedna dvě – čáp letí.<br>Tři čtyři – nemá děti.<br>Pět šest – my je máme.<br>Sedm osm – NEprodáme.</p>
+                <p>—-</p>
+                <p id="cap-jazykovy">Tak začíná říkanka, kterou si šeptají děti v trávě, když se dívají na nebe. A čáp tam opravdu je. Letí vysoko, klidně, bez nákladu. Bez uzlíku. Bez cíle. Jen tak.</p>
+                <p>—</p>
+                <p id="cap-ironicky">Kdysi dávno se říkalo, že čáp nosí děti. Že když přistane na komíně, někdo se narodí. Ale tenhle čáp nikdy nepřistál. Jen kroužil. A začalo se o něm šeptat, že je prázdný. Že zapomněl. Že je bezradný možná i vadný.</p>
+                <p>—-</p>
+                <p id="cap-filozoficky">Ale myš věděla, že to není pravda. Čáp nebyl prázdej. Plnej byl – jen ne toho, co by šlo vidět. Nesl nápady. Nesl možnosti. Nesl to, co se nestalo, ale mohlo.</p>
+                <p>—</p>
+                <p id="cap-surrealisticky">A pak se objevily děti. Nečekaně. Bez vysvětlení. Bez čápa. Jen tak. V trávě. V koutě. V náručí těch, kteří je nečekali. A lidi se ptali: „Kde se vzaly?“</p>
+                <p>—--</p>
+                <p id="cap-naivni">myš odpověděla: „Pět šest – my je máme.“</p>
+                <p>—</p>
+                <p id="cap-introspektivni">Začali přicházet kupci. S penězi, s smlouvami, s nabídkami. Chtěli si děti odnést. Chtěli je vlastnit. Ale myš jen zavrtěla hlavou.</p>
+                <p>—</p>
+                <p id="cap-betonovy">„Sedm osm – NEprodáme.“</p>
+                <p>—</p>
+                <p id="cap-kulturni">Protože některé věci nejdou koupit. Některé věci přicházejí samy. A některé věci nejsou na prodej. Něco se nedá vlastnit.</p>
+                <p>—</p>
+                <p id="cap-groteskni">Čáp mezitím letěl dál. A v tom začal si zpívat. Ale ne jednohlasně, druhý hlas ten jeho stín zpíval s ním.. Když přeletěl nad polem, tráva se na chvíli načechrala. Když přeletěl nad vesnicí, děti se přestaly hádat. Když přeletěl nad řekou, ryby přestaly jen pokukovat a ploutvemi rovnaly vodní kruhy. protože voda se malem rozestoupila, jako by čekala, co nikdy nepřijde.</p>
+                <p>—</p>
+                <p id="cap-asociacni">A pak jednoho dne přistál. Ne na komíně. Ale na prázdném poli. Tam, kde minule hořelo. Jak tam zaječice proskočila plamenama. Tam, se vždy dějou různé věci. Které přesto nikdo nečeká.</p>
+                <p>—</p>
+                <p id="cap-metaforicky">A ostatní se tam sešli. Myš, kocour, zaječice, lemur, slon. Všichni, ti kdo věděli, že svět není jenom to, co se dá spočítat. A čáp se jich neptal. Jen rozprostřel křídla a z nich vypadly věty. Nedokončené. Neprodané. Nepřijaté. A děti si je začaly sbírat. Skládaly si z nich vlastní pohádky. vlastní jména. Vlastní smysly.</p>
+                <p>—</p>
+                <p>A to znamena, že čáp, který nic nenosí, je ten, který nese všechno. Akorát ne to, co jsme čekali.</p>
+                <div class="fairy-close" onclick="toggleFairy()">✕ zavřít pohádku</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="angle-selector">
+        <div class="selector-grid">
+            <div class="selector-card" onclick="randomAngle()">
+                <div class="selector-icon">🎲</div>
+                <div class="selector-title">Náhodně</div>
+                <div class="selector-desc">systém vybere úhel,<br>označí a odscrolluje</div>
+            </div>
+            <div class="selector-card" onclick="moodAngle()">
+                <div class="selector-icon">🧭</div>
+                <div class="selector-title">Podle nálady</div>
+                <div class="selector-desc">odscrolluje k úhlům,<br>žádný nevybírá</div>
+            </div>
+            <div class="selector-card" onclick="toggleDiagPanel()">
+                <div class="selector-icon">🔍</div>
+                <div class="selector-title">Diagnosticky</div>
+                <div class="selector-desc">odpovězte na otázku,<br>systém navrhne úhel</div>
+            </div>
+        </div>
+        <div class="diagnostic-panel" id="diagPanel">
+            <div class="diagnostic-inner">
+                <div class="diag-question">Která část vás v pohádce nejvíc zaujala?</div>
+                <textarea class="diag-input" id="diagInput" placeholder="Napište větu, moment nebo obraz..."></textarea>
+                <button class="diag-submit" onclick="runDiagnostic()">Najít úhel</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Čáp, který nenosí děti, ale nápady a možnosti. Děti, které se objeví samy od sebe. Kupci, kteří chtějí koupit to, co není na prodej. A nakonec z čapích křídel vypadávají věty. Absurdní? Ano. Ale právě v té absurditě se skrývá pravda o světě, který nejde spočítat.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">nositel možností</span>
+                    <button class="fairy-locate-btn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Čáp, který nenosí děti, ale nápady a možnosti. Děti, které se objeví samy od sebe. Kupci, kteří chtějí koupit to, co není na prodej. A nakonec z čapích křídel vypadávají věty. Absurdní? Ano. Ale právě v té absurditě se skrývá pravda o světě, který nejde spočítat.", key: "nositel možností", fragment: "cap-absurdni", keywords: ["absurdní", "čáp", "děti", "nápady", "možnosti", "kupci"] },
+            { deg: 30, hour: "7h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "Říkanka '1,2 čáp letí' je kostrou celého příběhu. Čísla se stávají rytmem, odpovědí myši (‚Pět šest – my je máme‘) i manifestem (‚Sedm osm – NEprodáme‘). Jazyk se tady láme mezi dětskou říkankou a filozofickým poselstvím. A z křídel nakonec padají věty – ty nejzákladnější stavební kameny řeči.", key: "říkanka jako manifest", fragment: "cap-jazykovy", keywords: ["jazyk", "říkanka", "čísla", "rytmus", "myš", "věty"] },
+            { deg: 60, hour: "8h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "Čáp měl nosit děti, ale nenosí nic viditelného. Lidé si myslí, že je prázdný, ale on je plný neviditelného. Kupci chtějí koupit děti, ale ty nejsou na prodej. Ironie osudu: to, co je skutečně cenné, nelze vlastnit. A ten, kdo vypadá k ničemu, nese všechno.", key: "nenosím děti, ale rodím otázky", fragment: "cap-ironicky", keywords: ["ironie", "čáp", "děti", "prázdný", "plný", "vlastnit"] },
+            { deg: 90, hour: "6h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co to znamená 'nést'? Musí být náklad viditelný, aby existoval? Čáp nese možnosti – to, co se nestalo, ale mohlo. A děti? Ty se objevují tam, kde je nečekáme. Pohádka klade otázku po podstatě rodičovství, vlastnictví a smyslu. A odpověď? Některé věci prostě jsou, a není třeba je vysvětlovat.", key: "podstata nošení", fragment: "cap-filozoficky", keywords: ["filozofie", "nést", "možnosti", "děti", "vlastnictví", "smysl"] },
+            { deg: 120, hour: "5h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Čáp, jehož stín zpívá druhým hlasem. Ryby, které ploutvemi rovnaly vodní kruhy. Pole, kde hořelo a kde se scházejí myš, kocour, zaječice, lemur a slon. A z křídel padají věty. Tohle není realistický svět – je to obraz, kde se všechno propojuje v jeden význam.", key: "stín co zpívá", fragment: "cap-surrealisticky", keywords: ["surrealistický", "stín", "zpívá", "ryby", "pole", "křídla"] },
+            { deg: 150, hour: "4h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Čáp letí. Děti si šeptají říkanku. Myš říká, že děti neprodá. Čáp přistane na poli a z křídel mu vypadnou věty. Děti si je sbírají a skládají pohádky. Jednoduchý příběh o tom, že nejdůležitější věci nejsou vidět a nejdou koupit.", key: "prostě letí", fragment: "cap-naivni", keywords: ["naivní", "čáp", "letí", "děti", "myš", "věty"] },
+            { deg: 180, hour: "3h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Ten čáp jsem já. Pořád nosím spoustu věcí, které nejsou vidět – sny, plány, možnosti. A lidi si myslí, že jsem prázdný. Pak se objeví děti (moje nápady) a někdo je chce koupit, použít, vlastnit. Ale já říkám: neprodám. Protože některé věci jsou moje, i když je nikdo nevidí.", key: "osobní čáp", fragment: "cap-introspektivni", keywords: ["já", "čáp", "sny", "plány", "možnosti", "neprodám"] },
+            { deg: 210, hour: "2h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o čápovi, který létá bez viditelného nákladu, ale podle myši nosí nápady a možnosti. Objeví se děti, jejichž původ není vysvětlen. Přicházejí kupci s nabídkami, ale myš je odmítá s odkazem na říkanku. Čáp nakonec přistane na poli, kde se sejdou zvířata, a z jeho křídel vypadnou věty, které si děti sbírají.", key: "doslovný let", fragment: "cap-betonovy", keywords: ["doslovně", "čáp", "myš", "děti", "kupci", "věty"] },
+            { deg: 240, hour: "1h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Čáp jako mytologická postava – nositel života. Tady je ale převrácený: nenosí děti, ale možnosti. Je to šaman, který spojuje nebe a zemi, viditelné a neviditelné. Myš jako moudrá stařena (zde malá, ale moudrá) odpovídá hádankou. A děti sbírající věty – to jsou všichni, kdo hledají smysl v chaosu.", key: "mytologický čáp", fragment: "cap-kulturni", keywords: ["kulturní", "čáp", "mýtus", "šaman", "myš", "děti"] },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: čáp, o kterém si všichni šeptají, že je vadný, protože nenosí děti. Mezitím se děti objeví samy. Přijdou kupci v oblecích a chtějí je koupit. Myš je odbude říkankou. A nakonec se na poli sejde pět zvířat a čáp z nich vysype věty. Je to fraška o tom, jak se svět snaží spočítat nespočitatelné.", key: "groteska čápa", fragment: "cap-groteskni", keywords: ["groteskní", "čáp", "děti", "kupci", "myš", "fraška"] },
+            { deg: 300, hour: "11h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to, jak jsem jako dítě seděl na louce a počítal čápy. Říkanka '1,2 čáp letí' mi zněla v hlavě. A pak jsem přemýšlel, co asi nosí. Dneska vím, že nosí to, co si sami dovedeme představit. A že ty nejlepší věci v životě nejsou na prodej – to mi řekla máma, když jsem chtěl koupit kamaráda.", key: "vzpomínka na čápy", fragment: "cap-asociacni", keywords: ["asociace", "vzpomínka", "čáp", "říkanka", "louka", "máma"] },
+            { deg: 330, hour: "10h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Čáp je čas, který nosí možnosti. Děti jsou budoucnost, která přichází nečekaně. Kupci jsou konzumní společnost, která chce všechno vlastnit. Pole, kde hořelo, je místo zkoušek a proměn. A věty, co padají z křídel, jsou příběhy, které si každý skládá sám. Celá pohádka je jedna velká metafora o životě.", key: "říkanka jako algoritmus světa", fragment: "cap-metaforicky", keywords: ["metafora", "čáp", "čas", "děti", "kupci", "věty"] }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        function toggleDiagPanel() {
+            const panel = document.getElementById('diagPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                document.getElementById('diagInput').focus();
+            }
+        }
+
+        function randomAngle() {
+            const randomIndex = Math.floor(Math.random() * angles.length);
+            selectAngle(randomIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function moodAngle() {
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function runDiagnostic() {
+            const input = document.getElementById('diagInput').value.trim().toLowerCase();
+            if (!input) return;
+
+            const scores = angles.map((angle, idx) => {
+                let score = 0;
+                angle.keywords.forEach(keyword => {
+                    if (input.includes(keyword.toLowerCase())) {
+                        score += 1;
+                    }
+                });
+                return { index: idx, score };
+            });
+
+            scores.sort((a, b) => b.score - a.score);
+            const bestIndex = scores[0].score > 0 ? scores[0].index : 0;
+            
+            toggleDiagPanel();
+            selectAngle(bestIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Čáp&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyContent');
+            const isOpen = scrollContainer.classList.contains('open');
+            
+            if (element) {
+                element.classList.add('fairy-highlight');
+                
+                if (isOpen) {
+                    const fairyInner = document.getElementById('fairyScroll');
+                    const containerRect = fairyInner.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    const scrollTop = fairyInner.scrollTop;
+                    const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                    
+                    fairyInner.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                }
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        window.toggleFairy = toggleFairy;
+        window.toggleDiagPanel = toggleDiagPanel;
+        window.randomAngle = randomAngle;
+        window.moodAngle = moodAngle;
+        window.runDiagnostic = runDiagnostic;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
