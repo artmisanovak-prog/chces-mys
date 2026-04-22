@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repodom · stavitel offline webů</title>
+    <style>
+        /* ===== ČISTÝ ČERNOBÍLÝ STYL ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #ffffff;
+            --fg: #111111;
+            --muted: #555555;
+            --border: #d0d0d0;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--sans);
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        button, .btn {
+            padding: 6px 14px;
+            border: 1px solid var(--fg);
+            background: transparent;
+            color: var(--fg);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        button:hover, .btn:hover { background: var(--fg); color: var(--bg); }
+        .btn-outline { border-color: var(--border); color: var(--muted); }
+        .btn-outline:hover { background: var(--border); color: var(--fg); }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            background: white;
+        }
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 20;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            border: 1px solid var(--border);
+            background: var(--bg);
+        }
+        .panel-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tree {
+            padding: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .tree-item {
+            padding: 4px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .tree-item:hover { background: #f5f5f5; }
+        .tree-name { flex:1; }
+        .tree-actions { display: flex; gap: 4px; opacity: 0.7; }
+        .tree-actions button { padding: 2px 6px; font-size: 0.7rem; }
+        .help-badge { margin-left: 6px; color: var(--muted); cursor: help; }
+        details {
+            border: 1px solid var(--border);
+            margin-top: 12px;
+        }
+        summary {
+            padding: 12px 16px;
+            cursor: pointer;
+            list-style: none;
+            font-weight: 500;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '▼'; float: right; color: var(--muted); font-size: 0.8rem; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .help-content {
+            padding: 0 16px 16px 16px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+        }
+        .tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .tab { padding: 10px 16px; cursor: pointer; border: 1px solid transparent; }
+        .tab.active { border: 1px solid var(--border); border-bottom-color: white; font-weight: 600; }
+        .image-preview img { max-width: 100%; max-height: 200px; }
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            border: 1px solid var(--fg);
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .flex-row { display: flex; gap: 8px; align-items: center; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .text-muted { color: var(--muted); font-size: 0.9rem; }
+        iframe { width: 100%; height: 400px; border: 1px solid var(--border); background: white; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+<div class="top-bar">
+    <button onclick="scrollToSection('structure')">📁 Struktura</button>
+    <button onclick="openPreview()">👁️ Náhled</button>
+    <button onclick="exportZip()">📦 Export ZIP</button>
+    <button onclick="openCreateModal()">➕ Nový</button>
+    <button onclick="openTemplates()">📄 Šablony</button>
+    <button onclick="openMediaLibrary()">🖼️ Knihovna</button>
+    <button onclick="undo()">↩️</button>
+    <button onclick="redo()">↪️</button>
+    <span style="flex:1"></span>
+    <span class="text-muted">🏠 Repodom · stavitel</span>
+</div>
+
+<div class="layout">
+    <!-- LEVÝ PANEL – STROM -->
+    <div class="panel" id="structure">
+        <div class="panel-header">
+            <span>📁 <span id="projectNameDisplay">MůjRepodom</span></span>
+            <button onclick="editProjectInfo()">✎</button>
+        </div>
+        <div style="padding:12px; border-bottom:1px solid var(--border);">
+            <div id="projectDesc" class="text-muted"></div>
+            <div id="projectCover"></div>
+        </div>
+        <div class="tree" id="fileTree"></div>
+        <details>
+            <summary>📘 O struktuře</summary>
+            <div class="help-content">
+                <p><strong>Repodom</strong> – dům z kódu. Složky mají pevný účel:</p>
+                <ul>
+                    <li><code>data/</code> – sklad: HTML stránky, JSON, texty.</li>
+                    <li><code>media/</code> – galerie: obrázky, PDF, soubory.</li>
+                    <li><code>css/</code>, <code>js/</code> – styly a skripty.</li>
+                </ul>
+                <p>Všechny cesty relativní (<code>./data/soubor.html</code>). Přesun složky nic nerozbije.</p>
+            </div>
+        </details>
+    </div>
+
+    <!-- PRAVÝ PANEL – EDITOR / NÁHLED -->
+    <div class="panel" id="editor">
+        <div class="panel-header">
+            <span id="editorTitle">📄 Vyberte soubor</span>
+            <div>
+                <button onclick="saveCurrentFile()">💾 Uložit</button>
+                <button onclick="duplicateCurrent()">📋</button>
+                <button onclick="deleteCurrent()">🗑️</button>
+            </div>
+        </div>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('edit')">✏️ Editor</div>
+            <div class="tab" onclick="switchTab('preview')">👁️ Náhled</div>
+            <div class="tab" onclick="switchTab('urlHelp')">🔗 URL</div>
+        </div>
+        <div id="editTab" style="padding:16px;">
+            <div id="editorArea"><p class="text-muted">← Vyberte soubor ze struktury</p></div>
+        </div>
+        <div id="previewTab" style="padding:16px; display:none;">
+            <iframe id="previewFrame" srcdoc="<h1>Náhled</h1><p>Vyberte index.html</p>"></iframe>
+        </div>
+        <div id="urlHelpTab" style="padding:16px; display:none;">
+            <div class="help-content">
+                <p><strong>URL jako nosič stavu</strong></p>
+                <p>Parametry za otazníkem nahrazují databázi. Příklad: <code>?kategorie=mechy</code></p>
+                <select id="filterSelect" onchange="updateUrlDemo()">
+                    <option value="mechy">Mechy</option>
+                    <option value="kapradiny">Kapradiny</option>
+                </select>
+                <p class="mt-4">Aktuální URL: <code id="urlPreview">./katalog.html?filter=mechy</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODÁLY -->
+<div class="modal" id="createModal"><div class="modal-content">
+    <h3>➕ Nová položka</h3>
+    <label>Typ</label><select id="newType"><option value="folder">📁 Složka</option><option value="file">📄 Soubor</option></select>
+    <label>Název</label><input id="newName" placeholder="např. katalog.html">
+    <label>Cílová cesta</label><input id="newPath" placeholder="např. data/ (prázdné = root)">
+    <div class="flex-row mt-4"><button onclick="createNewItem()">Vytvořit</button><button onclick="closeModal()">Zrušit</button></div>
+</div></div>
+
+<div class="modal" id="templateModal"><div class="modal-content">
+    <h3>📄 Rychlé šablony</h3>
+    <select id="templateSelect">
+        <option value="katalog">🌿 Katalog rostlin</option>
+        <option value="eshop">🛒 Malý e‑shop</option>
+        <option value="fotoalbum">🖼️ Fotoalbum</option>
+        <option value="portfolio">🎨 Portfolio</option>
+        <option value="ebook">📚 E‑book</option>
+        <option value="game">🎮 Minihra</option>
+    </select>
+    <p class="text-muted mt-4">Aktuální obsah bude nahrazen ukázkovou strukturou.</p>
+    <div class="flex-row mt-4"><button onclick="applyTemplate()">Použít</button><button onclick="closeTemplateModal()">Zrušit</button></div>
+</div></div>
+
+<div class="modal" id="mediaModal"><div class="modal-content">
+    <h3>🖼️ Knihovna obrázků</h3>
+    <input type="file" id="imageUpload" accept="image/*" multiple onchange="uploadImages()">
+    <div id="mediaList" style="margin-top:16px;"></div>
+    <button onclick="closeMediaModal()">Zavřít</button>
+</div></div>
+
+<div class="modal" id="projectInfoModal"><div class="modal-content">
+    <h3>✎ Informace o projektu</h3>
+    <label>Název</label><input id="projectNameInput" value="MůjRepodom">
+    <label>Popis</label><textarea id="projectDescInput" rows="2"></textarea>
+    <label>URL obrázek (nebo nahraj)</label><input id="projectCoverUrl" placeholder="https://... nebo ./media/cover.jpg">
+    <div class="flex-row mt-4"><button onclick="saveProjectInfo()">Uložit</button><button onclick="closeProjectInfoModal()">Zrušit</button></div>
+</div></div>
+
+<script>
+// ===== DATOVÝ MODEL =====
+let fileSystem = {
+    'index.html': { type: 'file', content: '<h1>Vítejte v Repodomu</h1><p>Web offline i online.</p>' },
+    'data': { type: 'folder', children: {} },
+    'media': { type: 'folder', children: {} },
+    'css': { type: 'folder', children: {} },
+    'js': { type: 'folder', children: {} }
+};
+let projectInfo = { name: 'MůjRepodom', desc: '', cover: '' };
+let historyStack = []; let historyIndex = -1;
+let currentFilePath = null;
+
+// ===== INIT =====
+function init() {
+    loadFromStorage();
+    pushHistory();
+    renderAll();
+}
+function pushHistory() {
+    const snapshot = { fs: JSON.parse(JSON.stringify(fileSystem)), info: {...projectInfo} };
+    historyStack = historyStack.slice(0, historyIndex+1);
+    historyStack.push(snapshot);
+    historyIndex++;
+}
+function undo() { if (historyIndex > 0) { historyIndex--; restoreSnapshot(historyStack[historyIndex]); } }
+function redo() { if (historyIndex < historyStack.length-1) { historyIndex++; restoreSnapshot(historyStack[historyIndex]); } }
+function restoreSnapshot(snap) { fileSystem = JSON.parse(JSON.stringify(snap.fs)); projectInfo = {...snap.info}; renderAll(); }
+
+// ===== RENDER =====
+function renderAll() {
+    renderTree();
+    document.getElementById('projectNameDisplay').innerText = projectInfo.name;
+    document.getElementById('projectDesc').innerText = projectInfo.desc;
+    let coverHtml = '';
+    if (projectInfo.cover) coverHtml = `<img src="${projectInfo.cover}" style="max-width:100%; max-height:80px;">`;
+    document.getElementById('projectCover').innerHTML = coverHtml;
+    if (currentFilePath) selectFile(currentFilePath);
+    persistToStorage();
+}
+function renderTree() {
+    const container = document.getElementById('fileTree');
+    container.innerHTML = '';
+    const items = Object.entries(fileSystem).sort((a,b) => (a[1].type === 'folder' ? -1 : 1));
+    for (let [name, obj] of items) renderTreeItem(name, obj, container, '');
+}
+function renderTreeItem(name, obj, parent, indent) {
+    const div = document.createElement('div'); div.className = 'tree-item';
+    const left = document.createElement('span'); left.className = 'tree-name';
+    left.innerHTML = `${indent}${obj.type==='folder'?'📁':'📄'} ${name}`;
+    left.onclick = (e) => { e.stopPropagation(); obj.type==='folder'? toggleFolder(name) : selectFile(name); };
+    const actions = document.createElement('span'); actions.className = 'tree-actions';
+    if (name !== 'index.html' && name !== 'data' && name !== 'media' && name !== 'css' && name !== 'js') {
+        actions.innerHTML = `<button onclick="renameItem('${name}')">✎</button><button onclick="deleteItem('${name}')">✕</button>`;
+    }
+    const help = document.createElement('span'); help.className = 'help-badge'; help.innerHTML = '?';
+    help.onclick = (e) => { e.stopPropagation(); showHelp(name, obj.type); };
+    div.appendChild(left); div.appendChild(actions); div.appendChild(help);
+    parent.appendChild(div);
+    if (obj.type==='folder' && obj.expanded) {
+        for (let [cname, cobj] of Object.entries(obj.children)) renderTreeItem(cname, cobj, parent, indent+'  ');
+    }
+}
+function toggleFolder(name) { fileSystem[name].expanded = !fileSystem[name].expanded; renderTree(); }
+function selectFile(path) {
+    currentFilePath = path;
+    document.getElementById('editorTitle').innerText = `📄 ${path}`;
+    const obj = getFile(path);
+    if (!obj) return;
+    const area = document.getElementById('editorArea');
+    if (path.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        area.innerHTML = `<div class="image-preview"><img src="${obj.content}" alt="náhled"></div>`;
+    } else {
+        area.innerHTML = `<textarea id="fileEditor" style="min-height:250px;">${escapeHtml(obj.content)}</textarea>`;
+    }
+    updatePreview();
+}
+function getFile(path) {
+    if (path.includes('/')) {
+        let parts = path.split('/');
+        let folder = fileSystem[parts[0]];
+        return folder?.children?.[parts[1]];
+    }
+    return fileSystem[path];
+}
+function saveCurrentFile() {
+    if (!currentFilePath) return;
+    const ta = document.getElementById('fileEditor'); if (!ta) return;
+    const obj = getFile(currentFilePath); if (obj) { obj.content = ta.value; pushHistory(); renderAll(); }
+}
+function deleteItem(name) { if (confirm('Smazat?')) { delete fileSystem[name]; pushHistory(); renderAll(); } }
+function renameItem(old) { const nn = prompt('Nový název:', old); if (nn && nn!==old) { fileSystem[nn] = fileSystem[old]; delete fileSystem[old]; pushHistory(); renderAll(); } }
+function duplicateCurrent() { /* lze dodělat */ alert('Duplikace připravena.'); }
+function deleteCurrent() { if (currentFilePath) { deleteItem(currentFilePath); currentFilePath=null; } }
+
+// ===== MODÁLY =====
+function openCreateModal() { document.getElementById('createModal').style.display='flex'; }
+function closeModal() { document.getElementById('createModal').style.display='none'; }
+function createNewItem() {
+    const type = document.getElementById('newType').value;
+    const name = document.getElementById('newName').value.trim();
+    let path = document.getElementById('newPath').value.trim().replace(/\/$/,'');
+    if (!name) return;
+    if (path==='' || path==='/') {
+        if (type==='folder') fileSystem[name] = { type:'folder', children:{} };
+        else fileSystem[name] = { type:'file', content:'' };
+    } else {
+        let folder = fileSystem[path];
+        if (folder && folder.type==='folder') {
+            if (type==='folder') folder.children[name] = { type:'folder', children:{} };
+            else folder.children[name] = { type:'file', content:'' };
+        } else { alert('Cílová složka neexistuje.'); return; }
+    }
+    pushHistory(); renderAll(); closeModal();
+}
+function openTemplates() { document.getElementById('templateModal').style.display='flex'; }
+function closeTemplateModal() { document.getElementById('templateModal').style.display='none'; }
+function applyTemplate() {
+    const type = document.getElementById('templateSelect').value;
+    if (type==='katalog') {
+        fileSystem['data'].children['katalog.html'] = { type:'file', content: '<h2>Katalog rostlin</h2><ul><li><a href="./data/mech.html">Mech</a></li></ul>' };
+        fileSystem['data'].children['mech.html'] = { type:'file', content: '<h3>Mech</h3><img src="./media/mech.jpg" alt="Mech">' };
+    } else if (type==='eshop') {
+        fileSystem['data'].children['produkty.json'] = { type:'file', content: '[{"id":1,"nazev":"Myš"}]' };
+        fileSystem['objednavka.html'] = { type:'file', content: '<h2>Košík</h2><div id="cart"></div><script>/* URL params */</script>' };
+    } else if (type==='fotoalbum') {
+        fileSystem['data'].children['galerie.html'] = { type:'file', content: '<h2>Fotoalbum</h2><div class="grid"><img src="./media/foto1.jpg"></div>' };
+    } else if (type==='portfolio') {
+        fileSystem['data'].children['projekty.html'] = { type:'file', content: '<h2>Portfolio</h2><div class="project">Ukázka</div>' };
+    } else if (type==='ebook') {
+        fileSystem['data'].children['kapitola1.html'] = { type:'file', content: '<h2>Kapitola 1</h2><p>Text...</p>' };
+    } else if (type==='game') {
+        fileSystem['js'].children['hra.js'] = { type:'file', content: '// minihra' };
+        fileSystem['index.html'].content = '<canvas id="gameCanvas"></canvas><script src="./js/hra.js"></script>';
+    }
+    pushHistory(); renderAll(); closeTemplateModal();
+}
+function openMediaLibrary() { document.getElementById('mediaModal').style.display='flex'; renderMediaList(); }
+function closeMediaModal() { document.getElementById('mediaModal').style.display='none'; }
+function uploadImages() {
+    const files = document.getElementById('imageUpload').files;
+    for (let f of files) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const name = f.name;
+            fileSystem['media'].children[name] = { type:'file', content: e.target.result };
+            pushHistory(); renderAll(); renderMediaList();
+        };
+        reader.readAsDataURL(f);
+    }
+}
+function renderMediaList() {
+    const list = document.getElementById('mediaList');
+    const media = fileSystem['media'].children;
+    list.innerHTML = '';
+    for (let [n,o] of Object.entries(media)) {
+        if (n.match(/\.(jpg|png|gif)/i)) {
+            list.innerHTML += `<div><img src="${o.content}" style="height:40px;"> ${n} <button onclick="insertMediaPath('${n}')">Vložit cestu</button></div>`;
+        }
+    }
+}
+function insertMediaPath(name) { alert(`Cesta: ./media/${name} – zkopírujte do kódu.`); }
+function editProjectInfo() {
+    document.getElementById('projectNameInput').value = projectInfo.name;
+    document.getElementById('projectDescInput').value = projectInfo.desc;
+    document.getElementById('projectCoverUrl').value = projectInfo.cover;
+    document.getElementById('projectInfoModal').style.display='flex';
+}
+function saveProjectInfo() {
+    projectInfo.name = document.getElementById('projectNameInput').value;
+    projectInfo.desc = document.getElementById('projectDescInput').value;
+    projectInfo.cover = document.getElementById('projectCoverUrl').value;
+    pushHistory(); renderAll(); closeProjectInfoModal();
+}
+function closeProjectInfoModal() { document.getElementById('projectInfoModal').style.display='none'; }
+
+// ===== NÁHLED & EXPORT =====
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('editTab').style.display = tab==='edit'?'block':'none';
+    document.getElementById('previewTab').style.display = tab==='preview'?'block':'none';
+    document.getElementById('urlHelpTab').style.display = tab==='urlHelp'?'block':'none';
+    if (tab==='edit') document.querySelector('.tab:nth-child(1)').classList.add('active');
+    else if (tab==='preview') document.querySelector('.tab:nth-child(2)').classList.add('active');
+    else document.querySelector('.tab:nth-child(3)').classList.add('active');
+    if (tab==='preview') updatePreview();
+}
+function updatePreview() {
+    const html = fileSystem['index.html']?.content || '<h1>Repodom</h1>';
+    const frame = document.getElementById('previewFrame');
+    frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="./css/styl.css"></head><body>${html}</body></html>`;
+}
+function openPreview() { switchTab('preview'); }
+async function exportZip() {
+    const zip = new JSZip();
+    function add(obj, base) {
+        for (let [n,item] of Object.entries(obj)) {
+            const full = base ? `${base}/${n}` : n;
+            if (item.type==='folder') { zip.folder(full); add(item.children, full); }
+            else zip.file(full, item.content || '');
+        }
+    }
+    add(fileSystem, '');
+    const blob = await zip.generateAsync({type:'blob'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${projectInfo.name}.zip`; a.click();
+}
+function updateUrlDemo() {
+    const filter = document.getElementById('filterSelect').value;
+    document.getElementById('urlPreview').innerText = `./katalog.html?filter=${filter}`;
+}
+function showHelp(name, type) {
+    let msg = '';
+    if (name==='data') msg = 'Sklad: HTML stránky, JSON, texty. Relativní cesta ./data/...';
+    else if (name==='media') msg = 'Galerie: obrázky, PDF. ./media/foto.jpg';
+    else msg = `${type==='folder'?'Složka':'Soubor'} ${name}.`;
+    alert(msg);
+}
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function persistToStorage() { localStorage.setItem('repodom_fs', JSON.stringify(fileSystem)); localStorage.setItem('repodom_info', JSON.stringify(projectInfo)); }
+function loadFromStorage() {
+    const fs = localStorage.getItem('repodom_fs'); if (fs) fileSystem = JSON.parse(fs);
+    const inf = localStorage.getItem('repodom_info'); if (inf) projectInfo = JSON.parse(inf);
+}
+
+init();
+</script>
+</body>
+</html>
