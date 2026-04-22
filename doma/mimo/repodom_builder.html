@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stavitel Repodomu · offline web builder</title>
+    <style>
+        /* ===== ČISTÝ ČERNOBÍLÝ STYL (MYŠ, KROKODÝL, PÁV) ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #ffffff;
+            --fg: #111111;
+            --muted: #555555;
+            --border: #d0d0d0;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--sans);
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        button, .btn {
+            padding: 6px 14px;
+            border: 1px solid var(--fg);
+            background: transparent;
+            color: var(--fg);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+            border-radius: 0;
+            font-family: inherit;
+        }
+        button:hover, .btn:hover { background: var(--fg); color: var(--bg); }
+        .btn-outline { border-color: var(--border); color: var(--muted); }
+        .btn-outline:hover { background: var(--border); color: var(--fg); }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            background: white;
+        }
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 20;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            border: 1px solid var(--border);
+            background: var(--bg);
+        }
+        .panel-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tree {
+            padding: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .tree-item {
+            padding: 4px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .tree-item:hover { background: #f5f5f5; }
+        .tree-name { flex:1; }
+        .tree-actions { display: flex; gap: 4px; opacity: 0.7; }
+        .tree-actions button { padding: 2px 6px; font-size: 0.7rem; }
+        .help-badge { margin-left: 6px; color: var(--muted); cursor: help; }
+        details {
+            border: 1px solid var(--border);
+            margin-top: 12px;
+        }
+        summary {
+            padding: 12px 16px;
+            cursor: pointer;
+            list-style: none;
+            font-weight: 500;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '▼'; float: right; color: var(--muted); font-size: 0.8rem; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .help-content {
+            padding: 0 16px 16px 16px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+        }
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            border: 1px solid var(--fg);
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .image-preview img { max-width: 100%; max-height: 200px; }
+        .flex-row { display: flex; gap: 8px; align-items: center; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .text-muted { color: var(--muted); font-size: 0.9rem; }
+        .tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .tab { padding: 10px 16px; cursor: pointer; border: 1px solid transparent; }
+        .tab.active { border: 1px solid var(--border); border-bottom-color: white; font-weight: 600; }
+        .url-demo { background: #f5f5f5; padding: 12px; border: 1px solid var(--border); }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+<!-- horní lišta -->
+<div class="top-bar">
+    <button onclick="scrollToSection('structure')">📁 Struktura</button>
+    <button onclick="scrollToSection('editor')">✏️ Editor</button>
+    <button onclick="openPreview()">👁️ Náhled</button>
+    <button onclick="exportZip()">📦 Export ZIP</button>
+    <button onclick="openCreateModal()">➕ Nový</button>
+    <button onclick="openTemplates()">📄 Šablony</button>
+    <button onclick="openMediaLibrary()">🖼️ Knihovna</button>
+    <button onclick="undo()" title="Zpět">↩️</button>
+    <button onclick="redo()" title="Vpřed">↪️</button>
+    <span style="flex:1"></span>
+    <span class="text-muted">🏠 Repodom · stavitel</span>
+</div>
+
+<!-- HLAVNÍ LAYOUT -->
+<div class="layout">
+    <!-- LEVÝ PANEL – STRUKTURA -->
+    <div class="panel" id="structure">
+        <div class="panel-header">
+            <span>📁 Projekt: <span id="projectNameDisplay">MůjRepodom</span></span>
+            <button onclick="editProjectInfo()" style="font-size:0.7rem;">✎</button>
+        </div>
+        <div style="padding:12px; border-bottom:1px solid var(--border);">
+            <div id="projectDesc" class="text-muted" style="margin-bottom:8px;"></div>
+            <div id="projectCover" style="max-width:100%;"></div>
+        </div>
+        <div class="tree" id="fileTree"></div>
+        <details>
+            <summary>📘 O struktuře</summary>
+            <div class="help-content">
+                <p><strong>Repodom</strong> – dům z kódu. Každá složka má svůj účel.</p>
+                <p><code>data/</code> – sklad (texty, HTML, JSON). <code>media/</code> – galerie (obrázky). <code>css/</code>, <code>js/</code> – styly a skripty.</p>
+                <p>Všechny cesty relativní (<code>./data/soubor.html</code>). Přesun složky nic nerozbije.</p>
+                <p><strong>URL jako otisk:</strong> parametry <code>?kategorie=mechy</code> nahrazují databázi.</p>
+            </div>
+        </details>
+    </div>
+
+    <!-- PRAVÝ PANEL – EDITOR / NÁHLED / INFO -->
+    <div class="panel" id="editor">
+        <div class="panel-header">
+            <span id="editorTitle">📄 Vyberte soubor</span>
+            <div>
+                <button onclick="saveCurrentFile()">💾 Uložit</button>
+                <button onclick="duplicateCurrent()" title="Duplikovat">📋</button>
+                <button onclick="deleteCurrent()" title="Smazat">🗑️</button>
+            </div>
+        </div>
+        <div id="editorArea" style="padding:16px;">
+            <p class="text-muted">← Vyberte soubor nebo složku</p>
+        </div>
+        <!-- TABS: Vysvětlení / URL demo -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('help')">📘 Jak na to</div>
+            <div class="tab" onclick="switchTab('urlDemo')">🔗 URL parametry</div>
+        </div>
+        <div id="helpTab" style="padding:16px;">
+            <details open>
+                <summary>📁 Katalog / e‑shop / fotoalbum …</summary>
+                <div class="help-content">
+                    <p>Struktura pro každý typ:</p>
+                    <ul>
+                        <li><strong>Katalog rostlin:</strong> složka <code>data/rostliny/</code> s HTML soubory, obrázky v <code>media/</code>.</li>
+                        <li><strong>E‑shop:</strong> <code>data/produkty.json</code>, <code>objednavka.html</code> s URL parametry <code>?id=1</code>.</li>
+                        <li><strong>Fotoalbum:</strong> obrázky v <code>media/foto/</code>, <code>data/galerie.html</code> s lightboxem.</li>
+                        <li><strong>Portfolio:</strong> <code>index.html</code> s mřížkou projektů, detaily v <code>data/projekty/</code>.</li>
+                        <li><strong>E‑book:</strong> kapitoly jako <code>data/kapitola1.html</code>, styl v <code>css/ebook.css</code>.</li>
+                        <li><strong>Minihra:</strong> JavaScript v <code>js/hra.js</code>, HTML plátno.</li>
+                    </ul>
+                </div>
+            </details>
+            <details>
+                <summary>🖼️ Nahrávání obrázků a média</summary>
+                <div class="help-content">
+                    <p>Knihovna médií (tlačítko <strong>🖼️ Knihovna</strong>) slouží k nahrání obrázků. Odtud je lze vkládat do souborů pomocí relativní cesty <code>./media/nazev.jpg</code>.</p>
+                </div>
+            </details>
+            <details>
+                <summary>⏱️ Historie (Undo/Redo)</summary>
+                <div class="help-content">
+                    <p>Každá změna struktury nebo obsahu se ukládá. Lze se vracet zpět.</p>
+                </div>
+            </details>
+        </div>
+        <div id="urlDemoTab" style="padding:16px; display:none;">
+            <div class="url-demo">
+                <p><strong>Aktuální URL simulace:</strong> <code id="urlPreview">./katalog.html?filter=mechy</code></p>
+                <p>Parametry se čtou pomocí <code>URLSearchParams</code>. Příklad – filtrování:</p>
+                <select id="filterSelect" onchange="updateUrlDemo()">
+                    <option value="mechy">Mechy</option>
+                    <option value="kapradiny">Kapradiny</option>
+                </select>
+                <p class="text-muted mt-4">V reálném Repodomu tento odkaz sdílí stav – bez databáze.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODÁLY -->
+<div class="modal" id="createModal"><div class="modal-content">
+    <h3>➕ Nová položka</h3>
+    <label>Typ</label><select id="newType"><option value="folder">📁 Složka</option><option value="file">📄 Soubor</option></select>
+    <label>Název</label><input id="newName" placeholder="např. katalog.html">
+    <label>Cílová cesta</label><input id="newPath" placeholder="např. data/ (prázdné = root)">
+    <div class="flex-row mt-4"><button onclick="createNewItem()">Vytvořit</button><button onclick="closeModal()">Zrušit</button></div>
+</div></div>
+
+<div class="modal" id="templateModal"><div class="modal-content">
+    <h3>📄 Rychlé šablony</h3>
+    <select id="templateSelect">
+        <option value="katalog">🌿 Katalog rostlin</option>
+        <option value="eshop">🛒 Malý e‑shop</option>
+        <option value="fotoalbum">🖼️ Fotoalbum</option>
+        <option value="portfolio">🎨 Portfolio</option>
+        <option value="ebook">📚 E‑book</option>
+        <option value="game">🎮 Minihra (had)</option>
+    </select>
+    <div class="flex-row mt-4"><button onclick="applyTemplate()">Použít</button><button onclick="closeTemplateModal()">Zrušit</button></div>
+    <p class="text-muted mt-4">Aktuální obsah bude nahrazen ukázkovou strukturou.</p>
+</div></div>
+
+<div class="modal" id="mediaModal"><div class="modal-content">
+    <h3>🖼️ Knihovna obrázků</h3>
+    <input type="file" id="imageUpload" accept="image/*" multiple onchange="uploadImages()">
+    <div id="mediaList" style="margin-top:16px;"></div>
+    <button onclick="closeMediaModal()">Zavřít</button>
+</div></div>
+
+<div class="modal" id="projectInfoModal"><div class="modal-content">
+    <h3>✎ Informace o projektu</h3>
+    <label>Název</label><input id="projectNameInput" value="MůjRepodom">
+    <label>Popis</label><textarea id="projectDescInput" rows="2"></textarea>
+    <label>URL obrázek (nebo nahraj)</label><input id="projectCoverUrl" placeholder="https://... nebo ./media/cover.jpg">
+    <div class="flex-row mt-4"><button onclick="saveProjectInfo()">Uložit</button><button onclick="closeProjectInfoModal()">Zrušit</button></div>
+</div></div>
+
+<script>
+// ===== DATOVÝ MODEL =====
+let fileSystem = {
+    'index.html': { type: 'file', content: '<h1>Vítejte v Repodomu</h1><p>Web offline i online.</p>' },
+    'data': { type: 'folder', children: {} },
+    'media': { type: 'folder', children: {} },
+    'css': { type: 'folder', children: {} },
+    'js': { type: 'folder', children: {} }
+};
+let projectInfo = { name: 'MůjRepodom', desc: '', cover: '' };
+let historyStack = []; let historyIndex = -1;
+let currentFilePath = null;
+
+// ===== INIT =====
+function init() {
+    loadFromStorage();
+    pushHistory();
+    renderAll();
+}
+function pushHistory() {
+    const snapshot = { fs: JSON.parse(JSON.stringify(fileSystem)), info: {...projectInfo} };
+    historyStack = historyStack.slice(0, historyIndex+1);
+    historyStack.push(snapshot);
+    historyIndex++;
+    if (historyStack.length > 30) { historyStack.shift(); historyIndex--; }
+}
+function undo() { if (historyIndex > 0) { historyIndex--; restoreSnapshot(historyStack[historyIndex]); } }
+function redo() { if (historyIndex < historyStack.length-1) { historyIndex++; restoreSnapshot(historyStack[historyIndex]); } }
+function restoreSnapshot(snap) { fileSystem = JSON.parse(JSON.stringify(snap.fs)); projectInfo = {...snap.info}; renderAll(); }
+
+// ===== RENDER =====
+function renderAll() {
+    renderTree();
+    document.getElementById('projectNameDisplay').innerText = projectInfo.name;
+    document.getElementById('projectDesc').innerText = projectInfo.desc;
+    let coverHtml = '';
+    if (projectInfo.cover) coverHtml = `<img src="${projectInfo.cover}" style="max-width:100%; max-height:80px;">`;
+    document.getElementById('projectCover').innerHTML = coverHtml;
+    if (currentFilePath) selectFile(currentFilePath);
+    else document.getElementById('editorArea').innerHTML = '<p class="text-muted">← Vyberte soubor</p>';
+    persistToStorage();
+}
+function renderTree() {
+    const container = document.getElementById('fileTree');
+    container.innerHTML = '';
+    const items = Object.entries(fileSystem).sort((a,b) => (a[1].type === 'folder' ? -1 : 1));
+    for (let [name, obj] of items) renderTreeItem(name, obj, container, '');
+}
+function renderTreeItem(name, obj, parent, indent) {
+    const div = document.createElement('div'); div.className = 'tree-item';
+    const left = document.createElement('span'); left.className = 'tree-name';
+    left.innerHTML = `${indent}${obj.type==='folder'?'📁':'📄'} ${name}`;
+    left.onclick = (e) => { e.stopPropagation(); obj.type==='folder'? toggleFolder(name) : selectFile(name); };
+    const actions = document.createElement('span'); actions.className = 'tree-actions';
+    if (name !== 'index.html' && name !== 'data' && name !== 'media' && name !== 'css' && name !== 'js') {
+        actions.innerHTML = `<button onclick="renameItem('${name}')">✎</button><button onclick="deleteItem('${name}')">✕</button>`;
+    }
+    const help = document.createElement('span'); help.className = 'help-badge'; help.innerHTML = '?';
+    help.onclick = (e) => { e.stopPropagation(); showHelp(name, obj.type); };
+    div.appendChild(left); div.appendChild(actions); div.appendChild(help);
+    parent.appendChild(div);
+    if (obj.type==='folder' && obj.expanded) {
+        for (let [cname, cobj] of Object.entries(obj.children)) renderTreeItem(cname, cobj, parent, indent+'  ');
+    }
+}
+function toggleFolder(name) { fileSystem[name].expanded = !fileSystem[name].expanded; renderTree(); }
+function selectFile(path) {
+    currentFilePath = path;
+    document.getElementById('editorTitle').innerText = `📄 ${path}`;
+    const obj = getFile(path);
+    if (!obj) return;
+    const area = document.getElementById('editorArea');
+    if (path.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        area.innerHTML = `<div class="image-preview"><img src="${obj.content}" alt="náhled"></div>`;
+    } else {
+        area.innerHTML = `<textarea id="fileEditor" style="min-height:250px;">${escapeHtml(obj.content)}</textarea>`;
+    }
+}
+function getFile(path) {
+    if (path.includes('/')) {
+        let parts = path.split('/');
+        let folder = fileSystem[parts[0]];
+        return folder?.children?.[parts[1]];
+    }
+    return fileSystem[path];
+}
+function saveCurrentFile() {
+    if (!currentFilePath) return;
+    const ta = document.getElementById('fileEditor'); if (!ta) return;
+    const obj = getFile(currentFilePath); if (obj) { obj.content = ta.value; pushHistory(); renderAll(); }
+}
+function deleteItem(name) { if (confirm('Smazat?')) { delete fileSystem[name]; pushHistory(); renderAll(); } }
+function renameItem(old) { const nn = prompt('Nový název:', old); if (nn && nn!==old) { fileSystem[nn] = fileSystem[old]; delete fileSystem[old]; pushHistory(); renderAll(); } }
+function duplicateCurrent() { /* zjednodušeně – lze dodělat */ alert('Duplikace: funkci lze přidat.'); }
+function deleteCurrent() { if (currentFilePath) { deleteItem(currentFilePath); currentFilePath=null; } }
+
+// ===== MODÁLY =====
+function openCreateModal() { document.getElementById('createModal').style.display='flex'; }
+function closeModal() { document.getElementById('createModal').style.display='none'; }
+function createNewItem() {
+    const type = document.getElementById('newType').value;
+    const name = document.getElementById('newName').value.trim();
+    let path = document.getElementById('newPath').value.trim().replace(/\/$/,'');
+    if (!name) return;
+    if (path==='' || path==='/') {
+        if (type==='folder') fileSystem[name] = { type:'folder', children:{} };
+        else fileSystem[name] = { type:'file', content:'' };
+    } else {
+        let folder = fileSystem[path];
+        if (folder && folder.type==='folder') {
+            if (type==='folder') folder.children[name] = { type:'folder', children:{} };
+            else folder.children[name] = { type:'file', content:'' };
+        } else { alert('Cílová složka neexistuje.'); return; }
+    }
+    pushHistory(); renderAll(); closeModal();
+}
+
+function openTemplates() { document.getElementById('templateModal').style.display='flex'; }
+function closeTemplateModal() { document.getElementById('templateModal').style.display='none'; }
+function applyTemplate() {
+    const type = document.getElementById('templateSelect').value;
+    // Základní šablony (zjednodušeně)
+    if (type==='katalog') {
+        fileSystem['data'].children['katalog.html'] = { type:'file', content:'<h2>Katalog rostlin</h2><ul><li><a href="./data/mech.html">Mech</a></li></ul>' };
+        fileSystem['data'].children['mech.html'] = { type:'file', content:'<h3>Mech</h3><img src="./media/mech.jpg">' };
+    } else if (type==='eshop') {
+        fileSystem['data'].children['produkty.json'] = { type:'file', content:'[{"id":1,"nazev":"Myš"}]' };
+        fileSystem['objednavka.html'] = { type:'file', content:'<h2>Košík</h2><div id="cart"></div><script>/* URL params */</script>' };
+    } // ostatní analogicky...
+    pushHistory(); renderAll(); closeTemplateModal();
+}
+
+function openMediaLibrary() {
+    document.getElementById('mediaModal').style.display='flex';
+    renderMediaList();
+}
+function closeMediaModal() { document.getElementById('mediaModal').style.display='none'; }
+function uploadImages() {
+    const files = document.getElementById('imageUpload').files;
+    for (let f of files) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const name = f.name;
+            fileSystem['media'].children[name] = { type:'file', content: e.target.result };
+            pushHistory(); renderAll(); renderMediaList();
+        };
+        reader.readAsDataURL(f);
+    }
+}
+function renderMediaList() {
+    const list = document.getElementById('mediaList');
+    const media = fileSystem['media'].children;
+    list.innerHTML = '';
+    for (let [n,o] of Object.entries(media)) {
+        if (n.match(/\.(jpg|png|gif)/i)) {
+            list.innerHTML += `<div><img src="${o.content}" style="height:40px;"> ${n} <button onclick="insertMediaPath('${n}')">Vložit cestu</button></div>`;
+        }
+    }
+}
+function insertMediaPath(name) { alert(`Cesta: ./media/${name} – zkopírujte do kódu.`); }
+
+function editProjectInfo() {
+    document.getElementById('projectNameInput').value = projectInfo.name;
+    document.getElementById('projectDescInput').value = projectInfo.desc;
+    document.getElementById('projectCoverUrl').value = projectInfo.cover;
+    document.getElementById('projectInfoModal').style.display='flex';
+}
+function saveProjectInfo() {
+    projectInfo.name = document.getElementById('projectNameInput').value;
+    projectInfo.desc = document.getElementById('projectDescInput').value;
+    projectInfo.cover = document.getElementById('projectCoverUrl').value;
+    pushHistory(); renderAll(); closeProjectInfoModal();
+}
+function closeProjectInfoModal() { document.getElementById('projectInfoModal').style.display='none'; }
+
+// ===== NÁHLED & EXPORT =====
+function openPreview() {
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${projectInfo.name}</title><link rel="stylesheet" href="./css/styl.css"></head><body>${fileSystem['index.html'].content}</body></html>`;
+    const blob = new Blob([html], {type:'text/html'}); window.open(URL.createObjectURL(blob));
+}
+async function exportZip() {
+    const zip = new JSZip();
+    function add(obj, base) {
+        for (let [n,item] of Object.entries(obj)) {
+            const full = base ? `${base}/${n}` : n;
+            if (item.type==='folder') { zip.folder(full); add(item.children, full); }
+            else zip.file(full, item.content || '');
+        }
+    }
+    add(fileSystem, '');
+    const blob = await zip.generateAsync({type:'blob'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${projectInfo.name}.zip`; a.click();
+}
+
+// ===== POMOCNÉ =====
+function showHelp(name, type) {
+    let msg = '';
+    if (name==='data') msg = 'Sklad: texty, HTML, JSON. Relativní cesta ./data/...';
+    else if (name==='media') msg = 'Galerie: obrázky, soubory. ./media/foto.jpg';
+    else msg = `${type==='folder'?'Složka':'Soubor'} ${name}.`;
+    alert(msg);
+}
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    if (tab==='help') { document.getElementById('helpTab').style.display='block'; document.getElementById('urlDemoTab').style.display='none'; document.querySelector('.tab:first-child').classList.add('active'); }
+    else { document.getElementById('helpTab').style.display='none'; document.getElementById('urlDemoTab').style.display='block'; document.querySelector('.tab:last-child').classList.add('active'); }
+}
+function updateUrlDemo() {
+    const filter = document.getElementById('filterSelect').value;
+    document.getElementById('urlPreview').innerText = `./katalog.html?filter=${filter}`;
+}
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function persistToStorage() { localStorage.setItem('repodom_fs', JSON.stringify(fileSystem)); localStorage.setItem('repodom_info', JSON.stringify(projectInfo)); }
+function loadFromStorage() {
+    const fs = localStorage.getItem('repodom_fs'); if (fs) fileSystem = JSON.parse(fs);
+    const inf = localStorage.getItem('repodom_info'); if (inf) projectInfo = JSON.parse(inf);
+}
+
+init();
+</script>
+</body>
+</html>
