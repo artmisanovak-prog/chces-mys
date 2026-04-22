@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Repodom – váš web</title>
+    <style>
+        /* ===== REPODOM STYLE v1.0 ===== */
+        /* Čistý, černobílý, responzivní. Upravte si dle libosti. */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            color: #111111;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Typografie */
+        h1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #111;
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin: 2rem 0 1rem;
+        }
+
+        a {
+            color: #111;
+            text-underline-offset: 2px;
+        }
+
+        a:hover {
+            color: #555;
+        }
+
+        /* Navigace */
+        nav {
+            margin: 1.5rem 0 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        nav a {
+            margin-right: 1.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Karty / bloky */
+        .card {
+            border: 1px solid #ccc;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            background: #fafafa;
+        }
+
+        /* Patička */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ccc;
+            font-size: 0.8rem;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Responsivita */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            nav a {
+                display: inline-block;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* ===== VÁŠ STYL MŮŽETE PŘIDAT SEM ===== */
+    </style>
+</head>
+<body>
+
+    <!-- 
+        ===== REPODOM ŠABLONA =====
+        Všechny cesty v této šabloně jsou relativní.
+        Složky: ./data/ , ./media/ , ./css/ , ./js/
+        Upravujte, přidávejte, mažte – jak potřebujete.
+    -->
+
+    <header>
+        <h1>🏠 Váš Repodom</h1>
+        <p style="color: #555; margin-bottom: 0.5rem;">Web, který funguje offline i online. Bez hostingu, bez databáze.</p>
+    </header>
+
+    <nav>
+        <a href="index.html">Domů</a>
+        <!-- 
+            PŘIDEJTE DALŠÍ ODKAZY:
+            <a href="./data/katalog.html">Katalog</a>
+            <a href="./o-projektu.html">O projektu</a>
+        -->
+        <a href="#" style="color: #999;">← přidejte vlastní</a>
+    </nav>
+
+    <main>
+        <h2>📦 Co je tohle za složku?</h2>
+        <p>Tohle je <strong>Repodom</strong> – prázdná struktura pro web, který nepotřebuje hosting, databázi ani server.</p>
+        
+        <div class="card">
+            <h3 style="margin-top:0;">✨ Hlavní výhody</h3>
+            <ul style="margin-left: 1.5rem;">
+                <li><strong>Offline i online</strong> – rozbalte ZIP a funguje to. Nahrajte na GitHub Pages – funguje to stejně.</li>
+                <li><strong>Jednotné cesty</strong> – všechny odkazy jsou relativní (<code>./data/soubor.html</code>). Přesun složky nic nerozbije.</li>
+                <li><strong>URL jako otisk</strong> – stav (košík, filtr) můžete ukládat přímo do parametrů adresy.</li>
+                <li><strong>Žádné závislosti</strong> – čisté HTML, CSS, JavaScript. Žádný build, žádné předplatné.</li>
+            </ul>
+        </div>
+
+        <h2>📁 Struktura složek</h2>
+        <pre style="background:#f5f5f5; padding:1rem; border:1px solid #ccc; overflow-x:auto;">
+váš-web/
+├── index.html           (tento soubor)
+├── data/                (vaše texty, JSON, kategorie)
+├── media/               (obrázky, PDF, soubory ke stažení)
+├── css/                 (další styly – volitelné)
+├── js/                  (skripty – volitelné)
+└── LICENCE_NAVOD.html   (návod a licence)
+        </pre>
+        <p><em>→ Složky <code>data/</code> a <code>media/</code> jsou základ. Ostatní si přidejte podle potřeby.</em></p>
+
+        <h2>🚀 Jak začít</h2>
+        <ol style="margin-left: 1.5rem;">
+            <li><strong>Rozbalte</strong> tuto složku na svém počítači (nebo nahrajte na GitHub).</li>
+            <li><strong>Upravte</strong> texty, obrázky, styly – vše je otevřené a čeká na vás.</li>
+            <li><strong>Dodržujte relativní cesty</strong> – pište <code>./media/foto.jpg</code>, ne absolutní URL.</li>
+            <li><strong>Používejte</strong> offline, nebo nahrajte na GitHub Pages a sdílejte světu.</li>
+        </ol>
+
+        <div class="card" style="background:#fff;">
+            <h3 style="margin-top:0;">🔗 Příklad: URL jako nosič stavu</h3>
+            <p>Chcete udělat jednoduchý e‑shop nebo filtr bez databáze? Uložte data do URL:</p>
+            <code style="background:#eee; padding:0.2rem 0.4rem; display:block; margin:0.5rem 0;">
+            ./objednavka.html?produkt=mys&amp;mnozstvi=2&amp;sleva=10
+            </code>
+            <p>Tento odkaz <strong>je</strong> celá objednávka – pošlete ho emailem a příjemce vidí to samé.</p>
+        </div>
+
+        <h2>📄 Podrobný návod</h2>
+        <p>Všechny detaily, tipy a triky najdete v souboru <a href="LICENCE_NAVOD.html"><strong>LICENCE_NAVOD.html</strong></a>.</p>
+    </main>
+
+    <footer>
+        <p>
+            🏠 Postaveno metodou <strong>Repodom</strong> © 2026 Michaela Nováková<br>
+            <a href="https://github.com/artmisanovak-prog">github.com/artmisanovak-prog</a> · 
+            <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a><br>
+            <span style="font-size:0.75rem;">Šiřte, upravujte, používejte. Uveďte autorku.</span>
+        </p>
+    </footer>
+
+    <!-- 
+        ===== PŘIDEJTE VLASTNÍ SKRIPTY =====
+        Např. generátor, načítání JSON, interaktivní prvky.
+        Vše běží lokálně – žádné volání na server.
+    -->
+</body>
+</html>
