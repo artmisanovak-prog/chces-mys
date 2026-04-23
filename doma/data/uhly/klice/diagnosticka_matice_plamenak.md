@@ -1,0 +1,18 @@
+# DIAGNOSTICKÁ MATICE – PLAMEŇÁK
+
+## Jak podle odpovědí týmu poznat převažující dysfunkci?
+
+| Převládající úhel | Týmová diagnóza | Okamžitá intervence |
+|-------------------|-----------------|---------------------|
+| **1. Toxický optimismus** | Tým potlačuje pochybnosti a špatné zprávy pod nánosem povinného nadšení. Realita je tabu. | Zavést [**Minutu ticha pro realitu**](./kreativni_mod.md#1-protílek-na-toxický-optimismus–realita-jako-kompas). Každý musí říct jednu nepohodlnou pravdu. |
+| **2. Performativní energie** | Tým si cení aktivity a viditelného úsilí nad výsledky. „Vypadat zaneprázdněně“ je důležitější než dosáhnout cíle. | Zavést [**Misi, ne pohyb**](./kreativni_mod.md#2-protílek-na-performativní-energii–dopad-před-aktivitou). Každý úkol musí mít jasný ukončovací stav. |
+| **3. Neexistující dno** | Tým nemá definované červené linie, kill switch ani kritéria selhání. Projekty se neukončují, jen „padají dál“. | Společně definovat [**dna projektu**](./kreativni_mod.md#3-protílek-na-neexistující-dno–pojistka-před-pádem) – konkrétní metriky, kdy se projekt zastavuje. |
+| **4. Ilogická vytrvalost** | Tým oslavuje „bojovníky“, kteří jdou hlavou proti zdi znovu a znovu. „Nevzdávat se“ je dogma i v beznadějných situacích. | Zavést [**inteligentní vytrvalost**](./kreativni_mod.md#4-protílek-na-ilogickou-vytrvalost–inteligentní-vytrvalost). Reflexe před pokračováním. |
+| **5. Estetizace selhání** | Neúspěchy se balí do krásných příběhů a inspirativních lekcí, ale skutečné příčiny se neřeší. Forma přebíjí obsah. | Oddělit oslavu od analýzy: [**Holá kostra selhání**](./kreativni_mod.md#5-protílek-na-estetizaci-selhání–holá-kostra-pravdy). |
+| **6. Infekční nadšení** | Charismatický lídr strhne tým do riskantního podnikání. Kritické hlasy jsou umlčeny vlnou optimismu. | Ke každému plameňákovi přiřadit [**povinnou myš**](./kreativni_mod.md#6-protílek-na-infekční-nadšení–vyvážený-tandem). Myš má právo veta na aktivaci. |
+| **7. Ztráta orientace** | Tým ztratil spojení se strategií, trhem nebo zákazníkem. Metriky měří jen rychlost, ne směr. | Pravidelný [**kalibrační bod**](./kreativni_mod.md#7-protílek-na-ztrátu-orientace–kalibrace-podle-hvězd). Zastavit a zkontrolovat, jestli letíme správně. |
+| **8. Solistický přístup** | Jednotlivci pracují na „svých“ projektech, které přinášejí slávu jim, ale malou hodnotu celku. | Propojit odměny s [**dopadem na hejno**](./kreativni_mod.md#8-protílek-na-solistický-přístup–zpěv-pro-hejno), ne na sólistu. |
+| **9. Popírání reality** | Tým staví strategii na neověřených předpokladech. Když se ukážou jako mylné, změní se cíl, ne přístup. | Zavést [**test axiomů**](./kreativni_mod.md#9-protílek-na-popírání-reality–test-axiomů). Před projektem zapsat a testovat klíčové předpoklady. |
+| **10. Obsesivní směřování dolů** | Tým propadl krizovému módu. Hašení požárů je norma, adrenalin z krize je návykový. | Vynutit [**období nudné stability**](./kreativni_mod.md#10-protílek-na-obsesivní-směřování-dolů–nudná-stabilita). Ocenit ty, kdo požárům předcházejí. |
+| **11. Zapomnění spolucestujících** | Tým je natolik pohlcen vlastním letem, že nevnímá dopady na ostatní oddělení, zákazníky, partnery. | Pravidelně kreslit [**mapu ekosystému**](./kreativni_mod.md#11-protílek-na-zapomnění-spolucestujících–mapa-ekosystému). Kdo je náš komár, kdo naše prádelní šňůra? |
+| **12. Permanentní znovuzrození** | Retrospektivy a poučení nevedou ke změně. Příští projekt padá stejně, jen s lepší grafikou. | Z každé reflexe vynést [**jeden konkrétní závazek změny**](./kreativni_mod.md#12-protílek-na-permanentní-znovuzrození–závazek-ke-změně) a kontrolovat ho. |
