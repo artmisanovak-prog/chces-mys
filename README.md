@@ -30,6 +30,8 @@ kreativita, fyzika jazyka, metadenik
 - [metadeník](doma/nastroje/denik_minimal.html)
 
 - [licence a zpetna vazba](doma/licence_a_zpetna_vazba.html)
+
+- [atelier vizualnich pravidel](doma/mimo/atelier_vizualni_zazitek.html)
   
 ---
 
