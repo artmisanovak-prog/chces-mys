@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repodom · Moderní stavitel webů</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-hover: #f1f5f9;
+            --border: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #dbeafe;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        
+        .top-bar {
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            padding: 0 8px;
+            border-right: 1px solid var(--border);
+        }
+        
+        .toolbar-group:last-child { border-right: none; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        
+        .btn:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-icon {
+            padding: 6px;
+            font-size: 1rem;
+        }
+        
+        .app-layout {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            overflow: hidden;
+        }
+        
+        .app-layout.preview-visible {
+            grid-template-columns: 280px 1fr 1fr;
+        }
+        
+        @media (max-width: 900px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .app-layout.preview-visible { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .sidebar.mobile-open { 
+                display: flex; 
+                position: fixed; 
+                left: 0; 
+                top: 52px; 
+                bottom: 0; 
+                width: 280px; 
+                z-index: 40; 
+                box-shadow: var(--shadow-lg); 
+            }
+            .preview-area { display: none !important; }
+        }
+        
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        
+        .search-box {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        
+        .file-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            gap: 6px;
+            font-size: 0.85rem;
+            user-select: none;
+            position: relative;
+        }
+        
+        .tree-item:hover {
+            background: var(--surface-hover);
+        }
+        
+        .tree-item.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+        
+        .tree-item.drag-over {
+            background: var(--accent-light);
+            border: 2px dashed var(--accent);
+        }
+        
+        .tree-item .icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .tree-item .name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .tree-item .actions {
+            display: none;
+            gap: 2px;
+        }
+        
+        .tree-item:hover .actions {
+            display: flex;
+        }
+        
+        .tree-item .actions button {
+            padding: 2px 4px;
+            font-size: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .tree-item .actions button:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+        
+        .tree-children {
+            margin-left: 16px;
+            border-left: 1px solid var(--border);
+            padding-left: 4px;
+        }
+        
+        .editor-area {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--surface);
+        }
+        
+        .editor-tabs {
+            display: flex;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        .editor-tab {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-right: 1px solid var(--border);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            background: var(--bg);
+            color: var(--text-secondary);
+            position: relative;
+        }
+        
+        .editor-tab:hover {
+            background: var(--surface-hover);
+        }
+        
+        .editor-tab.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 500;
+        }
+        
+        .editor-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+        
+        .editor-tab .close {
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 0 2px;
+            border-radius: 4px;
+        }
+        
+        .editor-tab .close:hover {
+            background: var(--border);
+        }
+        
+        .editor-toolbar {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: var(--surface);
+        }
+        
+        .breadcrumb {
+            flex: 1;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .editor-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .code-editor {
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            border: none;
+            outline: none;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            background: var(--surface);
+            color: var(--text);
+            tab-size: 2;
+        }
+        
+        .image-viewer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            padding: 20px;
+        }
+        
+        .image-viewer img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+        }
+        
+        .preview-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+        
+        .preview-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: white;
+        }
+        
+        .status-bar {
+            height: 28px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            gap: 16px;
+            flex-shrink: 0;
+        }
+        
+        .status-bar .indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-bar .indicator.saved { color: var(--success); }
+        .status-bar .indicator.unsaved { color: var(--warning); }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalIn 0.2s ease;
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 4px;
+            border-radius: var(--radius);
+        }
+        
+        .modal-close:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+        
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.15s;
+            background: var(--bg);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .context-menu {
+            position: fixed;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 6px;
+            min-width: 160px;
+            z-index: 90;
+            display: none;
+        }
+        
+        .context-menu.active {
+            display: block;
+        }
+        
+        .context-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+        
+        .context-item:hover {
+            background: var(--surface-hover);
+        }
+        
+        .context-item.danger {
+            color: var(--danger);
+        }
+        
+        .context-item.danger:hover {
+            background: #fee2e2;
+        }
+        
+        .context-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0;
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .template-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+        }
+        
+        .template-card:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+        
+        .template-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .template-card .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .template-card .desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .media-item {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-item .name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 110;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .toast {
+            background: var(--text);
+            color: white;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @keyframes toastIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .hidden { display: none !important; }
+        .ml-auto { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logo">🏠 Repodom</div>
+        
+        <div class="toolbar-group">
+            <button class="btn btn-primary" onclick="app.newFile()">
+                <span>➕</span> Nový
+            </button>
+            <button class="btn" onclick="app.saveCurrent()">
+                <span>💾</span> Uložit
+            </button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="btn" onclick="app.undo()" title="Zpět (Ctrl+Z)">
+                <span>↩️</span>
+            </button>
+            <button class="btn" onclick="app.redo()" title="Znovu (Ctrl+Y)">
+                <span>↪️</span>
+            </button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="btn" onclick="app.togglePreview()" id="previewBtn">
+                <span>👁️</span> Náhled
+            </button>
+            <button class="btn" onclick="app.exportZip()">
+                <span>📦</span> Export
+            </button>
+            <button class="btn" onclick="app.importZip()">
+                <span>📥</span> Import
+            </button>
+        </div>
+        
+        <div class="toolbar-group">
+            <button class="btn" onclick="app.openTemplates()">
+                <span>📄</span> Šablony
+            </button>
+            <button class="btn" onclick="app.openMedia()">
+                <span>🖼️</span> Média
+            </button>
+            <button class="btn" onclick="app.editProject()">
+                <span>⚙️</span> Projekt
+            </button>
+        </div>
+        
+        <div class="toolbar-group ml-auto">
+            <button class="btn btn-icon" onclick="app.toggleMobileSidebar()" title="Menu">
+                <span>☰</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="app-layout" id="appLayout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">📁 Soubory</span>
+                <div style="display:flex;gap:4px;">
+                    <button class="btn btn-icon" onclick="app.newFolder()" title="Nová složka">📁➕</button>
+                    <button class="btn btn-icon" onclick="app.collapseAll()" title="Sbalit vše">⬆️</button>
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Hledat soubory..." oninput="app.searchFiles(this.value)">
+            </div>
+            <div class="file-tree" id="fileTree"></div>
+        </aside>
+
+        <section class="editor-area" id="editorArea">
+            <div class="editor-tabs" id="editorTabs"></div>
+            <div class="editor-toolbar">
+                <span class="breadcrumb" id="breadcrumb">Vyberte soubor</span>
+                <button class="btn btn-icon" onclick="app.duplicateCurrent()" title="Duplikovat">📋</button>
+                <button class="btn btn-icon btn-danger" onclick="app.deleteCurrent()" title="Smazat">🗑️</button>
+            </div>
+            <div class="editor-content" id="editorContent">
+                <div class="empty-state">
+                    <div class="icon">📄</div>
+                    <h3>Vyberte soubor</h3>
+                    <p>Vyberte soubor ze stromu vlevo nebo vytvořte nový</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="preview-area hidden" id="previewArea">
+            <div class="preview-header">
+                <span class="preview-title">👁️ Živý náhled</span>
+                <button class="btn btn-icon" onclick="app.refreshPreview()" title="Obnovit">🔄</button>
+            </div>
+            <iframe class="preview-frame" id="previewFrame"></iframe>
+        </section>
+    </div>
+
+    <footer class="status-bar">
+        <span class="indicator" id="saveIndicator">
+            <span>●</span> <span id="saveText">Připraven</span>
+        </span>
+        <span id="fileType"></span>
+        <span id="fileSize"></span>
+        <span class="ml-auto" id="cursorPos"></span>
+    </footer>
+
+    <div class="context-menu" id="contextMenu">
+        <div class="context-item" onclick="app.ctxNewFile()"><span>📄</span> Nový soubor</div>
+        <div class="context-item" onclick="app.ctxNewFolder()"><span>📁</span> Nová složka</div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="app.ctxRename()"><span>✏️</span> Přejmenovat</div>
+        <div class="context-item" onclick="app.ctxDuplicate()"><span>📋</span> Duplikovat</div>
+        <div class="context-divider"></div>
+        <div class="context-item danger" onclick="app.ctxDelete()"><span>🗑️</span> Smazat</div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="app.closeModal(event)">
+        <div class="modal hidden" id="newModal">
+            <div class="modal-header">
+                <span class="modal-title" id="newModalTitle">Nový soubor</span>
+                <button class="modal-close" onclick="app.closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Název</label>
+                    <input type="text" id="newName" placeholder="např. stranka.html" onkeydown="if(event.key==='Enter')app.confirmNew()">
+                </div>
+                <div class="form-group">
+                    <label>Cílová složka</label>
+                    <select id="newTarget"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="app.closeModal()">Zrušit</button>
+                <button class="btn btn-primary" onclick="app.confirmNew()">Vytvořit</button>
+            </div>
+        </div>
+
+        <div class="modal hidden" id="templatesModal">
+            <div class="modal-header">
+                <span class="modal-title">📄 Šablony</span>
+                <button class="modal-close" onclick="app.closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:12px;color:var(--text-secondary);">Vyberte šablonu pro rychlý start. Aktuální obsah zůstane zachován.</p>
+                <div class="template-grid">
+                    <div class="template-card" onclick="app.applyTemplate('blank')">
+                        <div class="icon">📄</div>
+                        <div class="title">Prázdný</div>
+                        <div class="desc">Základní HTML struktura</div>
+                    </div>
+                    <div class="template-card" onclick="app.applyTemplate('katalog')">
+                        <div class="icon">🌿</div>
+                        <div class="title">Katalog</div>
+                        <div class="desc">Katalog rostlin s filtrem</div>
+                    </div>
+                    <div class="template-card" onclick="app.applyTemplate('eshop')">
+                        <div class="icon">🛒</div>
+                        <div class="title">E-shop</div>
+                        <div class="desc">Produkty a košík</div>
+                    </div>
+                    <div class="template-card" onclick="app.applyTemplate('portfolio')">
+                        <div class="icon">🎨</div>
+                        <div class="title">Portfolio</div>
+                        <div class="desc">Galerie projektů</div>
+                    </div>
+                    <div class="template-card" onclick="app.applyTemplate('blog')">
+                        <div class="icon">📝</div>
+                        <div class="title">Blog</div>
+                        <div class="desc">Seznam článků</div>
+                    </div>
+                    <div class="template-card" onclick="app.applyTemplate('landing')">
+                        <div class="icon">🚀</div>
+                        <div class="title">Landing</div>
+                        <div class="desc">Jednostránkový web</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="app.closeModal()">Zavřít</button>
+            </div>
+        </div>
+
+        <div class="modal hidden" id="mediaModal">
+            <div class="modal-header">
+                <span class="modal-title">🖼️ Knihovna médií</span>
+                <button class="modal-close" onclick="app.closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nahrát obrázky</label>
+                    <input type="file" id="mediaUpload" accept="image/*" multiple onchange="app.uploadMedia(this)">
+                </div>
+                <div class="media-grid" id="mediaGrid"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="app.closeModal()">Zavřít</button>
+            </div>
+        </div>
+
+        <div class="modal hidden" id="projectModal">
+            <div class="modal-header">
+                <span class="modal-title">⚙️ Nastavení projektu</span>
+                <button class="modal-close" onclick="app.closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Název projektu</label>
+                    <input type="text" id="projectName" value="MůjRepodom">
+                </div>
+                <div class="form-group">
+                    <label>Popis</label>
+                    <textarea id="projectDesc" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>URL titulního obrázku</label>
+                    <input type="text" id="projectCover" placeholder="https://... nebo ./media/cover.jpg">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="app.closeModal()">Zrušit</button>
+                <button class="btn btn-primary" onclick="app.saveProject()">Uložit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <input type="file" id="importInput" accept=".zip" style="display:none" onchange="app.handleImport(this)">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const app = {
+            fs: {
+                'index.html': { 
+                    type: 'file', 
+                    content: '<!DOCTYPE html>\n<html lang="cs">\n<head>\n    <meta charset="UTF-8">\n    <title>Vítejte</title>\n    <link rel="stylesheet" href="./css/style.css">\n</head>\n<body>\n    <h1>Vítejte v Repodomu</h1>\n    <p>Váš moderní offline web builder.</p>\n    <script src="./js/app.js"><\\/script>\n</body>\n</html>' 
+                },
+                'css': { 
+                    type: 'folder', 
+                    expanded: true, 
+                    children: {
+                        'style.css': { 
+                            type: 'file', 
+                            content: 'body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; line-height: 1.6; color: #334155; } h1 { color: #2563eb; font-weight: 700; }' 
+                        }
+                    }
+                },
+                'js': { 
+                    type: 'folder', 
+                    expanded: true, 
+                    children: {
+                        'app.js': { type: 'file', content: 'console.log("Repodom ready!");' }
+                    }
+                },
+                'media': { type: 'folder', expanded: true, children: {} },
+                'data': { type: 'folder', expanded: true, children: {} }
+            },
+            project: { name: 'MůjRepodom', desc: '', cover: '' },
+            history: [],
+            historyIndex: -1,
+            openFiles: [],
+            activeFile: null,
+            contextTarget: null,
+            previewVisible: false,
+            
+            icons: {
+                folder: '📁',
+                folderOpen: '📂',
+                html: '🌐',
+                css: '🎨',
+                js: '⚡',
+                json: '📋',
+                image: '🖼️',
+                file: '📄',
+                unknown: '📎'
+            },
+            
+            init() {
+                this.loadStorage();
+                this.pushHistory();
+                this.render();
+                this.setupEvents();
+                this.updatePreview();
+            },
+            
+            setupEvents() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        if (e.key === 's') { e.preventDefault(); this.saveCurrent(); }
+                        if (e.key === 'z') { e.preventDefault(); this.undo(); }
+                        if (e.key === 'y') { e.preventDefault(); this.redo(); }
+                        if (e.key === 'n') { e.preventDefault(); this.newFile(); }
+                    }
+                });
+                
+                document.addEventListener('click', () => {
+                    document.getElementById('contextMenu').classList.remove('active');
+                });
+            },
+            
+            getFile(path) {
+                const parts = path.split('/').filter(p => p);
+                let current = this.fs;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    current = current[parts[i]]?.children;
+                    if (!current) return null;
+                }
+                return current[parts[parts.length - 1]];
+            },
+            
+            getParent(path) {
+                const parts = path.split('/').filter(p => p);
+                if (parts.length <= 1) return this.fs;
+                let current = this.fs;
+                for (let i = 0; i < parts.length - 2; i++) {
+                    current = current[parts[i]]?.children;
+                    if (!current) return null;
+                }
+                return current[parts[parts.length - 2]]?.children;
+            },
+            
+            getParentFolder(path) {
+                const parts = path.split('/').filter(p => p);
+                if (parts.length <= 1) return '';
+                parts.pop();
+                return parts.join('/');
+            },
+            
+            setFile(path, file) {
+                const parts = path.split('/').filter(p => p);
+                let current = this.fs;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    if (!current[parts[i]]) current[parts[i]] = { type: 'folder', expanded: true, children: {} };
+                    current = current[parts[i]].children;
+                }
+                current[parts[parts.length - 1]] = file;
+            },
+            
+            deleteFile(path) {
+                const parent = this.getParent(path);
+                const name = path.split('/').pop();
+                if (parent) delete parent[name];
+            },
+            
+            moveFile(from, to) {
+                const file = this.getFile(from);
+                if (!file) return;
+                this.deleteFile(from);
+                this.setFile(to + '/' + from.split('/').pop(), file);
+            },
+            
+            getFileIcon(name, type) {
+                if (type === 'folder') return this.icons.folder;
+                const ext = name.split('.').pop().toLowerCase();
+                if (ext === 'html' || ext === 'htm') return this.icons.html;
+                if (ext === 'css') return this.icons.css;
+                if (ext === 'js') return this.icons.js;
+                if (ext === 'json') return this.icons.json;
+                if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return this.icons.image;
+                return this.icons.file;
+            },
+            
+            pushHistory() {
+                const snap = JSON.parse(JSON.stringify({ fs: this.fs, project: this.project }));
+                this.history = this.history.slice(0, this.historyIndex + 1);
+                this.history.push(snap);
+                this.historyIndex++;
+                if (this.history.length > 50) { this.history.shift(); this.historyIndex--; }
+            },
+            
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restore();
+                }
+            },
+            
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.restore();
+                }
+            },
+            
+            restore() {
+                const snap = this.history[this.historyIndex];
+                this.fs = JSON.parse(JSON.stringify(snap.fs));
+                this.project = JSON.parse(JSON.stringify(snap.project));
+                this.render();
+                this.updatePreview();
+                this.setSaveStatus(true);
+                this.showToast('↩️ Obnoveno');
+            },
+            
+            render() {
+                this.renderTree();
+                this.renderTabs();
+                this.renderEditor();
+                this.updateStatus();
+            },
+            
+            matchesSearch(path, search) {
+                return path.toLowerCase().includes(search.toLowerCase());
+            },
+            
+            hasMatchingChild(children, prefix, search) {
+                for (const [name, item] of Object.entries(children)) {
+                    const childPath = prefix ? prefix + '/' + name : name;
+                    if (this.matchesSearch(childPath, search)) return true;
+                    if (item.type === 'folder' && this.hasMatchingChild(item.children, childPath, search)) return true;
+                }
+                return false;
+            },
+            
+            renderTree() {
+                const container = document.getElementById('fileTree');
+                container.innerHTML = '';
+                const search = document.getElementById('searchInput')?.value.trim() || '';
+                this.renderTreeLevel(this.fs, container, '', search);
+            },
+            
+            renderTreeLevel(obj, container, prefix, search) {
+                const entries = Object.entries(obj).sort((a, b) => {
+                    if (a[1].type !== b[1].type) return a[1].type === 'folder' ? -1 : 1;
+                    return a[0].localeCompare(b[0]);
+                });
+                
+                for (const [name, item] of entries) {
+                    const path = prefix ? prefix + '/' + name : name;
+                    const matches = !search || this.matchesSearch(path, search);
+                    const hasChildMatch = item.type === 'folder' ? this.hasMatchingChild(item.children, path, search) : false;
+                    
+                    if (search && !matches && !hasChildMatch) continue;
+                    if (search && hasChildMatch) item.expanded = true;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'tree-item' + (this.activeFile === path ? ' active' : '');
+                    div.draggable = true;
+                    div.dataset.path = path;
+                    div.title = path;
+                    
+                    const icon = this.getFileIcon(name, item.type);
+                    const indent = prefix.split('/').length;
+                    const paddingLeft = 8 + (indent * 12);
+                    const safePath = path.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeName = name.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    
+                    div.innerHTML = `
+                        <span class="icon">${icon}</span>
+                        <span class="name">${safeName}</span>
+                        <span class="actions">
+                            <button onclick="event.stopPropagation(); app.startRename('${safePath}')">✏️</button>
+                            <button onclick="event.stopPropagation(); app.deleteFile('${safePath}'); app.pushHistory(); app.render();">🗑️</button>
+                        </span>
+                    `;
+                    
+                    div.style.paddingLeft = paddingLeft + 'px';
+                    
+                    div.onclick = (e) => {
+                        if (item.type === 'folder') {
+                            item.expanded = !item.expanded;
+                            this.renderTree();
+                        } else {
+                            this.openFile(path);
+                        }
+                    };
+                    
+                    div.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        this.contextTarget = path;
+                        const menu = document.getElementById('contextMenu');
+                        menu.style.left = e.pageX + 'px';
+                        menu.style.top = e.pageY + 'px';
+                        menu.classList.add('active');
+                    };
+                    
+                    div.ondragstart = (e) => {
+                        e.dataTransfer.setData('text/plain', path);
+                        e.dataTransfer.effectAllowed = 'move';
+                    };
+                    
+                    div.ondragover = (e) => {
+                        e.preventDefault();
+                        if (item.type === 'folder') div.classList.add('drag-over');
+                    };
+                    
+                    div.ondragleave = () => {
+                        div.classList.remove('drag-over');
+                    };
+                    
+                    div.ondrop = (e) => {
+                        e.preventDefault();
+                        div.classList.remove('drag-over');
+                        const from = e.dataTransfer.getData('text/plain');
+                        if (from === path) return;
+                        if (item.type === 'folder') {
+                            this.moveFile(from, path);
+                            this.pushHistory();
+                            this.render();
+                            this.showToast('📁 Přesunuto');
+                        }
+                    };
+                    
+                    container.appendChild(div);
+                    
+                    if (item.type === 'folder' && item.expanded && (matches || hasChildMatch)) {
+                        const childrenDiv = document.createElement('div');
+                        childrenDiv.className = 'tree-children';
+                        this.renderTreeLevel(item.children, childrenDiv, path, search);
+                        container.appendChild(childrenDiv);
+                    }
+                }
+            },
+            
+            renderTabs() {
+                const container = document.getElementById('editorTabs');
+                container.innerHTML = '';
+                for (const path of this.openFiles) {
+                    const tab = document.createElement('div');
+                    tab.className = 'editor-tab' + (this.activeFile === path ? ' active' : '');
+                    const name = path.split('/').pop();
+                    tab.innerHTML = `
+                        <span onclick="app.switchTab('${path.replace(/'/g, "\\'")}')">${this.getFileIcon(name, 'file')} ${name}</span>
+                        <span class="close" onclick="event.stopPropagation(); app.closeTab('${path.replace(/'/g, "\\'")}')">✕</span>
+                    `;
+                    container.appendChild(tab);
+                }
+            },
+            
+            renderEditor() {
+                const content = document.getElementById('editorContent');
+                const breadcrumb = document.getElementById('breadcrumb');
+                
+                if (!this.activeFile) {
+                    content.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📄</div>
+                            <h3>Vyberte soubor</h3>
+                            <p>Vyberte soubor ze stromu vlevo nebo vytvořte nový</p>
+                        </div>
+                    `;
+                    breadcrumb.textContent = 'Vyberte soubor';
+                    return;
+                }
+                
+                const file = this.getFile(this.activeFile);
+                if (!file) return;
+                
+                breadcrumb.textContent = './' + this.activeFile;
+                
+                if (this.isImage(this.activeFile)) {
+                    content.innerHTML = `
+                        <div class="image-viewer">
+                            <img src="${file.content}" alt="${this.activeFile}">
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = `<textarea class="code-editor" spellcheck="false"></textarea>`;
+                    const ta = content.querySelector('textarea');
+                    ta.value = file.content;
+                    ta.focus();
+                    this.updateCursor(ta);
+                    
+                    ta.addEventListener('keydown', (e) => {
+                        if (e.key === 'Tab') {
+                            e.preventDefault();
+                            const start = ta.selectionStart;
+                            const end = ta.selectionEnd;
+                            ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
+                            ta.selectionStart = ta.selectionEnd = start + 2;
+                            this.markDirty();
+                        }
+                    });
+                    
+                    ta.addEventListener('input', () => this.markDirty());
+                    ta.addEventListener('keyup', () => this.updateCursor(ta));
+                    ta.addEventListener('click', () => this.updateCursor(ta));
+                }
+            },
+            
+            updateCursor(ta) {
+                const text = ta.value.substring(0, ta.selectionStart);
+                const lines = text.split('\n');
+                const row = lines.length;
+                const col = lines[lines.length - 1].length + 1;
+                document.getElementById('cursorPos').textContent = `Řádek ${row}, Sloupec ${col}`;
+            },
+            
+            openFile(path) {
+                if (!this.openFiles.includes(path)) {
+                    this.openFiles.push(path);
+                    if (this.openFiles.length > 10) this.openFiles.shift();
+                }
+                this.activeFile = path;
+                this.render();
+                this.updatePreview();
+            },
+            
+            switchTab(path) {
+                this.activeFile = path;
+                this.render();
+                this.updatePreview();
+            },
+            
+            closeTab(path) {
+                this.openFiles = this.openFiles.filter(p => p !== path);
+                if (this.activeFile === path) {
+                    this.activeFile = this.openFiles.length > 0 ? this.openFiles[this.openFiles.length - 1] : null;
+                }
+                this.render();
+                this.updatePreview();
+            },
+            
+            saveCurrent() {
+                if (!this.activeFile) return;
+                const file = this.getFile(this.activeFile);
+                const ta = document.querySelector('.code-editor');
+                if (file && ta) {
+                    file.content = ta.value;
+                    this.pushHistory();
+                    this.showToast('💾 Uloženo');
+                    this.setSaveStatus(true);
+                    this.persist();
+                }
+            },
+            
+            markDirty() {
+                this.setSaveStatus(false);
+            },
+            
+            setSaveStatus(saved) {
+                const ind = document.getElementById('saveIndicator');
+                const text = document.getElementById('saveText');
+                if (saved) {
+                    ind.className = 'indicator saved';
+                    text.textContent = 'Uloženo';
+                } else {
+                    ind.className = 'indicator unsaved';
+                    text.textContent = 'Neuloženo';
+                }
+            },
+            
+            newFile() {
+                this.contextTarget = null;
+                document.getElementById('newModalTitle').textContent = 'Nový soubor';
+                document.getElementById('newName').value = '';
+                this.fillFolderSelect();
+                this.openModal('newModal');
+                setTimeout(() => document.getElementById('newName').focus(), 100);
+            },
+            
+            newFolder() {
+                this.contextTarget = null;
+                document.getElementById('newModalTitle').textContent = 'Nová složka';
+                document.getElementById('newName').value = '';
+                this.fillFolderSelect();
+                this.openModal('newModal');
+                setTimeout(() => document.getElementById('newName').focus(), 100);
+            },
+            
+            fillFolderSelect() {
+                const select = document.getElementById('newTarget');
+                select.innerHTML = '<option value="">Kořen</option>';
+                this.collectFolders(this.fs, '', select);
+            },
+            
+            collectFolders(obj, prefix, select) {
+                for (const [name, item] of Object.entries(obj)) {
+                    if (item.type === 'folder') {
+                        const path = prefix ? prefix + '/' + name : name;
+                        select.innerHTML += `<option value="${path}">${path}</option>`;
+                        this.collectFolders(item.children, path, select);
+                    }
+                }
+            },
+            
+            confirmNew() {
+                const name = document.getElementById('newName').value.trim();
+                const target = document.getElementById('newTarget').value;
+                const isFolder = document.getElementById('newModalTitle').textContent.includes('složka');
+                if (!name) return;
+                
+                const path = target ? target + '/' + name : name;
+                const file = isFolder ? { type: 'folder', expanded: true, children: {} } : { type: 'file', content: '' };
+                this.setFile(path, file);
+                this.pushHistory();
+                this.render();
+                this.closeModal();
+                this.showToast(isFolder ? '📁 Složka vytvořena' : '📄 Soubor vytvořen');
+                if (!isFolder) this.openFile(path);
+            },
+            
+            startRename(path) {
+                const name = path.split('/').pop();
+                const newName = prompt('Nový název:', name);
+                if (newName && newName !== name) {
+                    const parent = this.getParent(path);
+                    const file = this.getFile(path);
+                    delete parent[name];
+                    parent[newName] = file;
+                    this.pushHistory();
+                    this.render();
+                }
+            },
+            
+            deleteCurrent() {
+                if (!this.activeFile) return;
+                if (confirm('Smazat ' + this.activeFile + '?')) {
+                    this.deleteFile(this.activeFile);
+                    this.openFiles = this.openFiles.filter(p => p !== this.activeFile);
+                    this.activeFile = this.openFiles.length > 0 ? this.openFiles[0] : null;
+                    this.pushHistory();
+                    this.render();
+                    this.updatePreview();
+                }
+            },
+            
+            duplicateCurrent() {
+                if (!this.activeFile) return;
+                const file = this.getFile(this.activeFile);
+                const parent = this.getParent(this.activeFile);
+                const name = this.activeFile.split('/').pop();
+                const base = name.replace(/\.[^/.]+$/, '');
+                const ext = name.match(/\.[^/.]+$/)?.[0] || '';
+                let newName = base + '_kopie' + ext;
+                let i = 2;
+                while (parent[newName]) newName = base + '_kopie' + i++ + ext;
+                parent[newName] = JSON.parse(JSON.stringify(file));
+                this.pushHistory();
+                this.render();
+                this.openFile(this.activeFile.replace(name, newName));
+            },
+            
+            ctxNewFile() {
+                this.newFile();
+                if (this.contextTarget) {
+                    const file = this.getFile(this.contextTarget);
+                    const target = file?.type === 'folder' ? this.contextTarget : this.getParentFolder(this.contextTarget);
+                    document.getElementById('newTarget').value = target;
+                }
+            },
+            
+            ctxNewFolder() {
+                this.newFolder();
+                if (this.contextTarget) {
+                    const file = this.getFile(this.contextTarget);
+                    const target = file?.type === 'folder' ? this.contextTarget : this.getParentFolder(this.contextTarget);
+                    document.getElementById('newTarget').value = target;
+                }
+            },
+            
+            ctxRename() {
+                if (this.contextTarget) this.startRename(this.contextTarget);
+            },
+            
+            ctxDuplicate() {
+                if (this.contextTarget) {
+                    this.activeFile = this.contextTarget;
+                    this.duplicateCurrent();
+                }
+            },
+            
+            ctxDelete() {
+                if (this.contextTarget) {
+                    this.activeFile = this.contextTarget;
+                    this.deleteCurrent();
+                }
+            },
+            
+            togglePreview() {
+                this.previewVisible = !this.previewVisible;
+                const layout = document.getElementById('appLayout');
+                const preview = document.getElementById('previewArea');
+                const btn = document.getElementById('previewBtn');
+                
+                if (this.previewVisible) {
+                    layout.classList.add('preview-visible');
+                    preview.classList.remove('hidden');
+                    btn.classList.add('btn-primary');
+                    this.updatePreview();
+                } else {
+                    layout.classList.remove('preview-visible');
+                    preview.classList.add('hidden');
+                    btn.classList.remove('btn-primary');
+                }
+            },
+            
+            updatePreview() {
+                const frame = document.getElementById('previewFrame');
+                const indexFile = this.fs['index.html'];
+                if (!indexFile) return;
+                
+                const html = indexFile.content;
+                if (html.trim().match(/^<!DOCTYPE/i) || html.trim().match(/^<html/i)) {
+                    frame.srcdoc = html;
+                } else {
+                    frame.srcdoc = `<!DOCTYPE html><html lang="cs"><head><meta charset="UTF-8"></head><body>${html}</body></html>`;
+                }
+            },
+            
+            refreshPreview() {
+                this.updatePreview();
+                this.showToast('🔄 Náhled obnoven');
+            },
+            
+            openTemplates() {
+                this.openModal('templatesModal');
+            },
+            
+            applyTemplate(type) {
+                switch(type) {
+                    case 'blank':
+                        this.fs['index.html'].content = '<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><title>Nová stránka</title></head>\n<body>\n    <h1>Nová stránka</h1>\n</body>\n</html>';
+                        break;
+                    case 'katalog':
+                        this.fs['data'].children['katalog.html'] = { type: 'file', content: '<h1>Katalog rostlin</h1><ul><li><a href="./data/mech.html">Mech</a></li><li><a href="./data/kapradina.html">Kapradina</a></li></ul>' };
+                        this.fs['data'].children['mech.html'] = { type: 'file', content: '<h2>Mech</h2><p>Mech je jednoduchá rostlina.</p><img src="./media/mech.jpg" alt="Mech">' };
+                        this.fs['data'].children['kapradina.html'] = { type: 'file', content: '<h2>Kapradina</h2><p>Kapradina je prastarý druh rostliny.</p>' };
+                        break;
+                    case 'eshop':
+                        this.fs['data'].children['produkty.html'] = { type: 'file', content: '<h1>Produkty</h1><div class="product"><h2>Myš</h2><p>Cena: 299 Kč</p><button>Koupit</button></div>' };
+                        this.fs['data'].children['kosik.html'] = { type: 'file', content: '<h1>Košík</h1><div id="cart">Košík je prázdný</div>' };
+                        break;
+                    case 'portfolio':
+                        this.fs['data'].children['projekty.html'] = { type: 'file', content: '<h1>Portfolio</h1><div class="project"><h2>Projekt 1</h2><p>Popis projektu...</p></div>' };
+                        break;
+                    case 'blog':
+                        this.fs['data'].children['clanky.html'] = { type: 'file', content: '<h1>Blog</h1><article><h2>První článek</h2><p>Obsah článku...</p></article>' };
+                        break;
+                    case 'landing':
+                        this.fs['index.html'].content = `<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Landing Page</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; padding: 0; }
+        .hero { background: #2563eb; color: white; padding: 4rem 2rem; text-align: center; }
+        .cta { background: white; color: #2563eb; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 1rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Vaše Landing Page</h1>
+        <p>Popis vašeho produktu</p>
+        <a href="#" class="cta">Začít</a>
+    </div>
+</body>
+</html>`;
+                        break;
+                }
+                this.pushHistory();
+                this.render();
+                this.updatePreview();
+                this.closeModal();
+                this.showToast('📄 Šablona aplikována');
+            },
+            
+            openMedia() {
+                this.renderMedia();
+                this.openModal('mediaModal');
+            },
+            
+            renderMedia() {
+                const grid = document.getElementById('mediaGrid');
+                grid.innerHTML = '';
+                const media = this.fs['media']?.children || {};
+                for (const [name, file] of Object.entries(media)) {
+                    if (this.isImage(name)) {
+                        grid.innerHTML += `
+                            <div class="media-item" onclick="app.insertMediaPath('${name.replace(/'/g, "\\'")}')">
+                                <img src="${file.content}" alt="${name}">
+                                <div class="name">${name}</div>
+                            </div>
+                        `;
+                    }
+                }
+                if (grid.innerHTML === '') {
+                    grid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);text-align:center;">Žádné obrázky</p>';
+                }
+            },
+            
+            uploadMedia(input) {
+                for (const file of input.files) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.fs['media'].children[file.name] = { type: 'file', content: e.target.result };
+                        this.renderMedia();
+                        this.pushHistory();
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.showToast('🖼️ Obrázky nahrány');
+            },
+            
+            insertMediaPath(name) {
+                const path = './media/' + name;
+                navigator.clipboard.writeText(path);
+                this.showToast('📋 Cesta zkopírována: ' + path);
+            },
+            
+            editProject() {
+                document.getElementById('projectName').value = this.project.name;
+                document.getElementById('projectDesc').value = this.project.desc;
+                document.getElementById('projectCover').value = this.project.cover;
+                this.openModal('projectModal');
+            },
+            
+            saveProject() {
+                this.project.name = document.getElementById('projectName').value;
+                this.project.desc = document.getElementById('projectDesc').value;
+                this.project.cover = document.getElementById('projectCover').value;
+                this.pushHistory();
+                this.render();
+                this.closeModal();
+                this.showToast('⚙️ Projekt uložen');
+            },
+            
+            async exportZip() {
+                const zip = new JSZip();
+                const add = (obj, base) => {
+                    for (const [n, item] of Object.entries(obj)) {
+                        const full = base ? `${base}/${n}` : n;
+                        if (item.type === 'folder') {
+                            zip.folder(full);
+                            add(item.children, full);
+                        } else {
+                            zip.file(full, item.content || '');
+                        }
+                    }
+                };
+                add(this.fs, '');
+                const blob = await zip.generateAsync({type:'blob'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${this.project.name}.zip`;
+                a.click();
+                this.showToast('📦 Exportováno');
+            },
+            
+            importZip() {
+                document.getElementById('importInput').click();
+            },
+            
+            async handleImport(input) {
+                const file = input.files[0];
+                if (!file) return;
+                const zip = await JSZip.loadAsync(file);
+                this.fs = {};
+                for (const [path, zipObj] of Object.entries(zip.files)) {
+                    if (zipObj.dir) {
+                        const parts = path.split('/').filter(p => p);
+                        let current = this.fs;
+                        for (const part of parts) {
+                            if (!current[part]) current[part] = { type: 'folder', expanded: true, children: {} };
+                            current = current[part].children;
+                        }
+                    } else {
+                        const content = await zipObj.async('string');
+                        const parts = path.split('/').filter(p => p);
+                        const name = parts.pop();
+                        let current = this.fs;
+                        for (const part of parts) {
+                            if (!current[part]) current[part] = { type: 'folder', expanded: true, children: {} };
+                            current = current[part].children;
+                        }
+                        current[name] = { type: 'file', content };
+                    }
+                }
+                this.openFiles = [];
+                this.activeFile = null;
+                this.pushHistory();
+                this.render();
+                this.updatePreview();
+                this.showToast('📥 Importováno');
+            },
+            
+            openModal(id) {
+                document.getElementById('modalOverlay').classList.add('active');
+                document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+                document.getElementById(id).classList.remove('hidden');
+            },
+            
+            closeModal(e) {
+                if (e && e.target !== e.currentTarget) return;
+                document.getElementById('modalOverlay').classList.remove('active');
+            },
+            
+            showToast(msg) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = msg;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+            
+            updateStatus() {
+                const file = this.activeFile ? this.getFile(this.activeFile) : null;
+                document.getElementById('fileType').textContent = file ? (file.type === 'folder' ? 'Složka' : 'Soubor') : '';
+                document.getElementById('fileSize').textContent = file && file.content ? (file.content.length + ' B') : '';
+            },
+            
+            searchFiles(query) {
+                this.renderTree();
+            },
+            
+            collapseAll() {
+                const collapse = (obj) => {
+                    for (const item of Object.values(obj)) {
+                        if (item.type === 'folder') {
+                            item.expanded = false;
+                            collapse(item.children);
+                        }
+                    }
+                };
+                collapse(this.fs);
+                this.renderTree();
+            },
+            
+            toggleMobileSidebar() {
+                document.getElementById('sidebar').classList.toggle('mobile-open');
+            },
+            
+            isImage(path) {
+                return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(path);
+            },
+            
+            persist() {
+                localStorage.setItem('repodom_v2_fs', JSON.stringify(this.fs));
+                localStorage.setItem('repodom_v2_project', JSON.stringify(this.project));
+            },
+            
+            loadStorage() {
+                const fs = localStorage.getItem('repodom_v2_fs');
+                const proj = localStorage.getItem('repodom_v2_project');
+                if (fs) this.fs = JSON.parse(fs);
+                if (proj) this.project = JSON.parse(proj);
+            }
+        };
+        
+        setInterval(() => app.persist(), 5000);
+        app.init();
+    </script>
+</body>
+</html>
