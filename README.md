@@ -80,6 +80,10 @@ kreativita, fyzika jazyka, metadenik
   
 - [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html)
 
+---
+
+
+---
 
 ilustrace:
 
@@ -94,6 +98,7 @@ ilustrace:
 - [pavouk](doma/ilustrace/pavouk.jpg)
 
 ---
+
 ### mimo ## myš 
 
 - [vizualni laborator](doma/mimo/vytvarna_laborator.html)
@@ -110,6 +115,19 @@ ilustrace:
 
  - [REPODOM SABLONA prazdna](doma/mimo/repodom_sablona.html)
 - [generátor fontů](doma/mimo/generator_fontu.html)
+
+---
+
+- [matice ryba](doma/data/klice/ryba_matice.md)
+- [matice husy](doma/data/klice/husy_matice.md)
+- [matice kocour](doma/data/klice/kocour_matice.md)
+- [matice plamenak](doma/data/klice/plamenak_matice.md)
+- [matice drak](doma/data/klice/drak_matice.md)
+- [matice mys](doma/data/klice/mys_matice.md)
+
+---
+  
+- [url_balicky_data](doma/balicky/metadenik_balicek_1.json)
 
 ---
 
