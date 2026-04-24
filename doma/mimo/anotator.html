@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Kontrolor fenoménů · Chceš myš?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ffffff; color: #111111; font-family: 'Helvetica Neue', Arial, sans-serif; padding: 1.5rem; max-width: 1200px; margin: 0 auto; line-height: 1.4; }
+    h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 2rem; font-weight: 400; margin-bottom: 0.2rem; }
+    .sub { color: #555; margin-bottom: 1.2rem; font-size: 0.8rem; border-bottom: 1px solid #ccc; padding-bottom: 0.8rem; }
+    .flex-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+    button, .btn { padding: 0.4rem 1rem; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer; font-size: 0.75rem; font-family: inherit; transition: 0.2s; white-space: nowrap; }
+    button:hover { background: #eee; }
+    .card-list { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 1.5rem; }
+    .card-chip { padding: 0.3rem 0.8rem; border: 1px solid #ddd; cursor: pointer; font-size: 0.75rem; transition: 0.2s; background: #fff; }
+    .card-chip.active { background: #111; color: #fff; border-color: #111; }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
+    .detail-card { border: 1px solid #ccc; background: #fafafa; padding: 1rem; }
+    .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
+    .detail-header h3 { font-family: Georgia, serif; font-weight: 400; margin: 0; }
+    .angle-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.4rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.8rem; }
+    .angle-color { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+    .angle-name { font-weight: 600; min-width: 120px; font-size: 0.75rem; }
+    .angle-data { flex: 1; min-width: 150px; color: #333; word-break: break-word; }
+    .angle-live { flex: 1; min-width: 150px; color: #0066aa; word-break: break-word; font-style: italic; background: #f0f6ff; padding: 0.2rem 0.5rem; border-radius: 3px; }
+    .mismatch { background: #fff0f0; border-left: 3px solid #cc0000; padding-left: 0.4rem; }
+    .match-ok { color: #2a7d2a; }
+    .status-badge { font-size: 0.6rem; padding: 0.2rem 0.5rem; border-radius: 10px; background: #eee; white-space: nowrap; }
+    .status-badge.ok { background: #d4edda; color: #155724; }
+    .status-badge.err { background: #f8d7da; color: #721c24; }
+    textarea { width: 100%; padding: 0.3rem; border: 1px solid #ccc; font-family: inherit; font-size: 0.75rem; resize: vertical; }
+    hr { margin: 1rem 0; border: none; border-top: 1px solid #eee; }
+    .hidden { display: none; }
+    .url-input { flex: 1; min-width: 250px; padding: 0.4rem; border: 1px solid #ccc; font-family: monospace; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Kontrolor fenoménů</h1>
+  <div class="sub">Ověř, jestli úhly v pohádkách sedí s daty. Načti HTML z URL a porovnej.</div>
+  
+  <div class="flex-row">
+    <button onclick="exportJSON()">⬇️ Exportovat data</button>
+    <button onclick="document.getElementById('importFile').click()">⬆️ Importovat</button>
+    <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(event)">
+    <button onclick="checkAllURLs()">🔄 Hromadně načíst vše</button>
+    <span style="flex:1;"></span>
+    <span style="font-size:0.7rem; color:#555;" id="statusText">Připraveno</span>
+  </div>
+
+  <div class="card-list" id="cardChips"></div>
+
+  <div class="flex-row">
+    <label style="font-size:0.7rem;">URL šablona (pro hromadné načtení):</label>
+    <input type="text" class="url-input" id="urlTemplate" value="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/[ID]_uhly.html" placeholder=".../[ID]_uhly.html">
+  </div>
+
+  <div class="detail-grid" id="detailContainer"></div>
+
+  <script>
+    // --- PALETA ---
+    const ANGLE_PALETTE = [
+      {st:0, name:"Analytický", color:"#4a6075"}, {st:30, name:"Kulturní", color:"#6a9e72"},
+      {st:60, name:"Filozofický", color:"#d4a0b0"}, {st:90, name:"Naivní", color:"#5fa8a0"},
+      {st:120, name:"Jazykový", color:"#8e7248"}, {st:150, name:"Metaforický", color:"#5a8a5a"},
+      {st:180, name:"Asociační", color:"#a85a5a"}, {st:210, name:"Introspektivní", color:"#c8a832"},
+      {st:240, name:"Ironický", color:"#c8722a"}, {st:270, name:"Groteskní", color:"#a83060"},
+      {st:300, name:"Absurdní", color:"#6080a0"}, {st:330, name:"Surrealistický", color:"#8060b0"}
+    ];
+    const ANGLE_MAP = Object.fromEntries(ANGLE_PALETTE.map(a => [a.st, a]));
+
+    // --- Výchozí data ---
+    const DEFAULT_DATA = {
+      "netopyr": {
+        jmeno:"NETOPÝR", ilustrace:"doma/ilustrace/netopyr.jpg", odkaz:"netopyr_uhly.html",
+        popis:"a kráse která ráno se [už] nehodí",
+        uhly:{"0":"","30":"","60":"","90":"","120":"","150":"","180":"","210":"","240":"","270":"","300":"","330":""}
+      },
+      "ryba": {
+        jmeno:"RYBA", ilustrace:"doma/ilustrace/ryba.jpg", odkaz:"ryba_uhly.html",
+        popis:"která rapovala",
+        uhly:{"0":"","30":"","60":"","90":"","120":"","150":"","180":"","210":"","240":"","270":"","300":"","330":""}
+      },
+      "prase": {
+        jmeno:"PRASE", ilustrace:"doma/ilustrace/prase.jpg", odkaz:"",
+        popis:"které hledá záchod",
+        uhly:{"0":"","30":"","60":"","90":"","120":"","150":"","180":"","210":"","240":"","270":"","300":"","330":""}
+      }
+    };
+
+    let DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    let selectedCards = new Set(['netopyr']);
+    // Uchová extrahovaná živá data z URL
+    let liveData = {}; // { "netopyr": { "0": "text z webu", ... } }
+
+    function init() {
+      const stored = localStorage.getItem('fenomeny-data');
+      if (stored) { try { DATA = JSON.parse(stored); } catch(e){} }
+      renderChips();
+      renderDetails();
+    }
+
+    function renderChips() {
+      const container = document.getElementById('cardChips');
+      container.innerHTML = '';
+      Object.entries(DATA).forEach(([id, card]) => {
+        const chip = document.createElement('span');
+        chip.className = 'card-chip';
+        if (selectedCards.has(id)) chip.classList.add('active');
+        chip.textContent = card.jmeno;
+        chip.onclick = () => {
+          if (selectedCards.has(id)) selectedCards.delete(id);
+          else selectedCards.add(id);
+          renderChips();
+          renderDetails();
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    function renderDetails() {
+      const container = document.getElementById('detailContainer');
+      container.innerHTML = '';
+      if (selectedCards.size === 0) {
+        container.innerHTML = '<p style="color:#888;">Vyber fenomén z lišty nahoře.</p>';
+        return;
+      }
+      selectedCards.forEach(id => {
+        const card = DATA[id];
+        if (!card) return;
+        const angles = card.uhly || {};
+        const live = liveData[id] || {};
+        
+        let html = `<div class="detail-card">
+          <div class="detail-header">
+            <h3>${card.jmeno}</h3>
+            <div>
+              <button onclick="fetchLiveData('${id}')" title="Načíst HTML z URL">🔄 Načíst z URL</button>
+            </div>
+          </div>`;
+        
+        html += `<div style="font-size:0.7rem; color:#555; margin-bottom:0.5rem;">Odkaz: ${card.odkaz || 'není'}</div>`;
+        
+        ANGLE_PALETTE.forEach(a => {
+          const st = a.st.toString();
+          const localVal = angles[st] || '';
+          const liveVal = live[st] || '';
+          const isMismatch = liveVal && localVal && liveVal !== localVal;
+          const isOk = liveVal && localVal && liveVal === localVal;
+          
+          let rowClass = '';
+          if (isMismatch) rowClass = 'mismatch';
+          
+          html += `<div class="angle-row ${rowClass}">
+            <span class="angle-color" style="background:${a.color};"></span>
+            <span class="angle-name">${a.name} (${st}°)</span>
+            <span class="angle-data" title="Lokální data">${localVal || '(prázdný)'}</span>
+            <span class="angle-live" title="Živá data z webu">${liveVal || '(není načteno)'}</span>
+            ${isMismatch ? '<span class="status-badge err">NESEDÍ</span>' : ''}
+            ${isOk ? '<span class="status-badge ok">OK</span>' : ''}
+          </div>`;
+        });
+        
+        html += `</div>`;
+        container.innerHTML += html;
+      });
+    }
+
+    async function fetchLiveData(id) {
+      const card = DATA[id];
+      if (!card || !card.odkaz) {
+        alert('Tento fenomén nemá definovaný odkaz na HTML stránku.');
+        return;
+      }
+      const base = 'https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/';
+      const url = base + card.odkaz;
+      document.getElementById('statusText').innerText = `Načítám ${url}...`;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const html = await resp.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        const extracted = {};
+        // Hledá všechny elementy s id, které začínají jménem karty (např. "netopyr-")
+        const prefix = id + '-';
+        doc.querySelectorAll('[id]').forEach(el => {
+          const elId = el.id.toLowerCase();
+          if (elId.startsWith(prefix)) {
+            const suffix = elId.substring(prefix.length);
+            // Pokusí se najít odpovídající úhel podle názvu
+            for (let a of ANGLE_PALETTE) {
+              if (suffix.includes(a.name.toLowerCase())) {
+                extracted[a.st.toString()] = el.textContent.trim().substring(0, 100);
+                break;
+              }
+            }
+          }
+        });
+        
+        liveData[id] = extracted;
+        document.getElementById('statusText').innerText = `Načteno pro ${card.jmeno}: ${Object.keys(extracted).length} úhlů.`;
+        renderDetails();
+      } catch (err) {
+        document.getElementById('statusText').innerText = `Chyba: ${err.message}`;
+      }
+    }
+
+    async function checkAllURLs() {
+      for (let id of selectedCards) {
+        await fetchLiveData(id);
+      }
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'fenomeny_kontrola.json'; a.click();
+    }
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try { DATA = JSON.parse(e.target.result); renderChips(); renderDetails(); } catch(ex) { alert('Chyba JSON'); }
+      };
+      reader.readAsText(file);
+    }
+
+    init();
+  </script>
+</body>
+</html>
