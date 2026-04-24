@@ -108,12 +108,12 @@ ilustrace:
 - [repodom_builder](doma/mimo/repodom_builder.html)
 - [repodom-builder = Claire](doma/mimo/repodom_builder.html)
 
- -[REPODOM SABLONA prazdna](doma/mimo/repodom_sablona.html)
+ - [REPODOM SABLONA prazdna](doma/mimo/repodom_sablona.html)
 - [generátor fontů](doma/mimo/generator_fontu.html)
 
 ---
 
-- - [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
+- [myší myšlení: 6xtema](doma/data/uhly/mys/index.html)
   denik - temata - nepouzit
 
 ---
