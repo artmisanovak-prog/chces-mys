@@ -104,6 +104,7 @@ ilustrace:
 
  ---
 
+- [repodom builder kimi](doma/mimo/repodom_builder_kimi.html)
 - [repodom_builder](doma/mimo/repodom_builder.html)
 - [repodom-builder = Claire](doma/mimo/repodom_builder.html)
 
