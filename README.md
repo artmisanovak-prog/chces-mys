@@ -32,7 +32,10 @@ kreativita, fyzika jazyka, metadenik
 - [licence a zpetna vazba](doma/licence_a_zpetna_vazba.html)
 
 - [atelier vizualnich pravidel](doma/mimo/atelier_vizualni_zazitek.html)
-  
+
+
+- [anotator car](doma/mimo/anotator.html)
+
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
