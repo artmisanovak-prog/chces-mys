@@ -879,5 +879,376 @@
 
         init();
     </script>
+
+    <!-- ===== ANOTAČNÍ REŽIM (PLNĚ FUNKČNÍ) ===== -->
+<style>
+    .secret-note-btn {
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+        width: 3rem; height: 3rem; border-radius: 50%;
+        background: rgba(10, 138, 138, 0.6); color: white; border: none;
+        font-size: 1.4rem; cursor: pointer; backdrop-filter: blur(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .secret-note-btn.active { background: #ff5722; }
+
+    .context-popup {
+        position: fixed; z-index: 10001;
+        background: #fff; border: 2px solid #111;
+        padding: 0.6rem; min-width: 200px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+        font-family: sans-serif; font-size: 0.9rem;
+    }
+    .context-popup button {
+        display: block; width: 100%; margin: 0.3rem 0; padding: 0.6rem;
+        cursor: pointer; border: 1px solid #ccc; background: #f9f9f9;
+        text-align: left; font-size: 0.9rem; border-radius: 4px;
+    }
+    .context-popup button:hover { background: #eee; }
+
+    .note-marker {
+        position: absolute; top: -6px; right: -6px;
+        width: 12px; height: 12px; background: #4caf50; border-radius: 50%;
+        z-index: 998; cursor: pointer; box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        pointer-events: none; /* Aby nechytaly kliky */
+    }
+
+    .export-panel {
+        position: fixed; top: 0; right: 0; width: 340px; max-width: 90vw;
+        height: 100vh; background: #fff; border-left: 2px solid #111;
+        z-index: 10010; padding: 1.5rem; overflow-y: auto;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.2);
+        font-family: sans-serif; font-size: 0.85rem; color: #111;
+    }
+    .export-panel audio { width: 100%; margin-top: 0.3rem; }
+    .close-export { float: right; cursor: pointer; font-size: 1.8rem; color: #555; }
+
+    .recording-indicator {
+        position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+        background: #ff4444; color: white; padding: 0.5rem 2rem;
+        border-radius: 30px; z-index: 10020; font-family: sans-serif;
+        font-weight: bold; display: none; align-items: center; gap: 0.5rem;
+    }
+    .recording-indicator.visible { display: flex; }
+    .stop-rec-btn {
+        background: white; color: #ff4444; border: none;
+        padding: 0.3rem 1rem; border-radius: 20px; cursor: pointer;
+        font-weight: bold; margin-left: 1rem;
+    }
+</style>
+
+<script>
+(function() {
+    const PASSWORD = "anotator";
+    const STORAGE_KEY = 'notes_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
+    let notes = {};
+    let editing = false;
+    let recorder = null;
+    let recording = false;
+    let activeElement = null;
+    let mediaStream = null;
+
+    // Načtení poznámek
+    try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) {}
+
+    // --- Hlavní tlačítko ---
+    const mainBtn = document.createElement('button');
+    mainBtn.className = 'secret-note-btn';
+    mainBtn.innerHTML = '🔑';
+    document.body.appendChild(mainBtn);
+
+    // --- Indikátor nahrávání ---
+    const recIndicator = document.createElement('div');
+    recIndicator.className = 'recording-indicator';
+    recIndicator.innerHTML = '🔴 Nahrávám... <button class="stop-rec-btn" id="stopRecBtn">UKONČIT</button>';
+    document.body.appendChild(recIndicator);
+
+    document.getElementById('stopRecBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        stopRecording(false);
+    });
+
+    // --- Přepínání režimu ---
+    mainBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (editing) {
+            deactivate();
+        } else {
+            const pwd = prompt('Heslo:');
+            if (pwd === PASSWORD) activate();
+            else if (pwd !== null) alert('Špatně.');
+        }
+    });
+
+    function activate() {
+        editing = true;
+        mainBtn.classList.add('active');
+        mainBtn.innerHTML = '🔒';
+        renderDots();
+    }
+
+    function deactivate() {
+        if (recording) stopRecording(true);
+        editing = false;
+        mainBtn.classList.remove('active');
+        mainBtn.innerHTML = '🔑';
+        document.querySelectorAll('.note-marker').forEach(m => m.remove());
+        closePopup();
+        closeExportPanel();
+    }
+
+    // --- Klikání na prvky (delegování) ---
+    document.body.addEventListener('click', function(e) {
+        if (!editing) return;
+
+        // Hledáme smysluplný prvek
+        const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, td, th, em, strong, blockquote, img, figcaption, a, span, div');
+        if (!target) return;
+
+        // Ignorujeme kliky na naše vlastní prvky
+        if (target.closest('.secret-note-btn') || target.closest('.context-popup') || target.closest('.export-panel') || target.closest('.recording-indicator') || target.closest('.note-marker')) {
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        activeElement = target;
+        showPopup(e.clientX, e.clientY);
+    });
+
+    // --- Popup menu ---
+    let popup = null;
+
+    function showPopup(x, y) {
+        closePopup();
+        popup = document.createElement('div');
+        popup.className = 'context-popup';
+        
+        // Zjistíme, jestli prvek už má poznámku
+        const sel = getSelector(activeElement);
+        const hasNote = notes[sel] ? true : false;
+        const noteType = hasNote && typeof notes[sel] === 'string' && notes[sel].startsWith('data:audio') ? 'audio' : 'text';
+
+        popup.innerHTML = `
+            <button class="popup-note-btn">📝 ${hasNote ? 'Upravit poznámku' : 'Napsat poznámku'}</button>
+            <button class="popup-audio-btn">🎤 ${recording ? 'Zastavit nahrávání' : 'Nahrát zvuk'}</button>
+            <button class="popup-edit-btn">✏️ Upravit text prvku</button>
+            <button class="popup-add-btn">➕ Přidat tlačítko s odkazem</button>
+            <button class="popup-export-btn">📋 Zobrazit všechny poznámky</button>
+            <button class="popup-close-btn">❌ Zavřít menu</button>
+        `;
+        document.body.appendChild(popup);
+
+        // Pozicování
+        const rect = popup.getBoundingClientRect();
+        let left = x, top = y;
+        if (x + rect.width > window.innerWidth) left = window.innerWidth - rect.width - 10;
+        if (y + rect.height > window.innerHeight) top = window.innerHeight - rect.height - 10;
+        popup.style.left = left + 'px';
+        popup.style.top = top + 'px';
+
+        // Události
+        popup.querySelector('.popup-note-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); addTextNote(); });
+        popup.querySelector('.popup-audio-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); toggleAudio(); });
+        popup.querySelector('.popup-edit-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); editElementText(); });
+        popup.querySelector('.popup-add-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); addLinkButton(); });
+        popup.querySelector('.popup-export-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); openExportPanel(); });
+        popup.querySelector('.popup-close-btn').addEventListener('click', function(e) { e.stopPropagation(); closePopup(); });
+    }
+
+    function closePopup() {
+        if (popup) { popup.remove(); popup = null; }
+    }
+
+    // --- Akce tlačítek ---
+    function addTextNote() {
+        if (!activeElement) return;
+        const sel = getSelector(activeElement);
+        const old = (typeof notes[sel] === 'string' && !notes[sel].startsWith('data:audio')) ? notes[sel] : '';
+        const txt = prompt('Poznámka:', old);
+        if (txt === null) return;
+        notes[sel] = txt.trim() || '';
+        saveAndRender();
+    }
+
+    function toggleAudio() {
+        if (!activeElement) return;
+        if (recording) {
+            stopRecording(false);
+        } else {
+            startRecording();
+        }
+    }
+
+    function editElementText() {
+        if (!activeElement) return;
+        const oldText = activeElement.textContent.trim();
+        const newText = prompt('Upravit text:', oldText);
+        if (newText === null || newText === oldText) return;
+        activeElement.textContent = newText;
+        const sel = getSelector(activeElement);
+        notes[sel] = '✏️ UPRAVENO: ' + newText;
+        saveAndRender();
+    }
+
+    function addLinkButton() {
+        if (!activeElement) return;
+        const url = prompt('URL odkazu (např. https://...):');
+        if (!url) return;
+        const label = prompt('Text tlačítka:', 'Nový odkaz');
+        if (!label) return;
+        
+        const btn = document.createElement('a');
+        btn.href = url;
+        btn.textContent = label;
+        btn.target = '_blank';
+        btn.style.cssText = 'display:inline-block;padding:0.4rem 1rem;border:1px solid #111;background:#f9f9f9;color:#111;text-decoration:none;margin:0.3rem;font-size:0.8rem;';
+        activeElement.insertAdjacentElement('afterend', btn);
+        
+        const sel = getSelector(activeElement);
+        const old = notes[sel] || '';
+        notes[sel] = old + (old ? ' | ' : '') + '🔗 PŘIDÁN ODKAZ: ' + url;
+        saveAndRender();
+    }
+
+    // --- Zvuk ---
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            mediaStream = stream;
+            recorder = new MediaRecorder(stream);
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                if (chunks.length > 0) {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        if (activeElement) {
+                            notes[getSelector(activeElement)] = reader.result;
+                            saveAndRender();
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                }
+                // Úklid
+                stream.getTracks().forEach(t => t.stop());
+                mediaStream = null;
+                recording = false;
+                recIndicator.classList.remove('visible');
+            };
+            recorder.start();
+            recording = true;
+            recIndicator.classList.add('visible');
+        }).catch(() => alert('Bez přístupu k mikrofonu.'));
+    }
+
+    function stopRecording(cancel) {
+        if (recorder && recorder.state === 'recording') {
+            if (cancel) {
+                recorder.ondataavailable = null; // Zrušit ukládání
+                recorder.onstop = () => {
+                    if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+                    mediaStream = null;
+                    recording = false;
+                    recIndicator.classList.remove('visible');
+                };
+            }
+            recorder.stop();
+        } else {
+            // Fallback, kdyby byl recorder null, ale indikátor svítil
+            if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+            mediaStream = null;
+            recording = false;
+            recIndicator.classList.remove('visible');
+        }
+    }
+
+    // --- Pomocné funkce ---
+    function getSelector(el) {
+        if (el.id) return '#' + el.id;
+        let path = [];
+        while (el && el !== document.body) {
+            let seg = el.tagName.toLowerCase();
+            if (el.className && typeof el.className === 'string') {
+                const classes = el.className.trim().split(/\s+/).slice(0,2);
+                if (classes.length) seg += '.' + classes.join('.');
+            }
+            const parent = el.parentElement;
+            if (parent) {
+                const siblings = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+                if (siblings.length > 1) seg += ':nth-child(' + (siblings.indexOf(el)+1) + ')';
+            }
+            path.unshift(seg);
+            el = parent;
+        }
+        return path.join(' > ');
+    }
+
+    function saveAndRender() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        renderDots();
+    }
+
+    function renderDots() {
+        document.querySelectorAll('.note-marker').forEach(m => m.remove());
+        if (!editing) return;
+        Object.entries(notes).forEach(([sel, val]) => {
+            try {
+                const el = document.querySelector(sel);
+                if (el) {
+                    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+                    const dot = document.createElement('span');
+                    dot.className = 'note-marker';
+                    dot.title = typeof val === 'string' ? (val.startsWith('data:audio') ? '🎤 Zvuk' : '📝 ' + val) : 'Poznámka';
+                    el.appendChild(dot);
+                }
+            } catch(e) {}
+        });
+    }
+
+    // --- Export panel ---
+    let exportPanel = null;
+    function openExportPanel() {
+        closeExportPanel();
+        exportPanel = document.createElement('div');
+        exportPanel.className = 'export-panel';
+        exportPanel.innerHTML = '<span class="close-export" id="closeExportBtn">×</span><h3>Poznámky</h3>';
+        const keys = Object.keys(notes);
+        if (keys.length === 0) {
+            exportPanel.innerHTML += '<p>Žádné.</p>';
+        } else {
+            keys.forEach(k => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '1.5rem';
+                div.innerHTML = '<strong>' + k + '</strong><br>';
+                const val = notes[k];
+                if (typeof val === 'string' && val.startsWith('data:audio')) {
+                    div.innerHTML += '<audio controls src="' + val + '"></audio>';
+                } else {
+                    div.innerHTML += (typeof val === 'string' ? val : '');
+                }
+                // Tlačítko na smazání
+                const delBtn = document.createElement('button');
+                delBtn.textContent = '🗑 Smazat';
+                delBtn.style.cssText = 'display:block;margin-top:0.3rem;font-size:0.7rem;cursor:pointer;';
+                delBtn.addEventListener('click', function() {
+                    delete notes[k];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+                    openExportPanel(); // Refresh panelu
+                    renderDots();
+                });
+                div.appendChild(delBtn);
+                exportPanel.appendChild(div);
+            });
+        }
+        document.body.appendChild(exportPanel);
+        document.getElementById('closeExportBtn').addEventListener('click', closeExportPanel);
+    }
+
+    function closeExportPanel() { if (exportPanel) { exportPanel.remove(); exportPanel = null; } }
+
+})();
+</script>
+    
 </body>
 </html>
