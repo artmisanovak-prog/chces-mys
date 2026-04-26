@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anotátor · Poznámky</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #fff; color: #111; line-height: 1.5;
+            padding: 1.5rem; max-width: 900px; margin: 0 auto;
+            transition: all 0.3s;
+        }
+        h1 { font-family: Georgia, serif; font-weight: 400; font-size: 2rem; margin-bottom: 0.5rem; }
+        .sub { color: #555; font-size: 0.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem; }
+        .toolbar { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        button, .btn {
+            padding: 0.4rem 1.2rem; border: 1px solid #ccc; background: #f9f9f9;
+            cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: 0.2s;
+        }
+        button:hover { background: #eee; }
+        .note-group { margin-bottom: 2rem; }
+        .note-group h2 {
+            font-family: Georgia, serif; font-weight: 400; font-size: 1.2rem;
+            border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; margin-bottom: 0.8rem;
+            word-break: break-all;
+        }
+        .note-entry {
+            border: 1px solid #eee; padding: 1rem; margin-bottom: 0.8rem;
+            background: #fafafa; border-radius: 4px;
+        }
+        .note-entry strong { display: block; font-size: 0.8rem; color: #555; margin-bottom: 0.3rem; }
+        .note-entry input, .note-entry textarea {
+            width: 100%; padding: 0.4rem; margin: 0.3rem 0; border: 1px solid #ddd;
+            font-family: inherit; font-size: 0.85rem;
+        }
+        .note-entry button { margin-right: 0.4rem; margin-top: 0.3rem; }
+        .empty { color: #888; font-style: italic; text-align: center; margin-top: 2rem; }
+
+        /* Plovoucí režim */
+        body.floating {
+            max-width: 380px; padding: 0.8rem; position: fixed; top: 0; right: 0;
+            height: 100vh; overflow-y: auto; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.97); backdrop-filter: blur(6px);
+            border-left: 1.5px solid #111; z-index: 9999;
+        }
+        #floatToggle { position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 10000; }
+        body.floating #floatToggle { left: auto; right: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <h1>📋 Poznámky</h1>
+    <div class="sub">Všechny poznámky ze všech stránek · Centrální přehled</div>
+
+    <div class="toolbar">
+        <button onclick="loadNotes()">🔄 Obnovit</button>
+        <button onclick="exportAllTXT()">📥 Exportovat vše do TXT</button>
+        <button id="floatToggle" onclick="toggleFloating()">📌 Plovoucí režim</button>
+    </div>
+
+    <div id="notesContainer"></div>
+
+    <script>
+        const STORAGE_PREFIX = 'notes_';
+
+        function getAllNotes() {
+            const allNotes = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(STORAGE_PREFIX)) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        const pageUrl = key.replace(STORAGE_PREFIX, '').replace(/_/g, '/').replace(/\/\//g, '/');
+                        allNotes[pageUrl] = data;
+                    } catch(e) {}
+                }
+            }
+            return allNotes;
+        }
+
+        function loadNotes() {
+            const container = document.getElementById('notesContainer');
+            const allNotes = getAllNotes();
+            const urls = Object.keys(allNotes);
+
+            if (urls.length === 0) {
+                container.innerHTML = '<div class="empty">Žádné poznámky. Nejdřív si přidej poznámky přes anotační režim na některé kartě.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            urls.forEach(url => {
+                const notes = allNotes[url];
+                const noteKeys = Object.keys(notes).filter(k => !k.endsWith('_cat'));
+                
+                if (noteKeys.length === 0) return;
+
+                const group = document.createElement('div');
+                group.className = 'note-group';
+                group.innerHTML = '<h2>' + url + '</h2>';
+                
+                noteKeys.forEach(sel => {
+                    const val = notes[sel];
+                    const cat = notes[sel+'_cat'] || '';
+                    const isAudio = typeof val === 'string' && val.startsWith('data:audio');
+                    
+                    const entry = document.createElement('div');
+                    entry.className = 'note-entry';
+                    
+                    let entryHtml = '<strong>Selektor: ' + sel + '</strong>';
+                    entryHtml += '<input type="text" class="cat-input" data-url="' + url + '" data-sel="' + sel + '" placeholder="Kategorie (např. font, barva...)" value="' + cat.replace(/"/g, '&quot;') + '">';
+                    
+                    if (isAudio) {
+                        entryHtml += '<audio controls src="' + val + '" style="width:100%;margin:0.3rem 0;"></audio>';
+                    } else {
+                        entryHtml += '<textarea class="text-input" data-url="' + url + '" data-sel="' + sel + '" rows="2">' + (typeof val === 'string' ? val.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '') + '</textarea>';
+                    }
+                    
+                    entryHtml += '<button class="save-btn" data-url="' + url + '" data-sel="' + sel + '">💾 Uložit</button>';
+                    entryHtml += '<button class="del-btn" data-url="' + url + '" data-sel="' + sel + '">🗑 Smazat</button>';
+                    
+                    entry.innerHTML = entryHtml;
+                    group.appendChild(entry);
+                });
+                
+                container.appendChild(group);
+            });
+
+            // Připojit události
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.dataset.url;
+                    const sel = this.dataset.sel;
+                    const storageKey = STORAGE_PREFIX + url.replace(/\//g, '_').replace(/\/\//g, '/');
+                    
+                    let notes = {};
+                    try { notes = JSON.parse(localStorage.getItem(storageKey)) || {}; } catch(e) {}
+                    
+                    const textarea = document.querySelector('.text-input[data-url="' + url + '"][data-sel="' + sel + '"]');
+                    const catInput = document.querySelector('.cat-input[data-url="' + url + '"][data-sel="' + sel + '"]');
+                    
+                    if (textarea) notes[sel] = textarea.value;
+                    if (catInput) notes[sel+'_cat'] = catInput.value;
+                    
+                    localStorage.setItem(storageKey, JSON.stringify(notes));
+                    alert('Uloženo.');
+                });
+            });
+
+            document.querySelectorAll('.del-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!confirm('Opravdu smazat?')) return;
+                    const url = this.dataset.url;
+                    const sel = this.dataset.sel;
+                    const storageKey = STORAGE_PREFIX + url.replace(/\//g, '_').replace(/\/\//g, '/');
+                    
+                    let notes = {};
+                    try { notes = JSON.parse(localStorage.getItem(storageKey)) || {}; } catch(e) {}
+                    
+                    delete notes[sel];
+                    delete notes[sel+'_cat'];
+                    
+                    if (Object.keys(notes).length === 0) {
+                        localStorage.removeItem(storageKey);
+                    } else {
+                        localStorage.setItem(storageKey, JSON.stringify(notes));
+                    }
+                    
+                    loadNotes();
+                });
+            });
+        }
+
+        function exportAllTXT() {
+            const allNotes = getAllNotes();
+            let txt = '=== VŠECHNY POZNÁMKY ===\n\n';
+            
+            Object.entries(allNotes).forEach(([url, notes]) => {
+                txt += '--- ' + url + ' ---\n';
+                Object.keys(notes).filter(k => !k.endsWith('_cat')).forEach(sel => {
+                    const val = notes[sel];
+                    const cat = notes[sel+'_cat'] || '';
+                    txt += '\nSELEKTOR: ' + sel + '\n';
+                    if (cat) txt += 'KATEGORIE: ' + cat + '\n';
+                    if (typeof val === 'string' && val.startsWith('data:audio')) {
+                        txt += 'TYP: zvuková poznámka\n\n';
+                    } else {
+                        txt += 'TEXT: ' + (typeof val === 'string' ? val : '') + '\n\n';
+                    }
+                });
+                txt += '\n';
+            });
+            
+            const blob = new Blob([txt], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'vsechny_poznamky.txt';
+            a.click();
+        }
+
+        function toggleFloating() {
+            document.body.classList.toggle('floating');
+            const btn = document.getElementById('floatToggle');
+            btn.textContent = document.body.classList.contains('floating') ? '📌 Celá stránka' : '📌 Plovoucí režim';
+        }
+
+        // Načíst při startu
+        loadNotes();
+    </script>
+</body>
+</html>
