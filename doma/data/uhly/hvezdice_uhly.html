@@ -704,23 +704,19 @@
     let recording = false;
     let activeElement = null;
     let mediaStream = null;
-    let showEdits = false; // Pouze dočasný stav, nikam se neukládá!
+    let showEdits = false;
 
     try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES)) || {}; } catch(e) {}
 
-    // --- Plovoucí ikona MYŠI (s bílým pozadím) ---
+    // --- IKONA MYŠI (malá, bez pozadí, bílá myš pomocí filtru) ---
     const mouseBtn = document.createElement('button');
     mouseBtn.className = 'secret-mouse-btn';
-    /* === UMÍSTĚNÍ SOUBORU: Cesta k ikoně myši === */
-    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;position:relative;z-index:2;">';
-    mouseBtn.style.background = 'rgba(255,255,255,0.9)';
-    mouseBtn.style.borderRadius = '50%';
-    mouseBtn.style.padding = '5px';
-    mouseBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+    /* === UMÍSTĚNÍ SOUBORU: ikona myši === */
+    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;filter:brightness(0) invert(1);">';
     mouseBtn.title = 'Klikni pro zadání hesla';
     document.body.appendChild(mouseBtn);
 
-    // --- Plovoucí panel nástrojů ---
+    // --- PANEL NÁSTROJŮ ---
     const toolbox = document.createElement('div');
     toolbox.className = 'floating-toolbox';
     toolbox.innerHTML = `
@@ -734,94 +730,61 @@
     `;
     document.body.appendChild(toolbox);
 
-    // --- Indikátor nahrávání ---
+    // --- INDIKÁTOR NAHRÁVÁNÍ ---
     const recIndicator = document.createElement('div');
     recIndicator.className = 'recording-indicator';
     recIndicator.innerHTML = '🔴 Nahrávám... <button class="stop-rec-btn" id="stopRecBtn">UKONČIT</button>';
     document.body.appendChild(recIndicator);
-    document.getElementById('stopRecBtn').addEventListener('click', function(e) {
-        e.stopPropagation();
-        stopRecording(false);
-    });
+    document.getElementById('stopRecBtn').addEventListener('click', e => { e.stopPropagation(); stopRecording(false); });
 
-    // --- Drag & Drop pro toolbox ---
-    let isDragging = false, dragOffsetX, dragOffsetY;
-    toolbox.addEventListener('mousedown', function(e) {
+    // --- TAŽENÍ PANELU (myš i dotyk) ---
+    let isDragging = false, startX, startY, origLeft, origTop;
+    function dragStart(e) {
         if (e.target.tagName === 'BUTTON' || e.target.classList.contains('toolbox-close-btn')) return;
         isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        startX = clientX; startY = clientY;
         const rect = toolbox.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        toolbox.style.cursor = 'grabbing';
+        origLeft = rect.left; origTop = rect.top;
         e.preventDefault();
-    });
-    // Pro touch zařízení
-    toolbox.addEventListener('touchstart', function(e) {
-        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('toolbox-close-btn')) return;
-        isDragging = true;
-        const touch = e.touches[0];
-        const rect = toolbox.getBoundingClientRect();
-        dragOffsetX = touch.clientX - rect.left;
-        dragOffsetY = touch.clientY - rect.top;
-        e.preventDefault();
-    }, {passive: false});
-
-    window.addEventListener('mousemove', function(e) {
+    }
+    function dragMove(e) {
         if (!isDragging) return;
-        toolbox.style.left = (e.clientX - dragOffsetX) + 'px';
-        toolbox.style.top = (e.clientY - dragOffsetY) + 'px';
-        toolbox.style.right = 'auto'; toolbox.style.bottom = 'auto';
-    });
-    window.addEventListener('touchmove', function(e) {
-        if (!isDragging) return;
-        const touch = e.touches[0];
-        toolbox.style.left = (touch.clientX - dragOffsetX) + 'px';
-        toolbox.style.top = (touch.clientY - dragOffsetY) + 'px';
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        toolbox.style.left = (origLeft + clientX - startX) + 'px';
+        toolbox.style.top = (origTop + clientY - startY) + 'px';
         toolbox.style.right = 'auto'; toolbox.style.bottom = 'auto';
         e.preventDefault();
-    }, {passive: false});
+    }
+    function dragEnd() { isDragging = false; }
+    toolbox.addEventListener('mousedown', dragStart);
+    toolbox.addEventListener('touchstart', dragStart, {passive: false});
+    window.addEventListener('mousemove', dragMove);
+    window.addEventListener('touchmove', dragMove, {passive: false});
+    window.addEventListener('mouseup', dragEnd);
+    window.addEventListener('touchend', dragEnd);
 
-    window.addEventListener('mouseup', function() {
-        if (isDragging) {
-            isDragging = false;
-            toolbox.style.cursor = 'grab';
-        }
-    });
-    window.addEventListener('touchend', function() {
-        isDragging = false;
-    });
-
-    // --- Toolbox události ---
-    document.getElementById('tb-close').addEventListener('click', function() {
-        toolbox.classList.remove('visible');
-    });
-    document.getElementById('tb-note').addEventListener('click', function() { addTextNote(); });
-    document.getElementById('tb-audio').addEventListener('click', function() { toggleAudio(); });
-    document.getElementById('tb-edit').addEventListener('click', function() { editElementText(); });
-    document.getElementById('tb-add').addEventListener('click', function() { addLinkButton(); });
-    document.getElementById('tb-export').addEventListener('click', function() { openExportPanel(); });
-    
-    // 👁 Přepínač zobrazení úprav
+    // --- TLAČÍTKA PANELU ---
+    document.getElementById('tb-close').addEventListener('click', () => toolbox.classList.remove('visible'));
+    document.getElementById('tb-note').addEventListener('click', addTextNote);
+    document.getElementById('tb-audio').addEventListener('click', toggleAudio);
+    document.getElementById('tb-edit').addEventListener('click', editElementText);
+    document.getElementById('tb-add').addEventListener('click', addLinkButton);
+    document.getElementById('tb-export').addEventListener('click', openExportPanel);
     document.getElementById('tb-toggle').addEventListener('click', function(e) {
-        const btn = e.target;
         showEdits = !showEdits;
-        if (showEdits) {
-            btn.classList.add('active');
-            btn.title = 'Skrýt úpravy';
-            applyAllEdits();
-        } else {
-            btn.classList.remove('active');
-            btn.title = 'Zobrazit úpravy';
-            removeAllEdits();
-        }
+        this.classList.toggle('active', showEdits);
+        this.title = showEdits ? 'Skrýt úpravy' : 'Zobrazit úpravy';
+        showEdits ? applyAllEdits() : removeAllEdits();
     });
 
-    // --- Přepínání režimu ---
-    mouseBtn.addEventListener('click', function(e) {
+    // --- PŘEPÍNÁNÍ REŽIMU (heslo) ---
+    mouseBtn.addEventListener('click', e => {
         e.stopPropagation();
-        if (editing) {
-            deactivate();
-        } else {
+        if (editing) { deactivate(); }
+        else {
             const pwd = prompt('Heslo:');
             if (pwd === PASSWORD) activate();
             else if (pwd !== null) alert('Špatně.');
@@ -831,10 +794,11 @@
     function activate() {
         editing = true;
         showEdits = false;
-        document.getElementById('tb-toggle').classList.remove('active');
-        document.getElementById('tb-toggle').title = 'Zobrazit úpravy';
+        const tbToggle = document.getElementById('tb-toggle');
+        tbToggle.classList.remove('active');
+        tbToggle.title = 'Zobrazit úpravy';
         mouseBtn.classList.add('active');
-        mouseBtn.title = 'Režim úprav aktivní. Klikni pro ukončení.';
+        mouseBtn.title = 'Režim úprav aktivní';
         document.body.style.cursor = 'crosshair';
         renderDots();
     }
@@ -844,7 +808,6 @@
         if (showEdits) removeAllEdits();
         showEdits = false;
         document.getElementById('tb-toggle').classList.remove('active');
-        document.getElementById('tb-toggle').title = 'Zobrazit úpravy';
         editing = false;
         mouseBtn.classList.remove('active');
         mouseBtn.title = 'Klikni pro zadání hesla';
@@ -854,26 +817,28 @@
         closeExportPanel();
     }
 
-    // --- KLIKNUTÍ NA PRVEK (místo dlouhého stisku) ---
-    document.body.addEventListener('click', function(e) {
+    // --- DLOUHÉ PODRŽENÍ PRO MOBIL I POČÍTAČ ---
+    let pressTimer;
+    function startPress(e) {
         if (!editing) return;
-
-        // Necháme fungovat interaktivní prvky (detaily, tlačítka, odkazy), pokud nejsou naše vlastní
         if (e.target.closest('.secret-mouse-btn, .floating-toolbox, .export-panel, .recording-indicator, .note-marker')) return;
-
-        // Detaily/summary necháváme normálně rozbalit
-        if (e.target.closest('details') || e.target.closest('summary')) return;
-
-        // Hledáme prvek k anotaci
         const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, td, th, em, strong, blockquote, img, figcaption, a, span, div, section, article');
-        if (!target) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-
+        if (!target || e.target.closest('details, summary')) return;
         activeElement = target;
-        showToolbox(e.clientX || e.touches?.[0]?.clientX || 100, e.clientY || e.touches?.[0]?.clientY || 100);
-    });
+        // Zabraň označení textu na mobilu
+        if (e.type === 'touchstart') e.preventDefault();
+        pressTimer = setTimeout(() => {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            showToolbox(clientX, clientY);
+        }, 500);
+    }
+    function cancelPress() { clearTimeout(pressTimer); }
+    document.body.addEventListener('mousedown', startPress);
+    document.body.addEventListener('touchstart', startPress, {passive: false});
+    document.body.addEventListener('mouseup', cancelPress);
+    document.body.addEventListener('touchend', cancelPress);
+    document.body.addEventListener('touchmove', cancelPress); // zrušení při posunu
 
     function showToolbox(x, y) {
         toolbox.classList.add('visible');
@@ -883,105 +848,76 @@
         toolbox.style.bottom = 'auto';
     }
 
-    // --- Akce tlačítek toolboxu ---
+    // --- FUNKCE ANOTÁTORU ---
     function addTextNote() {
         if (!activeElement) return;
         const sel = getSelector(activeElement);
         const old = (typeof notes[sel] === 'string' && !notes[sel].startsWith('data:audio')) ? notes[sel] : '';
-        const txt = prompt('Text poznámky:', old);
+        const txt = prompt('Poznámka:', old);
         if (txt === null) return;
-        notes[sel] = txt || '';
+        notes[sel] = txt;
         saveAndRender();
     }
-
     function toggleAudio() {
         if (!activeElement) return;
-        if (recording) stopRecording(false);
-        else startRecording();
+        recording ? stopRecording(false) : startRecording();
     }
-
     function editElementText() {
         if (!activeElement) return;
-        const oldText = activeElement.textContent.trim();
-        const newText = prompt('Upravit text:', oldText);
-        if (newText === null || newText === oldText) return;
+        const newText = prompt('Nový text:', activeElement.textContent.trim());
+        if (newText === null) return;
         activeElement.textContent = newText;
-        const sel = getSelector(activeElement);
-        notes[sel] = newText;
+        notes[getSelector(activeElement)] = newText;
         saveAndRender();
     }
-
     function addLinkButton() {
         if (!activeElement) return;
-        const url = prompt('URL odkazu (např. https://...):');
+        const url = prompt('URL odkazu:');
         if (!url) return;
-        const label = prompt('Text tlačítka:', 'Nový odkaz');
+        const label = prompt('Text tlačítka:', 'Odkaz');
         if (!label) return;
-        
         const sel = getSelector(activeElement);
-        const linkData = { type: 'link', url: url, label: label, selector: sel };
-        notes[sel + '_link'] = linkData;
-        
-        if (showEdits) {
-            addLinkToDOM(sel, linkData);
-        }
+        notes[sel + '_link'] = { type: 'link', url, label };
+        if (showEdits) addLinkToDOM(sel, notes[sel + '_link']);
         saveAndRender();
     }
-
     function addLinkToDOM(sel, data) {
         const el = document.querySelector(sel);
         if (!el) return;
         el.nextElementSibling?.classList.contains('adv-edited-link') && el.nextElementSibling.remove();
-        const btn = document.createElement('a');
-        btn.href = data.url;
-        btn.textContent = data.label;
-        btn.target = '_blank';
-        btn.className = 'adv-edited-link';
-        btn.style.cssText = 'display:inline-block;padding:0.4rem 1rem;border:1px solid #111;background:#f9f9f9;color:#111;text-decoration:none;margin:0.3rem;font-size:0.8rem;';
-        el.insertAdjacentElement('afterend', btn);
+        const a = document.createElement('a');
+        a.href = data.url; a.textContent = data.label; a.target = '_blank';
+        a.className = 'adv-edited-link';
+        a.style.cssText = 'display:inline-block;padding:0.4rem 1rem;border:1px solid #111;background:#f9f9f9;color:#111;text-decoration:none;margin:0.3rem;font-size:0.8rem;';
+        el.insertAdjacentElement('afterend', a);
     }
-
-    // --- Obnovení / odstranění úprav ---
     function applyAllEdits() {
         removeAllEdits();
-        Object.entries(notes).forEach(([key, value]) => {
+        Object.entries(notes).forEach(([key, val]) => {
             if (key.endsWith('_link') || key.endsWith('_cat')) return;
             const el = document.querySelector(key);
             if (!el) return;
-
-            if (typeof value === 'string' && !value.startsWith('data:audio')) {
-                if (el.tagName !== 'IMG') {
-                    el.textContent = value;
-                }
-            }
-
+            if (typeof val === 'string' && !val.startsWith('data:audio')) el.textContent = val;
             const linkKey = key + '_link';
-            if (notes[linkKey] && notes[linkKey].type === 'link') {
-                addLinkToDOM(key, notes[linkKey]);
-            }
+            if (notes[linkKey]?.type === 'link') addLinkToDOM(key, notes[linkKey]);
         });
     }
+    function removeAllEdits() { document.querySelectorAll('.adv-edited-link').forEach(el => el.remove()); }
 
-    function removeAllEdits() {
-        document.querySelectorAll('.adv-edited-link').forEach(el => el.remove());
-    }
-
-    // --- Zvuk (zjednodušeno, funkční) ---
+    // --- ZVUK ---
     function startRecording() {
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
             mediaStream = stream;
             recorder = new MediaRecorder(stream);
             const chunks = [];
-            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.ondataavailable = e => chunks.push(e.data);
             recorder.onstop = () => {
-                if (chunks.length > 0) {
+                if (chunks.length) {
                     const blob = new Blob(chunks, { type: 'audio/webm' });
                     const reader = new FileReader();
                     reader.onload = () => {
-                        if (activeElement) {
-                            notes[getSelector(activeElement)] = reader.result;
-                            saveAndRender();
-                        }
+                        if (activeElement) notes[getSelector(activeElement)] = reader.result;
+                        saveAndRender();
                     };
                     reader.readAsDataURL(blob);
                 }
@@ -994,35 +930,27 @@
             recIndicator.classList.add('visible');
         }).catch(() => alert('Bez přístupu k mikrofonu.'));
     }
-
     function stopRecording(cancel) {
-        if (recorder && recorder.state === 'recording') {
+        if (!recorder) return;
+        if (recorder.state === 'recording') {
             if (cancel) {
                 recorder.ondataavailable = null;
                 recorder.onstop = () => {
                     if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-                    recording = false;
-                    recIndicator.classList.remove('visible');
+                    recording = false; recIndicator.classList.remove('visible');
                 };
             }
             recorder.stop();
-        } else {
-            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-            recording = false;
-            recIndicator.classList.remove('visible');
         }
     }
 
-    // --- Pomocné funkce (stejné jako předtím) ---
+    // --- POMOCNÉ ---
     function getSelector(el) {
         if (el.id) return '#' + el.id;
         let path = [];
         while (el && el !== document.body) {
             let seg = el.tagName.toLowerCase();
-            if (el.className && typeof el.className === 'string') {
-                const classes = el.className.trim().split(/\s+/).slice(0,2);
-                if (classes.length) seg += '.' + classes.join('.');
-            }
+            if (el.className) seg += '.' + el.className.trim().split(/\s+/).slice(0,2).join('.');
             const parent = el.parentElement;
             if (parent) {
                 const siblings = Array.from(parent.children).filter(c => c.tagName === el.tagName);
@@ -1033,130 +961,89 @@
         }
         return path.join(' > ');
     }
-
     function saveAndRender() {
         localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
         renderDots();
         if (showEdits) applyAllEdits();
     }
-
     function renderDots() {
         document.querySelectorAll('.note-marker').forEach(m => m.remove());
         if (!editing) return;
-        Object.entries(notes).forEach(([sel, val]) => {
-            if (sel.endsWith('_link') || sel.endsWith('_cat')) return;
+        Object.entries(notes).forEach(([sel]) => {
+            if (sel.endsWith('_link')||sel.endsWith('_cat')) return;
             try {
                 const el = document.querySelector(sel);
                 if (el) {
-                    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+                    if (getComputedStyle(el).position==='static') el.style.position='relative';
                     const dot = document.createElement('span');
-                    dot.className = 'note-marker';
-                    const displayVal = typeof val === 'string' ? (val.startsWith('data:audio') ? '🎤 Zvuk' : '📝 ' + val.substring(0, 40)) : 'Poznámka';
-                    dot.title = displayVal;
+                    dot.className='note-marker';
+                    dot.title='Poznámka';
                     el.appendChild(dot);
                 }
-            } catch(e) {}
+            } catch(e){}
         });
     }
 
-    // --- Postranní panel (stejný) ---
+    // --- POSTRANNÍ PANEL ---
     let exportPanel = null;
     function openExportPanel() {
         closeExportPanel();
         exportPanel = document.createElement('div');
         exportPanel.className = 'export-panel';
-        
-        let html = '<button class="close-export-btn" id="closeExportBtn">×</button>';
-        html += '<h3>📋 Poznámky</h3>';
-        
-        const noteEntries = Object.entries(notes).filter(([k]) => !k.endsWith('_link') && !k.endsWith('_cat'));
-        if (noteEntries.length === 0) {
-            html += '<p style="color:#888;">Žádné poznámky.</p>';
-        } else {
-            html += '<button id="exportTxtBtn" style="margin-bottom:1rem;padding:0.4rem 1rem;cursor:pointer;border:1px solid #111;background:#fff;">📥 Export TXT</button>';
-            html += '<div id="notesList"></div>';
+        let html = '<button class="close-export-btn" id="closeExportBtn">×</button><h3>📋 Poznámky</h3>';
+        const entries = Object.entries(notes).filter(([k]) => !k.endsWith('_link')&&!k.endsWith('_cat'));
+        if (!entries.length) html += '<p style="color:#888;">Žádné poznámky.</p>';
+        else {
+            html += '<button id="exportTxtBtn" style="margin-bottom:1rem;padding:0.4rem 1rem;">📥 Export TXT</button><div id="notesList"></div>';
         }
-        
-        /* === UMÍSTĚNÍ SOUBORU: Cesta k editoru poznámek === */
-        html += '<hr style="margin:1.5rem 0;">';
-        html += '<a href="../../funkce/anotator_poznamky.html" target="_blank" style="display:inline-block; margin-top:1rem; padding:0.5rem 1rem; border:1px solid #111; text-decoration:none; color:#111;">📓 Otevřít v editoru poznámek</a>';
-        
+        /* === UMÍSTĚNÍ SOUBORU: editor poznámek === */
+        html += '<hr><a href="../../funkce/anotator_poznamky.html" target="_blank" style="display:inline-block;margin-top:1rem;">📓 Otevřít v editoru</a>';
         exportPanel.innerHTML = html;
         document.body.appendChild(exportPanel);
-        document.getElementById('closeExportBtn').addEventListener('click', closeExportPanel);
-
-        if (noteEntries.length > 0) {
-            const listDiv = document.getElementById('notesList');
-            noteEntries.forEach(([key, val]) => {
-                const entry = document.createElement('div');
-                entry.className = 'note-entry';
+        document.getElementById('closeExportBtn').onclick = closeExportPanel;
+        if (entries.length) {
+            const list = document.getElementById('notesList');
+            entries.forEach(([key,val]) => {
+                const div = document.createElement('div'); div.className='note-entry';
+                const cat = notes[key+'_cat']||'';
                 const isAudio = typeof val === 'string' && val.startsWith('data:audio');
-                const cat = notes[key + '_cat'] || '';
-                let entryHtml = `<strong>${key}</strong>`;
-                entryHtml += `<input type="text" class="note-category" placeholder="Kategorie" value="${cat}" data-key="${key}">`;
-                if (isAudio) {
-                    entryHtml += `<audio controls src="${val}"></audio>`;
-                } else {
-                    entryHtml += `<textarea class="note-text" data-key="${key}" rows="2">${typeof val === 'string' ? val : ''}</textarea>`;
-                }
-                entryHtml += `<button class="save-note-btn" data-key="${key}">💾 Uložit</button>`;
-                entryHtml += `<button class="del-note-btn" data-key="${key}">🗑 Smazat</button>`;
-                entry.innerHTML = entryHtml;
-                listDiv.appendChild(entry);
+                div.innerHTML = `<strong>${key}</strong>
+                    <input class="note-category" placeholder="Kategorie" value="${cat}" data-key="${key}">
+                    ${isAudio ? `<audio controls src="${val}"></audio>` : `<textarea class="note-text" data-key="${key}" rows="2">${val||''}</textarea>`}
+                    <button class="save-note-btn" data-key="${key}">💾 Uložit</button>
+                    <button class="del-note-btn" data-key="${key}">🗑 Smazat</button>`;
+                list.appendChild(div);
             });
-
-            listDiv.querySelectorAll('.save-note-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const key = this.dataset.key;
-                    const textarea = listDiv.querySelector(`.note-text[data-key="${key}"]`);
-                    const catInput = listDiv.querySelector(`.note-category[data-key="${key}"]`);
-                    if (textarea) notes[key] = textarea.value;
-                    if (catInput) notes[key + '_cat'] = catInput.value;
-                    saveAndRender();
-                    alert('Poznámka uložena.');
-                });
+            list.querySelectorAll('.save-note-btn').forEach(b => b.onclick = function() {
+                const key = this.dataset.key;
+                const ta = list.querySelector(`.note-text[data-key="${key}"]`);
+                const ci = list.querySelector(`.note-category[data-key="${key}"]`);
+                if (ta) notes[key] = ta.value;
+                if (ci) notes[key+'_cat'] = ci.value;
+                saveAndRender(); alert('Uloženo.');
             });
-            listDiv.querySelectorAll('.del-note-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const key = this.dataset.key;
-                    delete notes[key];
-                    delete notes[key + '_cat'];
-                    delete notes[key + '_link'];
-                    saveAndRender();
-                    openExportPanel();
-                });
+            list.querySelectorAll('.del-note-btn').forEach(b => b.onclick = function() {
+                const key = this.dataset.key;
+                delete notes[key]; delete notes[key+'_cat']; delete notes[key+'_link'];
+                saveAndRender(); openExportPanel();
             });
-        }
-        if (document.getElementById('exportTxtBtn')) {
-            document.getElementById('exportTxtBtn').addEventListener('click', exportTxt);
+            document.getElementById('exportTxtBtn').onclick = exportTxt;
         }
     }
-
-    function closeExportPanel() {
-        if (exportPanel) { exportPanel.remove(); exportPanel = null; }
-    }
-
+    function closeExportPanel() { if(exportPanel) { exportPanel.remove(); exportPanel=null; } }
     function exportTxt() {
-        let txt = `=== POZNÁMKY K ${window.location.href} ===\n\n`;
-        Object.entries(notes).forEach(([sel, val]) => {
-            if (sel.endsWith('_cat') || sel.endsWith('_link')) return;
-            txt += `SELEKTOR: ${sel}\n`;
-            const cat = notes[sel+'_cat'] || '';
-            if (cat) txt += `KATEGORIE: ${cat}\n`;
-            if (typeof val === 'string' && val.startsWith('data:audio')) {
-                txt += 'TYP: zvuková poznámka (base64)\n\n';
-            } else {
-                txt += `TEXT: ${typeof val === 'string' ? val : ''}\n\n`;
-            }
+        let txt = `=== POZNÁMKY K ${location.href} ===\n\n`;
+        Object.entries(notes).forEach(([k,v]) => {
+            if (k.endsWith('_cat')||k.endsWith('_link')) return;
+            txt += `SELEKTOR: ${k}\nKATEGORIE: ${notes[k+'_cat']||''}\n`;
+            txt += typeof v === 'string' && v.startsWith('data:audio') ? 'TYP: zvuk\n\n' : `TEXT: ${v||''}\n\n`;
         });
-        const blob = new Blob([txt], {type: 'text/plain'});
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'poznamky_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_') + '.txt';
-        a.click();
+        a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+        a.download = 'poznamky.txt'; a.click();
     }
 })();
-</script>                   
+</script>
     
 </body>
 </html>
