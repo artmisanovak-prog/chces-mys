@@ -36,6 +36,8 @@ kreativita, fyzika jazyka, metadenik
 
 - [anotator car](doma/mimo/anotator.html)
 
+-  [anotator poznamky](doma/funkce/anotator_poznamky.html)
+
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
