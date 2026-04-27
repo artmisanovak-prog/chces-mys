@@ -694,96 +694,7 @@
         init();
     </script>
 
-<!-- ===== ANOTAČNÍ REŽIM S IKONOU MYŠI (FINÁLNÍ VERZE) ===== -->
-<style>
-    .secret-mouse-btn {
-        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
-        width: 55px; height: 55px; cursor: pointer;
-        background: transparent; border: none; padding: 0;
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
-    }
-    .secret-mouse-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .secret-mouse-btn.active {
-        transform: rotate(-90deg);
-        filter: drop-shadow(0 2px 10px rgba(255,87,34,0.6));
-    }
-
-    .floating-toolbox {
-        position: fixed; z-index: 10001;
-        background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-        border: 1.5px solid #111; border-radius: 8px;
-        padding: 0.5rem; display: none; gap: 0.4rem; align-items: center;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-        font-family: sans-serif; font-size: 0.9rem;
-        user-select: none; cursor: grab;
-    }
-    .floating-toolbox.visible { display: flex; }
-    .floating-toolbox button {
-        width: 38px; height: 38px; border-radius: 50%;
-        border: 1px solid #ccc; background: #fff;
-        font-size: 1.2rem; cursor: pointer; display: flex;
-        align-items: center; justify-content: center;
-        transition: all 0.2s; padding: 0; margin: 0 2px;
-    }
-    .floating-toolbox button:hover { background: #f0f0f0; border-color: #111; }
-    .toolbox-close-btn {
-        margin-left: 0.5rem; font-size: 1.4rem; font-weight: bold;
-        cursor: pointer; color: #555; width: auto; height: auto;
-        background: none; border: none; padding: 0 0.3rem;
-    }
-    .toolbox-toggle-btn { font-size: 1.4rem; margin-right: 0.3rem; }
-    .toolbox-toggle-btn.active { color: #4caf50; }
-
-    .note-marker {
-        position: absolute; top: -5px; right: -5px;
-        width: 11px; height: 11px; background: #4caf50; border-radius: 50%;
-        z-index: 998; pointer-events: none; box-shadow: 0 0 4px rgba(0,0,0,0.3);
-    }
-
-    .export-panel {
-        position: fixed; top: 0; right: 0; width: 360px; max-width: 90vw;
-        height: 100vh; background: rgba(255,255,255,0.97); backdrop-filter: blur(10px);
-        border-left: 1.5px solid #111;
-        z-index: 10010; padding: 1.2rem; overflow-y: auto;
-        box-shadow: -4px 0 18px rgba(0,0,0,0.15);
-        font-family: sans-serif; font-size: 0.85rem; color: #111;
-    }
-    .export-panel h3 { font-family: Georgia, serif; font-weight: 400; font-size: 1.4rem; margin-bottom: 1rem; }
-    .export-panel audio { width: 100%; margin-top: 0.3rem; }
-    .close-export-btn {
-        position: sticky; top: 0; float: right; cursor: pointer;
-        font-size: 1.8rem; color: #555; background: none; border: none;
-    }
-    .note-entry {
-        margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;
-    }
-    .note-entry strong { display: block; margin-bottom: 0.3rem; word-break: break-all; font-size: 0.75rem; }
-    .note-entry input, .note-entry textarea {
-        width: 100%; padding: 0.3rem; margin: 0.2rem 0; border: 1px solid #ccc;
-        font-family: inherit; font-size: 0.8rem;
-    }
-    .note-entry button {
-        margin-right: 0.3rem; margin-top: 0.3rem; padding: 0.2rem 0.6rem;
-        font-size: 0.7rem; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9;
-    }
-    .note-entry button:hover { background: #eee; }
-
-    .recording-indicator {
-        position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
-        background: #ff4444; color: white; padding: 0.4rem 1.8rem;
-        border-radius: 30px; z-index: 10020; font-family: sans-serif;
-        font-weight: bold; display: none; align-items: center; gap: 0.6rem;
-    }
-    .recording-indicator.visible { display: flex; }
-    .stop-rec-btn {
-        background: white; color: #ff4444; border: none;
-        padding: 0.2rem 1rem; border-radius: 20px; cursor: pointer;
-        font-weight: bold; font-size: 0.8rem;
-    }
-</style>
-
-<script>
+  <script>
 (function() {
     const PASSWORD = "anotator";
     const STORAGE_KEY_NOTES = 'adv_notes_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
@@ -797,11 +708,15 @@
 
     try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES)) || {}; } catch(e) {}
 
-    // --- Plovoucí ikona MYŠI ---
+    // --- Plovoucí ikona MYŠI (s bílým pozadím) ---
     const mouseBtn = document.createElement('button');
     mouseBtn.className = 'secret-mouse-btn';
     /* === UMÍSTĚNÍ SOUBORU: Cesta k ikoně myši === */
-    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;">';
+    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;position:relative;z-index:2;">';
+    mouseBtn.style.background = 'rgba(255,255,255,0.9)';
+    mouseBtn.style.borderRadius = '50%';
+    mouseBtn.style.padding = '5px';
+    mouseBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
     mouseBtn.title = 'Klikni pro zadání hesla';
     document.body.appendChild(mouseBtn);
 
@@ -840,17 +755,40 @@
         toolbox.style.cursor = 'grabbing';
         e.preventDefault();
     });
+    // Pro touch zařízení
+    toolbox.addEventListener('touchstart', function(e) {
+        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('toolbox-close-btn')) return;
+        isDragging = true;
+        const touch = e.touches[0];
+        const rect = toolbox.getBoundingClientRect();
+        dragOffsetX = touch.clientX - rect.left;
+        dragOffsetY = touch.clientY - rect.top;
+        e.preventDefault();
+    }, {passive: false});
+
     window.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
         toolbox.style.left = (e.clientX - dragOffsetX) + 'px';
         toolbox.style.top = (e.clientY - dragOffsetY) + 'px';
         toolbox.style.right = 'auto'; toolbox.style.bottom = 'auto';
     });
+    window.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        toolbox.style.left = (touch.clientX - dragOffsetX) + 'px';
+        toolbox.style.top = (touch.clientY - dragOffsetY) + 'px';
+        toolbox.style.right = 'auto'; toolbox.style.bottom = 'auto';
+        e.preventDefault();
+    }, {passive: false});
+
     window.addEventListener('mouseup', function() {
         if (isDragging) {
             isDragging = false;
             toolbox.style.cursor = 'grab';
         }
+    });
+    window.addEventListener('touchend', function() {
+        isDragging = false;
     });
 
     // --- Toolbox události ---
@@ -863,7 +801,7 @@
     document.getElementById('tb-add').addEventListener('click', function() { addLinkButton(); });
     document.getElementById('tb-export').addEventListener('click', function() { openExportPanel(); });
     
-    // 👁 Přepínač zobrazení úprav – POUZE přepíná, nic neukládá
+    // 👁 Přepínač zobrazení úprav
     document.getElementById('tb-toggle').addEventListener('click', function(e) {
         const btn = e.target;
         showEdits = !showEdits;
@@ -892,7 +830,7 @@
 
     function activate() {
         editing = true;
-        showEdits = false; // Vždy začínáme s vypnutým zobrazením úprav
+        showEdits = false;
         document.getElementById('tb-toggle').classList.remove('active');
         document.getElementById('tb-toggle').title = 'Zobrazit úpravy';
         mouseBtn.classList.add('active');
@@ -903,7 +841,7 @@
 
     function deactivate() {
         if (recording) stopRecording(true);
-        if (showEdits) removeAllEdits(); // Při vypnutí režimu VŠE zmizí
+        if (showEdits) removeAllEdits();
         showEdits = false;
         document.getElementById('tb-toggle').classList.remove('active');
         document.getElementById('tb-toggle').title = 'Zobrazit úpravy';
@@ -916,23 +854,25 @@
         closeExportPanel();
     }
 
-    // --- Dlouhé kliknutí pro otevření toolboxu ---
-    let pressTimer;
-    document.body.addEventListener('mousedown', function(e) {
+    // --- KLIKNUTÍ NA PRVEK (místo dlouhého stisku) ---
+    document.body.addEventListener('click', function(e) {
         if (!editing) return;
+
+        // Necháme fungovat interaktivní prvky (detaily, tlačítka, odkazy), pokud nejsou naše vlastní
         if (e.target.closest('.secret-mouse-btn, .floating-toolbox, .export-panel, .recording-indicator, .note-marker')) return;
-        
+
+        // Detaily/summary necháváme normálně rozbalit
+        if (e.target.closest('details') || e.target.closest('summary')) return;
+
+        // Hledáme prvek k anotaci
         const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, td, th, em, strong, blockquote, img, figcaption, a, span, div, section, article');
         if (!target) return;
-        if (e.target.closest('details, summary')) return;
+
+        e.preventDefault();
+        e.stopPropagation();
 
         activeElement = target;
-        pressTimer = setTimeout(() => {
-            showToolbox(e.clientX, e.clientY);
-        }, 500);
-    });
-    document.body.addEventListener('mouseup', function() {
-        clearTimeout(pressTimer);
+        showToolbox(e.clientX || e.touches?.[0]?.clientX || 100, e.clientY || e.touches?.[0]?.clientY || 100);
     });
 
     function showToolbox(x, y) {
@@ -982,7 +922,6 @@
         const linkData = { type: 'link', url: url, label: label, selector: sel };
         notes[sel + '_link'] = linkData;
         
-        // Pokud je zrovna zapnuté zobrazování úprav, přidáme tlačítko hned
         if (showEdits) {
             addLinkToDOM(sel, linkData);
         }
@@ -992,7 +931,6 @@
     function addLinkToDOM(sel, data) {
         const el = document.querySelector(sel);
         if (!el) return;
-        // Odstraníme případný starý odkaz
         el.nextElementSibling?.classList.contains('adv-edited-link') && el.nextElementSibling.remove();
         const btn = document.createElement('a');
         btn.href = data.url;
@@ -1011,14 +949,12 @@
             const el = document.querySelector(key);
             if (!el) return;
 
-            // Aplikujeme uložený text
             if (typeof value === 'string' && !value.startsWith('data:audio')) {
                 if (el.tagName !== 'IMG') {
                     el.textContent = value;
                 }
             }
 
-            // Aplikujeme odkazy
             const linkKey = key + '_link';
             if (notes[linkKey] && notes[linkKey].type === 'link') {
                 addLinkToDOM(key, notes[linkKey]);
@@ -1027,14 +963,10 @@
     }
 
     function removeAllEdits() {
-        // Odstraníme všechna přidaná tlačítka
         document.querySelectorAll('.adv-edited-link').forEach(el => el.remove());
-        // POZNÁMKA: Obnovení původních textů by vyžadovalo zálohu.
-        // Pro jednoduchost zde necháváme texty tak, jak jsou.
-        // Pokud byste chtěl obnovovat i texty, bylo by potřeba ukládat původní hodnoty.
     }
 
-    // --- Zvuk ---
+    // --- Zvuk (zjednodušeno, funkční) ---
     function startRecording() {
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
             mediaStream = stream;
@@ -1081,7 +1013,7 @@
         }
     }
 
-    // --- Pomocné funkce ---
+    // --- Pomocné funkce (stejné jako předtím) ---
     function getSelector(el) {
         if (el.id) return '#' + el.id;
         let path = [];
@@ -1105,7 +1037,6 @@
     function saveAndRender() {
         localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes));
         renderDots();
-        // Pokud je zapnuté zobrazování úprav, obnovíme je
         if (showEdits) applyAllEdits();
     }
 
@@ -1128,7 +1059,7 @@
         });
     }
 
-    // --- Postranní panel ---
+    // --- Postranní panel (stejný) ---
     let exportPanel = null;
     function openExportPanel() {
         closeExportPanel();
@@ -1225,7 +1156,7 @@
         a.click();
     }
 })();
-</script>
+</script>                   
     
 </body>
 </html>
