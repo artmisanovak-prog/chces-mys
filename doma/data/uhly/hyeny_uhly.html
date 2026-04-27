@@ -690,5 +690,438 @@
 
         init();
     </script>
+
+<!-- ===== ANOTAČNÍ REŽIM S IKONOU MYŠI ===== -->
+<style>
+    .secret-mouse-btn {
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+        width: 55px; height: 55px; cursor: pointer;
+        background: transparent; border: none; padding: 0;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+    .secret-mouse-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .secret-mouse-btn.active { transform: rotate(-90deg); filter: drop-shadow(0 2px 10px rgba(255,87,34,0.6)); }
+
+    .floating-toolbox {
+        position: fixed; z-index: 10001;
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+        border: 1.5px solid #111; border-radius: 8px;
+        padding: 0.5rem; display: none; gap: 0.3rem; align-items: center;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+        font-family: sans-serif; font-size: 0.9rem;
+        user-select: none; cursor: grab;
+    }
+    .floating-toolbox.visible { display: flex; }
+    .floating-toolbox button {
+        width: 38px; height: 38px; border-radius: 50%;
+        border: 1px solid #ccc; background: #fff;
+        font-size: 1.2rem; cursor: pointer; display: flex;
+        align-items: center; justify-content: center;
+        transition: all 0.2s; padding: 0; margin: 0 2px;
+    }
+    .floating-toolbox button:hover { background: #f0f0f0; border-color: #111; }
+    .floating-toolbox button.active-tool { background: #ffe082; border-color: #f57c00; }
+    .toolbox-toggle-btn.active { color: #4caf50; }
+
+    .selected-element { outline: 3px solid #ff0000 !important; outline-offset: 2px; }
+
+    .recording-indicator {
+        position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+        background: #ff4444; color: white; padding: 0.4rem 1.8rem;
+        border-radius: 30px; z-index: 10020; font-family: sans-serif;
+        font-weight: bold; display: none; align-items: center; gap: 0.6rem;
+    }
+    .recording-indicator.visible { display: flex; }
+    .stop-rec-btn { background: white; color: #ff4444; border: none; padding: 0.2rem 1rem; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+
+    .export-panel {
+        position: fixed; top: 0; right: 0; width: 360px; max-width: 90vw;
+        height: 100vh; background: rgba(255,255,255,0.97); backdrop-filter: blur(10px);
+        border-left: 1.5px solid #111;
+        z-index: 10010; padding: 1.2rem; overflow-y: auto;
+        box-shadow: -4px 0 18px rgba(0,0,0,0.15);
+        font-family: sans-serif; font-size: 0.85rem; color: #111;
+    }
+    .export-panel h3 { font-family: Georgia, serif; font-weight: 400; font-size: 1.4rem; margin-bottom: 1rem; }
+    .export-panel audio { width: 100%; margin-top: 0.3rem; }
+    .close-export-btn { position: sticky; top: 0; float: right; cursor: pointer; font-size: 1.8rem; color: #555; background: none; border: none; }
+    .note-entry { margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; }
+    .note-entry strong { display: block; margin-bottom: 0.3rem; word-break: break-all; font-size: 0.75rem; }
+    .note-entry input, .note-entry textarea { width: 100%; padding: 0.3rem; margin: 0.2rem 0; border: 1px solid #ccc; font-family: inherit; font-size: 0.8rem; }
+    .note-entry button { margin-right: 0.3rem; margin-top: 0.3rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; }
+    .note-entry button:hover { background: #eee; }
+</style>
+
+<script>
+(function() {
+    const PASSWORD = "anotator";
+    const STORAGE_KEY = 'notes_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
+    let notes = {};
+    let editing = false;
+    let selectMode = false;
+    let selectedElement = null;
+    let recorder = null;
+    let recording = false;
+    let mediaStream = null;
+    let showEdits = false;
+    let toolbox = null, exportPanel = null;
+
+    try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) {}
+
+    // --- Plovoucí ikona MYŠI (bílá, bez pozadí) ---
+    const mouseBtn = document.createElement('button');
+    mouseBtn.className = 'secret-mouse-btn';
+    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;filter:brightness(0) invert(1);">';
+    mouseBtn.title = 'Klikni pro zadání hesla';
+    document.body.appendChild(mouseBtn);
+
+    // --- Indikátor nahrávání ---
+    const recIndicator = document.createElement('div');
+    recIndicator.className = 'recording-indicator';
+    recIndicator.innerHTML = '🔴 Nahrávám... <button class="stop-rec-btn" id="stopRecBtn">UKONČIT</button>';
+    document.body.appendChild(recIndicator);
+    document.getElementById('stopRecBtn').addEventListener('click', function(e) { e.stopPropagation(); stopRecording(false); });
+
+    // --- Plovoucí panel nástrojů ---
+    function createToolbox() {
+        toolbox = document.createElement('div');
+        toolbox.className = 'floating-toolbox visible';
+        toolbox.innerHTML = `
+            <button title="Vybrat prvek" id="tb-select">🎯</button>
+            <button title="Opravit text" id="tb-edit">✏️</button>
+            <button title="Poznámka" id="tb-note">📝</button>
+            <button title="Nahrát zvuk" id="tb-audio">🎤</button>
+            <button title="Přidat odkaz" id="tb-link">➕</button>
+            <button title="Zobrazit/skrýt úpravy" id="tb-toggle" class="toolbox-toggle-btn">👁</button>
+            <button title="Seznam poznámek" id="tb-export">📓</button>
+            <button title="Zavřít panel" id="tb-close">×</button>
+        `;
+        document.body.appendChild(toolbox);
+        toolbox.style.left = '20px';
+        toolbox.style.top = '100px';
+        makeDraggable(toolbox);
+        bindToolboxEvents();
+    }
+
+    function bindToolboxEvents() {
+        document.getElementById('tb-select').addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectMode = !selectMode;
+            this.classList.toggle('active-tool', selectMode);
+            if (selectedElement) { selectedElement.classList.remove('selected-element'); selectedElement = null; }
+        });
+        document.getElementById('tb-edit').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek (🎯 a klikni na něj).'); return; }
+            const oldText = selectedElement.textContent.trim();
+            const newText = prompt('Nový text:', oldText);
+            if (newText === null || newText === oldText) return;
+            const sel = getSelector(selectedElement);
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].originalText = oldText;
+            notes[sel].newText = newText;
+            notes[sel].type = 'text-edit';
+            selectedElement.textContent = newText;
+            saveNotes();
+        });
+        document.getElementById('tb-note').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek (🎯 a klikni na něj).'); return; }
+            const sel = getSelector(selectedElement);
+            const old = (notes[sel] && notes[sel].type === 'text-note') ? notes[sel].content : '';
+            const txt = prompt('Textová poznámka:', old);
+            if (txt === null) return;
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].type = 'text-note';
+            notes[sel].content = txt;
+            saveNotes();
+        });
+        document.getElementById('tb-audio').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek (🎯 a klikni na něj).'); return; }
+            if (recording) stopRecording(false);
+            else startRecording(getSelector(selectedElement));
+        });
+        document.getElementById('tb-link').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek (🎯 a klikni na něj).'); return; }
+            const url = prompt('URL odkazu:');
+            if (!url) return;
+            const label = prompt('Text tlačítka:', 'Odkaz');
+            if (!label) return;
+            const btn = document.createElement('a');
+            btn.href = url; btn.textContent = label; btn.target = '_blank';
+            btn.classList.add('edit-added');
+            btn.style.cssText = 'display:inline-block;padding:0.4rem 1rem;border:1px solid #111;background:#f9f9f9;color:#111;text-decoration:none;margin:0.3rem;font-size:0.8rem;';
+            selectedElement.insertAdjacentElement('afterend', btn);
+            const sel = getSelector(btn);
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].type = 'link-button';
+            notes[sel].url = url;
+            notes[sel].label = label;
+            notes[sel].added = true;
+            if (!showEdits) btn.style.display = 'none';
+            saveNotes();
+        });
+        document.getElementById('tb-toggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showEdits = !showEdits;
+            this.classList.toggle('active', showEdits);
+            applyEditVisibility();
+        });
+        document.getElementById('tb-export').addEventListener('click', function(e) {
+            e.stopPropagation();
+            openExportPanel();
+        });
+        document.getElementById('tb-close').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toolbox.classList.remove('visible');
+            toolbox.style.display = 'none';
+        });
+    }
+
+    function makeDraggable(el) {
+        let isDragging = false, startX, startY, origLeft, origTop;
+        el.addEventListener('mousedown', dragStart);
+        el.addEventListener('touchstart', dragStart, {passive: false});
+        function dragStart(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            isDragging = true;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startX = clientX; startY = clientY;
+            const rect = el.getBoundingClientRect();
+            origLeft = rect.left; origTop = rect.top;
+            e.preventDefault();
+        }
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('touchmove', dragMove, {passive: false});
+        function dragMove(e) {
+            if (!isDragging) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            el.style.left = (origLeft + clientX - startX) + 'px';
+            el.style.top = (origTop + clientY - startY) + 'px';
+            e.preventDefault();
+        }
+        window.addEventListener('mouseup', dragEnd);
+        window.addEventListener('touchend', dragEnd);
+        function dragEnd() { isDragging = false; }
+    }
+
+    // --- Přepínání režimu ---
+    mouseBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (editing) { deactivate(); }
+        else {
+            const pwd = prompt('Heslo:');
+            if (pwd === PASSWORD) activate();
+            else if (pwd !== null) alert('Špatně.');
+        }
+    });
+
+    function activate() {
+        editing = true;
+        showEdits = false;
+        selectMode = false;
+        mouseBtn.classList.add('active');
+        mouseBtn.title = 'Režim oprav aktivní';
+        document.body.style.cursor = 'crosshair';
+        if (!toolbox) createToolbox();
+        else { toolbox.style.display = 'flex'; toolbox.classList.add('visible'); }
+        document.getElementById('tb-toggle').classList.remove('active');
+        document.getElementById('tb-select').classList.remove('active-tool');
+        if (selectedElement) { selectedElement.classList.remove('selected-element'); selectedElement = null; }
+    }
+
+    function deactivate() {
+        if (recording) stopRecording(true);
+        if (showEdits) { showEdits = false; applyEditVisibility(); }
+        editing = false;
+        mouseBtn.classList.remove('active');
+        mouseBtn.title = 'Klikni pro zadání hesla';
+        document.body.style.cursor = '';
+        if (toolbox) { toolbox.style.display = 'none'; toolbox.classList.remove('visible'); }
+        if (exportPanel) closeExportPanel();
+        if (selectedElement) { selectedElement.classList.remove('selected-element'); selectedElement = null; }
+        selectMode = false;
+    }
+
+    // --- Klikání na prvky stránky ---
+    document.body.addEventListener('click', function(e) {
+        if (!editing) return;
+        if (e.target.closest('.secret-mouse-btn, .floating-toolbox, .export-panel, .recording-indicator')) return;
+        if (!selectMode) return;
+        const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, td, th, em, strong, blockquote, img, figcaption, a, span, div, section, article, button');
+        if (!target) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (selectedElement) selectedElement.classList.remove('selected-element');
+        selectedElement = target;
+        selectedElement.classList.add('selected-element');
+        selectMode = false;
+        document.getElementById('tb-select').classList.remove('active-tool');
+    }, true);
+
+    // --- Pomocné funkce ---
+    function getSelector(el) {
+        if (el.id) return '#' + el.id;
+        let path = [];
+        while (el && el !== document.body) {
+            let seg = el.tagName.toLowerCase();
+            if (el.className && typeof el.className === 'string') {
+                const classes = el.className.trim().split(/\s+/).slice(0,2).filter(c => c !== 'edit-added' && c !== 'selected-element');
+                if (classes.length) seg += '.' + classes.join('.');
+            }
+            const parent = el.parentElement;
+            if (parent) {
+                const siblings = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+                if (siblings.length > 1) seg += ':nth-child(' + (siblings.indexOf(el)+1) + ')';
+            }
+            path.unshift(seg);
+            el = parent;
+        }
+        return path.join(' > ');
+    }
+
+    function saveNotes() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    function applyEditVisibility() {
+        Object.entries(notes).forEach(([sel, data]) => {
+            if (!data) return;
+            const el = document.querySelector(sel);
+            if (data.type === 'text-edit' && el) {
+                el.textContent = showEdits ? (data.newText || el.textContent) : (data.originalText || el.textContent);
+            }
+            if ((data.type === 'link-button' || data.type === 'duplicate') && el) {
+                el.style.display = showEdits ? '' : 'none';
+            }
+        });
+    }
+
+    // --- Zvuk ---
+    function startRecording(sel) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            mediaStream = stream;
+            recorder = new MediaRecorder(stream);
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                if (chunks.length > 0) {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        if (!notes[sel]) notes[sel] = {};
+                        notes[sel].type = 'audio';
+                        notes[sel].data = reader.result;
+                        saveNotes();
+                    };
+                    reader.readAsDataURL(blob);
+                }
+                if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+                recording = false;
+                recIndicator.classList.remove('visible');
+            };
+            recorder.start();
+            recording = true;
+            recIndicator.classList.add('visible');
+        }).catch(() => alert('Bez přístupu k mikrofonu.'));
+    }
+
+    function stopRecording(cancel) {
+        if (recorder && recorder.state === 'recording') {
+            if (cancel) {
+                recorder.ondataavailable = null;
+                recorder.onstop = () => {
+                    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+                    recording = false;
+                    recIndicator.classList.remove('visible');
+                };
+            }
+            recorder.stop();
+        } else {
+            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+            recording = false;
+            recIndicator.classList.remove('visible');
+        }
+    }
+
+    // --- Postranní panel ---
+    function openExportPanel() {
+        if (exportPanel) closeExportPanel();
+        exportPanel = document.createElement('div');
+        exportPanel.className = 'export-panel';
+        let html = '<button class="close-export-btn" id="closeExportBtn">×</button><h3>📋 Poznámky</h3>';
+        const entries = Object.entries(notes).filter(([_, d]) => d && (d.type === 'text-note' || d.type === 'audio'));
+        if (!entries.length) html += '<p style="color:#888;">Žádné poznámky.</p>';
+        else {
+            html += '<button id="exportTxtBtn" style="margin-bottom:1rem;padding:0.4rem 1rem;">📥 Export TXT</button><div id="notesList"></div>';
+        }
+        html += '<hr style="margin:1.5rem 0;">';
+        html += '<a href="../../funkce/anotator_poznamky.html" target="_blank" style="display:inline-block; margin-top:1rem; padding:0.5rem 1rem; border:1px solid #111; text-decoration:none; color:#111;">📓 Otevřít v editoru poznámek</a>';
+        exportPanel.innerHTML = html;
+        document.body.appendChild(exportPanel);
+        document.getElementById('closeExportBtn').addEventListener('click', closeExportPanel);
+        if (entries.length) {
+            const list = document.getElementById('notesList');
+            entries.forEach(([sel, data]) => {
+                const div = document.createElement('div');
+                div.className = 'note-entry';
+                const cat = data.category || '';
+                const isAudio = data.type === 'audio';
+                div.innerHTML = `
+                    <strong>${sel}</strong>
+                    <input class="note-category" placeholder="Kategorie" value="${cat}" data-key="${sel}">
+                    ${isAudio ? `<audio controls src="${data.data}"></audio>` : `<textarea class="note-text" data-key="${sel}" rows="2">${data.content || ''}</textarea>`}
+                    <button class="save-note-btn" data-key="${sel}">💾 Uložit</button>
+                    <button class="del-note-btn" data-key="${sel}">🗑 Smazat</button>
+                `;
+                list.appendChild(div);
+            });
+            list.querySelectorAll('.save-note-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const key = this.dataset.key;
+                    const ta = list.querySelector(`.note-text[data-key="${key}"]`);
+                    const ci = list.querySelector(`.note-category[data-key="${key}"]`);
+                    if (!notes[key]) notes[key] = {};
+                    if (ta) notes[key].content = ta.value;
+                    if (ci) notes[key].category = ci.value;
+                    saveNotes();
+                    alert('Uloženo.');
+                });
+            });
+            list.querySelectorAll('.del-note-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const key = this.dataset.key;
+                    delete notes[key];
+                    saveNotes();
+                    openExportPanel();
+                });
+            });
+            document.getElementById('exportTxtBtn').addEventListener('click', exportTxt);
+        }
+    }
+
+    function closeExportPanel() {
+        if (exportPanel) { exportPanel.remove(); exportPanel = null; }
+    }
+
+    function exportTxt() {
+        let txt = `=== POZNÁMKY K ${location.href} ===\n\n`;
+        Object.entries(notes).forEach(([sel, data]) => {
+            if (!data || (data.type !== 'text-note' && data.type !== 'audio')) return;
+            txt += `SELEKTOR: ${sel}\nKATEGORIE: ${data.category || ''}\n`;
+            txt += data.type === 'audio' ? 'TYP: zvuková poznámka\n\n' : `TEXT: ${data.content || ''}\n\n`;
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain'}));
+        a.download = 'poznamky.txt'; a.click();
+    }
+})();
+</script>
+    
 </body>
 </html>
