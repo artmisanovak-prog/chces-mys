@@ -875,5 +875,790 @@
 
         init();
     </script>
+
+    <!-- ========================================== -->
+<!-- ===== ANOTAČNÍ REŽIM S IKONOU MYŠI    ===== -->
+<!-- ===== (Černobílý, plovoucí, opravený) ===== -->
+<!-- ========================================== -->
+<style>
+    .secret-mouse-btn {
+        position: fixed; bottom: 3rem; right: 1.5rem; z-index: 9999;
+        width: 56px; height: 56px; cursor: pointer;
+        background: transparent; border: none; padding: 0;
+        transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    }
+    .secret-mouse-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .secret-mouse-btn.active { transform: rotate(-90deg); filter: drop-shadow(0 2px 10px rgba(0,0,0,0.6)); }
+
+    /* Plovoucí toolbox */
+    .floating-toolbox, .collapsed-arrow {
+        position: fixed; z-index: 10001;
+        background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+        border: 1px solid #000; border-radius: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        font-family: sans-serif; font-size: 0.6rem;
+        user-select: none; cursor: grab;
+    }
+    .floating-toolbox {
+        padding: 0.2rem; display: none; gap: 0.15rem; align-items: center;
+        flex-wrap: nowrap; max-width: 320px;
+    }
+    .floating-toolbox.visible { display: flex; }
+    .floating-toolbox button {
+        width: 20px; height: 20px; border-radius: 0;
+        border: 1px solid #000; background: #fff;
+        font-size: 0.6rem; cursor: pointer; display: flex;
+        align-items: center; justify-content: center;
+        transition: all 0.2s; padding: 0; margin: 0;
+        line-height: 1; color: #000;
+    }
+    .floating-toolbox button:hover { background: #ddd; }
+    .floating-toolbox button.active-tool { background: #000; color: #fff; border-color: #000; }
+    .toolbox-toggle-btn.active { background: #000; color: #fff; border-color: #000; }
+    .lock-btn.locked { background: #000; color: #fff; border-color: #000; }
+
+    .collapsed-arrow {
+        width: 22px; height: 22px; display: none; align-items: center; justify-content: center;
+        font-size: 0.8rem; border-radius: 0; cursor: pointer;
+        background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+        color: #000;
+    }
+    .collapsed-arrow.visible { display: flex; }
+
+    .selected-element { outline: 2px solid #000 !important; outline-offset: 1px; }
+
+    /* Poznámkový štítek */
+    .note-badge {
+        position: absolute; background: #000; color: #fff; font-size: 0.5rem;
+        padding: 0.1rem 0.25rem; border-radius: 0; z-index: 997; cursor: default;
+        font-family: sans-serif; white-space: nowrap; pointer-events: auto;
+        display: flex; align-items: center; gap: 0.15rem;
+        border: 1px solid #000;
+    }
+    .note-badge .badge-close {
+        cursor: pointer; font-weight: bold; color: #999; margin-left: 0.1rem;
+    }
+
+    /* Mřížkový manažer a mřížky */
+    .grid-panel {
+        position: fixed; z-index: 10002;
+        background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+        border: 1px solid #000; border-radius: 0;
+        padding: 0.3rem; display: none; gap: 0.2rem; flex-direction: column;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        font-family: sans-serif; font-size: 0.5rem; min-width: 120px;
+    }
+    .grid-panel.visible { display: flex; }
+    .grid-row { display: flex; align-items: center; gap: 0.2rem; }
+    .grid-row span { flex: 1; }
+    .grid-dot {
+        width: 16px; height: 16px; border: 1px solid #000; background: #fff;
+        font-size: 0.5rem; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; border-radius: 0;
+    }
+    .grid-dot.used { background: #000; color: #fff; }
+    .grid-action-btn {
+        width: 16px; height: 16px; border: 1px solid #000; background: #fff;
+        font-size: 0.5rem; cursor: pointer; display: flex;
+        align-items: center; justify-content: center; padding: 0; margin: 0;
+        border-radius: 0; line-height: 1;
+    }
+    .grid-action-btn:hover { background: #ddd; }
+
+    /* Nahrávání */
+    .recording-indicator {
+        position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+        background: #000; color: #fff; padding: 0.3rem 1.5rem;
+        z-index: 10020; font-family: sans-serif;
+        font-weight: bold; display: none; align-items: center; gap: 0.6rem;
+        border: 1px solid #000;
+    }
+    .recording-indicator.visible { display: flex; }
+    .stop-rec-btn { background: #fff; color: #000; border: 1px solid #000; padding: 0.2rem 1rem; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+
+    /* Postranní panel */
+    .export-panel {
+        position: fixed; top: 0; right: 0; width: 360px; max-width: 90vw;
+        height: 100vh; background: rgba(255,255,255,0.97); backdrop-filter: blur(10px);
+        border-left: 1px solid #000;
+        z-index: 10010; padding: 1.2rem; overflow-y: auto;
+        box-shadow: -4px 0 18px rgba(0,0,0,0.2);
+        font-family: sans-serif; font-size: 0.85rem; color: #000;
+    }
+    .export-panel h3 { font-family: Georgia, serif; font-weight: 400; font-size: 1.4rem; margin-bottom: 1rem; }
+    .export-panel audio { width: 100%; margin-top: 0.3rem; }
+    .close-export-btn { position: sticky; top: 0; float: right; cursor: pointer; font-size: 1.8rem; color: #555; background: none; border: none; }
+    .note-entry { margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd; }
+    .note-entry strong { display: block; margin-bottom: 0.3rem; word-break: break-all; font-size: 0.75rem; }
+    .note-entry input, .note-entry textarea { width: 100%; padding: 0.3rem; margin: 0.2rem 0; border: 1px solid #ccc; font-family: inherit; font-size: 0.8rem; }
+    .note-entry button { margin-right: 0.3rem; margin-top: 0.3rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; cursor: pointer; border: 1px solid #000; background: #fff; color: #000; }
+    .note-entry button:hover { background: #eee; }
+
+    /* Heslo modal */
+    .custom-prompt-overlay {
+        position: fixed; inset: 0; background: rgba(255,255,255,0.2); backdrop-filter: blur(2px);
+        z-index: 10030; display: none; justify-content: center; align-items: flex-end;
+        padding-bottom: 8rem;
+    }
+    .custom-prompt-overlay.visible { display: flex; }
+    .custom-prompt-box {
+        background: #fff; border: 1px solid #000; padding: 1rem 1.5rem;
+        font-family: sans-serif; font-size: 0.8rem; display: flex; flex-direction: column;
+        gap: 0.5rem; min-width: 200px;
+    }
+    .custom-prompt-box input {
+        border: 1px solid #000; padding: 0.3rem; font-family: inherit;
+    }
+    .custom-prompt-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .custom-prompt-buttons button {
+        background: #fff; border: 1px solid #000; padding: 0.2rem 0.8rem;
+        cursor: pointer; font-family: inherit;
+    }
+</style>
+
+<script>
+(function() {
+    const PASSWORD = "anotator";
+    const STORAGE_KEY = 'notes_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
+    const LOCK_KEY = 'lock_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
+    const GRIDS_KEY = 'grids_' + window.location.pathname.replace(/[^a-z0-9]/gi, '_');
+
+    let notes = {};
+    let grids = [];
+    let editing = false;
+    let selectMode = false;
+    let selectedElement = null;
+    let recorder = null;
+    let recording = false;
+    let mediaStream = null;
+    let showEdits = false;
+    let locked = localStorage.getItem(LOCK_KEY) === 'true';
+
+    let toolbox = null, collapsedArrow = null, gridPanel = null, exportPanel = null;
+    let currentPromptCallback = null;
+
+    try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) {}
+    try { grids = JSON.parse(localStorage.getItem(GRIDS_KEY)) || []; } catch(e) {}
+    if (locked) { showEdits = true; }
+
+    // ========== IKONA MYŠI ==========
+    const mouseBtn = document.createElement('button');
+    mouseBtn.className = 'secret-mouse-btn';
+    mouseBtn.innerHTML = '<img src="../../ilustrace/mys_ikonka.png" alt="Myš" style="width:100%;height:100%;filter:brightness(0) invert(1);">';
+    mouseBtn.title = 'Klikni pro zadání hesla';
+    document.body.appendChild(mouseBtn);
+
+    // ========== INDIKÁTOR NAHRÁVÁNÍ ==========
+    const recIndicator = document.createElement('div');
+    recIndicator.className = 'recording-indicator';
+    recIndicator.innerHTML = '🔴 Nahrávám... <button class="stop-rec-btn" id="stopRecBtn">UKONČIT</button>';
+    document.body.appendChild(recIndicator);
+    document.getElementById('stopRecBtn').addEventListener('click', function(e) { e.stopPropagation(); stopRecording(false); });
+
+    // ========== HESLO MODAL ==========
+    const promptOverlay = document.createElement('div');
+    promptOverlay.className = 'custom-prompt-overlay';
+    promptOverlay.innerHTML = `
+        <div class="custom-prompt-box">
+            <span>Heslo pro vstup do režimu úprav</span>
+            <input type="password" id="customPromptInput" placeholder="zadej heslo">
+            <div class="custom-prompt-buttons">
+                <button id="customPromptCancel">Zrušit</button>
+                <button id="customPromptOk">OK</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(promptOverlay);
+    document.getElementById('customPromptOk').addEventListener('click', () => {
+        const val = document.getElementById('customPromptInput').value;
+        promptOverlay.classList.remove('visible');
+        if (currentPromptCallback) currentPromptCallback(val);
+    });
+    document.getElementById('customPromptCancel').addEventListener('click', () => {
+        promptOverlay.classList.remove('visible');
+        if (currentPromptCallback) currentPromptCallback(null);
+    });
+
+    function customPrompt(text, type = 'text') {
+        return new Promise((resolve) => {
+            currentPromptCallback = resolve;
+            promptOverlay.querySelector('span').textContent = text;
+            const input = document.getElementById('customPromptInput');
+            input.type = type;
+            input.value = '';
+            promptOverlay.classList.add('visible');
+            input.focus();
+        });
+    }
+
+    // ========== VYTVOŘENÍ PANELŮ ==========
+    function createToolbox() {
+        toolbox = document.createElement('div');
+        toolbox.className = 'floating-toolbox visible';
+        toolbox.innerHTML = `
+            <button title="Vybrat prvek" id="tb-select">🎯</button>
+            <button title="Opravit text" id="tb-edit">✏️</button>
+            <button title="Poznámka" id="tb-note">📝</button>
+            <button title="Nahrát zvuk" id="tb-audio">🎤</button>
+            <button title="Přidat odkaz" id="tb-link">➕</button>
+            <button title="Zobrazit/skrýt" id="tb-toggle" class="toolbox-toggle-btn ${showEdits ? 'active' : ''}">👁</button>
+            <button title="Zámek" id="tb-lock" class="lock-btn ${locked ? 'locked' : ''}">${locked ? '🔒' : '🔓'}</button>
+            <button title="Mřížky" id="tb-grids">${grids.length > 0 ? '📊' : '➕'}</button>
+            <button title="Poznámky" id="tb-export">📓</button>
+            <button title="Sbalit" id="tb-collapse">◀</button>
+        `;
+        document.body.appendChild(toolbox);
+        toolbox.style.left = '20px';
+        toolbox.style.top = '100px';
+        makeDraggable(toolbox);
+        bindToolboxEvents();
+        if (locked || showEdits) applyEditVisibility();
+    }
+
+    function createCollapsedArrow() {
+        collapsedArrow = document.createElement('div');
+        collapsedArrow.className = 'collapsed-arrow';
+        collapsedArrow.innerHTML = '▶';
+        collapsedArrow.title = 'Rozbalit panel nástrojů';
+        document.body.appendChild(collapsedArrow);
+        collapsedArrow.style.display = 'none';
+        makeDraggable(collapsedArrow);
+        collapsedArrow.addEventListener('click', expandToolbox);
+    }
+
+    function createGridPanel() {
+        gridPanel = document.createElement('div');
+        gridPanel.className = 'grid-panel';
+        document.body.appendChild(gridPanel);
+        makeDraggable(gridPanel);
+    }
+
+    function bindToolboxEvents() {
+        document.getElementById('tb-select').addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectMode = !selectMode;
+            this.classList.toggle('active-tool', selectMode);
+            if (selectedElement) { selectedElement.classList.remove('selected-element'); selectedElement = null; }
+        });
+        document.getElementById('tb-edit').addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek.'); return; }
+            const oldText = selectedElement.textContent.trim();
+            const newText = await customPrompt('Nový text:', 'text');
+            if (newText === null || newText === oldText) return;
+            const sel = getSelector(selectedElement);
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].originalText = oldText;
+            notes[sel].newText = newText;
+            notes[sel].type = 'text-edit';
+            selectedElement.textContent = newText;
+            saveNotes();
+        });
+        document.getElementById('tb-note').addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek.'); return; }
+            const sel = getSelector(selectedElement);
+            let current = (notes[sel] && notes[sel].type === 'text-note') ? notes[sel] : {};
+            const txt = await customPrompt('Textová poznámka:', 'text');
+            if (txt === null) return;
+            const cat = await customPrompt('Kategorie:', 'text');
+            if (cat === null) return;
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].type = 'text-note';
+            notes[sel].content = txt;
+            notes[sel].category = cat;
+            notes[sel].hidden = notes[sel].hidden || false;
+            saveNotes();
+            if (showEdits) applyEditVisibility();
+        });
+        document.getElementById('tb-audio').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek.'); return; }
+            if (recording) stopRecording(false);
+            else startRecording(getSelector(selectedElement));
+        });
+        document.getElementById('tb-link').addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (!selectedElement) { alert('Nejprve vyber prvek.'); return; }
+            const url = await customPrompt('URL odkazu:', 'text');
+            if (!url) return;
+            const label = await customPrompt('Text tlačítka:', 'text');
+            if (!label) return;
+            const btn = document.createElement('a');
+            btn.href = url; btn.textContent = label; btn.target = '_blank';
+            btn.style.cssText = 'display:inline-block;padding:0.2rem 0.6rem;border:1px solid #000;background:#fff;color:#000;text-decoration:none;margin:0.2rem;font-size:0.7rem;';
+            selectedElement.insertAdjacentElement('afterend', btn);
+            const sel = getSelector(btn);
+            if (!notes[sel]) notes[sel] = {};
+            notes[sel].type = 'link-button';
+            notes[sel].url = url;
+            notes[sel].label = label;
+            notes[sel].added = true;
+            if (!showEdits || notes[sel].hidden) btn.style.display = 'none';
+            saveNotes();
+        });
+        document.getElementById('tb-toggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showEdits = !showEdits;
+            this.classList.toggle('active', showEdits);
+            applyEditVisibility();
+        });
+        document.getElementById('tb-lock').addEventListener('click', function(e) {
+            e.stopPropagation();
+            locked = !locked;
+            localStorage.setItem(LOCK_KEY, locked ? 'true' : 'false');
+            this.innerHTML = locked ? '🔒' : '🔓';
+            this.classList.toggle('locked', locked);
+            if (!locked && !editing && showEdits) {
+                showEdits = false;
+                document.getElementById('tb-toggle').classList.remove('active');
+                applyEditVisibility();
+            }
+        });
+        document.getElementById('tb-grids').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleGridManager();
+        });
+        document.getElementById('tb-export').addEventListener('click', function(e) {
+            e.stopPropagation();
+            openExportPanel();
+        });
+        document.getElementById('tb-collapse').addEventListener('click', function(e) {
+            e.stopPropagation();
+            collapseToolbox();
+        });
+    }
+
+    // ========== SBALOVÁNÍ / ROZBALOVÁNÍ TOOLBOXU ==========
+    function collapseToolbox() {
+        if (!toolbox) return;
+        toolbox.classList.remove('visible');
+        toolbox.style.display = 'none';
+        const rect = toolbox.getBoundingClientRect();
+        if (!collapsedArrow) createCollapsedArrow();
+        collapsedArrow.style.left = rect.left + 'px';
+        collapsedArrow.style.top = rect.top + 'px';
+        collapsedArrow.classList.add('visible');
+        collapsedArrow.style.display = 'flex';
+    }
+
+    function expandToolbox() {
+        if (!collapsedArrow || !toolbox) return;
+        const rect = collapsedArrow.getBoundingClientRect();
+        toolbox.style.left = rect.left + 'px';
+        toolbox.style.top = rect.top + 'px';
+        toolbox.style.display = 'flex';
+        toolbox.classList.add('visible');
+        collapsedArrow.classList.remove('visible');
+        collapsedArrow.style.display = 'none';
+    }
+
+    // ========== MŘÍŽKOVÝ MANAŽER ==========
+    function toggleGridManager() {
+        if (!gridPanel) createGridPanel();
+        if (gridPanel.classList.contains('visible')) {
+            gridPanel.classList.remove('visible');
+            return;
+        }
+        refreshGridPanel();
+        const tbRect = toolbox.getBoundingClientRect();
+        gridPanel.style.left = (tbRect.left + tbRect.width + 10) + 'px';
+        gridPanel.style.top = tbRect.top + 'px';
+        gridPanel.classList.add('visible');
+    }
+
+    function refreshGridPanel() {
+        let html = '<div style="font-weight:bold;margin-bottom:0.2rem;">Mřížky</div>';
+        grids.forEach((grid, idx) => {
+            const visibleCount = grid.cells.filter(c => c).length;
+            html += `<div class="grid-row">
+                <span>${grid.name} (${visibleCount}/${grid.cells.length})</span>
+                <button class="grid-action-btn" data-action="toggle" data-idx="${idx}" title="Zobrazit/Skrýt">${grid.visible ? '👁' : '—'}</button>
+                <button class="grid-action-btn" data-action="delete" data-idx="${idx}" title="Smazat">✕</button>
+            </div>`;
+        });
+        html += `<button class="grid-action-btn" data-action="add" style="align-self:flex-start;margin-top:0.2rem;">➕ nová mřížka</button>`;
+        gridPanel.innerHTML = html;
+
+        gridPanel.querySelectorAll('.grid-action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const action = this.dataset.action;
+                const idx = parseInt(this.dataset.idx);
+                if (action === 'add') addGrid();
+                else if (action === 'toggle') toggleGrid(idx);
+                else if (action === 'delete') deleteGrid(idx);
+            });
+        });
+    }
+
+    async function addGrid() {
+        const name = await customPrompt('Název mřížky:');
+        if (!name) return;
+        const countStr = await customPrompt('Počet okének:');
+        const count = parseInt(countStr);
+        if (isNaN(count) || count < 1) return;
+        grids.push({
+            name: name,
+            cells: new Array(count).fill(false),
+            visible: true
+        });
+        saveGrids();
+        updateGridButton();
+        renderGrid(grids.length - 1);
+        toggleGridManager(); // refresh zavře panel
+    }
+
+    function toggleGrid(idx) {
+        const grid = grids[idx];
+        if (!grid) return;
+        if (grid.visible) {
+            const el = document.getElementById('grid-' + idx);
+            if (el) el.remove();
+            grid.visible = false;
+        } else {
+            grid.visible = true;
+            renderGrid(idx);
+        }
+        saveGrids();
+        refreshGridPanel();
+    }
+
+    function deleteGrid(idx) {
+        if (!confirm('Smazat mřížku "' + grids[idx].name + '"?')) return;
+        const el = document.getElementById('grid-' + idx);
+        if (el) el.remove();
+        grids.splice(idx, 1);
+        saveGrids();
+        updateGridButton();
+        refreshGridPanel();
+    }
+
+    function renderGrid(idx) {
+        const grid = grids[idx];
+        if (!grid || !grid.visible) return;
+        const old = document.getElementById('grid-' + idx);
+        if (old) old.remove();
+
+        const container = document.createElement('div');
+        container.id = 'grid-' + idx;
+        container.className = 'grid-panel visible';
+        container.style.position = 'fixed';
+        container.style.zIndex = '10003';
+        container.style.left = '200px';
+        container.style.top = '200px';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+        container.style.gap = '0.15rem';
+        container.style.flexWrap = 'wrap';
+        container.style.maxWidth = (grid.cells.length * 22) + 'px';
+        container.innerHTML = `<div style="font-size:0.5rem;width:100%;margin-bottom:0.2rem;">${grid.name}</div>`;
+
+        grid.cells.forEach((checked, i) => {
+            const dot = document.createElement('span');
+            dot.className = 'grid-dot' + (checked ? ' used' : '');
+            dot.textContent = i + 1;
+            dot.addEventListener('click', () => {
+                grid.cells[i] = !grid.cells[i];
+                dot.classList.toggle('used', grid.cells[i]);
+                saveGrids();
+            });
+            container.appendChild(dot);
+        });
+
+        document.body.appendChild(container);
+        makeDraggable(container);
+    }
+
+    function saveGrids() { localStorage.setItem(GRIDS_KEY, JSON.stringify(grids)); }
+    function updateGridButton() {
+        const btn = document.getElementById('tb-grids');
+        if (btn) btn.textContent = grids.length > 0 ? '📊' : '➕';
+    }
+
+    // ========== DRAGGABLE ==========
+    function makeDraggable(el) {
+        let isDragging = false, startX, startY, origLeft, origTop;
+        el.addEventListener('mousedown', function(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('.badge-close') || e.target.closest('.grid-dot') || e.target.closest('.grid-action-btn')) return;
+            isDragging = true;
+            startX = e.clientX; startY = e.clientY;
+            const rect = el.getBoundingClientRect();
+            origLeft = rect.left; origTop = rect.top;
+            el.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+        el.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('.badge-close') || e.target.closest('.grid-dot') || e.target.closest('.grid-action-btn')) return;
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX; startY = touch.clientY;
+            const rect = el.getBoundingClientRect();
+            origLeft = rect.left; origTop = rect.top;
+            e.preventDefault();
+        }, {passive: false});
+
+        window.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            el.style.left = (origLeft + e.clientX - startX) + 'px';
+            el.style.top = (origTop + e.clientY - startY) + 'px';
+        });
+        window.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            el.style.left = (origLeft + touch.clientX - startX) + 'px';
+            el.style.top = (origTop + touch.clientY - startY) + 'px';
+            e.preventDefault();
+        }, {passive: false});
+
+        window.addEventListener('mouseup', function() {
+            if (isDragging) { isDragging = false; el.style.cursor = 'grab'; }
+        });
+        window.addEventListener('touchend', function() {
+            isDragging = false;
+        });
+    }
+
+    // ========== PŘEPÍNÁNÍ REŽIMU ==========
+    mouseBtn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        if (editing) { deactivate(); }
+        else {
+            const pwd = await customPrompt('Heslo pro vstup do režimu úprav', 'password');
+            if (pwd === PASSWORD) activate();
+            else if (pwd !== null) alert('Špatné heslo.');
+        }
+    });
+
+    function activate() {
+        editing = true;
+        showEdits = locked ? true : false;
+        selectMode = false;
+        mouseBtn.classList.add('active');
+        mouseBtn.title = 'Režim oprav aktivní';
+        document.body.style.cursor = 'crosshair';
+        if (!toolbox) { createToolbox(); createCollapsedArrow(); createGridPanel(); }
+        else { toolbox.style.display = 'flex'; toolbox.classList.add('visible'); if (collapsedArrow) { collapsedArrow.classList.remove('visible'); collapsedArrow.style.display = 'none'; } }
+        if (locked || showEdits) applyEditVisibility();
+        grids.forEach((grid, idx) => { if (grid.visible) renderGrid(idx); });
+        updateGridButton();
+    }
+
+    function deactivate() {
+        if (recording) stopRecording(true);
+        if (!locked) {
+            showEdits = false;
+            if (toolbox) document.getElementById('tb-toggle')?.classList.remove('active');
+            applyEditVisibility();
+        }
+        editing = false;
+        mouseBtn.classList.remove('active');
+        mouseBtn.title = 'Klikni pro zadání hesla';
+        document.body.style.cursor = '';
+        if (toolbox) { toolbox.style.display = 'none'; toolbox.classList.remove('visible'); }
+        if (collapsedArrow) { collapsedArrow.classList.remove('visible'); collapsedArrow.style.display = 'none'; }
+        if (gridPanel) gridPanel.classList.remove('visible');
+        if (exportPanel) closeExportPanel();
+        if (selectedElement) { selectedElement.classList.remove('selected-element'); selectedElement = null; }
+        selectMode = false;
+        grids.forEach((grid, idx) => { const el = document.getElementById('grid-' + idx); if (el) el.remove(); grid.visible = false; });
+        saveGrids();
+        if (!locked) clearBadges();
+    }
+
+    // ========== KLIKÁNÍ NA PRVKY ==========
+    document.body.addEventListener('click', function(e) {
+        if (!editing) return;
+        if (e.target.closest('.secret-mouse-btn, .floating-toolbox, .collapsed-arrow, .grid-panel, .export-panel, .recording-indicator, .note-badge, .custom-prompt-overlay')) return;
+        if (!selectMode) return;
+        const target = e.target.closest('p, h1, h2, h3, h4, h5, h6, li, td, th, em, strong, blockquote, img, figcaption, a, span, div, section, article, button');
+        if (!target) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (selectedElement) selectedElement.classList.remove('selected-element');
+        selectedElement = target;
+        selectedElement.classList.add('selected-element');
+        selectMode = false;
+        document.getElementById('tb-select')?.classList.remove('active-tool');
+    }, true);
+
+    // ========== POZNÁMKY ==========
+    function applyEditVisibility() {
+        clearBadges();
+        if (!showEdits) return;
+        Object.entries(notes).forEach(([sel, data]) => {
+            if (!data || data.hidden) return;
+            const el = document.querySelector(sel);
+            if (!el) return;
+            if (data.type === 'text-edit' && el) el.textContent = data.newText;
+            if (data.type === 'link-button' && el) el.style.display = '';
+            if (data.type === 'text-note' && el) {
+                const badge = document.createElement('span');
+                badge.className = 'note-badge';
+                badge.innerHTML = `${data.content.substring(0, 30)}${data.content.length > 30 ? '…' : ''} <span class="badge-close" data-sel="${sel}">✕</span>`;
+                badge.style.top = '-1.5rem'; badge.style.right = '0';
+                if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+                el.appendChild(badge);
+                badge.querySelector('.badge-close').addEventListener('click', function(ev) {
+                    ev.stopPropagation();
+                    notes[this.dataset.sel].hidden = true;
+                    saveNotes();
+                    applyEditVisibility();
+                });
+            }
+        });
+    }
+
+    function clearBadges() {
+        document.querySelectorAll('.note-badge').forEach(b => b.remove());
+        Object.entries(notes).forEach(([sel, data]) => {
+            if (data && data.type === 'link-button') {
+                const el = document.querySelector(sel);
+                if (el) el.style.display = 'none';
+            }
+        });
+    }
+
+    function getSelector(el) {
+        if (el.id) return '#' + el.id;
+        let path = [];
+        while (el && el !== document.body) {
+            let seg = el.tagName.toLowerCase();
+            if (el.className) {
+                const classes = el.className.trim().split(/\s+/).slice(0,2).filter(c => c !== 'edit-added' && c !== 'selected-element');
+                if (classes.length) seg += '.' + classes.join('.');
+            }
+            const parent = el.parentElement;
+            if (parent) {
+                const siblings = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+                if (siblings.length > 1) seg += ':nth-child(' + (siblings.indexOf(el)+1) + ')';
+            }
+            path.unshift(seg);
+            el = parent;
+        }
+        return path.join(' > ');
+    }
+
+    function saveNotes() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
+
+    // ========== ZVUK ==========
+    function startRecording(sel) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            mediaStream = stream;
+            recorder = new MediaRecorder(stream);
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                if (chunks.length > 0) {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        if (!notes[sel]) notes[sel] = {};
+                        notes[sel].type = 'audio';
+                        notes[sel].data = reader.result;
+                        saveNotes();
+                    };
+                    reader.readAsDataURL(blob);
+                }
+                if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+                recording = false;
+                recIndicator.classList.remove('visible');
+            };
+            recorder.start();
+            recording = true;
+            recIndicator.classList.add('visible');
+        }).catch(() => alert('Bez přístupu k mikrofonu.'));
+    }
+
+    function stopRecording(cancel) {
+        if (recorder && recorder.state === 'recording') {
+            if (cancel) {
+                recorder.ondataavailable = null;
+                recorder.onstop = () => {
+                    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+                    recording = false;
+                    recIndicator.classList.remove('visible');
+                };
+            }
+            recorder.stop();
+        }
+    }
+
+    // ========== POSTRANNÍ PANEL ==========
+    function openExportPanel() {
+        if (exportPanel) closeExportPanel();
+        exportPanel = document.createElement('div');
+        exportPanel.className = 'export-panel';
+        let html = '<button class="close-export-btn" id="closeExportBtn">×</button><h3>📓 Poznámky</h3>';
+        const entries = Object.entries(notes).filter(([_, d]) => d && d.type);
+        if (!entries.length) html += '<p>Žádné poznámky.</p>';
+        else {
+            html += '<button id="exportTxtBtn" style="margin-bottom:1rem;padding:0.4rem 1rem;">📥 Export TXT</button><div id="notesList"></div>';
+        }
+        html += '<hr style="margin:1.5rem 0;">';
+        html += '<a href="../../funkce/anotator_poznamky.html" target="_blank" style="display:inline-block;margin-top:1rem;padding:0.5rem 1rem;border:1px solid #000;text-decoration:none;color:#000;">📓 Otevřít v editoru</a>';
+        exportPanel.innerHTML = html;
+        document.body.appendChild(exportPanel);
+        document.getElementById('closeExportBtn').addEventListener('click', closeExportPanel);
+        if (entries.length) {
+            const list = document.getElementById('notesList');
+            entries.forEach(([sel, data]) => {
+                const div = document.createElement('div');
+                div.className = 'note-entry';
+                const cat = data.category || '';
+                const isAudio = data.type === 'audio';
+                const content = data.type === 'link-button' ? `Odkaz: ${data.url} (${data.label})` : (data.content || data.newText || '');
+                div.innerHTML = `
+                    <strong>${sel}</strong>
+                    <input class="note-category" placeholder="Kategorie" value="${cat}" data-key="${sel}">
+                    ${isAudio ? `<audio controls src="${data.data}"></audio>` : `<textarea class="note-text" data-key="${sel}" rows="2">${content}</textarea>`}
+                    <button class="save-note-btn" data-key="${sel}">💾 Uložit</button>
+                    <button class="del-note-btn" data-key="${sel}">🗑 Smazat</button>
+                `;
+                list.appendChild(div);
+            });
+            list.querySelectorAll('.save-note-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const key = this.dataset.key;
+                    const ta = list.querySelector(`.note-text[data-key="${key}"]`);
+                    const ci = list.querySelector(`.note-category[data-key="${key}"]`);
+                    if (!notes[key]) notes[key] = {};
+                    if (ta && notes[key].type !== 'link-button') notes[key].content = ta.value;
+                    if (ci) notes[key].category = ci.value;
+                    saveNotes();
+                    if (showEdits) applyEditVisibility();
+                    alert('Uloženo.');
+                });
+            });
+            list.querySelectorAll('.del-note-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    delete notes[this.dataset.key];
+                    saveNotes();
+                    if (showEdits) applyEditVisibility();
+                    openExportPanel();
+                });
+            });
+            document.getElementById('exportTxtBtn').addEventListener('click', exportTxt);
+        }
+    }
+
+    function closeExportPanel() { if (exportPanel) { exportPanel.remove(); exportPanel = null; } }
+
+    function exportTxt() {
+        let txt = `=== POZNÁMKY K ${location.href} ===\n\n`;
+        Object.entries(notes).forEach(([sel, data]) => {
+            if (!data || !data.type) return;
+            txt += `SELEKTOR: ${sel}\nKATEGORIE: ${data.category || ''}\n`;
+            if (data.type === 'audio') txt += 'TYP: zvuková poznámka\n\n';
+            else if (data.type === 'link-button') txt += `ODKAZ: ${data.url} (${data.label})\n\n`;
+            else txt += `TEXT: ${data.content || data.newText || ''}\n\n`;
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([txt], {type: 'text/plain'}));
+        a.download = 'poznamky.txt'; a.click();
+    }
+})();
+</script>
 </body>
 </html>
