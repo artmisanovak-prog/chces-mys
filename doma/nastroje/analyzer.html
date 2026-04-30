@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jazykový analyzátor — Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--s:#161616;--s2:#1c1c1c;
+  --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.2);
+  --acc:#a89880;--border:rgba(168,152,128,.15);--border-hi:rgba(168,152,128,.35);
+  --serif:'Cormorant Garamond',Georgia,serif;--mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+header nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(15,15,15,.96);backdrop-filter:blur(14px);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.nav-brand{font-family:var(--serif);font-size:.9rem;font-weight:300}.nav-brand em{font-style:italic;color:var(--acc)}
+.nav-links{display:flex;gap:14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}.nav-links a:hover{color:var(--cream)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+/* HERO */
+.hero{padding:48px 0 36px;border-bottom:1px solid var(--border)}
+.hero-lbl{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+.hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3.8rem);font-weight:300;line-height:1.05;margin-bottom:10px}
+.hero h1 em{font-style:italic;color:var(--acc)}
+.hero-desc{font-size:.82rem;color:var(--dim);max-width:540px;line-height:1.9}
+.co-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin:32px 0}
+@media(max-width:700px){.co-grid{grid-template-columns:1fr}}
+.co-item{background:var(--s);padding:18px 20px}
+.co-num{font-family:var(--serif);font-size:2rem;font-weight:300;color:rgba(168,152,128,.18);line-height:1;margin-bottom:7px}
+.co-title{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:7px}
+.co-text{font-size:.78rem;color:var(--dim);line-height:1.8}
+
+/* MAIN GRID */
+.main{display:grid;grid-template-columns:1fr 360px;gap:0;padding:36px 0;border-bottom:1px solid var(--border)}
+@media(max-width:860px){.main{grid-template-columns:1fr}}
+.panel-l{padding-right:36px;border-right:1px solid var(--border)}
+@media(max-width:860px){.panel-l{padding-right:0;border-right:none;padding-bottom:28px;border-bottom:1px solid var(--border)}}
+.panel-r{padding-left:36px;display:flex;flex-direction:column;align-items:center}
+@media(max-width:860px){.panel-r{padding-left:0;padding-top:28px}}
+.panel-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:11px}
+textarea{width:100%;background:var(--s);border:1px solid var(--border);color:var(--cream);padding:14px;font-family:var(--mono);font-size:.84rem;line-height:1.85;resize:vertical;min-height:200px;transition:border-color .15s}
+textarea:focus{outline:none;border-color:var(--border-hi)}
+textarea::placeholder{color:rgba(232,224,208,.15)}
+.btn-row{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.btn{padding:10px 22px;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:all .12s}
+.btn-p{background:var(--acc);color:var(--bg)}.btn-p:hover{background:#c0aa90}
+.btn-g{background:transparent;color:var(--dim);border:1px solid var(--border)}.btn-g:hover{color:var(--cream);border-color:var(--border-hi)}.btn-g.on{color:var(--acc);border-color:var(--acc)}
+
+/* TEXT DISPLAY */
+.text-box{display:none;margin-top:14px;border:1px solid var(--border);background:var(--s);padding:14px;font-family:var(--serif);font-size:.87rem;line-height:2.1;white-space:pre-wrap;max-height:280px;overflow-y:auto}
+.text-box::-webkit-scrollbar{width:2px}.text-box::-webkit-scrollbar-thumb{background:var(--acc)}
+
+/* CANVAS */
+canvas{display:block;width:100%;max-width:300px;height:auto;cursor:pointer;margin:0 auto}
+.wheel-hint{font-size:.7rem;color:var(--dim);text-align:center;margin-top:7px;letter-spacing:.05em}
+
+/* COLOR BAR */
+.bar-section{display:none;padding:20px 0;border-bottom:1px solid var(--border)}
+.bar-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.bar-wrap{position:relative}
+.bar-row{display:flex;height:12px;margin-bottom:3px;border-radius:1px;overflow:hidden;cursor:pointer}
+.bar-seg{height:100%;transition:opacity .1s;flex-shrink:0}
+.bar-seg:hover{opacity:.7}
+.bar-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bar-leg-item{display:flex;align-items:center;gap:5px;font-size:.62rem;color:var(--dim);cursor:pointer}
+.bar-leg-item:hover{color:var(--cream)}
+.bar-leg-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+
+/* VÝSLEDKY */
+.results{padding:36px 0;border-bottom:1px solid var(--border)}
+.res-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
+.dom-box{border:1px solid var(--acc);background:rgba(168,152,128,.06);padding:18px 22px;margin-bottom:14px}
+.dom-angle{font-family:var(--serif);font-size:1.7rem;font-weight:300;margin-bottom:4px}
+.dom-meta{font-size:.76rem;color:var(--dim);line-height:1.9}
+.res-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.btn-out{background:transparent;border:1px solid var(--border);color:var(--dim);padding:7px 16px;cursor:pointer;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:all .12s}
+.btn-out:hover{border-color:var(--acc);color:var(--cream)}
+.scores-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+@media(max-width:600px){.scores-grid{grid-template-columns:repeat(2,1fr)}}
+.sc-cell{background:var(--s);padding:10px 13px;cursor:pointer;transition:background .1s}
+.sc-cell:hover,.sc-cell.hi{background:var(--s2)}
+.sc-cell.hi{background:rgba(168,152,128,.09)}
+.sc-name{font-size:.7rem;color:var(--cream);margin-bottom:3px}
+.sc-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.sc-bar{height:2px;background:var(--border);margin-bottom:3px;overflow:hidden}
+.sc-fill{height:100%;transition:width .4s ease}
+.sc-val{font-size:.66rem;color:var(--dim)}
+
+/* DETAIL ÚHLU */
+.angle-detail{display:none;padding:36px 0;border-bottom:1px solid var(--border)}
+.angle-detail.show{display:block}
+.ad-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:14px}
+.ad-title{font-family:var(--serif);font-size:1.5rem;font-weight:300;margin-bottom:6px}
+.ad-pct{font-size:.78rem;color:var(--dim);margin-bottom:16px}
+.ad-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:18px}
+@media(max-width:700px){.ad-grid{grid-template-columns:1fr}}
+.ad-cell{background:var(--s);padding:15px 17px}
+.ad-cell-lbl{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:7px}
+.ad-cell-txt{font-size:.8rem;color:rgba(232,224,208,.7);line-height:1.8}
+.fig-all-title{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.fig-all-grid{display:flex;flex-direction:column;gap:2px}
+.fig-all-item{padding:6px 12px;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:10px}
+.fig-all-item:hover{border-color:var(--border-hi);background:var(--s)}
+.fig-all-item.found{border-left:3px solid currentColor}
+.fig-swatch{width:10px;height:10px;border-radius:1px;flex-shrink:0}
+.fig-name{font-size:.74rem;flex:1}
+.fig-found-badge{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:inherit;opacity:.7}
+.fig-type-badge{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2)}
+
+/* DETAIL FIGURY */
+.fig-detail{display:none;padding:32px 0;border-bottom:1px solid var(--border)}
+.fig-detail.show{display:block}
+.fd-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+.fd-title{font-family:var(--serif);font-size:1.4rem;font-weight:300;margin-bottom:5px}
+.fd-def{font-size:.82rem;color:var(--dim);margin-bottom:16px;line-height:1.8;max-width:600px}
+.ctx-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:16px}
+@media(max-width:600px){.ctx-grid{grid-template-columns:1fr}}
+.ctx-cell{background:var(--s);padding:14px 16px}
+.ctx-lbl{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
+.ctx-txt{font-size:.78rem;color:rgba(232,224,208,.68);line-height:1.8}
+.fd-found{font-size:.78rem;color:var(--dim);font-style:italic;margin-top:10px}
+.back-btn{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px}
+.back-btn:hover{color:var(--cream)}
+
+footer{padding:28px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+footer p{font-size:.72rem;color:var(--dim)}footer a{color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+<nav>
+  <span class="nav-brand"><em>Chceš myš?</em> — jazykový analyzátor</span>
+  <div class="nav-links">
+    <a href="knihovna_figur.html">Figury</a>
+    <a href="zapisnik.html">Zápisník</a>
+  </div>
+</nav>
+</header>
+
+<main class="wrap">
+
+<section class="hero">
+  <p class="hero-lbl">Nástroj · Strukturní analýza textu</p>
+  <h1>Co říká váš jazyk —<br><em>ne obsah, ale forma.</em></h1>
+  <p class="hero-desc">Analyzátor hledá jazykové figury a struktury, ne téma textu. Přiřazuje je ke 12 kognitivním úhlům. Každý úhel se počítá nezávisle z délky textu.</p>
+  <div class="co-grid">
+    <article class="co-item">
+      <div class="co-num">01</div>
+      <div class="co-title">Figury a struktury</div>
+      <p class="co-text">Každý úhel má přiřazeny konkrétní figury — elipsa, anafora, metafora, fragment, paradox. Analyzátor je detekuje ve větách i v celém textu.</p>
+    </article>
+    <article class="co-item">
+      <div class="co-num">02</div>
+      <div class="co-title">Mikro a makro rovina</div>
+      <p class="co-text">Mikro: věta po větě — elipsa, přímá řeč, negace, závorky. Makro: celý text — anafora, gradace délek, změna časů, hapax legomena.</p>
+    </article>
+    <article class="co-item">
+      <div class="co-num">03</div>
+      <div class="co-title">Jazyk jako způsob myšlení</div>
+      <p class="co-text">Figura není ozdoba — proměňuje způsob, jak věta myslí. Dominantní úhel ukazuje, jaký kognitivní styl je v textu přítomný. Procenta = podíl vět s figurami daného úhlu.</p>
+    </article>
+  </div>
+</section>
+
+<div class="main">
+  <section class="panel-l">
+    <p class="panel-lbl">Váš text</p>
+    <textarea id="txt" placeholder="Vložte text — kreativní cvičení, odpovědi na otázky k pohádce, e-mail, zprávu, deník... Analyzátor pracuje se strukturou, ne tématem."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-p" id="analyzeBtn">Analyzovat →</button>
+      <button class="btn btn-g" id="hlBtn">Zvýraznit</button>
+      <button class="btn btn-g" id="resetBtn">Smazat</button>
+    </div>
+    <div class="text-box" id="textBox"></div>
+  </section>
+  <section class="panel-r">
+    <p class="panel-lbl" style="align-self:flex-start">12 úhlů · klikněte na segment</p>
+    <canvas id="wheel" width="300" height="300"></canvas>
+    <p class="wheel-hint">Kliknutím na segment zobrazíte detail úhlu</p>
+  </section>
+</div>
+
+<!-- BAREVNÝ PRUH -->
+<section class="bar-section" id="barSection">
+  <p class="bar-lbl">Rozložení figur v textu</p>
+  <div class="bar-wrap" id="barWrap"></div>
+  <div class="bar-legend" id="barLegend"></div>
+</section>
+
+<!-- VÝSLEDKY -->
+<section class="results" id="results" style="display:none">
+  <p class="res-lbl">Výsledek analýzy</p>
+  <div class="dom-box">
+    <div class="dom-angle" id="resDom"></div>
+    <div class="dom-meta" id="resMeta"></div>
+  </div>
+  <div class="res-actions">
+    <button class="btn-out" id="saveBtn">💾 Uložit do zápisníku</button>
+    <button class="btn-out" id="dlBtn">⬇ Stáhnout JSON</button>
+    <button class="btn-out" onclick="window.print()">🖨 Tisknout</button>
+    <a class="btn-out" href="zapisnik.html">📓 Zápisník</a>
+    <span id="saveMsg" style="display:none;font-size:.68rem;color:var(--acc);align-self:center">✓ Uloženo</span>
+  </div>
+  <div class="scores-grid" id="scoresGrid"></div>
+</section>
+
+<!-- DETAIL ÚHLU -->
+<section class="angle-detail" id="angleDetail">
+  <p class="ad-lbl" id="adLbl">Detail úhlu</p>
+  <div class="ad-title" id="adTitle"></div>
+  <div class="ad-pct" id="adPct"></div>
+  <div class="ad-grid">
+    <div class="ad-cell">
+      <div class="ad-cell-lbl">Popis úhlu</div>
+      <div class="ad-cell-txt" id="adPopis"></div>
+    </div>
+    <div class="ad-cell">
+      <div class="ad-cell-lbl">Jazyk a myšlení</div>
+      <div class="ad-cell-txt" id="adMysleni"></div>
+    </div>
+  </div>
+  <div class="fig-all-title">Figury tohoto úhlu · tučně = nalezeny v textu · kliknutím zobrazíte detail figury</div>
+  <div class="fig-all-grid" id="figAllGrid"></div>
+</section>
+
+<!-- DETAIL FIGURY -->
+<section class="fig-detail" id="figDetail">
+  <div class="back-btn" onclick="closeFigDetail()">← zpět na úhel</div>
+  <p class="fd-lbl" id="fdLbl">Detail figury</p>
+  <div class="fd-title" id="fdTitle"></div>
+  <div class="fd-def" id="fdDef"></div>
+  <div class="ctx-grid" id="ctxGrid"></div>
+  <div class="fd-found" id="fdFound"></div>
+</section>
+
+</main>
+
+<footer>
+  <p>Jazykový analyzátor · Chceš myš? · © 2026 Michaela Nováková</p>
+  <p><a href="/cdn-cgi/l/email-protection#44272c272137293d37042329252d286a272b29"><span class="__cf_email__" data-cfemail="4e2d262d2b3d23373d0e29232f2722602d2123">[email&#160;protected]</span></a></p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══════════════════════════════════════════
+// 12 ÚHLŮ
+// ═══════════════════════════════════════════
+const UHLY = [
+  {i:0, st:0,   barva:'#5a7fa8',
+   nazev:'Analytický',
+   popis:'Hledá fakta, logické závislosti a struktury. Pracuje s dlouhými větami, polysyndeton (mnoho spojek za sebou), apoziční definice (rozvíjí podmět) a paralelní konstrukce. Text buduje argumenty, řadí, třídí.',
+   mysleni:'Dlouhá věta organizuje svět do závislostí. Polysyndeton (a…a…a) vytváří pocit úplného výčtu — nic nesmí chybět. Apoziční definice upřesňuje a kontroluje. Fixace klíčových slov signalizuje, co mysl považuje za centrální téma.',
+   figury:['Dlouhá věta (20+ slov)','Polysyndeton','Apoziční definice','Parataxe','Fixace (opak. slova)']},
+  {i:1, st:30,  barva:'#6a9e72',
+   nazev:'Kulturní',
+   popis:'Pracuje s minulým časem (bez 1. osoby), parabolami, citacemi a změnou zájmen (já/ty/my/vy). Text odkazuje na tradici, sdílené vzorce, archetypy.',
+   mysleni:'Minulý čas bez 1. osoby přenáší odpovědnost na kolektiv nebo tradici. Parabola myslí analogicky. Změna zájmen signalizuje pohyb mezi perspektivami. Kulturní odkaz zakořeňuje text v sdílené paměti.',
+   figury:['Minulý čas (bez 1.os.j.č.)','Parabola','Intertextualita','Kulturní odkaz','Změna role (zájmen)']},
+  {i:2, st:60,  barva:'#9b72b5',
+   nazev:'Filozofický',
+   popis:'Klade otázky bez přímé řeči, vyhlašuje pravdy, reflektuje sám sebe jako text. Metatext, deklarace, paradox (2× být bez ale) a filozofické kolokace.',
+   mysleni:'Otázka bez odpovědi nechává prostor pro pochybnost. Deklarace ustavuje jistotu. Metatext je myšlení o myšlení. Paradox drží neslučitelné stavy pohromadě — to je základní filozofická gesta.',
+   figury:['Metatext','Deklarace','Otázka (ne v přímé řeči)','Paradox (2× být bez ale)','Filozofická kolokace']},
+  {i:3, st:90,  barva:'#5fa8a0',
+   nazev:'Naivní',
+   popis:'Elipsa (věta bez slovesa), komprese, nerozhodnostní výrazy (možná/snad/nevím), přímá řeč, performativita (kdybych/kéž). Text je otevřený, přímý, bez analytické distance.',
+   mysleni:'Elipsa myslí v záblescích — vynechává to, co je zdánlivě jasné. Nerozhodnost nechává věci otevřené. Přímá řeč přivádí hlas postavy bez filtrování. Komprese říká maximum minimem.',
+   figury:['Elipsa (bez slovesa)','Komprese','Nerozhodnost (možná/snad…)','Přímá řeč','Performativita (kdybych/kéž)']},
+  {i:4, st:120, barva:'#8e7248',
+   nazev:'Jazykový',
+   popis:'Zvuk, rytmus, opakování. Anafora (stejné začátky vět), epifora (stejné konce), aliterace (stejná písmena), paralelismus (věty podobné délky), onomatopoeia.',
+   mysleni:'Anafora buduje rytmus — čtenář čeká na opakování. Aliterace vytváří zvukový vzorek. Paralelismus organizuje symetrii. Tento úhel myslí formou, ne obsahem — textem jako zvukem.',
+   figury:['Onomatopoeia','Anafora (makro)','Epifora (makro)','Aliterace (makro)','Paralelismus (makro)']},
+  {i:5, st:150, barva:'#5a8a5a',
+   nazev:'Metaforický',
+   popis:'Přenosy významu — metafora (X je Y bez zájmena), přirovnání (jako), apostrofa (ó/hej/poslyš), závorky a pomlčky jako nositelé vedlejšího smyslu.',
+   mysleni:'Metafora myslí přenosem — vzdálené se najednou dotýká. Přirovnání pojmenovává přes analogii. Závorky nesou komentář, který se nevejde do hlavního proudu. Apostrofa oslovuje nepřítomné.',
+   figury:['Metafora','Přirovnání','Závorky','Pomlčka','Apostrofa']},
+  {i:6, st:180, barva:'#a85a5a',
+   nazev:'Asociační',
+   popis:'Krátké věty se slovesem (fragment), výčty čárkami (enumerace), imperativy, číslovky/číslice, znaménka (+=/&). Tok asociací, rychlé střídání, bez hierarchie.',
+   mysleni:'Fragment myslí skoky — každá věta je samostatný svět. Imperativ myslí výzvou. Výčet čárkami katalogizuje bez pořadí důležitosti. Čísla vnášejí konkrétnost. Znaménka zrychlují a zhuštují.',
+   figury:['Fragment (kr. věta se slovesem)','Enumerace (čárky)','Vykřičník','Číslovka/číslice','Znaménko (+=/&)']},
+  {i:7, st:210, barva:'#c8a832',
+   nazev:'Introspektivní',
+   popis:'1. osoba jednotného čísla (bez změny zájmen v textu), smyslové detaily, změna tempa vět (makro). Text se dívá dovnitř.',
+   mysleni:'1. osoba bez střídání = fokus na vlastní hledisko. Smyslový detail (barvy, textury, teploty) ukotvuje text v těle. Změna tempa (krátké po dlouhých) vytváří emocionální rytmus.',
+   figury:['1. osoba j.č. (bez změny)','Smyslový detail','Změna tempa vět (makro)']},
+  {i:8, st:240, barva:'#c8722a',
+   nazev:'Ironický',
+   popis:'Negace (2+ záporů v jedné větě), sémantický kontrast (kladné/záporné věty za sebou), parentéze, ironie (2× být + ale), deformovaná frazeologie.',
+   mysleni:'Negace myslí přes vyloučení. Ironie (2× být + ale) říká obojí najednou. Sémantický kontrast staví protilehlé perspektivy za sebou. Deformovaná frazeologie narušuje automatická očekávání.',
+   figury:['Negace (2+ záporů/věta)','Parentéze','Ironie (2× být + ale)','Deformovaná frazeologie','Kontrast sémantický (makro)']},
+  {i:9, st:270, barva:'#a83060',
+   nazev:'Groteskní',
+   popis:'Gradace délek vět (makro), hyperbola, vykřičník, ilokuce (řečový akt + !), změna časů v textu (makro), tautologie.',
+   mysleni:'Gradace zesiluje — myšlení eskaluje nebo se hroutí. Hyperbola přehání pro zdůraznění. Vykřičník aktivuje. Tautologie opakuje pro zesílení. Změna časů narušuje linearitu příběhu.',
+   figury:['Hyperbola','Tautologie','Vykřičník','Ilokuce (řeč.akt + !)','Gradace délek (makro)','Změna časů (makro)']},
+  {i:10,st:300, barva:'#6080a0',
+   nazev:'Absurdní',
+   popis:'Aposiopeze (…), synestezie (2+ smyslů), personifikace, oxymóron, neologismy se spojovníkem, přeskok (náhlá změna rytmu), redundance.',
+   mysleni:'Aposiopeze nechává větu nedokončenou — myšlení odmítá uzavřít. Synestezie míchá smysly. Personifikace dává neživému vůli. Oxymóron drží protiklady pohromadě bez rozlišení.',
+   figury:['Aposiopeze (…)','Synestezie (2+ smysly)','Personifikace','Oxymóron','Neologismus (spojovník)','Přeskok (makro)']},
+  {i:11,st:330, barva:'#8060b0',
+   nazev:'Surrealistický',
+   popis:'Výplňová slova (vlastně/jaksi/prostě), snovost, asyndeton (série kr. vět bez spojek, makro), prolínání míst a časů (makro), hapax legomena (makro).',
+   mysleni:'Výplňová slova jsou trhliny — text hledá, jak dál. Snovost přenáší do jiného modu reality. Asyndeton vytváří zahuštěný proud bez logiky. Prolínání míst a časů ruší kauzalitu. Hapax = izolované ostrovy slova.',
+   figury:['Výplňová slova','Sen (kl. slova)','Asyndeton (makro)','Prolínání míst+časů (makro)','Hapax legomena (makro)']},
+];
+
+// ═══════════════════════════════════════════
+// FIGURY — DEFINICE A KONTEXTY
+// ═══════════════════════════════════════════
+const FIGURY_DATA = {
+  'Dlouhá věta (20+ slov)':{def:'Věta překračující 20 slov — buduje komplexní logické struktury a závislosti.',
+    forenzni:'Dlouhé věty v výpovědích mohou signalizovat snahu o kontrolu — mluvčí nechce, aby ho přerušili. V manipulativních textech maskují klíčové tvrzení ve vedlejších větách.',
+    psych:'Svědčí o schopnosti pracovat s komplexními koncepty. Může indikovat analytické myšlení nebo potřebu úplnosti — nic nesmí zůstat nevysvětleno.',
+    kreativita:'Vytváří pomalý, hutný rytmus. Čtenář je nucen sledovat argumentaci. Vhodné pro epické nebo filozofické pasáže.',
+    reklama:'Používá se v technické nebo akademické komunikaci. V reklamě výjimečně — k vytvoření dojmu odbornosti.'},
+  'Polysyndeton':{def:'Opakování stejné spojky (a…a…a, nebo…nebo…nebo) — stupňuje, vytváří pocit úplnosti a naléhavosti.',
+    forenzni:'V svědectvích signalizuje snahu o completeness — mluvčí chce zmínit vše. Může maskovat váhání nebo přidávání dalšího důkazu.',
+    psych:'Ukazuje na myšlení v korelacích bez hierarchie. Všechny prvky mají stejnou váhu.',
+    kreativita:'Vytváří rytmické opakování s naléhavostí. Klasický příklad: "Přišel a viděl a zvítězil."',
+    reklama:'V sloganech vytváří dojem bohatství a výběru: "Rychlé a spolehlivé a dostupné."'},
+  'Apoziční definice':{def:'Vedlejší věta s "který/která/které" bezprostředně za podmětem — upřesňuje, omezuje, kontroluje.',
+    forenzni:'Nadměrné upřesňování v výpovědích může signalizovat snahu o kontrolu interpretace. Mluvčí přidává podmínky.',
+    psych:'Svědčí o potřebě přesnosti a kontroly. Analytické myšlení, které nenechá prostor pro nejednoznačnost.',
+    kreativita:'Zpomaluje větu a přidává detail. Vytváří dojem autoritative knowledge.',
+    reklama:'Typické pro právní texty a technické specifikace. V reklamě: "Parfém, který mění ráno."'},
+  'Parataxe':{def:'Souřadné spojení vět pomocí a/ale/nebo bez podřazování — rovnocenné větné celky vedle sebe.',
+    forenzni:'Parataxe v výpovědích signalizuje chronologické myšlení: "A pak… a pak… a pak…" Může svědčit o přímém záznamu paměti.',
+    psych:'Ukazuje na konkrétní, episodické myšlení. Méně abstrakce, více přímého záznamu událostí.',
+    kreativita:'Vytváří demokratický rytmus — žádný prvek není nadřazený. Hemingwayův styl.',
+    reklama:'Přímočaré sdělení bez hierarchie. "Koupíš. Vyzkoušíš. Zamiluješ se."'},
+  'Fixace (opak. slova)':{def:'Stejné slovo se v textu opakuje 3× a více — signalizuje klíčové téma nebo obsesi.',
+    forenzni:'Fixace na určité slovo může ukazovat na traumatické nebo emocionálně nabité téma. V manipulativních textech: záměrné opakování pro sugesci.',
+    psych:'Indikuje dominantní téma nebo starost. Může být vědomá (rétorika) nebo nevědomá (obsese).',
+    kreativita:'Vědomé opakování jako leitmotiv — téma, které se vrací a prohlubuje.',
+    reklama:'Opakování klíčového slova/značky vytváří asociaci a zapamatovatelnost.'},
+  'Minulý čas (bez 1.os.j.č.)':{def:'Slovesa v minulém čase, ale ne v první osobě jednotného čísla — vyprávění o druhých nebo kolektivu.',
+    forenzni:'Přechod z přítomného do minulého času bez osobní perspektivy může signalizovat distancování od vlastní odpovědnosti.',
+    psych:'Objektivizace zkušenosti — mluvčí se staví mimo děj. Může být obranný mechanismus nebo analytický postoj.',
+    kreativita:'Klasická narativní perspektiva. Vytváří distance mezi vypravěčem a příběhem.',
+    reklama:'V testimonialech: "Ona zkusila… a změnilo to její život."'},
+  'Parabola':{def:'Přirovnání k situaci nebo příběhu ("je to jako… v pohádce/historii/tradici").',
+    forenzni:'Parabolické myšlení může signalizovat vyhýbání se přímé výpovědi — mluvčí odpovídá příběhem, ne faktem.',
+    psych:'Ukazuje na analogické myšlení — pochopení přes podobnost. Silně zakořeněno v kulturním poznání.',
+    kreativita:'Základní narativní nástroj. Pohádka, bajka, podobenství — vysvětluje abstraktní přes konkrétní.',
+    reklama:'Storytelling — příběh o zákazníkovi, který ilustruje hodnotu produktu.'},
+  'Intertextualita':{def:'Přímá citace nebo odkaz na jiný text — uvozovky bez vlastního komentáře.',
+    forenzni:'Citace jako autoritativní odkaz. Skrývá vlastní tvrzení za cizí autoritu.',
+    psych:'Signalizuje kulturní zakořenění a potřebu legitimizace přes autoritu.',
+    kreativita:'Palimpsest — text psaný přes jiný text. Vědomý dialog s tradicí.',
+    reklama:'"Jak říká [slavná osoba]…" — přenášení důvěry z autority na produkt.'},
+  'Kulturní odkaz':{def:'Slova tradice/kultura/dějiny/archetyp/symbol/rituál — zakořenění v sdílené paměti.',
+    forenzni:'Odkazování na kulturní normy jako argumentace: "jak se vždy dělalo" může maskovat vlastní zájem.',
+    psych:'Potřeba kolektivního rámce — jedinec se umisťuje do větší struktury.',
+    kreativita:'Vytváří rezonanci — čtenář přináší vlastní kulturní asociace.',
+    reklama:'"Tradiční recept" — přenášení kulturní autority na produkt.'},
+  'Změna role (zájmen)':{def:'Text přechází mezi já/ty/my/vy — vypravěč mění perspektivu.',
+    forenzni:'Náhlé přechody zájmen mohou signalizovat zmatení nebo záměrné manipulování s perspektivou.',
+    psych:'Ukazuje na schopnost empatie a přijímání různých perspektiv. Nebo na nestabilitu identity.',
+    kreativita:'Polyfonie — více hlasů v jednom textu. Dramatický dialog.',
+    reklama:'"Víme, jak to cítíte" — přechod z pozice značky na pozici zákazníka.'},
+  'Metatext':{def:'Text, který mluví o sobě nebo o procesu psaní — "tato věta říká", "píšu to proto".',
+    forenzni:'Metatextové komentáře mohou signalizovat vědomí performativity výpovědi — mluvčí ví, že mluví.',
+    psych:'Vysoce reflexivní myšlení. Vědomí jazyka jako nástroje, ne transparentního média.',
+    kreativita:'Postmoderní nástroj — narušení iluze fikce. Sám Nabokov, Cortázar.',
+    reklama:'Ironie a sebereflexe v reklamě: "Toto není reklama na…"'},
+  'Deklarace':{def:'"Pravda je…", "Tvrdím, že…" — přímé ustavení faktů nebo přesvědčení.',
+    forenzni:'Deklarace bez důkazu = autoritativní tvrzení. Může být manipulativní nebo naivní.',
+    psych:'Ukazuje na potřebu jistoty a autoritativnosti. Nebo na obranný mechanismus.',
+    kreativita:'Proroctví, manifest. Silný otevírací nebo uzavírací hlas.',
+    reklama:'Garantované tvrzení: "Dokazujeme, že…" nebo "Je prokázáno, že…"'},
+  'Otázka (ne v přímé řeči)':{def:'Tázací věta bez uvozovek — vypravěč klade otázku bez očekávané odpovědi.',
+    forenzni:'Otázky bez odpovědi v textu mohou signalizovat nevyřešené napětí nebo záměrné vyhýbání se přímé odpovědi.',
+    psych:'Rétorická otázka aktivuje čtenáře. Filosofický postoj — pochybnost jako metoda.',
+    kreativita:'Otvírá prostor pro čtenáře. Text nevnucuje odpověď.',
+    reklama:'"Nejste unavení z…?" — aktivace potřeby před nabídkou řešení.'},
+  'Paradox (2× být bez ale)':{def:'Dvě výpovědi se slovesem být v jedné větě bez kontrastu (ale/přesto) — neslučitelné stavy jako jedna pravda.',
+    forenzni:'Paradoxní výpovědi mohou signalizovat kognitivní disonanci nebo vědomé přijímání protichůdných faktů.',
+    psych:'Schopnost udržet ambivalenci. Vyspělé kognitivní zpracování reality.',
+    kreativita:'Zen, Borges, Kafka — paradox jako filozofická figura. Svět nemá jednoduchou logiku.',
+    reklama:'Luxusní paradox: "Dostupná exkluzivita."'},
+  'Filozofická kolokace':{def:'Filozofická termína (ontologie, epistéme, bytí, jsoucno) — text se pohybuje v abstraktních kategoriích.',
+    forenzni:'Nadměrné filozofické termíny mohou signalizovat zakrývání konkrétní skutečnosti za abstrakcí.',
+    psych:'Vysoká úroveň abstrakce. Potřeba systémového rámce pro pochopení zkušenosti.',
+    kreativita:'Esej, filozofická próza. Pojmenovává to, co nemá jiný výraz.',
+    reklama:'V reklamě vzácně — signalizuje luxusní nebo intelektuální positioning.'},
+  'Elipsa (bez slovesa)':{def:'Věta bez slovesa — holé jméno nebo adjektivum jako samostatná výpověď.',
+    forenzni:'Eliptické výpovědi v svědectvích mohou signalizovat emočně nabitá témata, kde mluvčí nemůže nebo nechce říct víc.',
+    psych:'Neúplná výpověď jako emocionální zkratka. Intenzita, která nevejde do celé věty.',
+    kreativita:'Minimalismus. Každé slovo nese maximální váhu. Haiku jako extrémní případ.',
+    reklama:'"Svěžest. Síla. Výkon." — fragmenty jako branding.'},
+  'Komprese':{def:'Krátká věta (2–5 slov) se slovesem — maximálně úsporné vyjádření.',
+    forenzni:'Krátké výpovědi v kritických momentech výpovědi mohou signalizovat záměrné omezování informací.',
+    psych:'Přesné, kontrolované vyjadřování. Nebo zkratkovité myšlení v emočně náročných situacích.',
+    kreativita:'Telegrafický styl — každé slovo nesupluje jiné. Hemingway, Carver.',
+    reklama:'Slogan jako extrémní komprese: "Just do it."'},
+  'Nerozhodnost (možná/snad…)':{def:'Modifikátory nejistoty (možná, snad, nevím, asi, zdá se) — výpověď bez závazku.',
+    forenzni:'Vysoká frekvence hedging slov může signalizovat záměrné vyhýbání se závazné výpovědi.',
+    psych:'Kognitivní otevřenost nebo úzkost z chybné výpovědi. Epistemická pokora.',
+    kreativita:'Narativní neurčitost — vypravěč neví vše. Vytváří prostor pro čtenáře.',
+    reklama:'V reklamě vyhýbáno — každý závazek je riziko.'},
+  'Přímá řeč':{def:'Citát s uvozovkami — přímý hlas postavy bez filtrování vypravěče.',
+    forenzni:'Přesnost citace signalizuje vědomí důležitosti přesné reprodukce. Chyby v citaci mohou odhalit rekonstrukci.',
+    psych:'Schopnost slyšet druhého — zachovat jeho hlas beze změny.',
+    kreativita:'Dialog jako dramatická figura. Postava dostane vlastní hlas.',
+    reklama:'Testimonial — zákazník mluví přímo k zákazníkovi.'},
+  'Performativita (kdybych/kéž)':{def:'Kondicionál a optativ (kdybych/kéž/nechť/ať) — výpověď, která tvoří nebo přeje reality.',
+    forenzni:'Kondicionální výpovědi ("kdybych věděl") mohou být obranné — distancování od skutečnosti.',
+    psych:'Counterfactual thinking — myšlení o alternativních světech. Kreativní nebo anxiózní.',
+    kreativita:'Přání, zaříkávání, modlitba. Text, který chce změnit svět tím, že ho pojmenuje.',
+    reklama:'"Představte si…" — aktivace touhy přes kondicionál.'},
+  'Onomatopoeia':{def:'Slovo napodobující zvuk — bum, šum, cinká, vrčí.',
+    forenzni:'Zvukomalebná slova v výpovědích mohou signalizovat silnou smyslovou paměť na popisovanou událost.',
+    psych:'Syntetická paměť — zážitek uložen jako vícesmyslový. Silná přítomnostní kvalita vzpomínky.',
+    kreativita:'Tělesnost textu — čtenář slyší. Futurismus, konkrétní poezie.',
+    reklama:'"Snap! Crackle! Pop!" — zvuková identita produktu.'},
+  'Anafora (makro)':{def:'Stejné slovo nebo fráze na začátku po sobě jdoucích vět — detekováno přes celý text.',
+    forenzni:'Opakující se začátky vět mohou signalizovat fixaci nebo záměrný rétorický efekt.',
+    psych:'Rytmická organizace myšlenek. Potřeba struktury nebo emocionální intenzita.',
+    kreativita:'"Mám sen…" (King). Buduje refrén, rytmus a naléhavost.',
+    reklama:'Reklamní slogan jako anafora: "Vždy čerstvé. Vždy kvalitní. Vždy vaše."'},
+  'Epifora (makro)':{def:'Stejné slovo nebo fráze na konci po sobě jdoucích vět — uzavírající opakování.',
+    forenzni:'Epifora zesiluje závěry — mluvčí se k něčemu opakovaně vrací.',
+    psych:'Uzavírání myšlenek — potřeba potvrdit. Rituální nebo obsesivní kvalita.',
+    kreativita:'Poetická figura uzavírání. Závěrečný akord se opakuje.',
+    reklama:'Méně časté než anafora, ale silné: "…a to je váš život. A to je váš výběr."'},
+  'Aliterace (makro)':{def:'Tři a více slov se stejným počátečním písmenem v jedné větě.',
+    forenzni:'Záměrná aliterace může signalizovat rétorickou přípravu výpovědi.',
+    psych:'Zvuková organizace — estetický smysl pro formu.',
+    kreativita:'Klasická poetická figura. Zapojuje zvukovou paměť.',
+    reklama:'"Čistá, čerstvá, česká." — aliterace jako zapamatovatelnost.'},
+  'Paralelismus (makro)':{def:'Věty podobné délky (±2 slova) — symetrická organizace textu.',
+    forenzni:'Silná paralelní struktura signalizuje rétorickou přípravu nebo emocionálně zpracovaný příběh.',
+    psych:'Potřeba symetrie a balance. Analytické nebo estetické myšlení.',
+    kreativita:'Biblický styl, manifesty. Symetrie jako argumentační síla.',
+    reklama:'"Rychlejší. Silnější. Inteligentnější." — paralelismus jako gradace.'},
+  'Metafora':{def:'X je Y bez zájmena — přímý přenos pojmenování (ne jako/přirovnání).',
+    forenzni:'Metafory v výpovědích odhalují způsob konceptualizace — jak mluvčí vnímá situaci (bitva, hra, cesta).',
+    psych:'Základní kognitivní nástroj — myšlení přes domény. Lakoff: "Argument is war."',
+    kreativita:'Nosič obrazu — spojuje vzdálené světy. Základní básnická figura.',
+    reklama:'"Váš počítač je mozek vašeho businessu." — přenos hodnot přes metaforu.'},
+  'Přirovnání':{def:'"jako" nebo "jako by" — explicitní srovnání se zachovanou distance.',
+    forenzni:'Přirovnání zachovává distance ("bylo to JAKO…") — méně přímé než metafora.',
+    psych:'Analogické myšlení s vědomou distance. Méně projektivní než metafora.',
+    kreativita:'Klasická básnická figura. Vytváří obraz přes srovnání.',
+    reklama:'"Hladká jako hedvábí." — přenesení senzorické kvality.'},
+  'Závorky':{def:'Text v závorkách — komentář, který se nevejde do hlavního proudu.',
+    forenzni:'Závorky mohou obsahovat klíčové informace schované do vedlejší pozice.',
+    psych:'Myšlení ve vrstvách — hlavní tok a komentář existují simultánně.',
+    kreativita:'Postmoderní figura — hlas, který komentuje sám sebe.',
+    reklama:'Fine print — právní omezení v závorce.'},
+  'Pomlčka':{def:'Em-pomlčka nebo en-pomlčka — přerušení, vsuvka, rozvedení.',
+    forenzni:'Pomlčky mohou signalizovat myšlenkové přerušení nebo přidání upřesnění pod tlakem.',
+    psych:'Nelineární tok myšlenek. Přidávání kontextu, který "nemůže počkat".',
+    kreativita:'Emily Dickinson — pomlčka jako rytmická a sémantická pauza.',
+    reklama:'Dramatická pauza: "Zní to příliš dobře — protože to tak je."'},
+  'Apostrofa':{def:'Ó, ach, hej, poslyš — oslovení nepřítomné osoby nebo abstraktu.',
+    forenzni:'Apostrofa v výpovědích signalizuje emotivní zapojení — mluvčí přestává referovat a začíná komunikovat.',
+    psych:'Projekce — mluvčí oslovuje to, co nemůže nebo nesmí fyzicky oslovit.',
+    kreativita:'Básník oslovuje smrt, lásku, přírodu. Lyrika jako apostrofa.',
+    reklama:'"Přírodo, vrátíme ti, co jsme vzali." — apostrofa jako emocionální apel.'},
+  'Fragment (kr. věta se slovesem)':{def:'Krátká věta (2–6 slov) se slovesem — izolovaná myšlenka.',
+    forenzni:'Fragmentární výpovědi mohou signalizovat emočně nabitá místa — tam, kde jazyk přestává stačit.',
+    psych:'Zkratkovité myšlení pod emočním nebo kognitivním tlakem. Nebo vědomý minimalismus.',
+    kreativita:'Staccato rytmus — rychlé střídání obrazů. Film.',
+    reklama:'"Přijďte. Vyzkoušejte. Zůstaňte."'},
+  'Enumerace (čárky)':{def:'Výčet oddělený čárkami — 2 a více čárek v jedné větě.',
+    forenzni:'Výčet bez hierarchie může signalizovat myšlení v ekvivalencích — nic není důležitější než jiné.',
+    psych:'Asociativní myšlení nebo snaha o úplnost. Katalogizace jako způsob uchopení.',
+    kreativita:'Walt Whitman — katalog jako poetická forma. Svět jako výčet.',
+    reklama:'"Čerstvé, lokální, udržitelné, chutné." — bohatství přes výčet.'},
+  'Vykřičník':{def:'! — emočně nabité ukončení věty.',
+    forenzni:'Vykřičníky v textech mohou signalizovat emocionální intenzitu nebo záměrnou urgenci.',
+    psych:'Emocionální aktivace. Důraz, naléhavost, překvapení.',
+    kreativita:'Záměrné použití signalizuje dramatický moment. Nadužívání oslabuje efekt.',
+    reklama:'Urgence a nadšení. "Limitovaná nabídka!"'},
+  'Číslovka/číslice':{def:'Arabská čísla v textu — konkrétnost, přesnost.',
+    forenzni:'Specifická čísla zvyšují věrohodnost výpovědi. Falešná specifičnost (číslo, které není přesné) je klasická manipulace.',
+    psych:'Zakotvení v konkrétní realitě. Číslo jako kotva pro abstraktní tvrzení.',
+    kreativita:'Přesnost jako poetická figura: "77 mil za hodinu."',
+    reklama:'"95% zákazníků doporučuje." — číslo jako důkaz.'},
+  'Znaménko (+=/&)':{def:'Matematická nebo programová znaménka v textu — komprese, zhuštění.',
+    forenzni:'Nestandardní symboly v textu mohou signalizovat specifické zázemí nebo záměrnou komprimaci.',
+    psych:'Vizuálně-logické myšlení. Svět jako systém vztahů.',
+    kreativita:'Konkrétní poezie, kódy, vizuální text.',
+    reklama:'"R&D + Innovation = Váš úspěch."'},
+  '1. osoba j.č. (bez změny)':{def:'Já/jsem/mě/mi bez přechodu na jiné zájmeno v celém textu — stálá první perspektiva.',
+    forenzni:'Konzistentní 1. osoba signalizuje silně subjektivní výpověď — svět viděný výhradně z jednoho hlediska.',
+    psych:'Introverzní nebo narcistický fokus. Nebo autentická introspekce.',
+    kreativita:'Lyrická poezie, deník, autofiction.',
+    reklama:'Vzácné — značka mluví za sebe, ne za zákazníka.'},
+  'Smyslový detail':{def:'Konkrétní smyslová data — barvy, teploty, textury, míry.',
+    forenzni:'Bohaté smyslové detaily v výpovědích korelují s přímými vzpomínkami. Příliš málo nebo příliš mnoho může signalizovat rekonstrukci.',
+    psych:'Tělesná paměť. Zkušenost uložena jako multisenzorická.',
+    kreativita:'Show, don\'t tell. Detail uzemňuje abstraktní v konkrétním.',
+    reklama:'"Krémová textura, svěží vůně." — smyslové prodávání.'},
+  'Změna tempa vět (makro)':{def:'Velký rozdíl v délce vět v celém textu — kontrastní rytmus.',
+    forenzni:'Dramatické změny délky vět mohou signalizovat emocionální prolomení nebo záměrné rétorické budování napětí.',
+    psych:'Emocionální modulace — dlouhé věty budují, krátké strhávají k pointě.',
+    kreativita:'Filmový střih — tempo jako dramatický nástroj.',
+    reklama:'Budování → pointa: "Hledali jsme roky. Ptali jsme se tisíců lidí. Testovali jsme všechno. Výsledek: funguje."'},
+  'Negace (2+ záporů/věta)':{def:'Dvě a více záporů v jedné větě — definice přes vyloučení.',
+    forenzni:'Vícenásobná negace může signalizovat snahu o přesné vymezení nebo naopak záměrné zamlžování.',
+    psych:'Apofatické myšlení — definování přes ne. Negativní teologie, Wittgenstein.',
+    kreativita:'Paradoxní negace: "Nejsem ten, kdo jsem nebyl." Vytváří logickou spirálu.',
+    reklama:'Obvykle se vyhýbá — negace oslabuje. Výjimky: "Žádné kompromisy."'},
+  'Parentéze':{def:'Závorky nebo dvojitá pomlčka s vsuvkou — textový komentář mimo hlavní tok.',
+    forenzni:'Informace v závorkách mohou být klíčové, záměrně "schované" do vedlejší pozice.',
+    psych:'Dvouvrstevné myšlení — hlavní a vedlejší tok simultánně.',
+    kreativita:'Postmoderní komentář. Hlas, který ví, že je v textu.',
+    reklama:'"Nejlepší cena (v kategorii do 500 Kč)." — fine print.'},
+  'Ironie (2× být + ale)':{def:'Dvě výpovědi se slovesem být propojené kontrastem (ale/přesto/i tak) — říká obojí najednou.',
+    forenzni:'Ironická výpověď v textu může signalizovat záměrnou double meaning — text má dvě vrstvy čtení.',
+    psych:'Sofistikované kognitivní zpracování — schopnost udržet protikladné perspektivy.',
+    kreativita:'Základní ironická figura. Sokrates, Swiftova Skromná propozice.',
+    reklama:'"Je to tak dobré, že by to mělo být zakázané." — ironie jako lichotka.'},
+  'Deformovaná frazeologie':{def:'Klišé použité s ironickým nebo nečekaným efektem (samozřejmě, pochopitelně, jak jinak).',
+    forenzni:'Deformace klišé může signalizovat vzdělání a záměr. Nebo nevědomé přijímání kulturních vzorců.',
+    psych:'Metajazykové vědomí — mluvčí ví, že používá klišé.',
+    kreativita:'Defamiliarizace — obeznámené je najednou cizí. Šklovsky.',
+    reklama:'"Protože jste to vy." (L\'Oréal) — klišé jako přivlastnění.'},
+  'Kontrast sémantický (makro)':{def:'Věta s kladnými slovy bezprostředně následovaná větou se zápornými — nebo naopak.',
+    forenzni:'Náhlé sémantické obraty mohou signalizovat ambivalenci nebo záměrné budování dramatického napětí.',
+    psych:'Dialektické myšlení — tezeantiteze. Svět jako pole protikladů.',
+    kreativita:'Chiaroscuro — světlo a stín vedle sebe. Základní dramatický princip.',
+    reklama:'"Víte, jak to cítíte. My víme, jak to změnit."'},
+  'Hyperbola':{def:'Záměrné přehánění (naprosto/totálně/nikdy v životě) pro zdůraznění.',
+    forenzni:'Hyperbola v výpovědích může signalizovat emocionální přetížení nebo záměrnou dramatizaci.',
+    psych:'Emocionální zesilování — reálná intenzita prožitku vyjádřena přes přehánění.',
+    kreativita:'Komika, groteskno, epika. Rabelais, Gogol.',
+    reklama:'"Nejlepší burger na světě." — záměrná hyperbola jako branding.'},
+  'Tautologie':{def:'Stejné nebo synonymní slovo 2× v jedné větě — opakování pro zdůraznění.',
+    forenzni:'Tautologie může signalizovat prázdné plnění prostoru nebo záměrný důraz.',
+    psych:'Opakování jako emocionální nebo kognitivní zesílení.',
+    kreativita:'Anafora v miniaturní verzi. "Voda teče, teče, teče…"',
+    reklama:'Opakování klíčového atributu: "Rychlé a rychlé a ještě rychlejší."'},
+  'Ilokuce (řeč.akt + !)':{def:'Řečové sloveso (říká/křičel/tvrdí) s vykřičníkem — zdůrazněný akt promluvy.',
+    forenzni:'Ilokuční zdůraznění signalizuje, že akt promluvy je sám o sobě významný — ne jen obsah.',
+    psych:'Výkon jako sdělení. Jak říkám, ne jen co říkám.',
+    kreativita:'Dramatická řeč — postava, která nesouvisí s obsahem, ale s aktem mluvení.',
+    reklama:'"Volají po změně!" — ilokuce jako aktivace.'},
+  'Gradace délek (makro)':{def:'Věty v textu postupně rostou nebo klesají délkou — stupňující se nebo klesající rytmus.',
+    forenzni:'Gradující délka může signalizovat záměrné budování nebo řícení argumentu.',
+    psych:'Hierarchické nebo lineární myšlení — schopnost budovat nebo destruovat.',
+    kreativita:'Klasická rétorická gradace. Aristotelés: ethos, pathos, logos.',
+    reklama:'"Rychlejší. Spolehlivější. Nenahraditelný." — gradace jako eskalace hodnoty.'},
+  'Změna časů (makro)':{def:'Text přechází mezi minulým, přítomným a budoucím časem.',
+    forenzni:'Změny časů mohou signalizovat přechody mezi zkušeností, analýzou a výhledem.',
+    psych:'Temporální flexibilita — schopnost být simultánně v minulosti, přítomnosti a budoucnosti.',
+    kreativita:'Časové prolínání jako narativní technika — Proust, Woolf.',
+    reklama:'"Zákazníci říkali… říkají… budou říkat." — temporální budování důvěry.'},
+  'Aposiopeze (…)':{def:'Tři tečky — věta záměrně přerušená nebo nedokončená.',
+    forenzni:'Aposiopeze v výpovědích signalizuje záměrné nebo nedobrovolné přerušení. Co nebylo řečeno?',
+    psych:'Myšlenka, která nemůže nebo nesmí být dokončena. Trauma, tabu, nevyslovitelné.',
+    kreativita:'Mlčení jako součást textu. Co je vynecháno, je přítomno svou nepřítomností.',
+    reklama:'Vzácné — nedokončenost působí nezávazně.'},
+  'Synestezie (2+ smysly)':{def:'Dvě nebo více smyslových kategorií v jedné větě (barva + zvuk, chuť + teplota).',
+    forenzni:'Synestézie v výpovědích signalizuje silnou smyslovou paměť nebo kreativní zpracování zkušenosti.',
+    psych:'Propojení smyslových modalit — synestézie jako neurologický jev nebo metafora.',
+    kreativita:'"Slyším barvy." Baudelaire, Nabokov. Základ symbolismu.',
+    reklama:'"Krémová chuť, sametová textura." — smyslový přenos.'},
+  'Personifikace':{def:'Neživý podmět + lidské sloveso — věc myslí, cítí, jedná.',
+    forenzni:'Personifikace může signalizovat animistické nebo magické myšlení, nebo záměrnou rétoriku.',
+    psych:'Projekce — přenášení lidských vlastností na nelidské. Základní kognitice.',
+    kreativita:'"Stíny mají tvar. Zvuky mají smysl." Základní básnická figura.',
+    reklama:'"Vaše auto touží po otevřené silnici." — přenášení touhy na produkt.'},
+  'Oxymóron':{def:'Přímé spojení protikladných adjektiv (sladká bolest, hlučné ticho).',
+    forenzni:'Oxymóron může signalizovat vědomí ambivalence nebo paradoxní zkušenosti.',
+    psych:'Schopnost udržet protikladné stavy bez jejich rozlišení. Kognitivní složitost.',
+    kreativita:'"Living death", "bitter sweet." Shakespeare. Zachycení neslučitelného.',
+    reklama:'"Luxusní dostupnost." — paradox jako hodnota.'},
+  'Neologismus (spojovník)':{def:'Slovo se spojovníkem nebo zcela nové slovo — pojmenování mezery v jazyce.',
+    forenzni:'Neologismy mohou signalizovat záměrné vytváření nového pojmu nebo jazykovou hru.',
+    psych:'Kreativní jazykové myšlení. Potřeba přesnějšího pojmenování než jazyk nabízí.',
+    kreativita:'"Sebe-klam", "hvězdo-prach." Pojmenování toho, pro co výraz chybí.',
+    reklama:'"Joypad", "smartphone." — branding přes pojmenování nové kategorie.'},
+  'Přeskok (makro)':{def:'Náhlý skok z dlouhé věty na velmi krátkou (15+ slov vs 3- slov).',
+    forenzni:'Přeskok signalizuje emocionální zvraty nebo záměrné rétorické pointy.',
+    psych:'Nelineární myšlení nebo emocionální přerušení narativu.',
+    kreativita:'Střihová technika. Kontrast jako dramatická figura.',
+    reklama:'Efektní: "Pět let výzkumu. Tisíce testů. Funguje."'},
+  'Výplňová slova':{def:'Vlastně, jaksi, prostě, no, tedy, teda — "filler" výrazy signalizující hledání.',
+    forenzni:'Vysoká frekvence výplňových slov může signalizovat mluvený vzorec nebo nervozitu.',
+    psych:'Kognitivní přemostění — mozek hledá slovo nebo strukturu.',
+    kreativita:'Autenticita mluveného jazyka. Stream of consciousness.',
+    reklama:'Obvykle eliminovány — signalizují nejistotu.'},
+  'Sen (kl. slova)':{def:'Sen, snový, zdálo se, snil — klíčová slova snovosti a alternativní reality.',
+    forenzni:'Snové metafory v textech mohou signalizovat vědomé nebo nevědomé zpracování podvědomých obsahů.',
+    psych:'Oneirické myšlení. Logika snů — asociativní, ne kauzální.',
+    kreativita:'Surrealismus, magický realismus. Kafka, García Márquez.',
+    reklama:'"Váš sen o dovolené." — přenesení touhy přes sen.'},
+  'Asyndeton (makro)':{def:'Série krátkých vět bez spojek — proud bez logické koheze.',
+    forenzni:'Asyndeton signalizuje rychlý, neorganizovaný tok myšlenek nebo záměrnou urgenci.',
+    psych:'Proud vědomí — myšlení bez logického rámce.',
+    kreativita:'Modernistická próza. Joyce, Woolf. Text jako myšlení.',
+    reklama:'"Přijďte. Vyzkoušejte. Odejděte spokojeni."'},
+  'Prolínání míst+časů (makro)':{def:'Kombinace ukazatelů místa (tady/tam/venku) a času (dnes/včera/tehdy) — prostorová a časová nedefinovanost.',
+    forenzni:'Prolínání signalizuje chaotickou nebo traumatickou temporalitu — minulost a přítomnost nejsou odděleny.',
+    psych:'Narušení chronologie jako psychologický příznak nebo záměrná technika.',
+    kreativita:'Surrealistická geografie — místo a čas jako proměnné, ne konstanty.',
+    reklama:'Vzácné — signalizuje nestabilitu.'},
+  'Hapax legomena (makro)':{def:'Slova, která se v textu vyskytnou jen jednou — lexikální diverzita.',
+    forenzni:'Vysoké procento hapax signalizuje bohatou slovní zásobu nebo tekst sestavený z různých zdrojů.',
+    psych:'Lexikální flexibilita — každá situace dostane vlastní pojmenování.',
+    kreativita:'Poetická intenzita — každé slovo je nenahraditelné.',
+    reklama:'Nevhodné — opakovatelnost je klíčová.'},
+};
+
+const STOP = new Set(['a','ale','nebo','i','ani','že','co','jak','kde','kdy','kdo','tam','tady','to','ten','ta','je','jsou','byl','byla','bylo','se','si','na','v','ve','do','z','ze','o','po','pro','k','ke','s','u','nad','pod','za','před','mezi','už','jen','tedy','pak','tak']);
+
+// ═══════════════════════════════════════════
+// DETEKTORY MIKRO
+// ═══════════════════════════════════════════
+function detectMicro(sentence, si) {
+  const s=sentence, sl=s.toLowerCase();
+  const words=s.split(/\s+/).filter(Boolean), wl=words.length;
+  const R=[];
+  function hit(uhel,figura,match){R.push({uhel,figura,match:String(match).slice(0,60),si,type:'mikro'});}
+
+  // 0 ANALYTICKÝ
+  if(wl>20) hit(0,'Dlouhá věta (20+ slov)',s.slice(0,55)+'…');
+  {const c=(sl.match(/\b(a\b|ale\b|nebo\b|i\b|ani\b|avšak|jenže|přitom|protože|když|pokud|než|jestliže|ačkoli|neboť)\b/g)||[]).length;if(c>=3) hit(0,'Polysyndeton',c+'× spojka');}
+  if(/,\s*(který|která|které|jenž|jež)\b/i.test(s)) hit(0,'Apoziční definice',s.slice(0,45));
+  if(/\b(a\b|ale\b|nebo\b)\b[^,]{5,}/i.test(s)&&wl>8) hit(0,'Parataxe',s.slice(0,45));
+
+  // 1 KULTURNÍ
+  {const pV=s.match(/\b\w+(al|ala|alo|ali|aly|byl|byla|bylo|byli|byly)\b/gi)||[];if(pV.length>0&&!/\b(jsem|jsem\s+byl|jsem\s+byla)\b/i.test(s)) hit(1,'Minulý čas (bez 1.os.j.č.)',pV[0]);}
+  if(/jako\s+\w+\s+v\s+|podobně\s+jako\s+v|příběh\s+o|bajka|legenda|mýtus/i.test(s)) hit(1,'Parabola',s.slice(0,45));
+  if(/„[^"]+"|"[^"]+"/i.test(s)) hit(1,'Intertextualita',s.slice(0,45));
+  if(/\b(tradice|kultura|dějiny|minulost|archetyp|symbol|rituál)\b/i.test(s)) hit(1,'Kulturní odkaz',s.match(/\b(tradice|kultura|dějiny|minulost|archetyp|symbol|rituál)\b/i)[0]);
+
+  // 2 FILOZOFICKÝ
+  if(/\b(tento\s+text|tato\s+věta|píšu|říkám\s+to|mluvím\s+o|jazyk\s+sám)\b/i.test(s)) hit(2,'Metatext',s.slice(0,45));
+  if(/\b(pravda\s+je|jsem\s+přesvědčen|tvrdím|prohlašuji|je\s+zřejmé|faktem\s+je)\b/i.test(s)) hit(2,'Deklarace',s.slice(0,45));
+  if(s.trim().endsWith('?')&&!/„[^"]*\?/.test(s)&&!/"[^"]*\?/.test(s)) hit(2,'Otázka (ne v přímé řeči)',s.slice(0,55));
+  {const bc=(sl.match(/\bjsem\b|\bje\b|\bjsou\b|\bbýt\b/g)||[]).length;if(bc>=2&&!/\bale\b|\bpřesto\b|\bi\s+tak\b/.test(sl)) hit(2,'Paradox (2× být bez ale)',s.slice(0,45));}
+  if(/\b(kolokace|dekonstrukce|epistéme|ontologie|bytí|jsoucno)\b/i.test(s)) hit(2,'Filozofická kolokace',s.slice(0,45));
+
+  // 3 NAIVNÍ
+  {const hV=/\b(jsem|jsi|je\b|jsme|jste|jsou|byl|byla|bylo|být|mám|máš|má\b|jdu|šel|šla|říká|vidí|cítí|vím|mohu|musím|chci|dal|vzal|přišel)\b/i.test(s);if(!hV&&wl>1) hit(3,'Elipsa (bez slovesa)',s.slice(0,45));}
+  if(wl<=5&&wl>=2&&/\b(jsem|jsi|je\b|jsme|jste|jsou|byl|byla|mám|máš|jdu|stojí)\b/i.test(s)) hit(3,'Komprese',s.slice(0,35));
+  if(/\b(možná|snad|nevím|doufám|pravděpodobně|myslím\s+si|asi|zdá\s+se|zřejmě|skoro|jaksi)\b/i.test(s)) hit(3,'Nerozhodnost (možná/snad…)',s.match(/\b(možná|snad|nevím|doufám|pravděpodobně|myslím\s+si|asi|zdá\s+se|zřejmě|skoro|jaksi)\b/i)[0]);
+  if(/„[^"]+"|"[^"]+"/i.test(s)) hit(3,'Přímá řeč',s.slice(0,45));
+  if(/\b(kdybych|kdybychom|přál\s+bych\s+si|nechť|kéž|ať\b)\b/i.test(s)) hit(3,'Performativita (kdybych/kéž)',s.slice(0,35));
+
+  // 4 JAZYKOVÝ — pouze onomatopoeia mikro
+  if(/\b(bum|prásk|žbluňk|šum|hukot|šelest|šustí|sykot|hřmot|vrčí|klepot|vrzá|cinká|zvoní|hučí|šepotá|kvičí|prská)\b/i.test(s)) hit(4,'Onomatopoeia',s.match(/\b(bum|prásk|žbluňk|šum|hukot|šelest|šustí|sykot|hřmot|vrčí|klepot|vrzá|cinká|zvoní|hučí|šepotá|kvičí|prská)\b/i)[0]);
+
+  // 5 METAFORICKÝ
+  {const mM=s.match(/(\b\w{3,}\b)\s+(je|jsou|byl|byla|bylo)\s+(\b\w{3,}\b)/gi)||[];mM.forEach(m=>{const idx=s.indexOf(m);const before=s.slice(Math.max(0,idx-12),idx).toLowerCase();if(!/\b(já|ty|on|ona|ono|my|vy|oni|ony|se|si)\b/.test(before)) hit(5,'Metafora',m.slice(0,45));});}
+  if(/\b(jako\b|jako\s+by|podobně\s+jako|připomíná|jako\s+kdyby)\b/i.test(s)) hit(5,'Přirovnání',s.slice(0,45));
+  if(/[()]/.test(s)) hit(5,'Závorky',s.slice(0,45));
+  if(/[—–]/.test(s)) hit(5,'Pomlčka',s.slice(0,45));
+  if(/\b(ó|ach|hej|poslyš|pohleď)\b/i.test(s)) hit(5,'Apostrofa',s.slice(0,35));
+
+  // 6 ASOCIAČNÍ
+  {const hV=/\b(jsem|jsi|je\b|jsme|jste|jsou|byl|byla|bylo|mám|máš|má\b|jdu|jdeš|říkám|vidím|cítím|vím|chci|mohu|musím)\b/i.test(s);if(hV&&wl<=6&&wl>=2) hit(6,'Fragment (kr. věta se slovesem)',s.slice(0,35));}
+  {const cm=(s.match(/,/g)||[]).length;if(cm>=2) hit(6,'Enumerace (čárky)',cm+'× čárka');}
+  if(/[!]/.test(s)) hit(6,'Vykřičník',s.slice(0,35));
+  if(/\b\d+\b/.test(s)) hit(6,'Číslovka/číslice',s.match(/\b\d+\b/)[0]);
+  if(/[+=#&\/;]/.test(s)) hit(6,'Znaménko (+=/&)',s.match(/[+=#&\/;]/)[0]);
+
+  // 7 INTROSPEKTIVNÍ
+  if(/\b(já\b|jsem\b|mě\b|mi\b|mou\b|moje\b|moji\b|mám\b|cítím\b|říkám\b|vím\b)\b/i.test(s)) hit(7,'1. osoba j.č. (bez změny)',s.slice(0,45));
+  {const dM=s.match(/\b(\d+\s*(cm|mm|kg|°C|ml|m\b|km)|červen\w+|moder\w+|zelen\w+|žlut\w+|bíl\w+|černý|bílý|teplý|studený|hladký|hrubý|tmavý|světlý|sladký|kyselý|hořký|slaný)\b/i);if(dM) hit(7,'Smyslový detail',dM[0]);}
+
+  // 8 IRONICKÝ
+  {const ng=(sl.match(/\bne\b|\bni\b|\bbez\b|\bnikdy\b|\bnikdo\b|\bnic\b|\bnení\b|\bnemá\b|\bnemám\b|\bnemohu\b|\bnemohl\b|\bnebylo?\b|\bneví\b|\bnechce\b/g)||[]).length;if(ng>=2) hit(8,'Negace (2+ záporů/věta)',ng+'× negace');}
+  if(/[()]/.test(s)) hit(8,'Parentéze',s.slice(0,45));
+  {const bc=(sl.match(/\bjsem\b|\bjsi\b|\bje\b|\bjsme\b|\bjste\b|\bjsou\b|\bbyl\b|\bbyla\b/g)||[]).length;const hA=/\bale\b|\bpřesto\b|\bi\s+tak\b|\bvšak\b|\bjenže\b/.test(sl);if(bc>=2&&hA) hit(8,'Ironie (2× být + ale)',s.slice(0,45));}
+  if(/\b(samozřejmě|pochopitelně|jasně|no\s+jo|jak\s+jinak)\b/i.test(s)) hit(8,'Deformovaná frazeologie',s.match(/\b(samozřejmě|pochopitelně|jasně|no\s+jo|jak\s+jinak)\b/i)[0]);
+
+  // 9 GROTESKNÍ
+  if(/\b(naprosto|absolutně|zcela|totálně|nejvíc|nejhůř|nejlépe|nikdy\s+v\s+životě|stoprocentně)\b/i.test(s)) hit(9,'Hyperbola',s.match(/\b(naprosto|absolutně|zcela|totálně|nejvíc|nejhůř|nejlépe|stoprocentně)\b/i)[0]);
+  {const wA=words.map(w=>w.toLowerCase().replace(/[.,!?;:]/g,''));const seen={};let tau=false;wA.forEach(w=>{if(w.length>3&&!STOP.has(w)){if(seen[w])tau=true;seen[w]=true;}});if(tau) hit(9,'Tautologie',s.slice(0,45));}
+  if(/[!]/.test(s)) hit(9,'Vykřičník',s.slice(0,35));
+  {const rV=/\b(říká|říkal|řekl|řekla|křičí|křičel|šeptal|volá|volal|prohlašuje|tvrdí)\b/i.test(s);if(rV&&/[!]/.test(s)) hit(9,'Ilokuce (řeč.akt + !)',s.slice(0,35));}
+
+  // 10 ABSURDNÍ
+  if(/\.\.\.|…/.test(s)) hit(10,'Aposiopeze (…)',s.slice(0,45));
+  {const zr=/\b(barva|červen\w+|moder\w+|světl\w+|tmav\w+|vidět)\b/i.test(s);const sl2=/\b(zvuk|tón|melodie|hluk|tich\w+|slyšet)\b/i.test(s);const ch=/\b(chuť|sladký|kyselý|hořký|slaný|ochutnat)\b/i.test(s);const hm=/\b(dotyk|hladký|hrubý|teplý|studený|hebký|tvrdý|měkký)\b/i.test(s);const vu=/\b(vůně|zápach|vonět|páchnout|parfém)\b/i.test(s);if([zr,sl2,ch,hm,vu].filter(Boolean).length>=2) hit(10,'Synestezie (2+ smysly)',s.slice(0,45));}
+  {const ina=/\b(ticho|čas|světlo|tma|slova?|myšlenky?|vzduch|vítr|voda|kameny?|strom\w+|krajina|mlha|sen\w+)\b/i.test(s);const hv=/\b(řekl|říká|myslí|cítí|ví|chce|vzpomíná|snívá|smál|plakal|volal)\b/i.test(s);if(ina&&hv) hit(10,'Personifikace',s.slice(0,45));}
+  {const oxy=/\b(živá\s+smrt|sladká\s+bolest|veselý\s+smutek|hlučné\s+ticho|světlá\s+tma|radostný\s+pláč)\b/i.test(s);if(oxy) hit(10,'Oxymóron',s.slice(0,35));}
+  {const neo=s.match(/\b\w+-\w+\b/g)||[];if(neo.length>0) hit(10,'Neologismus (spojovník)',neo[0]);}
+
+  // 11 SURREALISTICKÝ
+  {const vy=(s.match(/\b(vlastně|jaksi|prostě|no\b|tedy|tak\b|víte|víš|ehm|hm\b|teda|takže\b)\b/gi)||[]);if(vy.length>0) hit(11,'Výplňová slova',vy.slice(0,3).join(', '));}
+  if(/\b(sen\b|snový|zdálo\s+se|snil\b|sny\b|noční\b|spánek|přisnil|snít)\b/i.test(s)) hit(11,'Sen (kl. slova)',s.slice(0,35));
+
+  return R;
+}
+
+// ═══════════════════════════════════════════
+// DETEKTORY MAKRO
+// ═══════════════════════════════════════════
+function detectMakro(sentences, fullText) {
+  const R=[];
+  const fl=fullText.toLowerCase();
+  const words=fullText.split(/\s+/).filter(Boolean).map(w=>w.toLowerCase().replace(/[.,!?;:„""—–\-()]/g,''));
+  function hit(uhel,figura,match){R.push({uhel,figura,match:String(match).slice(0,60),si:-1,type:'makro'});}
+
+  // 0 Fixace
+  const wfreq={};words.forEach(w=>{if(w.length>3&&!STOP.has(w))wfreq[w]=(wfreq[w]||0)+1;});
+  const fixW=Object.entries(wfreq).filter(([w,c])=>c>=3).sort((a,b)=>b[1]-a[1]);
+  if(fixW.length>0) hit(0,'Fixace (opak. slova)',fixW.slice(0,3).map(([w,c])=>'"'+w+'" '+c+'×').join(', '));
+
+  // 1 Změna role
+  {const ps=sentences.map(s=>{const p=new Set();if(/\bjá\b|\bjsem\b/i.test(s))p.add('já');if(/\bty\b|\btě\b/i.test(s))p.add('ty');if(/\bmy\b|\bnám\b/i.test(s))p.add('my');if(/\bvy\b|\bvám\b/i.test(s))p.add('vy');return p;});const aP=new Set(ps.flatMap(s=>[...s]));if(aP.size>=2) hit(1,'Změna role (zájmen)','přechod: '+[...aP].join(' → '));}
+
+  // 4 Anafora, Epifora, Aliterace, Paralelismus
+  {let an=0;for(let i=1;i<sentences.length;i++){const w1=(sentences[i-1].trim().split(/\s+/)[0]||'').toLowerCase();const w2=(sentences[i].trim().split(/\s+/)[0]||'').toLowerCase();if(w1.length>1&&w1===w2)an++;}if(an>=2) hit(4,'Anafora (makro)',an+'× stejné začátky vět');}
+  {let ep=0;for(let i=1;i<sentences.length;i++){const a=sentences[i-1].trim().split(/\s+/);const b=sentences[i].trim().split(/\s+/);const wa=(a[a.length-1]||'').toLowerCase().replace(/[.!?,;]/g,'');const wb=(b[b.length-1]||'').toLowerCase().replace(/[.!?,;]/g,'');if(wa.length>1&&wa===wb)ep++;}if(ep>=2) hit(4,'Epifora (makro)',ep+'× stejné konce vět');}
+  {let al=false;sentences.forEach(s=>{const ws=s.split(/\s+/).map(w=>w.toLowerCase().replace(/[^a-záčďéěíňóřšťůúýž]/g,''));const ic={};ws.forEach(w=>{if(w.length>1)ic[w[0]]=(ic[w[0]]||0)+1;});if(Object.values(ic).some(c=>c>=3))al=true;});if(al) hit(4,'Aliterace (makro)','3+ slov se stejným písm.');}
+  {let par=0;for(let i=1;i<sentences.length;i++){const la=sentences[i-1].split(/\s+/).length,lb=sentences[i].split(/\s+/).length;if(Math.abs(la-lb)<=2&&la>=3&&lb>=3)par++;}if(par>=3) hit(4,'Paralelismus (makro)',par+' větné páry');}
+
+  // 7 Změna tempa
+  {const lens=sentences.map(s=>s.split(/\s+/).length);if(lens.length>=3){const mx=Math.max(...lens),mn=Math.min(...lens);if(mx/Math.max(mn,1)>=4) hit(7,'Změna tempa vět (makro)',mn+'–'+mx+' slov');}}
+
+  // 8 Kontrast sémantický
+  {const pos=/\b(krásný|dobrý|šťastný|radost|úspěch|láska|naděje|světlo|skvělý|milý)\b/i;const neg=/\b(ošklivý|špatný|smutný|smutek|neúspěch|nenávist|beznaděj|tma|strašný|hrozný)\b/i;let ct=0;for(let i=1;i<sentences.length;i++){if((pos.test(sentences[i-1])&&neg.test(sentences[i]))||(neg.test(sentences[i-1])&&pos.test(sentences[i])))ct++;}if(ct>=1) hit(8,'Kontrast sémantický (makro)',ct+'× protikladné věty');}
+
+  // 9 Gradace, Změna časů
+  {const lens=sentences.map(s=>s.split(/\s+/).length);let gu=0,gd=0;for(let i=2;i<lens.length;i++){if(lens[i]>lens[i-1]&&lens[i-1]>lens[i-2])gu++;if(lens[i]<lens[i-1]&&lens[i-1]<lens[i-2])gd++;}if(gu>=2||gd>=2) hit(9,'Gradace délek (makro)',gu>=2?'narůst. '+gu+'×':'kles. '+gd+'×');}
+  {const hp=/\b\w+(al|ala|alo|ali|aly|byl|byla|bylo)\b/i.test(fullText);const hpr=/\b(je\b|jsou\b|má\b|mám\b|jde\b|říká)\b/i.test(fullText);const hf=/\b(bude\b|budu\b|budeme\b|budou\b)\b/i.test(fullText);if([hp,hpr,hf].filter(Boolean).length>=2) hit(9,'Změna časů (makro)','přechod časů v textu');}
+
+  // 10 Přeskok
+  {for(let i=1;i<sentences.length;i++){const la=sentences[i-1].split(/\s+/).length,lb=sentences[i].split(/\s+/).length;if(Math.abs(la-lb)>15&&lb<4) hit(10,'Přeskok (makro)',sentences[i].slice(0,35));}}
+
+  // 11 Asyndeton, Prolínání, Hapax
+  {let as=0;for(let i=1;i<sentences.length;i++){if(sentences[i-1].split(/\s+/).length<=5&&sentences[i].split(/\s+/).length<=5&&!/^(a\b|nebo\b|ale\b)/i.test(sentences[i].trim()))as++;}if(as>=3) hit(11,'Asyndeton (makro)',as+'× bez spojky');}
+  {const mi=(fl.match(/\b(tady|tam|zde|venku|uvnitř|nahoru|dolů|nahoře|dole|daleko|blízko)\b/g)||[]);const ca=(fl.match(/\b(dnes|včera|zítra|teď|nyní|tehdy|dávno|brzy|najednou|jednou)\b/g)||[]);if(mi.length>=2&&ca.length>=2) hit(11,'Prolínání míst+časů (makro)',mi.length+'× místo, '+ca.length+'× čas');}
+  {if(words.length>50){const hapax=Object.entries(wfreq).filter(([w,c])=>c===1&&w.length>5&&!STOP.has(w));const ratio=hapax.length/words.length;if(ratio>0.7) hit(11,'Hapax legomena (makro)',hapax.length+' unik. slov');}}
+
+  return R;
+}
+
+// ═══════════════════════════════════════════
+// STAV
+// ═══════════════════════════════════════════
+let lastAnalysis=null, hlOn=false, lastText='', currentUhelIdx=null;
+
+function splitVety(t){
+  return t.split(/(?<=[.!?…])\s+|\n(?=\S)/).map(s=>s.trim()).filter(s=>s.length>1);
+}
+
+// ═══════════════════════════════════════════
+// ANALYZUJ — SCORING: věty s figurou / celkem vět
+// ═══════════════════════════════════════════
+function analyze() {
+  const text=document.getElementById('txt').value.trim();
+  if(!text) return;
+  lastText=text;
+  const sentences=splitVety(text);
+  const allWords=text.split(/\s+/).filter(Boolean);
+
+  const micro=[];
+  sentences.forEach((s,si)=>detectMicro(s,si).forEach(h=>micro.push(h)));
+  const macro=detectMakro(sentences,text);
+  const allHits=[...micro,...macro];
+
+  // SCORING: pro každý úhel = věty obsahující alespoň 1 figuru tohoto úhlu / celkem vět
+  // Makro hity se počítají jako 1 věta navíc (text jako celek)
+  const N=sentences.length;
+  const scores=UHLY.map(u=>{
+    const hits=allHits.filter(h=>h.uhel===u.i);
+    const microSentences=new Set(hits.filter(h=>h.si>=0).map(h=>h.si));
+    const macroHits=hits.filter(h=>h.si<0).length;
+    // Věty s figurou + makro hity (každý = 1 průměrná věta ekvivalent)
+    const total=microSentences.size + macroHits;
+    const pct=N>0?Math.min(100,Math.round(total/N*100)):0;
+    return {uhel:u.i,hits,pct,microSentences,macroHits};
+  });
+
+  const uniW=new Set(allWords.map(w=>w.toLowerCase().replace(/[.,!?;:„""—–\-]/g,'')));
+  const avg=N?Math.round(allWords.length/N*10)/10:0;
+  const top=scores.reduce((a,b)=>b.pct>a.pct?b:a,scores[0]);
+  const topU=UHLY[top.uhel];
+
+  lastAnalysis={text,sentences,allHits,scores,allWords,uniW};
+
+  // Stats
+  document.getElementById('results').style.display='block';
+  document.getElementById('resDom').innerHTML='<span style="color:'+topU.barva+'">'+topU.st+'° '+topU.nazev+'</span>';
+  document.getElementById('resMeta').innerHTML=
+    'Slov: '+allWords.length+' · Vět: '+N+' · Slov/větu: '+avg+
+    ' · Lex. bohatost: '+Math.round(uniW.size/allWords.length*100)+'%<br>'+
+    'Figur nalezeno: '+allHits.length+' · Dominantní úhel: '+top.pct+'%';
+
+  buildScoresGrid(scores, top.uhel);
+  drawWheel(top.uhel, scores);
+  buildBar(sentences, allHits);
+  showDetail(top.uhel);
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+  if(hlOn) doHighlight();
+}
+
+// ═══════════════════════════════════════════
+// SCORES GRID
+// ═══════════════════════════════════════════
+function buildScoresGrid(scores, domUhel) {
+  const grid=document.getElementById('scoresGrid');
+  grid.innerHTML='';
+  [...scores].sort((a,b)=>b.pct-a.pct).forEach(sc=>{
+    const u=UHLY[sc.uhel];
+    const cell=document.createElement('div');
+    cell.className='sc-cell'+(sc.uhel===domUhel?' hi':'');
+    cell.addEventListener('click',()=>showDetail(sc.uhel));
+    cell.innerHTML=
+      '<div class="sc-name"><span class="sc-dot" style="background:'+u.barva+'"></span>'+u.st+'° '+u.nazev+'</div>'+
+      '<div class="sc-bar"><div class="sc-fill" style="width:0;background:'+u.barva+'" id="sf'+sc.uhel+'"></div></div>'+
+      '<div class="sc-val">'+sc.pct+'%</div>';
+    grid.appendChild(cell);
+    setTimeout(()=>{const f=document.getElementById('sf'+sc.uhel);if(f)f.style.width=sc.pct+'%';},60);
+  });
+}
+
+// ═══════════════════════════════════════════
+// KOLO
+// ═══════════════════════════════════════════
+const canvas=document.getElementById('wheel');
+const ctx=canvas.getContext('2d');
+const CX=150,CY=150,RMAX=132,RMIN=38;
+
+function drawWheel(hlDeg=null, scores=null) {
+  ctx.clearRect(0,0,300,300);
+  const sa=(Math.PI*2)/12;
+  UHLY.forEach((u,i)=>{
+    const startA=-Math.PI/2+i*sa+0.04;
+    const endA=startA+sa-0.08;
+    const pct=scores?scores[i].pct:0;
+    const fR=RMIN+(RMAX-RMIN)*(pct/100);
+    const isHi=hlDeg===u.st;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,RMAX,startA,endA);ctx.closePath();
+    ctx.fillStyle=u.barva+'12';ctx.fill();
+    ctx.strokeStyle='rgba(168,152,128,.1)';ctx.lineWidth=1;ctx.stroke();
+    if(pct>0){
+      ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,fR,startA,endA);ctx.closePath();
+      ctx.fillStyle=isHi?u.barva+'d8':u.barva+(pct>50?'88':'50');ctx.fill();
+    }
+    if(isHi){
+      ctx.beginPath();ctx.arc(CX,CY,RMAX+2,startA,endA);
+      ctx.strokeStyle=u.barva;ctx.lineWidth=2.5;ctx.stroke();
+    }
+    const midA=startA+(sa-0.08)/2;
+    const lr=(RMAX+RMIN)/2+8;
+    const lx=CX+Math.cos(midA)*lr,ly=CY+Math.sin(midA)*lr;
+    ctx.save();ctx.translate(lx,ly);ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle=isHi?'#e8e0d0':(pct>0?u.barva:'rgba(168,152,128,.22)');
+    ctx.font=(isHi?'400':'300')+' 7.5px DM Mono,monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(u.nazev,0,0);ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#0f0f0f';ctx.fill();
+  ctx.strokeStyle='rgba(168,152,128,.2)';ctx.lineWidth=1;ctx.stroke();
+  if(hlDeg!==null){
+    const u=UHLY.find(x=>x.st===hlDeg);
+    if(u){
+      ctx.fillStyle=u.barva;ctx.font='300 9px DM Mono';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(u.st+'°',CX,CY-7);
+      ctx.fillStyle='#e8e0d0';ctx.font='300 7px Cormorant Garamond,serif';
+      ctx.fillText(u.nazev,CX,CY+7);
+    }
+  } else {
+    ctx.fillStyle='rgba(168,152,128,.22)';ctx.font='300 9px DM Mono';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('12 úhlů',CX,CY);
+  }
+}
+drawWheel();
+
+canvas.addEventListener('click',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const sc=300/rect.width;
+  const mx=(e.clientX-rect.left)*sc-CX;
+  const my=(e.clientY-rect.top)*sc-CY;
+  const dist=Math.sqrt(mx*mx+my*my);
+  if(dist<RMIN||dist>RMAX) return;
+  let angle=Math.atan2(my,mx)+Math.PI/2;
+  if(angle<0) angle+=Math.PI*2;
+  const idx=Math.floor(angle/(Math.PI*2/12));
+  if(UHLY[idx]) showDetail(UHLY[idx].i);
+});
+
+// ═══════════════════════════════════════════
+// BAREVNÝ PRUH
+// ═══════════════════════════════════════════
+function buildBar(sentences, allHits) {
+  const sec=document.getElementById('barSection');
+  sec.style.display='block';
+  const wrap=document.getElementById('barWrap');
+  wrap.innerHTML='';
+  const N=sentences.length;
+  if(N===0) return;
+
+  // Pro každou větu: jaké úhly jsou přítomné
+  const sentHits={}; // si -> [uhel]
+  allHits.filter(h=>h.si>=0).forEach(h=>{
+    if(!sentHits[h.si]) sentHits[h.si]=new Set();
+    sentHits[h.si].add(h.uhel);
+  });
+
+  // Jednoduché řádky per úhel (pro přehlednost)
+  // Hlavní řádek: mixuje barvy dle toho, které úhly jsou ve větě
+  const mainRow=document.createElement('div');
+  mainRow.className='bar-row';
+  mainRow.style.marginBottom='4px';
+  mainRow.title='Kliknutím na segment zobrazíte větu';
+
+  sentences.forEach((s,si)=>{
+    const uhls=sentHits[si]?[...sentHits[si]]:[];
+    const seg=document.createElement('div');
+    seg.className='bar-seg';
+    seg.style.flex='1';
+    seg.style.height='14px';
+    seg.style.cursor='pointer';
+    if(uhls.length===0){
+      seg.style.background='rgba(168,152,128,.08)';
+    } else if(uhls.length===1){
+      seg.style.background=UHLY[uhls[0]].barva+'bb';
+    } else {
+      // Gradient z barev přítomných úhlů
+      const stops=uhls.map((u,i)=>{
+        const pct=Math.round(i/uhls.length*100)+'%';
+        const pct2=Math.round((i+1)/uhls.length*100)+'%';
+        return UHLY[u].barva+'99 '+pct+', '+UHLY[u].barva+'99 '+pct2;
+      });
+      seg.style.background='linear-gradient(90deg,'+stops.join(',')+')';
+    }
+    seg.title=s.slice(0,60)+(uhls.length?' ['+uhls.map(u=>UHLY[u].nazev).join(', ')+']':'');
+    seg.addEventListener('click',()=>{
+      if(uhls.length>0) showDetail(uhls[0]);
+    });
+    mainRow.appendChild(seg);
+  });
+  wrap.appendChild(mainRow);
+
+  // Druhý řádek: per úhel (vrstvené proužky)
+  const perRow=document.createElement('div');
+  perRow.style.display='flex';
+  perRow.style.flexDirection='column';
+  perRow.style.gap='1px';
+  UHLY.forEach(u=>{
+    const hasHits=allHits.some(h=>h.uhel===u.i&&h.si>=0);
+    if(!hasHits) return;
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.style.height='6px';
+    sentences.forEach((s,si)=>{
+      const hasThis=sentHits[si]&&sentHits[si].has(u.i);
+      const seg=document.createElement('div');
+      seg.className='bar-seg';
+      seg.style.flex='1';
+      seg.style.background=hasThis?u.barva+'cc':'transparent';
+      seg.title=hasThis?u.nazev+': '+s.slice(0,40):'';
+      if(hasThis) seg.addEventListener('click',()=>showDetail(u.i));
+      row.appendChild(seg);
+    });
+    perRow.appendChild(row);
+  });
+  wrap.appendChild(perRow);
+
+  // Legenda
+  const leg=document.getElementById('barLegend');
+  leg.innerHTML='';
+  const activeUhly=new Set(allHits.filter(h=>h.si>=0).map(h=>h.uhel));
+  activeUhly.forEach(ui=>{
+    const u=UHLY[ui];
+    const item=document.createElement('div');
+    item.className='bar-leg-item';
+    item.innerHTML='<span class="bar-leg-dot" style="background:'+u.barva+'"></span>'+u.nazev;
+    item.addEventListener('click',()=>showDetail(ui));
+    leg.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════
+// DETAIL ÚHLU
+// ═══════════════════════════════════════════
+function showDetail(uhelIdx) {
+  const u=UHLY[uhelIdx];
+  const sc=lastAnalysis?lastAnalysis.scores[uhelIdx]:null;
+  currentUhelIdx=uhelIdx;
+
+  document.getElementById('figDetail').className='fig-detail';
+  document.getElementById('angleDetail').className='angle-detail show';
+  document.getElementById('adLbl').textContent='Detail úhlu · '+u.st+'°';
+  document.getElementById('adTitle').innerHTML='<span style="color:'+u.barva+'">'+u.nazev+'</span>';
+  document.getElementById('adPct').textContent=sc?sc.pct+'% textu · '+sc.hits.length+' výskytů':'kliknutím na segment po analýze';
+  document.getElementById('adPopis').textContent=u.popis;
+  document.getElementById('adMysleni').textContent=u.mysleni;
+
+  if(lastAnalysis) drawWheel(u.st, lastAnalysis.scores);
+
+  // Figury
+  const grid=document.getElementById('figAllGrid');
+  grid.innerHTML='';
+  // Seskup nalezené
+  const foundFigs=new Set(sc?sc.hits.map(h=>h.figura):[]);
+  // Odstíny barvy pro figury tohoto úhlu
+  const figCount=u.figury.length;
+  u.figury.forEach((fig,fi)=>{
+    const found=foundFigs.has(fig);
+    // Odstín: světlejší nebo tmavší varianta barvy úhlu
+    const alpha=found?'ee':'44';
+    const item=document.createElement('div');
+    item.className='fig-all-item'+(found?' found':'');
+    item.style.color=u.barva;
+    item.style.borderLeftColor=found?u.barva:'transparent';
+    item.style.borderLeftWidth=found?'3px':'1px';
+    // Swatch s různým odstínem
+    const lightness=Math.round(30+fi*(40/Math.max(figCount-1,1)));
+    item.innerHTML=
+      '<span class="fig-swatch" style="background:'+u.barva+alpha+'"></span>'+
+      '<span class="fig-name" style="font-weight:'+(found?'400':'300')+'">'+fig+'</span>'+
+      (found?'<span class="fig-found-badge">nalezeno</span>':'<span style="font-size:.6rem;color:var(--dim2)">–</span>')+
+      '<span class="fig-type-badge">'+(fig.includes('makro')?'makro':'mikro')+'</span>';
+    item.addEventListener('click',()=>showFigDetail(fig, u.barva, sc?sc.hits.filter(h=>h.figura===fig):[]));
+    grid.appendChild(item);
+  });
+
+  // Highlight text
+  if(lastAnalysis&&sc) highlightUhel(uhelIdx);
+
+  document.getElementById('angleDetail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function highlightUhel(uhelIdx) {
+  if(!lastAnalysis) return;
+  const u=UHLY[uhelIdx];
+  const box=document.getElementById('textBox');
+  box.style.display='block';
+  const {sentences,allHits}=lastAnalysis;
+  const hitSis=new Set(allHits.filter(h=>h.uhel===uhelIdx&&h.si>=0).map(h=>h.si));
+  let html=lastText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+  sentences.forEach((s,si)=>{
+    if(hitSis.has(si)){
+      const esc=s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      html=html.replace(esc,'<span style="border-bottom:2px solid '+u.barva+';padding-bottom:1px;cursor:help" title="'+u.st+'° '+u.nazev+'">'+esc+'</span>');
+    }
+  });
+  box.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+// DETAIL FIGURY
+// ═══════════════════════════════════════════
+function showFigDetail(fig, barva, hits) {
+  const data=FIGURY_DATA[fig]||{def:'Definice v přípravě.',forenzni:'—',psych:'—',kreativita:'—',reklama:'—'};
+
+  document.getElementById('angleDetail').className='angle-detail';
+  document.getElementById('figDetail').className='fig-detail show';
+  document.getElementById('fdLbl').textContent='Detail figury';
+  document.getElementById('fdTitle').innerHTML='<span style="color:'+barva+'">'+fig+'</span>';
+  document.getElementById('fdDef').textContent=data.def;
+
+  const ctxGrid=document.getElementById('ctxGrid');
+  ctxGrid.innerHTML=
+    '<div class="ctx-cell"><div class="ctx-lbl">Forenzní lingvistika</div><div class="ctx-txt">'+data.forenzni+'</div></div>'+
+    '<div class="ctx-cell"><div class="ctx-lbl">Psychologie</div><div class="ctx-txt">'+data.psych+'</div></div>'+
+    '<div class="ctx-cell"><div class="ctx-lbl">Kreativita a umění</div><div class="ctx-txt">'+data.kreativita+'</div></div>'+
+    '<div class="ctx-cell"><div class="ctx-lbl">Reklama a komunikace</div><div class="ctx-txt">'+data.reklama+'</div></div>';
+
+  // Nalezené výskyty
+  const fdFound=document.getElementById('fdFound');
+  if(hits.length>0){
+    fdFound.textContent='Nalezeno v textu ('+hits.length+'×): '+hits.slice(0,3).map(h=>'"'+h.match+'"').join(' · ');
+  } else {
+    fdFound.textContent='Tato figura nebyla v analyzovaném textu nalezena.';
+  }
+
+  // Highlight v textu
+  if(lastAnalysis&&hits.length>0){
+    const box=document.getElementById('textBox');
+    box.style.display='block';
+    const {sentences}=lastAnalysis;
+    const hitSis=new Set(hits.filter(h=>h.si>=0).map(h=>h.si));
+    let html=lastText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+    sentences.forEach((s,si)=>{
+      if(hitSis.has(si)){
+        const esc=s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+        html=html.replace(esc,'<span style="border-bottom:2px solid '+barva+';background:'+barva+'15;padding:1px 2px;cursor:help" title="'+fig+'">'+esc+'</span>');
+      }
+    });
+    box.innerHTML=html;
+    box.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  document.getElementById('figDetail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeFigDetail() {
+  document.getElementById('figDetail').className='fig-detail';
+  if(currentUhelIdx!==null) {
+    document.getElementById('angleDetail').className='angle-detail show';
+    document.getElementById('angleDetail').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+// ═══════════════════════════════════════════
+// HIGHLIGHT
+// ═══════════════════════════════════════════
+function doHighlight() {
+  if(!lastAnalysis) return;
+  const {sentences,allHits}=lastAnalysis;
+  const box=document.getElementById('textBox');
+  box.style.display='block';
+  // Per věta: vezmi úhel s nejvíce hity
+  const sentMap={};
+  allHits.filter(h=>h.si>=0).forEach(h=>{
+    if(!sentMap[h.si]) sentMap[h.si]={};
+    sentMap[h.si][h.uhel]=(sentMap[h.si][h.uhel]||0)+1;
+  });
+  let html=lastText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+  sentences.forEach((s,si)=>{
+    if(!sentMap[si]) return;
+    const topU=parseInt(Object.entries(sentMap[si]).sort((a,b)=>b[1]-a[1])[0][0]);
+    const u=UHLY[topU];
+    const esc=s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const figs=[...new Set(allHits.filter(h=>h.si===si).map(h=>h.figura))].join(', ');
+    html=html.replace(esc,'<span style="border-bottom:2px solid '+u.barva+';cursor:help" title="'+u.nazev+': '+figs+'">'+esc+'</span>');
+  });
+  box.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+// ZÁPISNÍK + EXPORT
+// ═══════════════════════════════════════════
+function saveToZapisnik() {
+  if(!lastAnalysis) return;
+  const ts=Date.now();
+  const top=[...lastAnalysis.scores].sort((a,b)=>b.pct-a.pct).slice(0,3);
+  const topStr=top.map(s=>UHLY[s.uhel].nazev+' '+s.pct+'%').join(' · ');
+  const zapis={
+    id:'az_'+ts,ts,typ:'analyza',
+    nazev:'Analýza — '+new Date(ts).toLocaleDateString('cs-CZ'),
+    text:'Slov: '+lastAnalysis.allWords.length+' | Vět: '+lastAnalysis.sentences.length+
+      ' | Figur: '+lastAnalysis.allHits.length+'\nTop úhly: '+topStr+
+      '\n\nÚryvek:\n'+lastAnalysis.text.slice(0,200)+(lastAnalysis.text.length>200?'…':'')
+  };
+  try{
+    const key='chcesmys_zapisnik';
+    const data=JSON.parse(localStorage.getItem(key)||'{}');
+    const mk=Object.keys(data);const mid=mk.length>0?mk[0]:'map_default';
+    if(!data[mid])data[mid]={name:'Zápisník mezer',entries:[],created:ts};
+    data[mid].entries.unshift(zapis);
+    localStorage.setItem(key,JSON.stringify(data));
+    const msg=document.getElementById('saveMsg');
+    msg.style.display='inline';setTimeout(()=>msg.style.display='none',3500);
+  }catch(e){alert('Nepodařilo se uložit.');}
+}
+
+function downloadJSON() {
+  if(!lastAnalysis) return;
+  const data={
+    timestamp:new Date().toISOString(),
+    statistiky:{slova:lastAnalysis.allWords.length,vety:lastAnalysis.sentences.length,figur:lastAnalysis.allHits.length},
+    uhly:lastAnalysis.scores.map(s=>({
+      uhel:UHLY[s.uhel].nazev,stupne:UHLY[s.uhel].st,procenta:s.pct,
+      figury:s.hits.map(h=>({figura:h.figura,match:h.match,typ:h.type}))
+    })),
+    text:lastAnalysis.text.slice(0,500)
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='analyza_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+}
+
+function resetAll() {
+  document.getElementById('txt').value='';
+  document.getElementById('textBox').innerHTML='';document.getElementById('textBox').style.display='none';
+  document.getElementById('results').style.display='none';
+  document.getElementById('barSection').style.display='none';
+  document.getElementById('angleDetail').className='angle-detail';
+  document.getElementById('figDetail').className='fig-detail';
+  document.getElementById('hlBtn').classList.remove('on');
+  hlOn=false;lastText='';lastAnalysis=null;currentUhelIdx=null;
+  drawWheel();
+}
+
+// Events
+document.getElementById('analyzeBtn').addEventListener('click',analyze);
+document.getElementById('hlBtn').addEventListener('click',()=>{
+  hlOn=!hlOn;
+  document.getElementById('hlBtn').classList.toggle('on',hlOn);
+  if(hlOn&&lastAnalysis) doHighlight();
+  else{document.getElementById('textBox').style.display='none';}
+});
+docum
+document.getElementById('resetBtn').addEventListener('click',resetAll);
+document.getElementById('saveBtn').addEventListener('click',saveToZapisnik);
+document.getElementById('dlBtn').addEventListener('click',downloadJSON);
+</script>
+</body>
+</html>
