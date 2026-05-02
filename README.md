@@ -40,6 +40,8 @@ kreativita, fyzika jazyka, metadenik
 
 -  [anotator poznamky](doma/funkce/anotator_poznamky.html)
 
+-  [denik_url](doma/nastroje/denik_url.html)
+
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
