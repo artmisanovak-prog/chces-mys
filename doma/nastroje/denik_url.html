@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Deník · Chceš myš?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0f0f0f;--s:#161616;--s2:#1c1c1c;
+            --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.2);
+            --acc:#a89880;--border:rgba(168,152,128,.15);--border-hi:rgba(168,152,128,.35);
+            --serif:'Cormorant Garamond',Georgia,serif;--mono:'DM Mono',monospace;
+            --radius:4px;
+        }
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+        a{color:var(--acc);text-decoration:none;transition:color .15s}
+        a:hover{color:var(--cream)}
+        .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+
+        nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(15,15,15,.94);backdrop-filter:blur(14px);padding:12px 0;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:.9rem;font-weight:300}.nav-brand em{font-style:italic;color:var(--acc)}
+        .nav-links{display:flex;gap:14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}.nav-links a:hover{color:var(--cream)}
+
+        .hero{padding:0 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+        .hero-label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+        h1{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.5rem);font-weight:300;line-height:1.0;margin-bottom:6px}
+        h1 em{font-style:italic;color:var(--acc)}
+        .hero-desc{font-size:.82rem;color:var(--dim);max-width:540px;line-height:1.9;margin-top:8px}
+
+        .cards-row{display:flex;gap:2px;background:var(--border);border:1px solid var(--border);margin-bottom:1rem}
+        .card-wrapper{flex:1;aspect-ratio:74/105;cursor:pointer;overflow:hidden;position:relative}
+        .card-img{width:100%;height:100%;background-size:cover;background-position:center;filter:grayscale(100%) contrast(1.1);transition:filter .2s}
+        .card-wrapper:hover .card-img{filter:grayscale(80%) contrast(1.15)}
+        .card-name-overlay{position:absolute;bottom:4px;left:4px;font-size:.55rem;color:var(--dim);opacity:0;transition:opacity .2s}
+        .card-wrapper:hover .card-name-overlay{opacity:1}
+        .card-actions{display:flex;gap:.8rem;margin-bottom:2rem}
+        .btn{padding:8px 18px;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;border-radius:var(--radius)}
+        .btn:hover{border-color:var(--acc);color:var(--cream)}
+        .btn-primary{background:var(--acc);color:var(--bg);border-color:var(--acc)}.btn-primary:hover{background:#c0aa90;color:var(--bg)}
+
+        .editor-wrap{margin-bottom:1.5rem}
+        textarea{width:100%;background:var(--s);border:1px solid var(--border);color:var(--cream);padding:14px;font-family:var(--serif);font-size:.95rem;line-height:1.9;resize:vertical;min-height:160px;transition:border-color .15s;border-radius:var(--radius)}
+        textarea:focus{outline:none;border-color:var(--acc)}
+        textarea::placeholder{color:var(--dim2);font-style:italic}
+
+        .share-url-display{font-size:.7rem;color:var(--dim);margin:.5rem 0;word-break:break-all;display:none;padding:8px 12px;background:var(--s);border:1px solid var(--border);border-radius:var(--radius)}
+        .share-url-display.visible{display:block}
+
+        .timeline-sec{margin:2rem 0;border-top:1px solid var(--border);padding-top:1.5rem}
+        .sec-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+        .timeline-strip{display:flex;gap:3px;flex-wrap:wrap;min-height:36px;align-items:center}
+        .tl-entry{height:28px;width:22px;cursor:pointer;position:relative;transition:transform .15s;border-radius:2px}
+        .tl-entry:hover{transform:scale(1.15);z-index:5}
+        .tl-entry:after{content:attr(data-date);position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:.5rem;color:var(--dim2);white-space:nowrap;display:none}
+        .tl-entry:hover:after{display:block}
+
+        .url-library{margin:2rem 0;border-top:1px solid var(--border);padding-top:1.5rem}
+        .url-input-wrap{display:flex;gap:.5rem;margin:.8rem 0}
+        .url-input{flex:1;background:var(--s);border:1px solid var(--border);color:var(--cream);padding:8px 12px;font-family:var(--mono);font-size:.7rem;border-radius:var(--radius)}
+        .url-input:focus{outline:none;border-color:var(--acc)}
+        .url-list{display:flex;flex-direction:column;gap:2px}
+        .url-item{display:flex;align-items:center;gap:.8rem;padding:6px 12px;background:var(--s);border:1px solid var(--border);font-size:.65rem;border-radius:var(--radius)}
+        .url-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cream)}
+        .url-item-date{font-size:.55rem;color:var(--dim2)}
+        .url-item-actions{display:flex;gap:4px}
+        .url-item-actions button{background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;font-size:.55rem;padding:2px 6px;border-radius:2px;transition:all .12s}
+        .url-item-actions button:hover{color:var(--cream);border-color:var(--acc)}
+
+        footer{padding:28px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:2rem}
+        footer p{font-size:.72rem;color:var(--dim)}footer a{color:var(--acc)}
+
+        @media(max-width:600px){.cards-row{flex-wrap:wrap}.card-wrapper{flex:1 1 30%}}
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <nav>
+        <span class="nav-brand"><em>Chceš myš?</em> — Deník</span>
+        <div class="nav-links">
+            <a href="./analyzer.html">Analyzér</a>
+            <a href="./nastenka.html">Nástěnka</a>
+            <a href="./">Hlavní index</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <p class="hero-label">Nástroj · Osobní deník</p>
+        <h1>Co tě <em>zaujalo</em>?</h1>
+        <p class="hero-desc">Vylosuj si karty, přečti si pohádky a piš. Odešli text do Analyzéru a vrať se s barevným proužkem — otiskem tvého úhlu pohledu. Vše offline, vše tvoje.</p>
+    </section>
+
+    <div class="cards-row" id="cardsRow"></div>
+    <div class="card-actions">
+        <button class="btn" id="shuffleBtn">🎲 Vylosovat karty</button>
+        <button class="btn" id="lockShareBtn">🔗 Sdílet výběr karet</button>
+    </div>
+    <div class="share-url-display" id="shareUrlDisplay"></div>
+
+    <div class="editor-wrap">
+        <textarea id="editor" placeholder="Piš svůj zápis... Co tě zaujalo? Jaký příběh ti karta připomněla?"></textarea>
+    </div>
+    <div class="card-actions">
+        <button class="btn btn-primary" id="analyzeBtn">🔍 Otevřít v Analyzéru</button>
+        <button class="btn" id="saveLocalBtn">💾 Uložit lokálně</button>
+        <button class="btn" id="shareToNastenkaBtn">📊 Sdílet na Nástěnku</button>
+        <span id="saveMsg" style="display:none;font-size:.68rem;color:var(--acc);align-self:center">✓ Uloženo</span>
+    </div>
+
+    <div class="timeline-sec">
+        <p class="sec-label">📅 Časová osa (klikni na proužek)</p>
+        <div class="timeline-strip" id="timelineStrip"></div>
+    </div>
+
+    <div class="url-library">
+        <p class="sec-label">🔗 Knihovnička URL</p>
+        <div class="url-input-wrap">
+            <input type="text" class="url-input" id="urlInput" placeholder="Vlož URL odkazu...">
+            <button class="btn" id="urlAddBtn">Přidat</button>
+        </div>
+        <div class="url-list" id="urlList"></div>
+    </div>
+
+    <footer>
+        <p>Deník · Chceš myš? · © 2026 Michaela Nováková</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// KONFIGURACE
+// ═══════════════════════════════════════════
+const ANALYZER_URL = './analyzer.html';
+const NASTENKA_URL = './nastenka.html';
+
+// Všech 50+ identifikátorů karet (pevný seznam)
+const ALL_CARD_SLUGS = [
+    "mys","kocour","ryba","zajic","netopyr","pav","motyl","pavouk","krokodyl",
+    "cap","slon","hyeny","opice","psi_smecka","panda","vlk","had","lemur",
+    "plamenak","husy","jezevec","liska","sova","jezek","vydra","kun","kozel",
+    "veverka","krab","meduza","chobotnice","moucha","komar","cvrcek",
+    "svetluska","brouk","mravenec","housenka","beruska","vaza","sekac",
+    "pampeliska","snehulak","kamen","vitr","dest","mesic","slunce","hvezda","more","les"
+];
+
+// Barvy úhlů (stejné jako v Analyzéru)
+const UHLY_BARVY = {
+    0:'#5a7fa8',30:'#6a9e72',60:'#9b72b5',90:'#5fa8a0',
+    120:'#8e7248',150:'#5a8a5a',180:'#a85a5a',210:'#c8a832',
+    240:'#c8722a',270:'#a83060',300:'#6080a0',330:'#8060b0'
+};
+
+const STOR_KEY = 'chcesmys_denik';
+const URL_LIB_KEY = 'chcesmys_url_library';
+
+// ═══════════════════════════════════════════
+// STAV
+// ═══════════════════════════════════════════
+let currentCards = [];
+let diaryEntries = [];
+
+// ═══════════════════════════════════════════
+// KARTY — načítání ze složky
+// ═══════════════════════════════════════════
+function getAvailableCards() {
+    // V offline režimu zkusíme načíst seznam z localStorage
+    const stored = localStorage.getItem('chcesmys_available_cards');
+    if (stored) return JSON.parse(stored);
+
+    // Výchozí: základní sada
+    return ["mys","kocour","ryba","zajic","netopyr","pav","motyl","pavouk","krokodyl"];
+}
+
+function renderCards() {
+    const available = getAvailableCards();
+    const selected = currentCards.length > 0 ? currentCards : pickRandom(available, 3);
+    currentCards = selected;
+
+    const row = document.getElementById('cardsRow');
+    row.innerHTML = '';
+    selected.forEach(slug => {
+        const imgUrl = `../ilustrace/${slug}.jpg`;
+        const cardUrl = `../data/uhly/${slug}_uhly.html`;
+        const wrap = document.createElement('div');
+        wrap.className = 'card-wrapper';
+        wrap.innerHTML = `<div class="card-img" style="background-image:url('${imgUrl}')" title="${slug}"></div><span class="card-name-overlay">${slug}</span>`;
+        wrap.addEventListener('click', () => window.open(cardUrl, '_blank'));
+        row.appendChild(wrap);
+    });
+}
+
+function pickRandom(arr, count) {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, arr.length));
+}
+
+// ═══════════════════════════════════════════
+// ANALÝZA
+// ═══════════════════════════════════════════
+function openAnalyzer() {
+    const text = document.getElementById('editor').value.trim();
+    if (!text) { alert('Napiš nejdřív text.'); return; }
+    const url = new URL(ANALYZER_URL, window.location.href);
+    url.searchParams.set('text', encodeURIComponent(text));
+    url.searchParams.set('source', 'denik');
+    url.searchParams.set('cards', currentCards.join(','));
+    url.searchParams.set('returnTo', window.location.href);
+    window.open(url.toString(), '_blank');
+}
+
+// ═══════════════════════════════════════════
+// PŘÍJEM Z ANALYZÉRU
+// ═══════════════════════════════════════════
+function processUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('angles')) {
+        const anglesStr = params.get('angles');
+        const percentages = {};
+        anglesStr.split(',').forEach(p => {
+            const [st, val] = p.split(':').map(Number);
+            if (!isNaN(st) && !isNaN(val)) percentages[st] = val;
+        });
+        const cardsParam = params.get('cards') || currentCards.join(',');
+        const entry = {
+            id: Date.now() + '-' + Math.random().toString(36),
+            date: new Date().toISOString(),
+            text: document.getElementById('editor').value,
+            cards: cardsParam.split(','),
+            percentages,
+            url: window.location.href
+        };
+        diaryEntries.unshift(entry);
+        saveEntries();
+        renderTimeline();
+        document.getElementById('editor').value = '';
+        // Vyčistit URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        document.getElementById('saveMsg').style.display = 'inline';
+        document.getElementById('saveMsg').textContent = '✓ Analýza uložena';
+        setTimeout(() => document.getElementById('saveMsg').style.display = 'none', 3000);
+    }
+}
+
+// ═══════════════════════════════════════════
+// LOKÁLNÍ ULOŽENÍ
+// ═══════════════════════════════════════════
+function loadEntries() {
+    try {
+        const stored = localStorage.getItem(STOR_KEY);
+        if (stored) diaryEntries = JSON.parse(stored);
+    } catch(e) { diaryEntries = []; }
+}
+function saveEntries() {
+    localStorage.setItem(STOR_KEY, JSON.stringify(diaryEntries));
+}
+
+function saveLocal() {
+    const text = document.getElementById('editor').value.trim();
+    if (!text) return;
+    const entry = {
+        id: Date.now() + '-' + Math.random().toString(36),
+        date: new Date().toISOString(),
+        text,
+        cards: [...currentCards],
+        percentages: {},
+        url: ''
+    };
+    diaryEntries.unshift(entry);
+    saveEntries();
+    renderTimeline();
+    document.getElementById('editor').value = '';
+    document.getElementById('saveMsg').style.display = 'inline';
+    document.getElementById('saveMsg').textContent = '✓ Uloženo lokálně';
+    setTimeout(() => document.getElementById('saveMsg').style.display = 'none', 3000);
+}
+
+// ═══════════════════════════════════════════
+// ČASOVÁ OSA
+// ═══════════════════════════════════════════
+function getDominantAngle(percentages) {
+    if (!percentages || Object.keys(percentages).length === 0) return null;
+    const sorted = Object.entries(percentages).sort((a,b) => b[1] - a[1]);
+    return parseInt(sorted[0][0]);
+}
+
+function renderTimeline() {
+    const strip = document.getElementById('timelineStrip');
+    strip.innerHTML = '';
+    const sorted = [...diaryEntries].sort((a,b) => new Date(a.date) - new Date(b.date));
+    sorted.forEach(entry => {
+        const dom = getDominantAngle(entry.percentages);
+        const color = dom !== null ? (UHLY_BARVY[dom] || '#888') : '#444';
+        const date = new Date(entry.date).toLocaleDateString('cs-CZ', {day:'2-digit',month:'2-digit'});
+        const dot = document.createElement('div');
+        dot.className = 'tl-entry';
+        dot.style.backgroundColor = color;
+        dot.setAttribute('data-date', date);
+        dot.title = `${date}: ${entry.text.slice(0,60)}...`;
+        dot.addEventListener('click', () => {
+            if (entry.url) window.open(entry.url, '_blank');
+            else {
+                document.getElementById('editor').value = entry.text;
+                currentCards = entry.cards;
+                renderCards();
+            }
+        });
+        strip.appendChild(dot);
+    });
+}
+
+// ═══════════════════════════════════════════
+// KNIHOVNIČKA URL
+// ═══════════════════════════════════════════
+function loadUrlLibrary() {
+    try {
+        const stored = localStorage.getItem(URL_LIB_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch(e) { return []; }
+}
+function saveUrlLibrary(lib) {
+    localStorage.setItem(URL_LIB_KEY, JSON.stringify(lib));
+}
+
+function renderUrlLibrary() {
+    const lib = loadUrlLibrary();
+    const list = document.getElementById('urlList');
+    list.innerHTML = '';
+    if (lib.length === 0) {
+        list.innerHTML = '<div style="font-size:.7rem;color:var(--dim2);font-style:italic;padding:8px 12px;">Zatím žádné uložené odkazy. Přidej URL výše.</div>';
+        return;
+    }
+    lib.slice().reverse().forEach((item, idx) => {
+        const realIdx = lib.length - 1 - idx;
+        const div = document.createElement('div');
+        div.className = 'url-item';
+        const date = new Date(item.added).toLocaleDateString('cs-CZ', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        div.innerHTML = `
+            <span class="url-item-name" title="${item.url}">${item.name || item.url.slice(0,50)+'…'}</span>
+            <span class="url-item-date">${date}</span>
+            <div class="url-item-actions">
+                <button onclick="openUrlFromLib(${realIdx})">Otevřít</button>
+                <button onclick="copyUrlFromLib(${realIdx})">Kopírovat</button>
+                <button onclick="deleteUrlFromLib(${realIdx})">Smazat</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function addUrlToLib() {
+    const input = document.getElementById('urlInput');
+    const url = input.value.trim();
+    if (!url) return;
+    const name = prompt('Pojmenuj tento odkaz (volitelné):', '');
+    const lib = loadUrlLibrary();
+    lib.push({ url, name: name || '', added: Date.now() });
+    saveUrlLibrary(lib);
+    input.value = '';
+    renderUrlLibrary();
+}
+
+function openUrlFromLib(idx) {
+    const lib = loadUrlLibrary();
+    if (lib[idx]) window.open(lib[idx].url, '_blank');
+}
+function copyUrlFromLib(idx) {
+    const lib = loadUrlLibrary();
+    if (lib[idx] && navigator.clipboard) {
+        navigator.clipboard.writeText(lib[idx].url);
+        alert('Odkaz zkopírován.');
+    }
+}
+function deleteUrlFromLib(idx) {
+    const lib = loadUrlLibrary();
+    lib.splice(idx, 1);
+    saveUrlLibrary(lib);
+    renderUrlLibrary();
+}
+
+// ═══════════════════════════════════════════
+// SDÍLENÍ
+// ═══════════════════════════════════════════
+function lockAndShare() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('cards', currentCards.join(','));
+    const urlStr = url.toString();
+    navigator.clipboard?.writeText(urlStr);
+    const display = document.getElementById('shareUrlDisplay');
+    display.textContent = '🔗 Odkaz zkopírován: ' + urlStr;
+    display.classList.add('visible');
+}
+
+function shareToNastenka() {
+    if (diaryEntries.length === 0) { alert('Nejprve ulož zápis s analýzou.'); return; }
+    const last = diaryEntries[0];
+    if (!last.percentages || Object.keys(last.percentages).length === 0) { alert('Poslední zápis nemá analýzu.'); return; }
+    const p = new URLSearchParams();
+    p.set('cards', last.cards.join(','));
+    const anglesStr = Object.entries(last.percentages).map(([st,val]) => `${st}:${val}`).join(',');
+    p.set('angles', anglesStr);
+    p.set('context', 'denik');
+    p.set('ts', Date.now());
+    window.open(`${NASTENKA_URL}?${p.toString()}`, '_blank');
+}
+
+// ═══════════════════════════════════════════
+// INICIALIZACE
+// ═══════════════════════════════════════════
+function init() {
+    loadEntries();
+    renderCards();
+    renderTimeline();
+    renderUrlLibrary();
+    processUrlParams();
+
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+        const available = getAvailableCards();
+        currentCards = pickRandom(available, 3);
+        renderCards();
+    });
+    document.getElementById('lockShareBtn').addEventListener('click', lockAndShare);
+    document.getElementById('analyzeBtn').addEventListener('click', openAnalyzer);
+    document.getElementById('saveLocalBtn').addEventListener('click', saveLocal);
+    document.getElementById('shareToNastenkaBtn').addEventListener('click', shareToNastenka);
+    document.getElementById('urlAddBtn').addEventListener('click', addUrlToLib);
+    document.getElementById('urlInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addUrlToLib();
+    });
+}
+
+init();
+</script>
+</body>
+</html>
