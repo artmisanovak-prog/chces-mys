@@ -19,6 +19,12 @@
 
 - [graficky generator](doma/nastroje/graficky_generator.html)
 
+- [graficky generator1](doma/nastroje/graficky_generator1.html)
+
+- [graficky generator2](doma/nastroje/graficky_generator2.html)
+
+- [graficky generator3](doma/nastroje/graficky_generator3.html)
+
 - [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
  galerie, nastenka, url stooy v case a prostoru, sdileni otisku
  ODKUDKOLI POKUD URL METADATA - FENOMENY 
