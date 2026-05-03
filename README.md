@@ -8,6 +8,7 @@
 
 ---
 
+-[kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
 - 
