@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motýl — 12 úhlů pohledu | Chceš myš?</title>
+    <script async src="https://plausible.io/js/pa-rZt5pPr7lTGl3S7OSNHqj.js"></script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)}</script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Work+Sans:wght@300;400;500&display=swap');
+        
+        :root {
+            --bg: #0c0808;
+            --bg-elevated: #130d0d;
+            --text: #f5eeee;
+            --text-dim: #5a4a4a;
+            --text-mid: #8a7575;
+            --accent: #c8a8c0;       /* levandulově šedá / pudrová */
+            --accent-dim: #3d2a3d;
+            --border: #1a1218;
+            --highlight: rgba(200,168,192,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-weight: 300;
+        }
+
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .home-link {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .home-link:hover { color: var(--accent); }
+
+        header { text-align: center; padding: 4rem 1rem 1rem; }
+        h1 { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: clamp(1.5rem, 5vw, 2.4rem); 
+            font-weight: 400; 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .subtitle { 
+            font-size: 0.65rem; 
+            letter-spacing: 0.35em; 
+            color: var(--text-dim); 
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .hero { 
+            position: relative; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .card-illustration { 
+            width: 100%; 
+            max-width: 300px; 
+            filter: grayscale(100%) contrast(1.05) brightness(0.95); 
+            opacity: 0.9;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+        .card-illustration:hover {
+            opacity: 1;
+            filter: grayscale(100%) contrast(1.1) brightness(1);
+        }
+        
+        .wing { 
+            position: absolute; 
+            width: 16px; 
+            height: 12px; 
+            background: var(--accent);
+            opacity: 0.2;
+            pointer-events: none; 
+            border-radius: 50% 0 50% 0;
+            transform-origin: center;
+        }
+        .wing-1 { top: 20%; right: 15%; transform: rotate(30deg); animation: float1 12s ease-in-out infinite; }
+        .wing-2 { bottom: 25%; left: 12%; transform: rotate(-20deg); animation: float2 14s ease-in-out infinite; }
+        .wing-3 { top: 60%; right: 20%; width: 12px; height: 8px; transform: rotate(60deg); animation: float3 10s infinite; }
+        .wing-4 { top: 40%; left: 18%; width: 20px; height: 14px; transform: rotate(-45deg); animation: float4 16s infinite; }
+        
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) rotate(30deg) scale(1); opacity: 0.15; }
+            50% { transform: translate(-15px, -20px) rotate(45deg) scale(1.2); opacity: 0.3; }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) rotate(-20deg) scale(1); opacity: 0.2; }
+            50% { transform: translate(20px, -15px) rotate(-5deg) scale(1.1); opacity: 0.1; }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0) rotate(60deg); opacity: 0.1; }
+            50% { transform: translate(-25px, -10px) rotate(80deg); opacity: 0.25; }
+        }
+        @keyframes float4 {
+            0%, 100% { transform: translate(0, 0) rotate(-45deg) scale(1); opacity: 0.15; }
+            33% { transform: translate(10px, 20px) rotate(-30deg) scale(0.9); opacity: 0.3; }
+            66% { transform: translate(-15px, 5px) rotate(-60deg) scale(1.1); opacity: 0.1; }
+        }
+
+        .audio-wrap { text-align: center; margin: 0.5rem 0 2.5rem; }
+        .audio-btn {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.5rem; border: 1px solid var(--border);
+            color: var(--text-mid); text-decoration: none; font-size: 0.75rem;
+            letter-spacing: 0.1em; transition: all 0.3s; text-transform: uppercase;
+        }
+        .audio-btn:hover { 
+            color: var(--accent); 
+            border-color: var(--accent-dim); 
+            background: var(--bg-elevated);
+        }
+
+        .fairy-wrap { max-width: 700px; margin: 0 auto 3rem; padding: 0 1rem; text-align: center; }
+        .fairy-toggle {
+            background: transparent; border: none; 
+            border-bottom: 1px solid var(--border);
+            color: var(--text-mid); 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 1.15rem; 
+            font-style: italic; 
+            cursor: pointer; 
+            padding: 0.4rem 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .fairy-toggle .arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+        .fairy-toggle.open .arrow {
+            transform: rotate(180deg);
+        }
+        .fairy-toggle:hover { color: var(--accent); border-color: var(--text-mid); }
+        
+        .fairy-content { max-height: 0; overflow: hidden; transition: max-height 0.8s ease; text-align: left; scroll-behavior: smooth; }
+        .fairy-content.open { max-height: 8000px; margin-top: 1.5rem; }
+        .fairy-inner { 
+            padding: 1.5rem 2rem; 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 1.1rem; 
+            line-height: 1.9; 
+            color: #b0a0b0;
+            border-left: 1px solid var(--accent-dim);
+            background: linear-gradient(to right, rgba(200,168,192,0.02), transparent);
+        }
+        .fairy-inner p { margin-bottom: 1.2rem; }
+        .fairy-inner strong { color: var(--accent); font-weight: 500; }
+        .fairy-inner em { color: #9a85a0; font-style: italic; }
+        .fairy-highlight {
+            background: var(--highlight);
+            transition: background 0.3s;
+        }
+        .fairy-close {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.3rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .fairy-close:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Panel výběru úhlu – úzké karty */
+        .angle-selector {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            padding: 0 1rem;
+            text-align: center;
+        }
+        .selector-grid {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 0.3rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .selector-grid::-webkit-scrollbar {
+            height: 2px;
+            background: transparent;
+        }
+        .selector-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-dim);
+        }
+        .selector-card {
+            flex: 0 0 auto;
+            width: 100px;
+            border: 1px solid var(--border);
+            padding: 0.8rem 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-elevated);
+        }
+        .selector-card:hover {
+            border-color: var(--accent);
+            background: var(--bg);
+        }
+        .selector-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        .selector-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 0.2rem;
+        }
+        .selector-desc {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+        @media (min-width: 480px) {
+            .selector-card {
+                width: 130px;
+                padding: 1rem 0.6rem;
+            }
+            .selector-icon {
+                font-size: 1.4rem;
+            }
+            .selector-title {
+                font-size: 0.9rem;
+            }
+            .selector-desc {
+                font-size: 0.6rem;
+            }
+        }
+
+        .diagnostic-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 0;
+        }
+        .diagnostic-panel.open {
+            max-height: 300px;
+            margin-top: 1rem;
+        }
+        .diagnostic-inner {
+            padding: 1.2rem;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            text-align: left;
+        }
+        .diag-question {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+        }
+        .diag-input {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            margin-bottom: 0.8rem;
+        }
+        .diag-submit {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.65rem;
+            font-family: 'Work Sans', sans-serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .perspective-section { padding: 1rem 1rem 5rem; display: flex; flex-direction: column; align-items: center; }
+        
+        .big-words { text-align: center; margin-bottom: 2.5rem; }
+        .big-words h2 { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
+            font-weight: 400; 
+            letter-spacing: 0.25em; 
+            line-height: 1.2; 
+            text-transform: uppercase;
+        }
+        .big-words .l1 { color: var(--accent); display: block; margin-bottom: 0.3rem; }
+        .big-words .l2 { color: var(--text-dim); font-size: 0.55em; letter-spacing: 0.4em; }
+
+        .protractor-wrap { position: relative; width: 380px; height: 380px; margin: 1rem auto; }
+        @media (max-width: 420px) { .protractor-wrap { transform: scale(0.78); } }
+
+        .eye {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #151010, #000);
+            border: 1px solid #1a1218;
+            box-shadow: 0 0 40px rgba(200,168,192,0.04);
+            z-index: 10;
+        }
+        .pupil {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(200,168,192,0.3);
+        }
+        
+        .spiral {
+            position: absolute; top: 50%; left: 50%; width: 300%; height: 300%;
+            transform: translate(-50%, -50%); opacity: 0.06;
+            animation: spin 30s linear infinite;
+        }
+        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .hand {
+            position: absolute; top: 50%; left: 50%; width: 1px; height: 140px;
+            background: linear-gradient(to top, transparent 12%, var(--accent));
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            z-index: 5; pointer-events: none;
+        }
+        .hand::after {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .angle-btn {
+            position: absolute; 
+            padding: 0.4rem;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-dim); 
+            cursor: pointer; 
+            z-index: 20;
+            transform: translate(-50%, -50%);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .angle-btn:hover { color: var(--text-mid); z-index: 30; }
+        .angle-btn.active { color: var(--accent); font-weight: 400; }
+        
+        .angle-btn .deg { 
+            font-size: 0.6rem; 
+            opacity: 0.35; 
+            margin-bottom: 2px;
+            letter-spacing: 0.15em;
+            transition: opacity 0.3s;
+        }
+        .angle-btn:hover .deg { opacity: 0.7; }
+        
+        .angle-btn .name { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+
+        .angle-preview {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: 190px;
+            padding: 0.4rem 0;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: var(--accent);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+            pointer-events: none;
+            text-align: center;
+            background: transparent;
+            border: none;
+            letter-spacing: 0.02em;
+        }
+        
+        .angle-btn:hover .angle-preview {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .speech-section { 
+            margin-top: 3rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            max-width: 650px;
+            padding: 0 1rem;
+        }
+        
+        .bubble {
+            background: var(--bg-elevated); 
+            border: 1px solid var(--border);
+            padding: 2.5rem; 
+            width: 100%;
+            text-align: center; 
+            margin-bottom: 2rem; 
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        
+        .angle-header {
+            font-size: 0.65rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .bubble-text {
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 1.2rem; 
+            line-height: 1.8;
+            color: var(--text); 
+            font-weight: 400;
+            transition: opacity 0.4s;
+            min-height: 4rem;
+        }
+
+        .bubble-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .key-hint {
+            font-family: 'Work Sans', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: lowercase;
+        }
+
+        .fairy-locate-btn {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent);
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: 'Work Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: lowercase;
+            border-radius: 20px;
+        }
+        .fairy-locate-btn:hover {
+            background: var(--accent-dim);
+            color: var(--text);
+        }
+
+        .generator-link {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-dim);
+            transition: all 0.3s;
+            text-transform: lowercase;
+        }
+        .generator-link:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .mouth {
+            width: 48px; 
+            height: 24px;
+            background: linear-gradient(to bottom, #d8c8e0, #a898b8);
+            border-radius: 0 0 24px 24px; 
+            border: 1px solid #3d2a3d; 
+            border-top: none;
+            opacity: 0.6;
+            position: relative;
+        }
+        .mouth::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 20%; 
+            right: 20%; 
+            height: 4px;
+            background: #ddd; 
+            border-radius: 0 0 2px 2px;
+            opacity: 0.7;
+        }
+
+        footer { 
+            margin-top: 4rem; 
+            padding: 2rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        footer a { 
+            color: var(--text-mid); 
+            text-decoration: none; 
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        footer a:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <a href="index.html" class="home-link">← Domů</a>
+
+    <header>
+        <h1>Motýl</h1>
+        <div class="subtitle">12 úhlů pohledu</div>
+    </header>
+
+    <section class="hero">
+        <div class="wing wing-1"></div>
+        <div class="wing wing-2"></div>
+        <div class="wing wing-3"></div>
+        <div class="wing wing-4"></div>
+        <img src="../ilustrace/motyl.jpg" alt="Ilustrace motýla" class="card-illustration">
+    </section>
+
+    <div class="audio-wrap">
+        <a href="https://youtube.com/shorts/C9aNsatIg_M?is=Vdtyo5qKWy5CSYQR" target="_blank" class="audio-btn">
+            ▶ Poslechnout pohádku
+        </a>
+    </div>
+
+    <!-- Sbalovací pohádka -->
+    <div class="fairy-wrap">
+        <button class="fairy-toggle" onclick="toggleFairy()" id="fairyBtn">
+            <span>Pohádka o Motýlech</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="fairy-content" id="fairyContent">
+            <div class="fairy-inner" id="fairyScroll">
+                <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+                <p><strong>O MOTÝLECH</strong><br><strong>kterých se nenajíš</strong></p>
+                <p>—</p>
+                <p id="motyl-absurdni">„Já mám hlad," řekla.<br>„Tak tady máš," řekl.<br>A podal jí motýly. Tři. Jeden modrý, jeden žlutý, jeden trochu rozmazaný. Ten třetí se jmenoval Horac, ale to se dozvěděli až později.</p>
+                <p>—</p>
+                <p id="motyl-jazykovy">„To se nedá sníst," řekla.<br>„Ale dá se na to koukat," řekl.<br>„Já nechci koukat. Já chci jíst."<br>„Motýli jsou lehcí. Nezatíží ti žaludek."<br>„Ale já chci, aby mi žaludek zpíval, ne aby si šeptal básničky."</p>
+                <p>—</p>
+                <p id="motyl-ironicky">Motýli se zatím rozhlíželi. Jeden si lehl do polívky. Druhý se schoval pod rohlík. Třetí Horac se snažil otevřít ledničku, ale neměl palce.</p>
+                <p>—</p>
+                <p id="motyl-filozoficky">„Já mám hlad," řekla znovu. „A ty mi dáváš křídla."<br>„Křídla jsou taky něco," řekl.<br>„Ale nejsou chleba," řekla.<br>„To je pravda," řekl. „Ale chleba neumí lítat."<br>“A ještě je chleba nejvic emo," řekl polohlasem.<br>" Jakto?“ řekla.<br>“Řeže se a má dvě patky." řekl.<br>"aha” uzavřela.</p>
+                <p>—</p>
+                <p id="motyl-surrealisticky">Chvíli bylo ticho. Motýli se tvářili, že rozumí. Ale nerozuměli. Jeden se pokusil být salát. Druhý se schoulil do tvaru knedlíku. Horác se převlékl za banán. A začal si říkat Florián.</p>
+                <p>—</p>
+                <p id="motyl-naivni">„Tohle je divný," řekla.<br>„To je umění," řekl.<br>„To je hlad," řekla.<br>„To je interpretace," řekl.<br>„To je nesmysl," řekla.<br>„To je možné," řekl.</p>
+                <p>—</p>
+                <p id="motyl-introspektivni">Nakonec si sedla na zem. Motýli jí kroužili kolem hlavy. Dělali vítr a i víry v myšlenkách. A jeden jí přistál na nose. „Já tě nesním," řekla mu. „To je dobře," řekl Florián. „Já bych stejně chutnal jako neděle."</p>
+                <p>—</p>
+                <p id="motyl-betonovy">A tak si vzala rohlík. Bez motýlů. Bez klišé. Bez chutí.</p>
+                <p>—</p>
+                <p id="motyl-kulturni">Ale v hlavě jí drnčela věta: „Motýlů v břiše se nenajíš."</p>
+                <p>—</p>
+                <p id="motyl-metaforicky">A pokaždé, když jí někdo chtěl nakrmit láskou, zeptala se: „A máš k tomu i přílohu?"</p>
+                <div class="fairy-close" onclick="toggleFairy()">✕ zavřít pohádku</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel výběru úhlu -->
+    <div class="angle-selector">
+        <div class="selector-grid">
+            <div class="selector-card" onclick="randomAngle()">
+                <div class="selector-icon">🎲</div>
+                <div class="selector-title">Náhodně</div>
+                <div class="selector-desc">systém vybere úhel,<br>označí a odscrolluje</div>
+            </div>
+            <div class="selector-card" onclick="moodAngle()">
+                <div class="selector-icon">🧭</div>
+                <div class="selector-title">Podle nálady</div>
+                <div class="selector-desc">odscrolluje k úhlům,<br>žádný nevybírá</div>
+            </div>
+            <div class="selector-card" onclick="toggleDiagPanel()">
+                <div class="selector-icon">🔍</div>
+                <div class="selector-title">Diagnosticky</div>
+                <div class="selector-desc">odpovězte na otázku,<br>systém navrhne úhel</div>
+            </div>
+        </div>
+        <div class="diagnostic-panel" id="diagPanel">
+            <div class="diagnostic-inner">
+                <div class="diag-question">Která část vás v pohádce nejvíc zaujala?</div>
+                <textarea class="diag-input" id="diagInput" placeholder="Napište větu, moment nebo obraz..."></textarea>
+                <button class="diag-submit" onclick="runDiagnostic()">Najít úhel</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="perspective-section">
+        <div class="big-words">
+            <h2><span class="l1">Jiný pohled</span><span class="l2">Jiná řeč</span></h2>
+        </div>
+
+        <div class="protractor-wrap" id="protractor">
+            <div class="eye">
+                <svg class="spiral" viewBox="0 0 100 100">
+                    <path d="M50 50 m0 0 a5 5 0 1 0 0 0.1 m0 0 a10 10 0 1 0 0 0.1 m0 0 a20 20 0 1 0 0 0.1 m0 0 a30 30 0 1 0 0 0.1 m0 0 a40 40 0 1 0 0 0.1" 
+                          fill="none" stroke="rgba(200,168,192,0.4)" stroke-width="0.5"/>
+                </svg>
+                <div class="pupil"></div>
+            </div>
+            
+            <div class="hand" id="hand"></div>
+        </div>
+
+        <div class="speech-section">
+            <div class="bubble">
+                <div class="angle-header" id="angleHeader">0° — Absurdní</div>
+                <div class="bubble-text" id="bubbleText">Motýli jako jídlo? Jeden v polévce, druhý pod rohlíkem, třetí se převléká za banán. A ten dialog: ‚To je umění.‘ ‚To je hlad.‘ Absurdní situace, kde se všechno snaží být něčím, čím není – a přitom je to k smíchu i k pláči zároveň.</div>
+                <div class="bubble-footer">
+                    <span class="key-hint" id="keyHint">motýl v polévce</span>
+                    <button class="fairy-locate-btn" onclick="locateInFairy()">📍 ukázat v pohádce</button>
+                    <a href="#" id="generatorLink" class="generator-link" target="_blank">🔗 generátor</a>
+                </div>
+            </div>
+            <div class="mouth"></div>
+        </div>
+    </section>
+
+    <footer>
+        <p><strong>Michaela Nováková</strong> — metoda REPODOM</p>
+        <p><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+
+    <script>
+        // 12 úhlů pro motýla – s klíčovými slovy pro diagnostiku
+        const angles = [
+            { deg: 0, hour: "9h", name: "Absurdní", desc: "Hledá nesmysl, paradox, rozpor.", text: "Motýli jako jídlo? Jeden v polévce, druhý pod rohlíkem, třetí se převléká za banán. A ten dialog: ‚To je umění.‘ ‚To je hlad.‘ Absurdní situace, kde se všechno snaží být něčím, čím není – a přitom je to k smíchu i k pláči zároveň.", key: "motýl v polévce", fragment: "motyl-absurdni", keywords: ["absurdní", "motýl", "polévka", "jídlo", "hlad", "Horac"] },
+            { deg: 30, hour: "7h", name: "Kulturní", desc: "Hledá archetypy a paralely.", text: "Motýli jako symbol duše, lásky, pomíjivosti. Tady jsou konfrontováni s naprosto hmotnou potřebou – hladem. Je to střet dvou světů: romantického a pragmatického. Florián (bývalý Horác) je jako postmoderní Don Quijote – bojuje s větrnými mlýny (ledničkou bez palců) a převléká se za to, čím není.", key: "symbol duše vs. hlad", fragment: "motyl-kulturni", keywords: ["kulturní", "symbol", "duše", "láska", "romantický", "pragmatický"] },
+            { deg: 60, hour: "8h", name: "Filozofický", desc: "Ptá se po smyslu a podstatě.", text: "Co člověka doopravdy nasytí? Chleba, nebo krása? Láska, nebo jídlo? Pohádka klade otázku po hodnotách: můžeme žít z pocitů, nebo potřebujeme něco hmatatelného? A proč vlastně chceme, aby nám žaludek zpíval, místo aby šeptal básničky?", key: "chleba nebo křídla", fragment: "motyl-filozoficky", keywords: ["filozofie", "hodnoty", "chleba", "krása", "láska", "jídlo"] },
+            { deg: 90, hour: "6h", name: "Naivní", desc: "Vidí věci jednoduše, bez předsudků.", text: "Holka má hlad. Kluk jí dá motýly. Ona říká, že se to nedá jíst. On říká, že se na to dá koukat. Motýli se snaží být jídlo, ale nejde jim to. Nakonec si holka vezme rohlík. A motýli lítají dál. Prostě.", key: "tři motýli místo chleba", fragment: "motyl-naivni", keywords: ["naivní", "jednoduchý", "holka", "kluk", "rohlík", "motýli"] },
+            { deg: 120, hour: "5h", name: "Jazykový", desc: "Sleduje slova, rytmus, dvojznačnost.", text: "‚Motýlů v břiše‘ – klišé o lásce se tady bere doslova. ‚Chleba je nejvíc emo, protože řeže se a má dvě patky.‘ Jazyk se v pohádce láme, převléká a hledá nové významy. Každá věta je hra – a každé slovo může být zítra banán.", key: "křídla místo chleba", fragment: "motyl-jazykovy", keywords: ["jazyk", "slova", "klišé", "motýli v břiše", "věta", "hra"] },
+            { deg: 150, hour: "4h", name: "Metaforický", desc: "Vidí symboly za věcmi.", text: "Motýli jsou sny, touhy, ideály. Ona je realita, každodennost, hlad. On se jí snaží nakrmit ideály, ale ty nenasytí. Motýli se mění v banány a knedlíky – ideály se převlékají za to, co je hmatatelné. Ale stejně chutnají jako neděle – jako prázdný den, kdy se nic neděje.", key: "ideály chutnají jako neděle", fragment: "motyl-metaforicky", keywords: ["metafora", "sny", "ideály", "realita", "neděle", "hmatatelné"] },
+            { deg: 180, hour: "3h", name: "Asociační", desc: "Vyvolává osobní vzpomínky.", text: "Připomnělo mi to, jak mi kdysi někdo dal k narozeninám básničku. Měl jsem hlad jako vlk, a on mi četl verše. Tehdy bych dal za rohlík. Dneska už vím, že motýli v břiše jsou fajn, ale k večeři si dám radši řízek. A přílohu.", key: "básnička místo jídla", fragment: "motyl-betonovy", keywords: ["asociace", "vzpomínka", "básnička", "narozeniny", "hlad", "rohlík"] },
+            { deg: 210, hour: "2h", name: "Introspektivní", desc: "Promítá do příběhu vlastní pocity.", text: "Tohle je přesně můj život. Pořád mi někdo dává motýly – očekávání, symboly, krásné řeči. A já mám hlad. Pořádnej hlad po něčem skutečným. A nakonec sáhnu po rohlíku, protože aspoň vím, co dostanu. A ta věta: ‚A máš k tomu i přílohu?‘ – tu budu říkat napořád.", key: "hlad po skutečném", fragment: "motyl-introspektivni", keywords: ["já", "můj život", "motýli", "očekávání", "skutečné", "příloha"] },
+            { deg: 240, hour: "1h", name: "Ironický", desc: "Vidí rozpor mezi záměrem a výsledkem.", text: "On jí chce dát něco krásného, symbolického – motýly. Ona má ale hlad. On vidí umění, ona vidí nesmysl. Ironie vztahů: někdo nosí křídla, druhej chce rohlík. A nakonec zjistíš, že motýli chutnají jako neděle – tedy vlastně nijak.", key: "umění vs. rohlík", fragment: "motyl-ironicky", keywords: ["ironie", "krásné", "symbolické", "umění", "nesmysl", "rohlík"] },
+            { deg: 270, hour: "12h", name: "Groteskní", desc: "Vidí přehnanou, temnou komiku.", text: "Představ si: motýl v polévce, motýl pod rohlíkem, motýl otevírající ledničku. A k tomu debata o tom, jestli je chleba emo. Je to fraška o tom, jak se lidi míjejí – ona chce žrát, on jí dává poezii. A nakonec z toho zbude jen otázka: ‚A máš k tomu i přílohu?‘ Směšný. A smutný.", key: "motýlí víry v myšlenkách", fragment: "motyl-surrealisticky", keywords: ["groteskní", "přehnaný", "komický", "fraška", "míjejí", "poezie"] },
+            { deg: 300, hour: "11h", name: "Surrealistický", desc: "Propojuje nesouvisející.", text: "Motýl v polévce, motýl jako knedlík, motýl jménem Horác, který se převlékne za Floriána. Svět, kde se věci mění v jiné věci, kde dialog připomíná absurdní drama a kde nakonec usedáš s rohlíkem, zatímco ti kolem hlavy krouží křídla. Tohle není realita – to je obraz.", key: "Horác se převléká za Floriána", fragment: "motyl-surrealisticky", keywords: ["surrealistický", "Horác", "Florián", "převléká", "obraz", "absurdní"] },
+            { deg: 330, hour: "10h", name: "Betonový", desc: "Čte doslovně, fakticky.", text: "Příběh vypráví o ženě, která má hlad a muž jí místo jídla nabídne tři motýly (modrý, žlutý, rozmazaný). Motýli se neúspěšně pokoušejí stát se jídlem (polévka, rohlík, banán). Po sérii absurdních dialogů si žena vezme rohlík, ale v hlavě jí utkví věta o motýlech v břiše. Od té doby se ptá těch, co jí nabízejí lásku, zda mají i přílohu.", key: "tři motýli místo jídla", fragment: "motyl-betonovy", keywords: ["doslovně", "fakticky", "žena", "muž", "tři motýli", "rohlík"] }
+        ];
+
+        const radius = 155;
+        let currentIndex = 0;
+        let currentAngle = angles[0];
+        let handElement = document.getElementById('hand');
+        let currentRotation = 0;
+        let rotationInterval = null;
+        let isAnimating = false;
+
+        // ========== DIAGNOSTICKÉ FUNKCE ==========
+        function toggleDiagPanel() {
+            const panel = document.getElementById('diagPanel');
+            panel.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                document.getElementById('diagInput').focus();
+            }
+        }
+
+        function randomAngle() {
+            const randomIndex = Math.floor(Math.random() * angles.length);
+            selectAngle(randomIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function moodAngle() {
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function runDiagnostic() {
+            const input = document.getElementById('diagInput').value.trim().toLowerCase();
+            if (!input) return;
+
+            const scores = angles.map((angle, idx) => {
+                let score = 0;
+                angle.keywords.forEach(keyword => {
+                    if (input.includes(keyword.toLowerCase())) {
+                        score += 1;
+                    }
+                });
+                return { index: idx, score };
+            });
+
+            scores.sort((a, b) => b.score - a.score);
+            const bestIndex = scores[0].score > 0 ? scores[0].index : 0;
+            
+            toggleDiagPanel();
+            selectAngle(bestIndex);
+            document.querySelector('.perspective-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========== PŮVODNÍ FUNKCE ==========
+        function startSlowRotation() {
+            if (rotationInterval) clearInterval(rotationInterval);
+            rotationInterval = setInterval(() => {
+                if (!isAnimating) {
+                    currentRotation = (currentRotation + 0.5) % 360;
+                    handElement.style.transition = 'none';
+                    handElement.style.transform = `translate(-50%, -100%) rotate(${currentRotation}deg)`;
+                }
+            }, 53);
+        }
+
+        function init() {
+            const container = document.getElementById('protractor');
+            
+            angles.forEach((angle, index) => {
+                const cssDeg = (180 - angle.deg) % 360;
+                const rad = cssDeg * Math.PI / 180;
+                const x = radius * Math.cos(rad);
+                const y = radius * Math.sin(rad);
+                
+                const btn = document.createElement('button');
+                btn.className = 'angle-btn';
+                btn.style.left = `calc(50% + ${x}px)`;
+                btn.style.top = `calc(50% + ${y}px)`;
+                btn.innerHTML = `
+                    <span class="deg">${angle.deg}° ${angle.hour}</span>
+                    <span class="name">${angle.name}</span>
+                    <span class="angle-preview">${angle.desc}</span>
+                `;
+                btn.onclick = () => selectAngle(index);
+                container.appendChild(btn);
+            });
+            
+            startSlowRotation();
+            selectAngle(0);
+        }
+
+        function selectAngle(index) {
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            currentIndex = index;
+            currentAngle = angles[index];
+            
+            document.querySelectorAll('.angle-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            
+            const textEl = document.getElementById('bubbleText');
+            const headerEl = document.getElementById('angleHeader');
+            const keyEl = document.getElementById('keyHint');
+            const genLink = document.getElementById('generatorLink');
+            
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                headerEl.textContent = `${currentAngle.deg}° — ${currentAngle.name}`;
+                textEl.textContent = currentAngle.text;
+                keyEl.textContent = currentAngle.key;
+                const encodedKey = encodeURIComponent(currentAngle.key);
+                const encodedAngle = encodeURIComponent(currentAngle.name);
+                genLink.href = `generator.html?zvir=Motýl&uhel=${encodedAngle}&klic=${encodedKey}`;
+                textEl.style.opacity = 1;
+            }, 200);
+            
+            if (handElement) {
+                isAnimating = true;
+                
+                let targetRot = (180 - currentAngle.deg) % 360;
+                let diff = targetRot - currentRotation;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+                const finalRot = currentRotation + diff;
+                
+                handElement.style.transition = 'transform 1.3s cubic-bezier(0.25, 1.4, 0.5, 1)';
+                handElement.style.transform = `translate(-50%, -100%) rotate(${finalRot}deg)`;
+                
+                currentRotation = finalRot % 360;
+                if (currentRotation < 0) currentRotation += 360;
+                
+                setTimeout(() => { isAnimating = false; }, 1300);
+            }
+            
+            if (window.plausible) plausible('Angle Changed', {props: {angle: currentAngle.name}});
+        }
+
+        function locateInFairy() {
+            if (!currentAngle || !currentAngle.fragment) return;
+            
+            document.querySelectorAll('.fairy-highlight').forEach(el => el.classList.remove('fairy-highlight'));
+            
+            const element = document.getElementById(currentAngle.fragment);
+            const scrollContainer = document.getElementById('fairyContent');
+            const isOpen = scrollContainer.classList.contains('open');
+            
+            if (element) {
+                element.classList.add('fairy-highlight');
+                
+                if (isOpen) {
+                    const fairyInner = document.getElementById('fairyScroll');
+                    const containerRect = fairyInner.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    const scrollTop = fairyInner.scrollTop;
+                    const targetScroll = scrollTop + (elementRect.top - containerRect.top) - (containerRect.height / 3);
+                    
+                    fairyInner.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                }
+            }
+        }
+
+        window.locateInFairy = locateInFairy;
+
+        function toggleFairy() {
+            const el = document.getElementById('fairyContent');
+            const btn = document.getElementById('fairyBtn');
+            const isOpen = el.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.style.color = isOpen ? 'var(--accent)' : '';
+            btn.style.borderColor = isOpen ? 'var(--accent)' : '';
+        }
+
+        window.toggleFairy = toggleFairy;
+        window.toggleDiagPanel = toggleDiagPanel;
+        window.randomAngle = randomAngle;
+        window.moodAngle = moodAngle;
+        window.runDiagnostic = runDiagnostic;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                selectAngle((currentIndex + 1) % 12);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                selectAngle((currentIndex - 1 + 12) % 12);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
