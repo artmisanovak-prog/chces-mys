@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kognitivní zrcadlo – Čáp</title>
+  <!-- Chart.js pro radarový graf -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f0f; --surface: #161616; --surface2: #1c1c1c;
+      --cream: #e8e0d0; --dim: rgba(232,224,208,0.42); --accent: #a89880;
+      --border: rgba(168,152,128,0.15); --border-hi: rgba(168,152,128,0.35);
+      --serif: 'Cormorant Garamond', Georgia, serif; --mono: 'DM Mono', monospace;
+    }
+    body {
+      background: var(--bg); color: var(--cream);
+      font-family: var(--mono); font-size: 14px; line-height: 1.6;
+      padding: 30px 20px;
+    }
+    .wrap { max-width: 1300px; margin: 0 auto; }
+    header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+    h1 { font-family: var(--serif); font-size: 2.6rem; font-weight: 300; }
+    h1 span { color: var(--accent); font-style: italic; }
+
+    .pohadka {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 25px; margin-bottom: 40px; font-family: var(--serif);
+      font-size: 1.1rem; line-height: 1.9; white-space: pre-wrap;
+    }
+
+    .ukoly {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+      margin-bottom: 40px;
+    }
+    @media (max-width:700px){ .ukoly { grid-template-columns: 1fr; } }
+    .ukol {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 20px;
+    }
+    .ukol h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 300; margin-bottom: 10px; }
+    .ukol p { color: var(--dim); margin-bottom: 15px; }
+    textarea {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      color: var(--cream); font-family: var(--mono); font-size: 0.9rem;
+      padding: 12px; resize: vertical; min-height: 120px;
+    }
+    .btn {
+      background: var(--accent); color: var(--bg); border: none;
+      font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.1em;
+      padding: 10px 18px; margin-top: 10px; cursor: pointer;
+      text-transform: uppercase; transition: 0.2s;
+    }
+    .btn:hover { background: #c0aa90; }
+
+    /* Sekce skórování (12 poruch) */
+    .scoring {
+      margin: 40px 0;
+      border-top: 1px solid var(--border);
+      padding-top: 30px;
+    }
+    .scoring h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 300; margin-bottom: 20px; }
+    .poruchy-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .porucha-card {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 15px;
+    }
+    .porucha-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .porucha-nazev { font-weight: bold; color: var(--accent); }
+    .porucha-stupne { font-size: 0.8rem; color: var(--dim); }
+    .porucha-popis {
+      font-size: 0.8rem; color: var(--dim); margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .porucha-slider {
+      width: 100%; background: transparent;
+    }
+    .porucha-hodnota {
+      display: inline-block; margin-left: 8px; font-weight: bold;
+    }
+
+    /* Výsledky – graf + tabulka */
+    .vysledky {
+      display: none;
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 30px;
+    }
+    .vysledky.visible { display: block; }
+    .graf-wrapper {
+      max-width: 500px; margin: 20px 0 30px;
+      background: var(--surface); padding: 20px;
+    }
+    .tabulka-skore {
+      width: 100%; border-collapse: collapse;
+    }
+    .tabulka-skore th, .tabulka-skore td {
+      border: 1px solid var(--border);
+      padding: 8px 12px; text-align: left;
+    }
+    .tabulka-skore th { background: var(--surface2); color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kognitivní zrcadlo <span>// Čáp</span></h1>
+    <p style="color:var(--dim);">Metodika 12 jazykových poruch (0–4) podle M. Novákové</p>
+  </header>
+
+  <!-- Text pohádky (stejný jako dřív) -->
+  <div class="pohadka">
+    <p>O ČÁPOVI</p>
+    <p>1, 2 čáp letí. 3, 4 nemá děti. 5, 6 my je máme. 7, 8 NEprodáme.</p>
+    <p>—</p>
+    <p>Jedna dvě – čáp letí. Tři čtyři – nemá děti. Pět šest – my je máme. Sedm osm – NEprodáme.</p>
+    <p>—-</p>
+    <p>Tak začíná říkanka, kterou si šeptají děti v trávě, když se dívají na nebe. A čáp tam opravdu je. Letí vysoko, klidně, bez nákladu. Bez uzlíku. Bez cíle. Jen tak.</p>
+    <p>—</p>
+    <p>Kdysi dávno se říkalo, že čáp nosí děti. Že když přistane na komíně, někdo se narodí. Ale tenhle čáp nikdy nepřistál. Jen kroužil. A začalo se o něm šeptat, že je prázdný. Že zapomněl. Že je bezradný možná i vadný.</p>
+    <p>—-</p>
+    <p>Ale myš věděla, že to není pravda. Čáp nebyl prázdej. Plnej byl – jen ne toho, co by šlo vidět. Nesl nápady. Nesl možnosti. Nesl to, co se nestalo, ale mohlo.</p>
+    <p>—</p>
+    <p>A pak se objevily děti. Nečekaně. Bez vysvětlení. Bez čápa. Jen tak. V trávě. V koutě. V náručí těch, kteří je nečekali. A lidi se ptali: „Kde se vzaly?“</p>
+    <p>--</p>
+    <p>myš odpověděla: „Pět šest – my je máme.</p>
+    <p>—</p>
+    <p>Začali přicházet kupci. S penězi, s smlouvami, s nabídkami. Chtěli si děti odnést. Chtěli je vlastnit. Ale myš jen zavrtěla hlavou.</p>
+    <p>—</p>
+    <p>„Sedm osm – NEprodáme.“</p>
+    <p>—</p>
+    <p>Protože některé věci nejdou koupit. Některé věci přicházejí samy. A některé věci nejsou na prodej. Něco se nedá vlastnit.</p>
+    <p>—</p>
+    <p>Čáp mezitím letěl dál. A v tom začal si zpívat. Ale ne jednohlasně, druhý hlas ten jeho stín zpíval s ním.. Když přeletěl nad polem, tráva se na chvíli načechrala. Když přeletěl nad vesnicí, děti se přestaly hádat. Když přeletěl nad řekou, ryby přestaly jen pokukovat a ploutvemi rovnaly vodní kruhy. protože voda se malem rozestoupila, jako by čekala, co nikdy nepřijde.</p>
+    <p>—</p>
+    <p>A pak jednoho dne přistál. Ne na komíně. Ale na prázdném poli. Tam, kde minule hořelo. Jak tam zaječice proskočila plamenama. Tam, se vždy dějou různé věci. Které přesto nikdo nečeká.</p>
+    <p>—</p>
+    <p>A ostatní se tam sešli.</p>
+    <p>—</p>
+    <p>Myš, kocour, zaječice, lemur, slon. Všichni, ti kdo věděli, že svět není jenom to, co se dá spočítat. A čáp se jich neptal. Jen rozprostřel křídla a z nich vypadly věty. Nedokončené. Neprodané. Nepřijaté.</p>
+    <p>—</p>
+    <p>A děti si je začaly sbírat. Skládaly si z nich vlastní pohádky. vlastní jména. Vlastní smysly.</p>
+    <p>—</p>
+    <p>A to znamena, že čáp, který nic nenosí, je ten, který nese všechno. Akorát ne to, co jsme čekali.</p>
+  </div>
+
+  <!-- Dva úkoly -->
+  <div class="ukoly">
+    <div class="ukol">
+      <h3>✎ Úkol 1 – Nedokončené věty</h3>
+      <p>Napiš pokračování, kde čáp rozprostře křídla a vypadnou z nich další věty. Tyto věty by měly být nedokončené, plné náznaků a otevřených konců. Zaměř se na „druhý hlas stínu“ a nečekaná sousedství slov. (min. 50 slov)</p>
+      <textarea id="ukol1" placeholder="Sem napiš svůj text..."></textarea>
+    </div>
+    <div class="ukol">
+      <h3>✎ Úkol 2 – Perspektiva kupce</h3>
+      <p>Vžij se do role kupce, který přichází s penězi a smlouvami. Zhodnoť čápův „náklad“ z obchodního hlediska. Co bys koupil, prodal, co je neprodejné? Použij obchodní výrazy. (min. 50 slov)</p>
+      <textarea id="ukol2" placeholder="Sem napiš svůj text..."></textarea>
+    </div>
+  </div>
+
+  <!-- Sekce skórování 12 poruch -->
+  <div class="scoring">
+    <h2>Kognitivní skórování (0–4)</h2>
+    <p style="margin-bottom:20px; color:var(--dim);">U každé poruchy nastav hodnotu podle toho, jak silně se v analyzovaném textu projevuje (0 = ideál, 4 = absolutní porucha).</p>
+    <div class="poruchy-grid" id="poruchyGrid"></div>
+    <button class="btn" id="vykresliGrafBtn" style="margin-top:30px;">Vykreslit kognitivní mapu</button>
+    <button class="btn" id="resetBtn" style="margin-left:10px;">Reset skóre</button>
+  </div>
+
+  <!-- Výsledky (graf + tabulka) -->
+  <div class="vysledky" id="vysledky">
+    <h2>Kognitivní mapa</h2>
+    <div class="graf-wrapper">
+      <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+    <table class="tabulka-skore" id="tabulkaSkore">
+      <thead><tr><th>Úhel (porucha)</th><th>Skóre (0–4)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button class="btn" id="exportBtn" style="margin-top:20px;">Exportovat JSON</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DEFINICE 12 PORUCH (převzato z tvojí metodiky)
+// ============================================================
+const PORUCHY = [
+  { nazev: 'Ananatologický (0°)', popis: 'Absence analogií, metafor, přirovnání. Text je striktně doslovný.' },
+  { nazev: 'Asociační (180°)', popis: 'Neschopnost navazovat na kontext, náhodné skoky, nesouvislosti.' },
+  { nazev: 'Kulturní (30°)', popis: 'Absence kulturních odkazů, idiomů, generický text.' },
+  { nazev: 'Introspektivní (210°)', popis: 'Absence sebereflexe, vnitřního prožitku, subjektivních pocitů.' },
+  { nazev: 'Filozofický (60°)', popis: 'Absence hlubokých otázek, abstraktního myšlení, komplexních úvah.' },
+  { nazev: 'Ironický (240°)', popis: 'Absence ironie, sarkasmu, humoru, striktní vážnost.' },
+  { nazev: 'Naivní (90°)', popis: 'Absence komplexnosti, zjednodušování, dětská perspektiva.' },
+  { nazev: 'Groteskní (270°)', popis: 'Absence nadsázky, absurdity, deformace reality, čistý realismus.' },
+  { nazev: 'Jazykový (120°)', popis: 'Absence hry s jazykem, experimentování, gramaticky korektní ale nudný text.' },
+  { nazev: 'Absurdní (300°)', popis: 'Absence nelogičnosti, paradoxů, striktní racionalita.' },
+  { nazev: 'Metaforický (150°)', popis: 'Absence hlubokých metafor, symboliky, alegorie, povrchní popis.' },
+  { nazev: 'Surrealistický (330°)', popis: 'Absence snu, podvědomí, iracionálních spojení, čistý realismus.' }
+];
+
+// Zkrácené názvy pro graf
+const NAZVY_GRAF = PORUCHY.map(p => p.nazev.split(' ')[0]); // jen první slovo
+
+// ============================================================
+// VYTVOŘENÍ POSUVNÍKŮ
+// ============================================================
+const grid = document.getElementById('poruchyGrid');
+PORUCHY.forEach((p, index) => {
+  const card = document.createElement('div');
+  card.className = 'porucha-card';
+  card.innerHTML = `
+    <div class="porucha-header">
+      <span class="porucha-nazev">${p.nazev}</span>
+      <span class="porucha-stupne">0–4</span>
+    </div>
+    <div class="porucha-popis">${p.popis}</div>
+    <div style="display:flex; align-items:center;">
+      <input type="range" min="0" max="4" step="1" value="2" class="porucha-slider" id="slider-${index}">
+      <span class="porucha-hodnota" id="hodnota-${index}">2</span>
+    </div>
+  `;
+  grid.appendChild(card);
+
+  // Propojení slideru a zobrazení hodnoty
+  const slider = document.getElementById(`slider-${index}`);
+  const span = document.getElementById(`hodnota-${index}`);
+  slider.addEventListener('input', () => {
+    span.textContent = slider.value;
+  });
+});
+
+// ============================================================
+// FUNKCE PRO ZÍSKÁNÍ AKTUÁLNÍCH SKÓRE
+// ============================================================
+function getSkore() {
+  const skore = [];
+  for (let i = 0; i < PORUCHY.length; i++) {
+    const slider = document.getElementById(`slider-${i}`);
+    skore.push(parseInt(slider.value, 10));
+  }
+  return skore;
+}
+
+// ============================================================
+// VYKRESLENÍ RADAROVÉHO GRAFU
+// ============================================================
+let chart; // globální proměnná pro graf
+
+function vykresliGraf() {
+  const skore = getSkore();
+  const ctx = document.getElementById('radarChart').getContext('2d');
+
+  // Pokud graf existuje, zničíme ho
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: NAZVY_GRAF,
+      datasets: [{
+        label: 'Skóre poruchy (0–4)',
+        data: skore,
+        backgroundColor: 'rgba(168,152,128,0.2)',
+        borderColor: '#a89880',
+        pointBackgroundColor: '#a89880',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#a89880'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 4,
+          ticks: { stepSize: 1, color: '#e8e0d0' },
+          grid: { color: 'rgba(232,224,208,0.1)' },
+          pointLabels: { color: '#e8e0d0' }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+  // Vyplnit tabulku
+  const tbody = document.querySelector('#tabulkaSkore tbody');
+  tbody.innerHTML = '';
+  PORUCHY.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.nazev}</td><td>${skore[i]}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Zobrazit sekci výsledků
+  document.getElementById('vysledky').classList.add('visible');
+}
+
+// ============================================================
+// RESET SKÓRE (nastaví všechny na 2)
+// ============================================================
+function resetSkore() {
+  for (let i = 0; i < PORUCHY.length; i++) {
+    const slider = document.getElementById(`slider-${i}`);
+    slider.value = 2;
+    document.getElementById(`hodnota-${i}`).textContent = '2';
+  }
+}
+
+// ============================================================
+// EXPORT DO JSON
+// ============================================================
+function exportJSON() {
+  const skore = getSkore();
+  const data = {
+    pohadka: 'Čáp',
+    datum: new Date().toISOString(),
+    skore: skore,
+    poruchy: PORUCHY.map((p, i) => ({ nazev: p.nazev, skore: skore[i] }))
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cap_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+document.getElementById('vykresliGrafBtn').addEventListener('click', vykresliGraf);
+document.getElementById('resetBtn').addEventListener('click', resetSkore);
+document.getElementById('exportBtn').addEventListener('click', exportJSON);
+
+// Při načtení nastavit výchozí hodnoty sliderů (už jsou 2)
+</script>
+</body>
+</html>
