@@ -17,6 +17,7 @@
 - [vizualni_analyzer](doma/nastroje/vizualni_analyzer.html)
  hra perspektiv = mezi vztahy
 
+- [graficky generator](doma/nastroje/graficky_generator.html)
 
 - [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
  galerie, nastenka, url stooy v case a prostoru, sdileni otisku
