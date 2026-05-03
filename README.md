@@ -89,6 +89,14 @@ kreativita, fyzika jazyka, metadenik
 - [veverka](doma/data/uhly/veverka_uhly.html)
 - [panda](doma/data/uhly/panda_uhly.html)
 - [vlk](doma/data/uhly/vlk_uhly.html)
+
+- [gepard](doma/data/uhly/gepard_uhly.html)
+- [zizala](doma/data/uhly/zizala_uhly.html)
+- [chameleon](doma/data/uhly/chameleon_uhly.html)
+- [kliste](doma/data/uhly/kliste_uhly.html)
+- [lev](doma/data/uhly/lev_uhly.html)
+- [opice](doma/data/uhly/opice_uhly.html)
+- [psi_smecka](doma/data/uhly/psi_smecka_uhly.html)
   
 - [kocour pridat kresbu](doma/data/uhly/kocour_pridat_kresbu.html)
 
