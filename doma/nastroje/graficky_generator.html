@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grafický generátor · Fyzika linky</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg:#0f0d0a; --surface:#171410; --surface2:#1e1a14;
+            --cream:#e8e0d0; --dim:rgba(232,224,208,.42); --accent:#a89880;
+            --serif:'Cormorant Garamond',Georgia,serif; --mono:'DM Mono',monospace;
+        }
+        body {
+            background:var(--bg); color:var(--cream); font-family:var(--mono);
+            font-size:13px; padding:1rem; user-select:none;
+            touch-action:manipulation;
+        }
+        .wrap { max-width:700px; margin:0 auto; }
+        h1 { font-family:var(--serif); font-size:1.6rem; margin-bottom:0.3rem; font-weight:300; }
+        h1 em { color:var(--accent); font-style:italic; }
+
+        .panel {
+            background:var(--surface); border:1px solid rgba(168,152,128,.15);
+            padding:1.2rem; margin-bottom:1.5rem; border-radius:4px;
+        }
+        .panel-label {
+            font-size:0.7rem; color:var(--dim); text-transform:uppercase; letter-spacing:.1em;
+            margin-bottom:.8rem;
+        }
+
+        /* Zdrojové karty */
+        .cards-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
+            gap:10px;
+        }
+        .card {
+            background:var(--surface2);
+            border:1px solid rgba(168,152,128,.2);
+            padding:4px; cursor:pointer;
+            display:flex; flex-direction:column; align-items:center;
+            border-radius:3px; position:relative;
+            transition:border-color .15s;
+        }
+        .card:hover { border-color:var(--accent); }
+        .card img {
+            width:100%; aspect-ratio:74/105;   /* A7 na výšku */
+            object-fit:cover; display:block; border-radius:2px;
+            filter:grayscale(100%) contrast(1.05);
+        }
+        .card.landscape img { aspect-ratio:105/74; }  /* výjimky na šířku */
+        .card-name {
+            font-size:0.65rem; color:var(--dim); margin-top:.3rem;
+            text-align:center; line-height:1.2; width:100%;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+        }
+        .badge {
+            position:absolute; top:-6px; right:-6px;
+            background:var(--accent); color:var(--bg);
+            width:20px; height:20px; border-radius:50%;
+            font-size:0.7rem; font-weight:bold;
+            display:none; align-items:center; justify-content:center;
+            pointer-events:none;
+        }
+        .badge.show { display:flex; }
+
+        /* Layout */
+        .layout {
+            min-height:200px;
+            border:2px dashed var(--accent);
+            background:var(--surface2);
+            padding:8px;
+            margin-bottom:1.5rem;
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
+            gap:6px;
+            align-content:start;
+        }
+        .layout .card { cursor:pointer; }
+        .layout .card img { width:100%; height:auto; }
+
+        /* Tlačítka */
+        .btn {
+            background:var(--accent); color:var(--bg); border:none;
+            padding:0.7rem 1.6rem; font-family:var(--mono); font-size:0.75rem;
+            letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+            transition:background .15s; border-radius:4px; margin-top:0.5rem;
+        }
+        .btn:hover { background:#c0aa90; }
+        .btn-secondary {
+            background:transparent; color:var(--accent);
+            border:1px solid var(--accent);
+        }
+        .btn-secondary:hover { background:rgba(168,152,128,.1); }
+
+        .result {
+            background:var(--surface2); border:2px solid var(--accent);
+            padding:1.5rem; display:none; border-radius:4px; margin-top:1rem;
+        }
+        .result h2 { font-family:var(--serif); font-weight:300; color:var(--accent); margin-bottom:1rem; }
+        pre {
+            background:#0f0d0a; padding:1rem; font-size:0.75rem;
+            overflow:auto; white-space:pre-wrap; border-radius:3px;
+        }
+
+        @media (max-width:400px) {
+            .cards-grid { grid-template-columns:repeat(3, 1fr); }
+            .layout { grid-template-columns:repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Grafický generátor <em>Fyzika linky</em></h1>
+    <p style="color:var(--dim); margin-bottom:1.5rem;">
+        Kliknutím na kartu ji přidáš do layoutu (opakovaně). Kliknutím na kartu v layoutu ji odebereš. Karty lze v layoutu přetahovat.
+    </p>
+
+    <div class="panel">
+        <div class="panel-label">Karty · klikni pro přidání do layoutu</div>
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-label">Layout · přetahuj a přehazuj</div>
+        <div class="layout" id="layout" 
+             ondragover="allowDrop(event)" 
+             ondrop="drop(event)">
+        </div>
+        <button class="btn" onclick="analyzeStructure()">Analyzovat strukturu</button>
+        <button class="btn btn-secondary" onclick="clearLayout()" style="margin-left:.5rem;">Vyčistit layout</button>
+    </div>
+
+    <div id="result" class="result">
+        <h2>Nový grafický blok vytvořen</h2>
+        <pre id="metadataOutput"></pre>
+        <div id="suggestions" style="margin-top:1rem;"></div>
+        <button class="btn" onclick="copyMetadata()" style="margin-top:1rem;">📋 Zkopírovat metadata</button>
+    </div>
+</div>
+
+<script>
+const baseUrl = "https://artmisanovak-prog.github.io/dataset_multi_fenomen/doma/ilustrace/";
+
+const myCards = [
+    {id:"mys", name:"Myš", file:"mys.jpg", landscape:false},
+    {id:"kocour", name:"Kocour", file:"kocour.jpg", landscape:false},
+    {id:"zajic", name:"Zajíc", file:"zajic.jpg", landscape:false},
+    {id:"ryba", name:"Ryba", file:"ryba.jpg", landscape:false},
+    {id:"krokodyl", name:"Krokodýl", file:"krokodyl.jpg", landscape:false},
+    {id:"netopyr", name:"Netopýr", file:"netopyr.jpg", landscape:false},
+    {id:"liska", name:"Liška", file:"liska.jpg", landscape:false},
+    {id:"hyena", name:"Hyena", file:"hyena.jpg", landscape:false},
+    {id:"pav", name:"Páv", file:"pav.jpg", landscape:false},
+    {id:"lemur", name:"Lemur", file:"lemur.jpg", landscape:false},
+    {id:"motyl", name:"Motýl", file:"motyl.jpg", landscape:false},
+    {id:"parohy", name:"Parohy", file:"parohy.jpg", landscape:false},
+    {id:"husy", name:"Husy", file:"husy.jpg", landscape:false},
+    {id:"beran", name:"Beran", file:"beran.jpg", landscape:false},
+    {id:"jednorozec", name:"Jednorožec", file:"jednorozec.jpg", landscape:false},
+    {id:"zizala", name:"Žížala", file:"zizala.jpg", landscape:false},
+    {id:"cap", name:"Čáp", file:"cap.jpg", landscape:false},
+    {id:"pavouk", name:"Pavouk", file:"pavouk.jpg", landscape:false},
+    {id:"drak", name:"Drak", file:"drak.jpg", landscape:false},
+    {id:"veverka", name:"Veverka", file:"veverka.jpg", landscape:false},
+    {id:"prase", name:"Prase", file:"prase.jpg", landscape:false},
+    {id:"panda", name:"Panda", file:"panda.jpg", landscape:false},
+    {id:"vlk", name:"Vlk", file:"vlk.jpg", landscape:false},
+    {id:"zelva", name:"Želva", file:"zelva.jpg", landscape:false},
+    {id:"hvezdice", name:"Hvězdice", file:"hvezdice.jpg", landscape:false},
+    {id:"osel", name:"Osel", file:"osel.jpg", landscape:false},
+    {id:"vrabec", name:"Vrabec", file:"vrabec.jpg", landscape:false},
+    {id:"plamenak", name:"Plameňák", file:"plamenak.jpg", landscape:false},
+    {id:"zralok", name:"Žralok", file:"zralok.jpg", landscape:false},
+    {id:"had", name:"Had", file:"had.jpg", landscape:true},
+    {id:"slon", name:"Slon", file:"slon.jpg", landscape:true},
+    {id:"moucha", name:"Moucha", file:"moucha.jpg", landscape:true},
+];
+
+// Počty výskytů každé karty v layoutu
+const layoutCounts = {};
+
+// Drag stav
+let isDragging = false;
+let draggedElement = null;
+
+function init() {
+    renderCards();
+    clearLayout();
+}
+
+function renderCards() {
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+    myCards.forEach(card => {
+        const el = document.createElement('div');
+        el.className = 'card' + (card.landscape ? ' landscape' : '');
+        el.dataset.cardId = card.id;
+        el.title = `${card.name} (klikni pro přidání)`;
+
+        // Obsah karty
+        el.innerHTML = `
+            <img src="${baseUrl}${card.file}" alt="${card.name}">
+            <span class="card-name">${card.name}</span>
+            <span class="badge" id="badge-${card.id}"></span>
+        `;
+
+        // Klik pro přidání do layoutu
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            addCardToLayout(card.id);
+        });
+
+        grid.appendChild(el);
+    });
+}
+
+function updateBadge(cardId) {
+    const badge = document.getElementById(`badge-${cardId}`);
+    if (!badge) return;
+    const count = layoutCounts[cardId] || 0;
+    badge.textContent = count;
+    if (count > 0) {
+        badge.classList.add('show');
+    } else {
+        badge.classList.remove('show');
+    }
+}
+
+function addCardToLayout(cardId) {
+    const card = myCards.find(c => c.id === cardId);
+    if (!card) return;
+
+    // Inkrementuj počet
+    layoutCounts[cardId] = (layoutCounts[cardId] || 0) + 1;
+    updateBadge(cardId);
+
+    const layout = document.getElementById('layout');
+    const clone = document.createElement('div');
+    clone.className = 'card' + (card.landscape ? ' landscape' : '');
+    clone.dataset.cardId = card.id;
+    clone.draggable = true;   // umožní přetahování v layoutu
+    clone.innerHTML = `
+        <img src="${baseUrl}${card.file}" alt="${card.name}">
+        <span class="card-name">${card.name}</span>
+    `;
+
+    // Drag & drop v layoutu
+    clone.addEventListener('dragstart', (e) => {
+        isDragging = true;
+        draggedElement = clone;
+        e.dataTransfer.setData('text/plain', card.id);
+        e.dataTransfer.effectAllowed = 'move';
+    });
+    clone.addEventListener('dragend', (e) => {
+        isDragging = false;
+        draggedElement = null;
+    });
+
+    // Klik pro odstranění
+    clone.addEventListener('click', (e) => {
+        // Ignorujeme kliknutí po přetažení
+        if (isDragging) return;
+        e.stopPropagation();
+        removeCardFromLayout(clone, cardId);
+    });
+
+    layout.appendChild(clone);
+}
+
+function removeCardFromLayout(element, cardId) {
+    // Dekrementuj počet
+    if (layoutCounts[cardId] > 0) {
+        layoutCounts[cardId]--;
+        updateBadge(cardId);
+    }
+    // Odeber element z DOM
+    element.remove();
+}
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    const id = ev.dataTransfer.getData('text/plain');
+    // Zjistíme, jestli přetahujeme z layoutu (přeskupení) nebo zvenku (nová karta)
+    if (draggedElement) {
+        // Přeskupení uvnitř layoutu
+        const afterElement = getDragAfterElement(document.getElementById('layout'), ev.clientX);
+        if (afterElement == null) {
+            document.getElementById('layout').appendChild(draggedElement);
+        } else {
+            document.getElementById('layout').insertBefore(draggedElement, afterElement);
+        }
+    } else {
+        // Nová karta přetažená z panelu – přidej ji
+        addCardToLayout(id);
+    }
+}
+
+function getDragAfterElement(container, x) {
+    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function clearLayout() {
+    document.getElementById('layout').innerHTML = '';
+    // Vynuluj počty a aktualizuj badge
+    for (const id in layoutCounts) {
+        layoutCounts[id] = 0;
+        updateBadge(id);
+    }
+    document.getElementById('result').style.display = 'none';
+}
+
+function analyzeStructure() {
+    // Získání aktuálního seznamu karet z layoutu (podle DOM)
+    const layoutEl = document.getElementById('layout');
+    const cardElements = layoutEl.querySelectorAll('.card');
+    const layoutCards = [];
+    cardElements.forEach(el => {
+        const cardId = el.dataset.cardId;
+        const card = myCards.find(c => c.id === cardId);
+        if (card) layoutCards.push(card);
+    });
+
+    if (layoutCards.length < 2) {
+        alert('Přidej do layoutu aspoň 2 karty.');
+        return;
+    }
+
+    const detected = ["tok","pretekani","echo","krizeni","trhlina","hustota","obrat","smycka","vetev","komprese","expanze","rozpad"];
+
+    const metadata = {
+        id: "G-" + Date.now().toString(36),
+        source_cards: layoutCards.map(c => c.id),
+        graphic_elements: detected,
+        flow_direction: "těsný_tok_bez_mezery",
+        density: "stredni",
+        rhythm: "opakujici_se_echo_s_trhlinou",
+        function: "generuje plynulý tok s náhlým přerušením a opakováním motivu",
+        movement: "tok → přetékání → echo → trhlina",
+        intensity: "vysoká",
+        multimedia_suggestions: {
+            zvuk: "dlouhý spojitý tón + náhlé ticho + opakující se echo",
+            tanec: "plynulý pohyb přes scénu + náhlé freeze + opakování gesta",
+            choreografie: "hlavní dráha = tok linky, detaily = tečky jako malé kroky",
+            video: "slow-motion přechod + náhlý cut na trhlinu",
+            instalace: "projekce karet, kde linky svítí a přetékají přímo"
+        }
+    };
+
+    document.getElementById('metadataOutput').textContent = JSON.stringify(metadata, null, 2);
+    const sugg = document.getElementById('suggestions');
+    sugg.innerHTML = `<strong>Multimedia návrhy:</strong><br>` + 
+        Object.entries(metadata.multimedia_suggestions).map(([k,v]) => 
+            `<div style="margin:0.5rem 0"><strong>${k}:</strong> ${v}</div>`
+        ).join('');
+    document.getElementById('result').style.display = 'block';
+}
+
+function copyMetadata() {
+    const text = document.getElementById('metadataOutput').textContent;
+    navigator.clipboard.writeText(text).then(() => alert('✅ Metadata zkopírována'));
+}
+
+// Spuštění
+init();
+</script>
+</body>
+</html>
