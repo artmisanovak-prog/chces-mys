@@ -45,6 +45,9 @@ kreativita, fyzika jazyka, metadenik
 -  [denik_url](doma/nastroje/denik_url.html)
 -  [denik_url1](doma/nastroje/denik_url1.html)
 -  [denik_url2](doma/nastroje/denik_url2.html)
+
+- [ebook_1](doma/nastroje/ebook_1.html)
+
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
