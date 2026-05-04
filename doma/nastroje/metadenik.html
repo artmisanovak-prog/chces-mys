@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Chceš myš? · MetaDeník</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8f6f2;
+            --paper: #fffef9;
+            --ink: #2b2723;
+            --dim: #8c857b;
+            --dimmer: #b8b0a4;
+            --acc: #a89880;
+            --acc2: #c0aa90;
+            --hair: #e8e3d9;
+            --shadow: 0 1px 3px rgba(0, 0, 0, .04);
+            --serif: 'Cormorant Garamond', Georgia, serif;
+            --mono: 'DM Mono', monospace;
+            --radius: 4px;
+            --gap: 8px;
+            --tr: 0.18s ease;
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+            font-size: 14px;
+        }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--serif);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+        }
+        /* ---- LAYOUT ---- */
+        .shell {
+            width: 100%;
+            max-width: 780px;
+            padding: 1.2rem 1.4rem 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        /* ---- TYPO ---- */
+        .wordmark {
+            font-family: var(--serif);
+            font-size: 2.1rem;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+        .wordmark em {
+            font-style: italic;
+            color: var(--acc);
+        }
+        .label {
+            font-size: 0.65rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--dim);
+            font-family: var(--mono);
+        }
+        .small {
+            font-size: 0.7rem;
+            color: var(--dim);
+            font-family: var(--mono);
+        }
+
+        /* ---- CARDS ROW (subtilní) ---- */
+        .cards-strip {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .card-thumb {
+            width: 58px;
+            height: 82px;
+            border-radius: 3px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            border: 1px solid var(--hair);
+            transition: border-color var(--tr), box-shadow var(--tr);
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+        .card-thumb:hover {
+            border-color: var(--acc);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+        .card-actions-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ---- BUTTONS (subtilní) ---- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: transparent;
+            border: 1px solid var(--hair);
+            color: var(--dim);
+            padding: 0.35rem 0.9rem;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all var(--tr);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        .btn:hover {
+            border-color: var(--acc);
+            color: var(--ink);
+            background: rgba(168, 152, 128, .04);
+        }
+        .btn.on {
+            border-color: var(--acc);
+            color: var(--acc);
+            background: rgba(168, 152, 128, .07);
+        }
+        .btn.primary {
+            background: var(--acc);
+            border-color: var(--acc);
+            color: #fffef9;
+        }
+        .btn.primary:hover {
+            background: var(--acc2);
+            border-color: var(--acc2);
+        }
+        .btn.danger {
+            border-color: #c08070;
+            color: #c08070;
+        }
+        .btn.danger:hover {
+            background: rgba(192, 128, 112, .05);
+        }
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--dim);
+            transition: all var(--tr);
+        }
+        .icon-btn:hover {
+            background: rgba(168, 152, 128, .06);
+            color: var(--ink);
+        }
+
+        /* ---- NEKONEČNÝ EDITOR ---- */
+        .editor-surface {
+            width: 100%;
+            min-height: 160px;
+            background: var(--paper);
+            border: none;
+            border-bottom: 1px solid var(--hair);
+            padding: 1.6rem 0.6rem 2rem;
+            font-family: var(--serif);
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--ink);
+            outline: none;
+            caret-color: var(--acc);
+            transition: border-color var(--tr);
+            resize: none;
+            overflow: hidden;
+        }
+        .editor-surface:focus {
+            border-bottom-color: var(--acc);
+        }
+        .editor-surface:empty::before {
+            content: 'Piš svůj zápis… kurzor bliká na téhle rovině, text roste dolů, nekonečně.';
+            color: var(--dimmer);
+            font-style: italic;
+        }
+
+        /* ---- PANELY (babyšky) ---- */
+        .panel {
+            border: 1px solid var(--hair);
+            border-radius: var(--radius);
+            background: var(--paper);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.2s;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.55rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--dim);
+            border-bottom: 1px solid transparent;
+            transition: all var(--tr);
+        }
+        .panel-header:hover {
+            color: var(--ink);
+        }
+        .panel.open>.panel-header {
+            border-bottom-color: var(--hair);
+            color: var(--ink);
+        }
+        .panel-body {
+            display: none;
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+        .panel.open>.panel-body {
+            display: block;
+        }
+        .panel-arrow {
+            transition: transform var(--tr);
+            font-size: 0.6rem;
+        }
+        .panel.open .panel-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* ---- ÚHLOVÉ PROUŽKY ---- */
+        .angle-bar-wrap {
+            display: flex;
+            height: 8px;
+            border-radius: 2px;
+            overflow: hidden;
+            background: #e8e3d9;
+            margin: 0.4rem 0 0.8rem;
+            cursor: pointer;
+        }
+        .angle-seg {
+            height: 100%;
+            transition: flex 0.4s ease;
+        }
+        .angle-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .angle-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.62rem;
+            font-family: var(--mono);
+            color: var(--dim);
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all var(--tr);
+        }
+        .angle-chip:hover {
+            border-color: var(--hair);
+            color: var(--ink);
+        }
+        .angle-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ---- ČASOVÁ OSA ---- */
+        .timeline-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tl-card {
+            background: var(--paper);
+            border: 1px solid var(--hair);
+            border-radius: var(--radius);
+            padding: 0.7rem 0.9rem;
+            cursor: pointer;
+            transition: all var(--tr);
+            flex: 1 1 140px;
+            max-width: 200px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .tl-card:hover {
+            border-color: var(--acc);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .06);
+        }
+        .tl-date {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+        }
+        .tl-title {
+            font-weight: 400;
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+        .tl-bars-mini {
+            display: flex;
+            height: 4px;
+            border-radius: 1px;
+            overflow: hidden;
+            background: #e8e3d9;
+        }
+        .tl-dominant {
+            font-size: 0.6rem;
+            font-family: var(--mono);
+        }
+
+        /* ---- DETAIL MODAL ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(248, 246, 242, .92);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-card {
+            background: var(--paper);
+            border: 1px solid var(--hair);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.6rem;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.7rem;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--dim);
+        }
+        .modal-close:hover {
+            color: var(--ink);
+        }
+
+        /* ---- FILTROVACÍ TAGY ---- */
+        .filter-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+        }
+        .filter-tag {
+            font-size: 0.6rem;
+            font-family: var(--mono);
+            padding: 2px 10px;
+            border-radius: 14px;
+            border: 1px solid var(--hair);
+            cursor: pointer;
+            background: transparent;
+            color: var(--dim);
+            transition: all var(--tr);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .filter-tag:hover,
+        .filter-tag.active {
+            border-color: var(--acc);
+            color: var(--ink);
+            background: rgba(168, 152, 128, .05);
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width:600px) {
+            .shell {
+                padding: 0.8rem 0.8rem 3rem;
+            }
+            .card-thumb {
+                width: 44px;
+                height: 62px;
+            }
+            .editor-surface {
+                font-size: 1rem;
+                padding: 1rem 0.4rem 1.5rem;
+            }
+            .tl-card {
+                flex: 1 1 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <!-- HLAVIČKA -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+            <span class="wordmark"><em>Chceš myš?</em> MetaDeník</span>
+            <span class="label" style="font-size:0.6rem;">piš · losuj · analyzuj · sdílej</span>
+        </div>
+
+        <!-- KARTY -->
+        <div>
+            <div class="cards-strip" id="cardsRow"></div>
+            <div class="card-actions-row" style="margin-top:0.5rem;">
+                <button class="btn" id="shuffleBtn" title="Vylosuj 3 karty">🎲 Losovat</button>
+                <button class="btn" id="lockShareBtn" title="Sdílet odkaz na tuto trojici">🔗 Kopírovat odkaz</button>
+                <span id="shareMsg" class="small" style="opacity:0;transition:opacity .3s;">✓ zkopírováno</span>
+            </div>
+        </div>
+
+        <!-- NEKONEČNÝ EDITOR -->
+        <div id="editor" class="editor-surface" contenteditable="true"></div>
+
+        <!-- PANEL NÁSTROJŮ (babyška) -->
+        <div class="panel" id="toolsPanel">
+            <div class="panel-header" onclick="togglePanel('toolsPanel')">
+                <span>🔧 Nástroje & akce</span>
+                <span class="panel-arrow">▾</span>
+            </div>
+            <div class="panel-body">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                    <button class="btn primary" id="analyzeBtn">🔍 Analyzovat text</button>
+                    <button class="btn" id="saveLocalBtn">💾 Uložit lokálně</button>
+                    <button class="btn" id="shareToGalleryBtn">📊 Sdílet do přehlídky</button>
+                    <button class="btn" id="compareBtn">↔ Porovnat s předchozím</button>
+                    <button class="btn" id="groupMapBtn">🗺 Skupinová mapa variací</button>
+                </div>
+                <div id="saveMsg" class="small" style="margin-top:0.6rem;display:none;"></div>
+                <div id="duplicateWarning" class="small" style="color:#c08070;margin-top:0.4rem;display:none;">⚠ Tento zápis už existuje. Ulož ho jako novou variaci.</div>
+            </div>
+        </div>
+
+        <!-- PANEL HISTORIE (babyška) -->
+        <div class="panel open" id="historyPanel">
+            <div class="panel-header" onclick="togglePanel('historyPanel')">
+                <span>📅 Časová osa</span>
+                <span class="panel-arrow">▾</span>
+            </div>
+            <div class="panel-body">
+                <div class="filter-tags" id="filterTags">
+                    <span class="filter-tag active" data-filter="all">Vše</span>
+                </div>
+                <div class="timeline-grid" id="timelineGrid"></div>
+                <div id="paginationRow" style="display:flex;gap:8px;margin-top:1rem;align-items:center;justify-content:center;"></div>
+            </div>
+        </div>
+
+        <!-- PANEL IMPORT (babyška) -->
+        <div class="panel" id="importPanel">
+            <div class="panel-header" onclick="togglePanel('importPanel')">
+                <span>📦 Import balíčku karet</span>
+                <span class="panel-arrow">▾</span>
+            </div>
+            <div class="panel-body">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <input type="url" id="importUrl" placeholder="URL balíčku (JSON nebo HTML cesta)…" style="flex:1;min-width:200px;padding:0.4rem;border:1px solid var(--hair);border-radius:var(--radius);font-family:var(--mono);font-size:0.7rem;background:var(--paper);">
+                    <button class="btn" id="importBtn">Načíst</button>
+                </div>
+                <p class="small" style="margin-top:0.5rem;">Podporované formáty: JSON mapování jmen na obrázky, nebo přímé URL na obrázky.</p>
+                <div class="small" style="margin-top:0.4rem;color:var(--dim);">
+                    Výchozí balíčky: <a href="#" onclick="quickImport('mys,kocour,ryba,zajic,pav,pavouk,krokodyl,netopyr,motyl')" style="color:var(--acc);">zvířata</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODÁL PRO DETAIL ZÁPISU -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card" id="detailContent">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ═══ KONFIGURACE ═══
+            const ANALYZER_URL = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/analyzer.html';
+            const GALLERY_URL = 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html';
+            const BASE_ASSETS = 'https://artmisanovak-prog.github.io/chces-mys/';
+            const STORAGE_CARDS = 'mys-metadenik-cards';
+            const STORAGE_DIARY = 'mys-metadenik-diary';
+            const STORAGE_GROUPS = 'mys-metadenik-groups';
+
+            // Výchozí karty – rozšířeno podle tvých odkazů
+            let CARDS = {
+                "myš": { file: "mys.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/mys_uhly.html",
+                    name: "Myš" },
+                "kocour": { file: "kocour.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/kocour_uhly.html",
+                    name: "Kocour" },
+                "zajíc": { file: "zajic.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/zajic_uhly.html",
+                    name: "Zajíc" },
+                "ryba": { file: "ryba.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/ryba_uhly.html",
+                    name: "Ryba" },
+                "páv": { file: "pav.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/pav_uhly.html",
+                    name: "Páv" },
+                "netopýr": { file: "netopyr.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/netopyr_uhly.html",
+                    name: "Netopýr" },
+                "motýl": { file: "motyl.jpg", odkaz: "", name: "Motýl" },
+                "pavouk": { file: "pavouk.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/pavouk_uhly.html",
+                    name: "Pavouk" },
+                "krokodýl": { file: "krokodyl.jpg", odkaz: "https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/krokodyl_uhly.html",
+                    name: "Krokodýl" }
+            };
+
+            const UHLY = [
+                { st: 0, name: 'Analytický', color: '#5a7fa8' }, { st: 30, name: 'Kulturní', color: '#6a9e72' },
+                { st: 60, name: 'Filozofický', color: '#9b72b5' }, { st: 90, name: 'Naivní', color: '#5fa8a0' },
+                { st: 120, name: 'Jazykový', color: '#8e7248' }, { st: 150, name: 'Metaforický',
+                color: '#5a8a5a' },
+                { st: 180, name: 'Asociační', color: '#a85a5a' }, { st: 210, name: 'Introspektivní',
+                color: '#c8a832' },
+                { st: 240, name: 'Ironický', color: '#c8722a' }, { st: 270, name: 'Groteskní',
+                color: '#a83060' },
+                { st: 300, name: 'Absurdní', color: '#6080a0' }, { st: 330, name: 'Surrealistický',
+                color: '#8060b0' }
+            ];
+            const ANGLE_MAP = Object.fromEntries(UHLY.map(a => [a.st, a]));
+
+            // Stav
+            let currentCards = ["myš", "kocour", "zajíc"];
+            let diaryEntries = [];
+            let currentEntryId = null;
+            let currentPage = 1;
+            const PAGE_SIZE = 12;
+            let activeFilter = 'all';
+
+            // DOM
+            const cardsRow = document.getElementById('cardsRow');
+            const editor = document.getElementById('editor');
+            const timelineGrid = document.getElementById('timelineGrid');
+            const filterTags = document.getElementById('filterTags');
+            const paginationRow = document.getElementById('paginationRow');
+            const modal = document.getElementById('detailModal');
+            const detailContent = document.getElementById('detailContent');
+            const shareMsg = document.getElementById('shareMsg');
+
+            // ═══ RENDER KARET ═══
+            function renderCards() {
+                cardsRow.innerHTML = '';
+                currentCards.forEach(id => {
+                    const card = CARDS[id];
+                    if (!card) return;
+                    const url = (card.file && card.file.startsWith('http')) ? card.file :
+                        BASE_ASSETS + 'doma/ilustrace/' + (card.file || (id + '.jpg'));
+                    const thumb = document.createElement('div');
+                    thumb.className = 'card-thumb';
+                    thumb.style.backgroundImage = `url('${url}')`;
+                    thumb.title = card.name || id;
+                    thumb.addEventListener('click', () => {
+                        if (card.odkaz) window.open(card.odkaz, '_blank');
+                        else alert('Tato karta nemá odkaz na přehlídku fenoménů.');
+                    });
+                    cardsRow.appendChild(thumb);
+                });
+            }
+
+            function shuffleCards() {
+                const ids = Object.keys(CARDS);
+                if (ids.length < 3) return;
+                const shuffled = [...ids].sort(() => Math.random() - 0.5);
+                currentCards = shuffled.slice(0, 3);
+                renderCards();
+            }
+
+            function lockAndShare() {
+                const url = new URL(window.location);
+                url.searchParams.set('cards', currentCards.join(','));
+                navigator.clipboard?.writeText(url.toString()).then(() => {
+                    shareMsg.style.opacity = '1';
+                    setTimeout(() => shareMsg.style.opacity = '0', 2200);
+                }).catch(() => {
+                    shareMsg.textContent = url.toString();
+                    shareMsg.style.opacity = '1';
+                    setTimeout(() => shareMsg.style.opacity = '0', 4000);
+                });
+            }
+
+            // ═══ ULOŽENÍ / DUPLICITA ═══
+            function computeFingerprint(text, cards) {
+                const stripped = text.replace(/\s+/g, ' ').trim().toLowerCase();
+                const cardsKey = [...cards].sort().join(',');
+                return stripped.slice(0, 200) + '|' + cardsKey;
+            }
+
+            function isDuplicate(text, cards, excludeId = null) {
+                const fp = computeFingerprint(text, cards);
+                return diaryEntries.some(e => e.id !== excludeId && computeFingerprint(e.text, e.cards) ===
+                    fp);
+            }
+
+            function checkDuplicate() {
+                const text = editor.innerText.trim();
+                if (!text) {
+                    document.getElementById('duplicateWarning').style.display = 'none';
+                    return false;
+                }
+                const dup = isDuplicate(text, currentCards, currentEntryId);
+                document.getElementById('duplicateWarning').style.display = dup ? 'block' : 'none';
+                return dup;
+            }
+
+            // ═══ ANALÝZA (přesměrování do analyzéru) ═══
+            function openAnalyzer() {
+                const text = editor.innerText.trim();
+                if (!text) { alert('Napiš text.'); return; }
+                const url = new URL(ANALYZER_URL);
+                url.searchParams.set('text', text);
+                url.searchParams.set('returnTo', window.location.href);
+                url.searchParams.set('cards', currentCards.join(','));
+                window.open(url.toString(), '_blank');
+            }
+
+            // ═══ ULOŽENÍ ZÁPISU ═══
+            function saveEntry(percentages = null, userAngle = null) {
+                const text = editor.innerText.trim();
+                if (!text) return null;
+                const title = prompt('Název zápisu:', 'Zápis ' + new Date().toLocaleString());
+                if (title === null) return null;
+
+                if (isDuplicate(text, currentCards, currentEntryId)) {
+                    if (!confirm('Tento zápis už existuje. Chceš ho přesto uložit jako novou variaci?')) return null;
+                }
+
+                const entry = {
+                    id: currentEntryId || (Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+                    date: new Date().toISOString(),
+                    title,
+                    text,
+                    cards: [...currentCards],
+                    percentages: percentages || {},
+                    userAngle: userAngle || null,
+                };
+                const idx = diaryEntries.findIndex(e => e.id === entry.id);
+                if (idx >= 0) diaryEntries[idx] = entry;
+                else diaryEntries.push(entry);
+                saveDiaryToStorage();
+                renderTimeline();
+                currentEntryId = null;
+                document.getElementById('duplicateWarning').style.display = 'none';
+                showSaveMsg('✓ Zápis uložen.');
+                return entry;
+            }
+
+            function saveLocal() {
+                const entry = saveEntry();
+                if (entry) editor.innerHTML = '';
+            }
+
+            function showSaveMsg(msg) {
+                const el = document.getElementById('saveMsg');
+                el.textContent = msg;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 2800);
+            }
+
+            // ═══ SDÍLENÍ DO PŘEHLÍDKY ═══
+            function shareToGallery(entryId = null) {
+                let entry;
+                if (entryId) {
+                    entry = diaryEntries.find(e => e.id === entryId);
+                } else {
+                    const text = editor.innerText.trim();
+                    if (!text) { alert('Nejprve napiš a ulož zápis.'); return; }
+                    entry = saveEntry();
+                    if (!entry) return;
+                }
+                if (!entry) return;
+
+                const nick = prompt('Nepovinná přezdívka:') || '';
+                const params = new URLSearchParams();
+                params.set('cards', entry.cards.join(','));
+                if (Object.keys(entry.percentages).length > 0) {
+                    params.set('angles', Object.entries(entry.percentages).map(([st, val]) => `${st}:${val}`)
+                        .join(','));
+                }
+                if (entry.userAngle) params.set('userAngle', entry.userAngle);
+                if (nick) params.set('nick', nick);
+                params.set('entryId', entry.id);
+                const groupKey = getOrCreateGroupKey();
+                params.set('groupKey', groupKey);
+                window.open(`${GALLERY_URL}?${params.toString()}`, '_blank');
+                showSaveMsg('✓ Odesláno do přehlídky.');
+            }
+
+            function getOrCreateGroupKey() {
+                let groups = JSON.parse(localStorage.getItem(STORAGE_GROUPS) || '{}');
+                const today = new Date().toISOString().slice(0, 10);
+                if (!groups[today]) {
+                    groups[today] = 'grp-' + today + '-' + Math.random().toString(36).slice(2, 6);
+                    localStorage.setItem(STORAGE_GROUPS, JSON.stringify(groups));
+                }
+                return groups[today];
+            }
+
+            function shareGroupMap() {
+                const groupKey = getOrCreateGroupKey();
+                const params = new URLSearchParams();
+                params.set('groupKey', groupKey);
+                params.set('view', 'map');
+                window.open(`${GALLERY_URL}?${params.toString()}`, '_blank');
+            }
+
+            function openCompare() {
+                if (diaryEntries.length < 2) { alert('Potřebuješ alespoň 2 zápisy pro porovnání.'); return; }
+                const sorted = [...diaryEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastTwo = sorted.slice(0, 2);
+                const params = new URLSearchParams();
+                params.set('compare', lastTwo.map(e => e.id).join(','));
+                params.set('groupKey', getOrCreateGroupKey());
+                window.open(`${GALLERY_URL}?${params.toString()}`, '_blank');
+            }
+
+            // ═══ IMPORT KARET ═══
+            async function importCards(url) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('Nelze načíst');
+                    const contentType = res.headers.get('content-type') || '';
+                    if (contentType.includes('json')) {
+                        const json = await res.json();
+                        CARDS = { ...CARDS, ...json };
+                    } else {
+                        const text = await res.text();
+                        const parsed = parseHtmlForCards(text, url);
+                        CARDS = { ...CARDS, ...parsed };
+                    }
+                    localStorage.setItem(STORAGE_CARDS, JSON.stringify(CARDS));
+                    renderCards();
+                    alert('Karty načteny: ' + Object.keys(CARDS).length + ' položek.');
+                } catch (e) {
+                    alert('Chyba při načítání: ' + e.message);
+                }
+            }
+
+            function parseHtmlForCards(html, baseUrl) {
+                const result = {};
+                const tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                const imgs = tmp.querySelectorAll('img');
+                imgs.forEach((img, i) => {
+                    const src = img.getAttribute('src') || '';
+                    const alt = img.getAttribute('alt') || 'karta_' + i;
+                    const absSrc = src.startsWith('http') ? src : new URL(src, baseUrl).href;
+                    const id = alt.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+                    result[id] = { file: absSrc, odkaz: '', name: alt };
+                });
+                return result;
+            }
+
+            function quickImport(idsStr) {
+                const ids = idsStr.split(',').map(s => s.trim());
+                const available = ids.filter(id => CARDS[id]);
+                if (available.length >= 3) {
+                    currentCards = available.slice(0, 3);
+                    renderCards();
+                }
+            }
+
+            // ═══ ČASOVÁ OSA ═══
+            function getDominantAngles(percentages, topN = 3) {
+                const entries = Object.entries(percentages).map(([st, val]) => ({ st: parseInt(st), val }));
+                entries.sort((a, b) => b.val - a.val);
+                const threshold = entries.length > 0 ? entries[0].val * 0.25 : 0;
+                return entries.filter(e => e.val >= threshold).slice(0, topN);
+            }
+
+            function renderTimeline() {
+                const filtered = activeFilter === 'all' ?
+                    diaryEntries :
+                    diaryEntries.filter(e => e.cards.some(c => c === activeFilter));
+
+                const totalPages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+                if (currentPage > totalPages) currentPage = totalPages;
+                const start = (currentPage - 1) * PAGE_SIZE;
+                const pageEntries = filtered.slice().reverse().slice(start, start + PAGE_SIZE);
+
+                timelineGrid.innerHTML = '';
+                pageEntries.forEach(entry => {
+                    const doms = getDominantAngles(entry.percentages || {});
+                    const card = document.createElement('div');
+                    card.className = 'tl-card';
+                    card.addEventListener('click', () => showDetail(entry));
+
+                    let barsHtml = '';
+                    if (doms.length > 0) {
+                        barsHtml = '<div class="tl-bars-mini">';
+                        doms.forEach(d => {
+                            const ang = ANGLE_MAP[d.st];
+                            barsHtml +=
+                                `<div style="flex:${d.val};background:${ang?.color||'#ccc'};" title="${ang?.name||d.st} ${d.val}%"></div>`;
+                        });
+                        barsHtml += '</div>';
+                    }
+                    const domNames = doms.map(d => ANGLE_MAP[d.st]?.name || d.st).join(' · ');
+                    card.innerHTML = `
+                <div class="tl-date">${new Date(entry.date).toLocaleDateString('cs-CZ', {day:'2-digit',month:'2-digit',year:'numeric'})}</div>
+                <div class="tl-title">${entry.title}</div>
+                ${barsHtml}
+                <div class="tl-dominant" style="color:${ANGLE_MAP[doms[0]?.st]?.color||'var(--dim)'};">${domNames||'—'}</div>
+              `;
+                    timelineGrid.appendChild(card);
+                });
+
+                // Paginace
+                paginationRow.innerHTML = '';
+                if (totalPages > 1) {
+                    for (let p = 1; p <= totalPages; p++) {
+                        const btn = document.createElement('button');
+                        btn.className = 'btn' + (p === currentPage ? ' on' : '');
+                        btn.textContent = p;
+                        btn.addEventListener('click', () => { currentPage = p;
+                            renderTimeline(); });
+                        paginationRow.appendChild(btn);
+                    }
+                }
+
+                // Filtrovací tagy
+                buildFilterTags();
+            }
+
+            function buildFilterTags() {
+                const allCardIds = new Set();
+                diaryEntries.forEach(e => e.cards.forEach(c => allCardIds.add(c)));
+                filterTags.innerHTML = '<span class="filter-tag' + (activeFilter === 'all' ? ' active' : '') +
+                    '" data-filter="all">Vše</span>';
+                allCardIds.forEach(cid => {
+                    const name = CARDS[cid]?.name || cid;
+                    const tag = document.createElement('span');
+                    tag.className = 'filter-tag' + (activeFilter === cid ? ' active' : '');
+                    tag.dataset.filter = cid;
+                    tag.textContent = name;
+                    filterTags.appendChild(tag);
+                });
+                document.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.addEventListener('click', () => {
+                        activeFilter = tag.dataset.filter;
+                        currentPage = 1;
+                        renderTimeline();
+                    });
+                });
+            }
+
+            // ═══ DETAIL ZÁPISU ═══
+            function showDetail(entry) {
+                const doms = getDominantAngles(entry.percentages || {});
+                const cardsStr = entry.cards.map(id => CARDS[id]?.name || id).join(' + ');
+                const anglesStr = doms.map(d => `${ANGLE_MAP[d.st]?.name||d.st} ${d.val}%`).join(', ');
+                const userAngleStr = entry.userAngle ? ANGLE_MAP[entry.userAngle]?.name || entry.userAngle + '°' :
+                    '—';
+
+                let barsHtml = '';
+                if (doms.length > 0) {
+                    barsHtml = '<div class="angle-bar-wrap">';
+                    doms.forEach(d => {
+                        const ang = ANGLE_MAP[d.st];
+                        barsHtml +=
+                            `<div class="angle-seg" style="flex:${d.val};background:${ang?.color||'#ccc'};" title="${ang?.name||d.st} ${d.val}%"></div>`;
+                    });
+                    barsHtml += '</div>';
+                }
+
+                detailContent.innerHTML = `
+              <button class="modal-close" onclick="closeModal()">✕</button>
+              <h3 style="font-weight:400;margin-bottom:0.3rem;">${entry.title}</h3>
+              <div class="small" style="margin-bottom:0.6rem;">${new Date(entry.date).toLocaleString()} · Karty: ${cardsStr}</div>
+              ${barsHtml}
+              <div class="small" style="margin:0.5rem 0;">Dominantní úhly: ${anglesStr||'—'} · Vlastní úhel: ${userAngleStr}</div>
+              <div style="background:#faf8f5;padding:1rem;border-radius:var(--radius);margin:0.8rem 0;white-space:pre-wrap;font-size:0.9rem;line-height:1.7;border-left:3px solid var(--acc);">${entry.text}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn" onclick="loadEntry('${entry.id}')">📂 Načíst</button>
+                <button class="btn" onclick="shareToGallery('${entry.id}')">📊 Sdílet</button>
+                <button class="btn danger" onclick="deleteEntry('${entry.id}')">🗑 Smazat</button>
+              </div>
+            `;
+                modal.classList.add('active');
+            }
+
+            window.closeModal = () => modal.classList.remove('active');
+            window.loadEntry = (id) => {
+                const entry = diaryEntries.find(e => e.id === id);
+                if (entry) {
+                    editor.innerHTML = entry.text;
+                    currentCards = entry.cards;
+                    renderCards();
+                    currentEntryId = entry.id;
+                    checkDuplicate();
+                    closeModal();
+                    editor.focus();
+                }
+            };
+            window.deleteEntry = (id) => {
+                if (confirm('Opravdu smazat tento zápis?')) {
+                    diaryEntries = diaryEntries.filter(e => e.id !== id);
+                    saveDiaryToStorage();
+                    renderTimeline();
+                    closeModal();
+                }
+            };
+
+            // ═══ PANELY (babyšky) ═══
+            window.togglePanel = (id) => {
+                const panel = document.getElementById(id);
+                panel.classList.toggle('open');
+            };
+
+            // ═══ STORAGE ═══
+            function saveDiaryToStorage() {
+                localStorage.setItem(STORAGE_DIARY, JSON.stringify(diaryEntries));
+            }
+
+            function loadFromStorage() {
+                const storedCards = localStorage.getItem(STORAGE_CARDS);
+                if (storedCards) CARDS = JSON.parse(storedCards);
+                const storedDiary = localStorage.getItem(STORAGE_DIARY);
+                if (storedDiary) diaryEntries = JSON.parse(storedDiary);
+            }
+
+            // ═══ URL PARAMETRY ═══
+            function processUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('cards')) {
+                    const ids = params.get('cards').split(',').map(s => s.trim()).filter(id => CARDS[id]);
+                    if (ids.length === 3) currentCards = ids;
+                }
+                if (params.has('angles') && params.has('returnTo')) {
+                    const anglesStr = params.get('angles');
+                    const percentages = {};
+                    anglesStr.split(',').forEach(p => {
+                        const [st, val] = p.split(':').map(Number);
+                        if (!isNaN(st) && !isNaN(val)) percentages[st] = val;
+                    });
+                    const cardsParam = params.get('cards') || currentCards.join(',');
+                    const analysis = { percentages, cards: cardsParam.split(','), timestamp: Date
+                    .now() };
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    if (confirm('Analýza dokončena. Uložit zápis s výsledky?')) {
+                        const entry = saveEntry(analysis.percentages);
+                        if (entry && confirm('Přidat vlastní úhel?')) {
+                            const angleSt = prompt(
+                                'Zadej stupně (0,30,60,90,120,150,180,210,240,270,300,330):');
+                            if (angleSt && ANGLE_MAP[angleSt]) {
+                                entry.userAngle = parseInt(angleSt);
+                                saveDiaryToStorage();
+                                renderTimeline();
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ═══ EVENTY ═══
+            function bindEvents() {
+                document.getElementById('shuffleBtn').addEventListener('click', shuffleCards);
+                document.getElementById('lockShareBtn').addEventListener('click', lockAndShare);
+                document.getElementById('analyzeBtn').addEventListener('click', openAnalyzer);
+                document.getElementById('saveLocalBtn').addEventListener('click', saveLocal);
+                document.getElementById('shareToGalleryBtn').addEventListener('click', () => shareToGallery());
+                document.getElementById('compareBtn').addEventListener('click', openCompare);
+                document.getElementById('groupMapBtn').addEventListener('click', shareGroupMap);
+                document.getElementById('importBtn').addEventListener('click', () => {
+                    const url = document.getElementById('importUrl').value.trim();
+                    if (url) importCards(url);
+                });
+                document.getElementById('importUrl').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const url = document.getElementById('importUrl').value.trim();
+                        if (url) importCards(url);
+                    }
+                });
+                editor.addEventListener('input', checkDuplicate);
+                editor.addEventListener('blur', checkDuplicate);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') closeModal();
+                });
+                // Swipe pro listování historií (zjednodušené)
+                let touchStartX = 0;
+                timelineGrid.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+                timelineGrid.addEventListener('touchend', (e) => {
+                    const diff = touchStartX - e.changedTouches[0].clientX;
+                    const totalPages = Math.ceil((activeFilter === 'all' ? diaryEntries.length :
+                        diaryEntries.filter(e => e.cards.some(c => c === activeFilter)).length) /
+                        PAGE_SIZE) || 1;
+                    if (Math.abs(diff) > 60) {
+                        if (diff > 0 && currentPage < totalPages) { currentPage++;
+                            renderTimeline(); } else if (diff < 0 && currentPage > 1) { currentPage--;
+                            renderTimeline(); }
+                    }
+                });
+            }
+
+            // ═══ INIT ═══
+            function init() {
+                loadFromStorage();
+                renderCards();
+                renderTimeline();
+                processUrlParams();
+                bindEvents();
+                checkDuplicate();
+                editor.focus();
+            }
+            init();
+        })();
+    </script>
+</body>
+</html>
