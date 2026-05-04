@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Křivá pohádka – Rovné svědectví | Ekosystém</title>
+    <style>
+        :root {
+            --bg: #0b0b12;
+            --surface: #1a1a28;
+            --text: #c8c8d4;
+            --muted: #7a7a92;
+            --primary: #c4a35a;
+            --primary-glow: #e5c86c;
+            --border: #2a2a3c;
+            --radius: 14px;
+            --transition: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            min-height: 100vh;
+            height: 100vh;
+        }
+
+        .book {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100vh;
+            width: max-content;
+        }
+
+        .page {
+            flex: 0 0 auto;
+            width: 100vw;
+            max-width: 1100px;
+            min-width: 90vw;
+            height: 100vh;
+            overflow-y: auto;
+            scroll-snap-align: start;
+            padding: 3rem 2.5rem;
+            background: var(--bg);
+            border-right: 1px solid var(--border);
+            position: relative;
+            transition: background var(--transition);
+        }
+        .page:last-child {
+            border-right: none;
+        }
+        .page::-webkit-scrollbar {
+            width: 6px;
+        }
+        .page::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+        .page::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+            border-left: 5px solid var(--primary);
+            padding-left: 1.2rem;
+            line-height: 1.2;
+        }
+        h2 {
+            font-size: 1.6rem;
+            color: var(--primary-glow);
+            margin: 2rem 0 1rem;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.2rem;
+            color: #ddd;
+            margin: 1.5rem 0 0.8rem;
+        }
+        p,
+        li {
+            margin: 0.7rem 0;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary);
+            transition: all var(--transition);
+        }
+        a:hover {
+            color: var(--primary-glow);
+            border-bottom-style: solid;
+        }
+
+        /* Akordeony */
+        details {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+        details[open] {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(196, 163, 90, 0.15);
+        }
+        summary {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #fff;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            user-select: none;
+        }
+        summary::before {
+            content: "▸";
+            display: inline-block;
+            transition: transform 0.3s ease;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .accordion-body {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            color: var(--text);
+            border-top: 1px solid var(--border);
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+        }
+
+        /* Karty */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.7rem;
+            margin: 1rem 0;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.9rem;
+            font-size: 0.9rem;
+        }
+        .card h4 {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+        .card .path {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 0.4rem;
+        }
+        .card a {
+            font-size: 0.8rem;
+        }
+
+        /* Navigace */
+        .nav-arrows {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .nav-arrows button {
+            background: var(--surface);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .nav-arrows button:hover {
+            background: var(--primary);
+            color: #0b0b12;
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                padding: 2rem 1.2rem;
+                width: 100vw;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="book" id="book">
+
+        <!-- Stránka 1: Úvod -->
+        <div class="page">
+            <h1>Křivá pohádka<br>Rovné svědectví</h1>
+            <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+
+            <details open>
+                <summary>📖 Co je Křivá pohádka?</summary>
+                <div class="accordion-body">
+                    <p>Křivá pohádka je <strong>ekosystém vyprávění</strong>, který se vzpírá běžným pravidlům. Není to jen kniha – je to digitální prostor, kde každý text existuje v mnoha podobách: jako webová stránka, API karta, zvuková stopa nebo vizuální objekt.</p>
+                    <p>Pohádky tu nevyprávějí příběhy tak, jak by měly. Místo kouzel vládne <strong>nedorozumění</strong>. Místo dobra a zla – <strong>podivný klid mezi nimi</strong>. Zvířata mluví, ale ne aby nás bavila – říkají to, co lidé nemohou vyslovit.</p>
+                    <p>Spojuje je postava <strong>Myši</strong>, která si zapisuje ticho do skulin mezi slovy a klade otázku: <em>„Chceš myš?“</em> – otázku, která se neptá na ni samotnou, ale na smysl, jazyk a strach.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>🧩 Struktura e‑booku</summary>
+                <div class="accordion-body">
+                    <ul>
+                        <li><strong>27 podobenství</strong> o zvířecích postavách (Kocour, Ryba, Zaječice, Páv, Lemur, Čáp, Had, Slon, Prasátko, Liška, Panda a Vlk…)</li>
+                        <li><strong>1 rámcový úvod</strong> – <em>Křivá pohádka – Rovné svědectví</em></li>
+                        <li><strong>1 meta‑příběh Myši</strong> – prolog, který vše propojuje</li>
+                        <li><strong>Epilog</strong> – <em>O parozích</em> (Sýýýr), který celý cyklus uzavírá</li>
+                    </ul>
+                    <p>Každá pohádka zároveň existuje jako <strong>samostatná karta (API endpoint)</strong>, kterou lze vložit do jiného média, sdílet nebo programově zpracovávat.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 2: Karty zvířat -->
+        <div class="page">
+            <h2>🐾 Zvířecí karty – 12 úhlů pohledu</h2>
+            <p>Každé zvíře má vlastní HTML stránku, která nabízí <strong>12 způsobů čtení</strong> – od absurdního přes betonový až po diagnostický.</p>
+
+            <details open>
+                <summary>📂 Otevři kartu zvířete</summary>
+                <div class="accordion-body">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h4>🐭 Myš</h4>
+                            <div class="path">/uhly/mys_uhly.html</div>
+                            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/mys_uhly.html" target="_blank">Otevřít →</a>
+                        </div>
+                        <div class="card">
+                            <h4>🐊 Krokodýl</h4>
+                            <div class="path">/uhly/krokodyl_uhly.html</div>
+                            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/krokodyl_uhly.html" target="_blank">Otevřít →</a>
+                        </div>
+                        <div class="card">
+                            <h4>🦚 Páv</h4>
+                            <div class="path">/uhly/pav_uhly.html</div>
+                            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/pav_uhly.html" target="_blank">Otevřít →</a>
+                        </div>
+                        <div class="card">
+                            <h4>🐟 Ryba</h4>
+                            <div class="path">/uhly/ryba_uhly.html</div>
+                            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/ryba_uhly.html" target="_blank">Otevřít →</a>
+                        </div>
+                        <div class="card">
+                            <h4>🐰 Zajíc</h4>
+                            <div class="path">/uhly/zajic_uhly.html</div>
+                            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/zajic_uhly.html" target="_blank">Otevřít →</a>
+                        </div>
+                    </div>
+                    <p>Každá karta obsahuje: <strong>pohádku</strong> · <strong>12 úhlů</strong> (označených 0°–360°) · <strong>zápisník Myši</strong> pro poznámky · <strong>tlačítko „Náhodně“</strong>, které vybere úhel za vás.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>⚡ Jak s kartami pracovat</summary>
+                <div class="accordion-body">
+                    <ul>
+                        <li><strong>Embedování:</strong> Vlož iframe s URL karty do svého webu.</li>
+                        <li><strong>Sdílení:</strong> Pouhým odkazem rozešleš celý příběh.</li>
+                        <li><strong>Generování:</strong> Skript náhodně vybírá z registru karet.</li>
+                        <li><strong>Workshopy:</strong> Lektor vybere téma a účastníci dostanou sadu karet.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 3: Nástroje -->
+        <div class="page">
+            <h2>🛠️ Nástroje ekosystému</h2>
+            <p>Kromě příběhů existují doprovodné aplikace, které rozšiřují možnosti čtení i tvorby.</p>
+
+            <details>
+                <summary>📔 MetaDenik Myši – digitální zápisník</summary>
+                <div class="accordion-body">
+                    <p>Osobní prostor pro zaznamenávání „ticha mezi slovy“. Nahraj si balíček karet, vylosuj je a piš. Odešli text do Analyzéru a získej zpátky svůj otisk — barevný proužek tvého úhlu pohledu. Vše offline, vše tvoje.</p>
+                    <a href="https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html" target="_blank">Otevřít deník →</a>
+                </div>
+            </details>
+
+            <details>
+                <summary>📝 Analyzér – strukturní analýza textu</summary>
+                <div class="accordion-body">
+                    <p>Co říká váš jazyk — ne obsah, ale forma. Analyzátor hledá jazykové figury a struktury (elipsa, anafora, metafora, fragment, paradox) a přiřazuje je ke 12 kognitivním úhlům. Mikro rovina (věta po větě) i makro rovina (celý text).</p>
+                    <a href="https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/analyzer.html" target="_blank">Otevřít analyzér →</a>
+                    <span style="margin:0 0.5rem;color:var(--muted);">|</span>
+                    <a href="https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/analyzer9.html" target="_blank">Verze 9 →</a>
+                </div>
+            </details>
+
+            <details>
+                <summary>🌐 Přehlídka jevů</summary>
+                <div class="accordion-body">
+                    <p>Vizualizuje všechny postavy a jejich vztahy. Funguje jako rozcestník i mapa celého ekosystému.</p>
+                    <a href="https://artmisanovak-prog.github.io/metadenik_mys/doma/nastroje/prehlidka_jevu.html" target="_blank">Otevřít přehlídku →</a>
+                </div>
+            </details>
+
+            <details>
+                <summary>📚 Slovník mezer & Fenomény</summary>
+                <div class="accordion-body">
+                    <p>Klíčové pojmy („mezera“, „nedokončená věta“, „ticho“) definované formou karet. Každé heslo má vlastní HTML stránku. K dispozici jsou dvě varianty:</p>
+                    <ul>
+                        <li><a href="https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/" target="_blank">Slovník mezer (verze 1) →</a></li>
+                        <li><a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" target="_blank">Fenomény – kreativní slovník (verze 2) →</a></li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>📦 BlokBooks – ukázka: 1_34 architektura váhání</summary>
+                <div class="accordion-body">
+                    <p>Blokové knihy jsou další formát – kombinace pojmů a jejich permutací s návrhy využití pro herní design, zvuk, choreografii, film i vzdělávání.</p>
+                    <a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/blokbooks/1_34.html" target="_blank">Otevřít blok 1_34 →</a>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 4: API a jak to celé funguje -->
+        <div class="page">
+            <h2>📡 API – jak to celé funguje</h2>
+            <p>Každá karta, každý nástroj, každé heslo ve slovníku je <strong>samostatný webový zdroj</strong> s čistou URL. To znamená, že celý ekosystém je zároveň <strong>API</strong> – lze ho používat modulárně, skládat, embedovat a programově zpracovávat.</p>
+
+            <details open>
+                <summary>🔗 Princip čisté URL</summary>
+                <div class="accordion-body">
+                    <p>Vše běží na <strong>GitHub Pages</strong>. Každá stránka má trvalou adresu ve tvaru:</p>
+                    <pre>https://artmisanovak-prog.github.io/[repo]/[cesta]/[soubor].html</pre>
+                    <p>To znamená: <strong>žádný server, žádná databáze, žádné přihlašování</strong>. Vše je statické HTML, CSS a vanilla JavaScript. Přesto je každá stránka interaktivní.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>🔄 Jak se nástroje propojují</summary>
+                <div class="accordion-body">
+                    <ol>
+                        <li><strong>Čtenář</strong> otevře kartu zvířete (např. <em>pav_uhly.html</em>).</li>
+                        <li>Klikne na <strong>„Náhodně“</strong> – systém vybere jeden z 12 úhlů, označí ho a odscrolluje k němu.</li>
+                        <li>Do <strong>Zápisníku Myši</strong> napíše poznámku – propojení s Analyzérem.</li>
+                        <li>Text odešle do <strong>Analyzéru</strong> (strukturní analýza jazyka).</li>
+                        <li>Výsledek – <strong>barevný proužek</strong> – se uloží do <strong>MetaDeníku</strong>.</li>
+                    </ol>
+                    <p>Vše probíhá na straně klienta (prohlížeče), bez serveru, bez cookies. <strong>Výstup = otisk tvého úhlu pohledu.</strong></p>
+                </div>
+            </details>
+
+            <details>
+                <summary>💻 Embedování do jiného webu</summary>
+                <div class="accordion-body">
+                    <pre>&lt;iframe src="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/krokodyl_uhly.html"
+        width="100%" height="500"&gt;&lt;/iframe&gt;</pre>
+                    <p>Kartu lze začlenit do blogu, portfolia nebo výukové platformy.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 5: 12 úhlů -->
+        <div class="page">
+            <h2>🔮 12 úhlů – jeden příběh, dvanáct pohledů</h2>
+            <p>Tohle je jádro celého systému. Každá pohádka není jen jeden text – je to <strong>spektrum 12 perspektiv</strong>. Každý úhel představuje jiný kognitivní styl, jiný způsob čtení.</p>
+
+            <details open>
+                <summary>🎯 Co je to úhel?</summary>
+                <div class="accordion-body">
+                    <p>Úhel je <strong>způsob, jakým se díváte</strong>. Není to jen jiný text – je to jiná <strong>svalová skupina myšlení</strong>. Systém jich nabízí 12:</p>
+                    <ul>
+                        <li><strong>0°</strong> – Absurdní / Betonový</li>
+                        <li><strong>30°</strong> – Metaforický</li>
+                        <li><strong>60°</strong> – Emocionální</li>
+                        <li><strong>90°</strong> – Analytický</li>
+                        <li><strong>120°</strong> – Narativní</li>
+                        <li><strong>150°</strong> – Fragmentární</li>
+                        <li><strong>180°</strong> – Reflexivní</li>
+                        <li><strong>210°</strong> – Dialogický</li>
+                        <li><strong>240°</strong> – Strukturní</li>
+                        <li><strong>270°</strong> – Hravý / Ironický</li>
+                        <li><strong>300°</strong> – Tichý / Minimalistický</li>
+                        <li><strong>330°</strong> – Prázdný (pro vlastní tvorbu)</li>
+                    </ul>
+                    <p>Každý úhel má přiřazeny <strong>konkrétní jazykové figury</strong> – např. elipsa, anafora, paradox, fragment. Analyzér tyto figury detekuje a ukáže, které úhly ve vašem textu dominují.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>🧪 Jak se úhly používají</summary>
+                <div class="accordion-body">
+                    <ul>
+                        <li><strong>Náhodně:</strong> Systém vybere úhel, označí a odscrolluje.</li>
+                        <li><strong>Podle nálady:</strong> Odscrollujete k úhlům sami, žádný nevybíráte.</li>
+                        <li><strong>Diagnosticky:</strong> Odpovíte na otázku „Která část vás v pohádce nejvíc zaujala?“ a systém navrhne úhel.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 6: Manuál pro různé skupiny -->
+        <div class="page">
+            <h2>🚀 Jak začít – manuál</h2>
+
+            <details open>
+                <summary>👤 Pro čtenáře</summary>
+                <div class="accordion-body">
+                    <ol>
+                        <li>Otevřete kartu zvířete – třeba <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/uhly/pav_uhly.html" target="_blank">Páva →</a></li>
+                        <li>Klikněte na <strong>„Náhodně“</strong> a nechte se překvapit úhlem.</li>
+                        <li>Čtěte. Přemýšlejte. Pište si poznámky do Zápisníku Myši.</li>
+                    </ol>
+                </div>
+            </details>
+
+            <details>
+                <summary>👨‍💻 Pro vývojáře</summary>
+                <div class="accordion-body">
+                    <ol>
+                        <li>Prozkoumejte zdrojový kód karet – obsah je přímo v DOM, lze parsovat.</li>
+                        <li>Registr všech karet najdete v Přehlídce jevů.</li>
+                        <li>Vlastní karty můžete vytvářet podle principu „12 úhlů“ a zapojit je do ekosystému.</li>
+                    </ol>
+                </div>
+            </details>
+
+            <details>
+                <summary>🏫 Pro pedagogy a facilitátory</summary>
+                <div class="accordion-body">
+                    <ul>
+                        <li><strong>MetaDenik</strong> jako nástroj pro reflexi a tvůrčí psaní.</li>
+                        <li><strong>Slovník mezer</strong> pro vysvětlení abstraktních pojmů skrze příběh.</li>
+                        <li><strong>Karty lze tisknout</strong> (uložit HTML jako PDF) a pracovat s nimi fyzicky.</li>
+                        <li><strong>Analyzér</strong> pro zkoumání jazykové formy – ne co říkáte, ale jak to říkáte.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+
+        <!-- Stránka 7: Filozofie -->
+        <div class="page">
+            <h2>🌀 Filozofie ekosystému</h2>
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <div style="background:var(--surface); padding:1.2rem; border-radius:var(--radius); border-left:4px solid var(--primary);">
+                    <strong>📖 Nedokončenost</strong><br>Věty nejsou ukončeny schválně – čtenář je spolutvůrcem. Každá karta má prázdný úhel (330°) pro vlastní tvorbu.
+                </div>
+                <div style="background:var(--surface); padding:1.2rem; border-radius:var(--radius); border-left:4px solid var(--primary);">
+                    <strong>🦊 Paradox</strong><br>Každá pravda je zároveň opakem jiné pravdy. Krokodýlí slzy nejsou falešné – jsou jen snadno dostupné.
+                </div>
+                <div style="background:var(--surface); padding:1.2rem; border-radius:var(--radius); border-left:4px solid var(--primary);">
+                    <strong>🔇 Ticho jako aktivní médium</strong><br>Co není řečeno, je stejně důležité jako slova. Myš zapisuje do skulin mezi slovy.
+                </div>
+                <div style="background:var(--surface); padding:1.2rem; border-radius:var(--radius); border-left:4px solid var(--primary);">
+                    <strong>🐾 Zvířata jako kognitivní archetypy</strong><br>Každé zvíře nese jazykový či existenciální princip (Kocour = interpunkce, Pavouk = nevyřčené, Páv = projekce).
+                </div>
+                <div style="background:var(--surface); padding:1.2rem; border-radius:var(--radius); border-left:4px solid var(--primary);">
+                    <strong>🌍 Otevřený zdroj významu</strong><br>Každá karta je výzvou k přepisu, převyprávění, doplnění. Žádný význam není konečný.
+                </div>
+            </div>
+            <p style="margin-top:2rem;">Celý prostor se průběžně rozrůstá pod uživatelem <strong>artmisanovak-prog</strong> na GitHubu. Všechny příběhy i nástroje vycházejí z jediné otázky: <em>„Chceš myš?“</em> – otázky, která se nedá zodpovědět, ale otevírá dveře do jiného myšlení.</p>
+        </div>
+    </div>
+
+    <!-- Navigační šipky -->
+    <div class="nav-arrows">
+        <button id="scrollLeft" title="Předchozí stránka">◀</button>
+        <button id="scrollRight" title="Další stránka">▶</button>
+    </div>
+
+    <script>
+        const book = document.getElementById('book');
+        const leftBtn = document.getElementById('scrollLeft');
+        const rightBtn = document.getElementById('scrollRight');
+
+        function getPageWidth() {
+            const page = document.querySelector('.page');
+            return page ? page.offsetWidth : window.innerWidth;
+        }
+
+        leftBtn.addEventListener('click', () => {
+            book.scrollBy({ left: -getPageWidth(), behavior: 'smooth' });
+        });
+        rightBtn.addEventListener('click', () => {
+            book.scrollBy({ left: getPageWidth(), behavior: 'smooth' });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                book.scrollBy({ left: -getPageWidth(), behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                book.scrollBy({ left: getPageWidth(), behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
