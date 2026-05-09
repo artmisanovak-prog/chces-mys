@@ -12,6 +12,7 @@
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
 - 
+- [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy](doma/nastroje/mezitahy.html)
 - [meziTahy1](doma/nastroje/mezitahy1.html)
