@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektor struktury kresby | Chceš myš?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #1a1a1a;
+            --bg-el: #222222;
+            --text: #f0e6f0;
+            --dim: #8888aa;
+            --mid: #b0a0b0;
+            --border: #333344;
+            --accent: #e0b0d0;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body {
+            width:100%; height:100%;
+            overflow-x:hidden; overflow-y:auto;
+            background:var(--bg);
+            color:var(--text);
+            font-family:'Space Grotesk',sans-serif;
+            font-weight:300;
+        }
+        .grain {
+            position:fixed; inset:0; pointer-events:none; z-index:1000; opacity:0.025;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem; }
+
+        h1,h2,h3 { font-family:'Spectral',serif; font-weight:400; }
+        h2 { font-size:clamp(1.2rem,4vw,2rem); letter-spacing:0.2em; text-transform:uppercase; }
+        .label { font-size:0.6rem; letter-spacing:0.4em; text-transform:uppercase; color:var(--dim); margin-bottom:0.4rem; }
+        .center { text-align:center; }
+
+        .btn {
+            padding:0.6rem 1.2rem; border:1px solid var(--accent);
+            background:transparent; color:var(--accent);
+            font-family:'Space Grotesk',sans-serif; font-size:0.75rem;
+            letter-spacing:0.1em; text-transform:uppercase;
+            cursor:pointer; transition:all 0.3s;
+            margin:0.2rem;
+        }
+        .btn:hover { background:var(--accent); color:var(--bg); }
+        .btn-primary { background:var(--accent); color:var(--bg); }
+        .btn-primary:hover { background:transparent; color:var(--accent); }
+        .btn-small { font-size:0.6rem; padding:0.2rem 0.6rem; }
+
+        .upload-box {
+            border:2px dashed var(--border); padding:2rem; text-align:center;
+            margin:1rem 0; transition:border-color 0.3s;
+        }
+        .upload-box:hover { border-color:var(--accent); }
+        .preview-img { max-width:100%; max-height:40vh; display:block; margin:1rem auto; border:1px solid var(--border); }
+
+        .structure-list { margin:1.5rem 0; }
+        .structure-row {
+            display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;
+            border-bottom:1px solid var(--border); padding:0.4rem 0;
+            transition:all 0.3s;
+        }
+        .structure-row.removing { opacity:0; transform:translateX(20px); }
+        .structure-row label { flex:1; font-size:0.8rem; color:var(--mid); cursor:pointer; }
+        .structure-row input[type="checkbox"] { accent-color:var(--accent); }
+        .intensity-group { display:flex; align-items:center; gap:0.4rem; }
+        .intensity-group input[type="range"] { width:80px; accent-color:var(--accent); }
+        .intensity-group span { font-size:0.7rem; color:var(--dim); min-width:1.5rem; text-align:center; }
+        .intensity-group .btn { margin-left:0.5rem; }
+
+        .wheel-box { text-align:center; margin:1.5rem 0; }
+        .wheel-box canvas { max-width:280px; height:auto; }
+
+        .bar-section { margin:1.5rem 0; }
+        .bar-wrap { height:20px; display:flex; border-radius:2px; overflow:hidden; border:1px solid var(--border); }
+        .bar-seg { height:100%; transition:width 0.4s ease; }
+
+        .url-box {
+            background:var(--bg-el); padding:1rem; border:1px solid var(--border);
+            word-break:break-all; font-size:0.75rem; color:var(--mid); margin:1rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="wrap">
+
+    <div class="center" style="margin-bottom:2rem;">
+        <div class="label">Chceš myš? meziTahy</div>
+        <h2 style="color:var(--accent);">Detektor struktury</h2>
+        <p style="color:var(--dim); font-size:0.8rem;">Nahraj kresbu, vyber struktury, nastav intenzitu.</p>
+    </div>
+
+    <!-- SEKCIA: UPLOAD -->
+    <div id="uploadSection">
+        <div class="upload-box" id="uploadBox">
+            <p style="color:var(--dim); margin-bottom:1rem;">Přetáhni sem obrázek nebo klikni pro výběr</p>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Nahrát</button>
+            <button class="btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment'); document.getElementById('fileInput').click()" style="margin-left:0.5rem;">📷 Vyfotit</button>
+        </div>
+        <img id="previewImg" class="preview-img" style="display:none;">
+        <p id="detekceStatus" style="text-align:center; font-size:0.75rem; margin-top:0.5rem;"></p>
+    </div>
+
+    <!-- SEKCIA: STRUKTURY -->
+    <div id="structureSection" style="display:none;">
+        <h3 style="font-family:'Spectral',serif; color:var(--accent); margin-bottom:0.5rem;">Struktury čáry</h3>
+        <p style="color:var(--dim); font-size:0.7rem; margin-bottom:1rem;">Zaškrtni, co vidíš, a nastav intenzitu (1–10).</p>
+        <div class="structure-list" id="structureList"></div>
+        <div class="center" style="margin-top:1rem;">
+            <button class="btn btn-primary" id="analyzeBtn" disabled>Analyzovat</button>
+        </div>
+    </div>
+
+    <!-- SEKCIA: VÝSLEDEK -->
+    <div id="resultSection" style="display:none;">
+        <div class="center">
+            <h3 style="font-family:'Spectral',serif; color:var(--accent); margin-bottom:1rem;">Výsledek</h3>
+            <div class="wheel-box">
+                <canvas id="resultWheel" width="300" height="300"></canvas>
+            </div>
+            <div class="bar-section">
+                <div class="bar-wrap" id="barWrap"></div>
+            </div>
+            <div id="vysledekDetail" style="margin-bottom:1rem; font-size:0.8rem; color:var(--mid);"></div>
+            <div class="url-box" id="urlVysledek" style="display:none;"></div>
+            <button class="btn copy-btn" onclick="kopiruj('urlVysledek')">📋 Kopírovat URL</button>
+            <button class="btn" onclick="otevriMetadenik()">📅 Časová osa</button>
+            <button class="btn" onclick="otevriPorovnavac()">📊 Porovnávač</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ========================
+// DATA
+// ========================
+const struktury = [
+    { nazev: "Rovné dlouhé čáry", uhelIdx: 0 },
+    { nazev: "Stínování, reálnost", uhelIdx: 1 },
+    { nazev: "Perspektiva, 3D", uhelIdx: 2 },
+    { nazev: "Jedním tahem", uhelIdx: 3 },
+    { nazev: "Pravidelnost", uhelIdx: 4 },
+    { nazev: "Písmo a text", uhelIdx: 5 },
+    { nazev: "Šrafování", uhelIdx: 6 },
+    { nazev: "Detaily", uhelIdx: 7 },
+    { nazev: "Sklon doprava", uhelIdx: 8 },
+    { nazev: "Obtahování, přetahování", uhelIdx: 9 },
+    { nazev: "Vybarvování", uhelIdx: 10 },
+    { nazev: "Nedokončené tahy, náznaky", uhelIdx: 11 }
+];
+
+const uhlyDB = [
+    { nazev: "Analytický", stupne: 0, barva: "#ffffff" },
+    { nazev: "Kulturní", stupne: 30, barva: "#a8d5a2" },
+    { nazev: "Filozofický", stupne: 60, barva: "#b3d4ff" },
+    { nazev: "Naivní", stupne: 90, barva: "#40e0d0" },
+    { nazev: "Jazykový", stupne: 120, barva: "#c8a2c8" },
+    { nazev: "Metaforický", stupne: 150, barva: "#2e8b57" },
+    { nazev: "Asociační", stupne: 180, barva: "#d2b48c" },
+    { nazev: "Introspektivní", stupne: 210, barva: "#ffd700" },
+    { nazev: "Ironický", stupne: 240, barva: "#ffa500" },
+    { nazev: "Groteskní", stupne: 270, barva: "#dc143c" },
+    { nazev: "Absurdní", stupne: 300, barva: "#c71585" },
+    { nazev: "Surrealistický", stupne: 330, barva: "#8b4513" }
+];
+
+// Stav
+let vybraneStruktury = {}; // { index: intenzita 1-10 }
+
+// ========================
+// UPLOAD A DETEKCE
+// ========================
+const fileInput = document.getElementById('fileInput');
+const previewImg = document.getElementById('previewImg');
+const detekceStatus = document.getElementById('detekceStatus');
+const structureSection = document.getElementById('structureSection');
+
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const dataUrl = ev.target.result;
+        previewImg.src = dataUrl;
+        previewImg.style.display = 'block';
+
+        // Detekce saturace
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const maxW = 200;
+            const scale = maxW / img.width;
+            canvas.width = maxW;
+            canvas.height = img.height * scale;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            let saturationSum = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const max = Math.max(r,g,b), min = Math.min(r,g,b);
+                const s = max === 0 ? 0 : (max - min) / max;
+                saturationSum += s;
+            }
+            const avgSat = saturationSum / (data.length / 4);
+            if (avgSat < 0.15) {
+                detekceStatus.textContent = '✔ Detekována černobílá kresba.';
+                detekceStatus.style.color = '#a0c0a0';
+            } else {
+                detekceStatus.textContent = '⚠ Barevný obrázek – pokud to není záměr, zkontroluj.';
+                detekceStatus.style.color = '#c0a060';
+            }
+            // Zobraz struktury
+            structureSection.style.display = 'block';
+            structureSection.scrollIntoView({ behavior:'smooth', block:'start' });
+        };
+        img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+});
+
+// ========================
+// STRUKTURY
+// ========================
+const structureList = document.getElementById('structureList');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+struktury.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'structure-row';
+    row.id = `struct-row-${idx}`;
+    row.innerHTML = `
+        <input type="checkbox" id="chk-${idx}" onchange="onCheck(${idx})">
+        <label for="chk-${idx}">${s.nazev}</label>
+        <div class="intensity-group" id="intensity-${idx}" style="display:none;">
+            <input type="range" min="1" max="10" value="5" id="range-${idx}" oninput="document.getElementById('val-${idx}').textContent=this.value">
+            <span id="val-${idx}">5</span>
+            <button class="btn btn-small" onclick="confirmStructure(${idx})">OK</button>
+        </div>
+    `;
+    structureList.appendChild(row);
+});
+
+function onCheck(idx) {
+    const chk = document.getElementById(`chk-${idx}`);
+    const intensityDiv = document.getElementById(`intensity-${idx}`);
+    intensityDiv.style.display = chk.checked ? 'flex' : 'none';
+    updateAnalyzeBtn();
+}
+
+function confirmStructure(idx) {
+    const intenzita = parseInt(document.getElementById(`range-${idx}`).value);
+    vybraneStruktury[idx] = intenzita;
+
+    // Animace zmizení
+    const row = document.getElementById(`struct-row-${idx}`);
+    row.classList.add('removing');
+    setTimeout(() => {
+        row.style.display = 'none';
+        updateAnalyzeBtn();
+    }, 300);
+}
+
+function updateAnalyzeBtn() {
+    analyzeBtn.disabled = (Object.keys(vybraneStruktury).length === 0);
+}
+window.confirmStructure = confirmStructure;
+window.onCheck = onCheck;
+
+// ========================
+// ANALÝZA
+// ========================
+analyzeBtn.addEventListener('click', () => {
+    const skore = new Array(12).fill(0);
+    for (const [idx, intenzita] of Object.entries(vybraneStruktury)) {
+        const uhelIdx = struktury[parseInt(idx)].uhelIdx;
+        skore[uhelIdx] += intenzita;
+    }
+    const maxSkore = Math.max(...skore, 1);
+    const profil = skore.map((s, i) => ({
+        uhel: uhlyDB[i],
+        pct: Math.round((s / maxSkore) * 100)
+    }));
+
+    vykresliUhlomer(profil);
+    vykresliBar(profil);
+
+    // Detail text
+    let detailHTML = '';
+    profil.filter(p => p.pct > 0).forEach(p => {
+        detailHTML += `<p style="color:${p.uhel.barva};">${p.uhel.nazev}: ${p.pct}%</p>`;
+    });
+    document.getElementById('vysledekDetail').innerHTML = detailHTML;
+
+    // Generování URL
+    const params = new URLSearchParams();
+    profil.filter(p => p.pct > 0).forEach(p => {
+        params.append('uhly', p.uhel.stupne + ':' + p.pct);
+    });
+    const vysledekUrl = `${window.location.origin}${window.location.pathname}?profil=${params.toString()}`;
+    const urlBox = document.getElementById('urlVysledek');
+    urlBox.style.display = 'block';
+    urlBox.textContent = vysledekUrl;
+
+    document.getElementById('resultSection').style.display = 'block';
+    document.getElementById('resultSection').scrollIntoView({ behavior:'smooth', block:'start' });
+});
+
+// ========================
+// UHLOMĚR
+// ========================
+function vykresliUhlomer(profil) {
+    const canvas = document.getElementById('resultWheel');
+    const ctx = canvas.getContext('2d');
+    const CX = 150, CY = 150, RMAX = 132, RMIN = 38;
+    ctx.clearRect(0,0,300,300);
+    const sa = (Math.PI*2)/12;
+    profil.forEach((p, i) => {
+        const startA = -Math.PI/2 + i*sa + 0.04;
+        const endA = startA + sa - 0.08;
+        const fillR = RMIN + (RMAX - RMIN) * (p.pct / 100);
+        ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,fillR,startA,endA); ctx.closePath();
+        ctx.fillStyle = p.uhel.barva + (p.pct > 0 ? 'aa' : '10');
+        ctx.fill();
+        ctx.strokeStyle = p.uhel.barva; ctx.lineWidth = p.pct > 0 ? 1.5 : 0.5;
+        ctx.stroke();
+        const midA = startA + (sa-0.08)/2;
+        const lr = (RMAX+RMIN)/2 + 6;
+        const lx = CX + Math.cos(midA)*lr;
+        const ly = CY + Math.sin(midA)*lr;
+        ctx.save(); ctx.translate(lx,ly); ctx.rotate(midA + Math.PI/2);
+        ctx.fillStyle = p.pct > 30 ? '#000' : p.uhel.barva;
+        ctx.font = '300 7px "Space Grotesk",sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(p.uhel.nazev.split(' ')[0], 0, 0);
+        ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+    ctx.fillStyle = '#1a1a1a'; ctx.fill();
+    ctx.strokeStyle = 'rgba(200,180,200,.2)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(200,180,200,.3)'; ctx.font = '300 9px "Space Grotesk"';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('profil', CX, CY);
+}
+
+// ========================
+// BAREVNÝ PRUH
+// ========================
+function vykresliBar(profil) {
+    const barWrap = document.getElementById('barWrap');
+    barWrap.innerHTML = '';
+    profil.forEach(p => {
+        if (p.pct > 0) {
+            const seg = document.createElement('div');
+            seg.className = 'bar-seg';
+            seg.style.width = p.pct + '%';
+            seg.style.backgroundColor = p.uhel.barva;
+            seg.title = p.uhel.nazev + ': ' + p.pct + '%';
+            barWrap.appendChild(seg);
+        }
+    });
+}
+
+// ========================
+// SDÍLENÍ
+// ========================
+function kopiruj(id) {
+    const box = document.getElementById(id);
+    navigator.clipboard.writeText(box.textContent).then(() => alert('URL zkopírováno!'));
+}
+function otevriMetadenik() {
+    const url = document.getElementById('urlVysledek').textContent;
+    window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html?otisk=' + encodeURIComponent(url), '_blank');
+}
+function otevriPorovnavac() {
+    const url = document.getElementById('urlVysledek').textContent;
+    window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html?otisk=' + encodeURIComponent(url), '_blank');
+}
+window.kopiruj = kopiruj;
+window.otevriMetadenik = otevriMetadenik;
+window.otevriPorovnavac = otevriPorovnavac;
+</script>
+</body>
+</html>
