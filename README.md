@@ -12,7 +12,10 @@
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
 - 
+- [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy](doma/nastroje/mezitahy.html)
+- [meziTahy1](doma/nastroje/mezitahy1.html)
+- [meziTahy2](doma/nastroje/mezitahy2.html)
 - 
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
