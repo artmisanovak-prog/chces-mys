@@ -8,9 +8,11 @@
 
 ---
 
--[kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
+- [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
+- 
+- [meziTahy](doma/nastroje/mezitahy.html)
 - 
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
