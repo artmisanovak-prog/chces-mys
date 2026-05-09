@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chceš myš? meziTahy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #050a12;
+            --bg-el: #0a141e;
+            --text: #e6f0fa;
+            --dim: #3a5a70;
+            --mid: #6a8a9a;
+            --border: #0f1a24;
+            --accent: #b8a0c0;
+            --accent-dim: #2a1e2e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 300;
+        }
+        .grain {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .scroll-track {
+            display: flex; width: 100%; height: 100vh;
+            overflow-x: auto; overflow-y: hidden;
+            scroll-snap-type: x mandatory; scrollbar-width: none;
+        }
+        .scroll-track::-webkit-scrollbar { display: none; }
+        .panel {
+            flex: 0 0 100vw; height: 100vh;
+            scroll-snap-align: start;
+            overflow-y: auto; overflow-x: hidden;
+            position: relative; padding: 3rem 1.5rem 5rem;
+            scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+        }
+        .panel::-webkit-scrollbar { width: 3px; }
+        .panel::-webkit-scrollbar-thumb { background: var(--border); }
+
+        .nav-arrows {
+            position: fixed; top: 1.5rem; right: 1.5rem;
+            display: flex; gap: 0.25rem; z-index: 500;
+        }
+        .nav-arrow-mini {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--dim); font-size: 1rem; padding: 0.3rem 0.6rem;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .nav-arrow-mini:hover { color: var(--accent); border-color: var(--accent); }
+
+        h1, h2, h3 { font-family: 'Spectral', serif; font-weight: 400; }
+        h2 { font-size: clamp(1.2rem, 4vw, 2rem); letter-spacing: 0.2em; text-transform: uppercase; }
+        .label { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.4rem; }
+        .center { text-align: center; }
+        .max-w { max-width: 680px; margin: 0 auto; }
+        .divider { width: 40px; height: 1px; background: var(--accent); opacity: 0.3; margin: 2rem auto; }
+
+        .acc-item { border-bottom: 1px solid var(--border); }
+        .acc-trigger {
+            width: 100%; background: transparent; border: none;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 0; cursor: pointer; color: var(--mid);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem;
+            letter-spacing: 0.15em; text-transform: uppercase; text-align: left;
+            transition: color 0.3s;
+        }
+        .acc-trigger:hover { color: var(--accent); }
+        .acc-trigger.open { color: var(--accent); }
+        .acc-arrow { transition: transform 0.3s; font-size: 0.7rem; flex-shrink: 0; }
+        .acc-trigger.open .acc-arrow { transform: rotate(180deg); }
+        .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.6s ease; }
+        .acc-body.open { max-height: 3000px; }
+        .acc-inner {
+            padding: 0 0 1.5rem; font-family: 'Spectral', serif;
+            font-size: 0.95rem; line-height: 1.9; color: #a0c0d0;
+        }
+        .acc-inner p { margin-bottom: 0.8rem; }
+        .acc-inner strong { color: var(--accent); font-weight: 500; }
+        .acc-inner em { color: var(--mid); }
+
+        .input-field {
+            width: 100%; padding: 0.7rem; background: var(--bg-el);
+            border: 1px solid var(--border); color: var(--text);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; margin-bottom: 0.8rem;
+        }
+        .btn {
+            padding: 0.7rem 1.5rem; border: 1px solid var(--accent);
+            background: transparent; color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn:hover { background: var(--accent); color: var(--bg); }
+        .btn-primary { background: var(--accent); color: var(--bg); }
+        .btn-primary:hover { background: transparent; color: var(--accent); }
+
+        .structure-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .structure-row {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            border-bottom: 1px solid var(--border); padding: 0.5rem 0;
+        }
+        .structure-row label { flex: 1; font-size: 0.8rem; color: var(--mid); cursor: pointer; }
+        .structure-row input[type="checkbox"] { accent-color: var(--accent); }
+        .intensity-slider { display: flex; align-items: center; gap: 0.5rem; }
+        .intensity-slider input[type="range"] { width: 100px; accent-color: var(--accent); }
+        .intensity-slider span { font-size: 0.7rem; color: var(--dim); width: 1.5rem; text-align: center; }
+
+        .upload-box {
+            border: 2px dashed var(--border); padding: 2rem; text-align: center;
+            margin: 1rem 0; transition: border-color 0.3s;
+        }
+        .upload-box:hover { border-color: var(--accent); }
+        .preview-img { max-width: 100%; max-height: 50vh; display: block; margin: 1rem auto; border: 1px solid var(--border); }
+
+        .wheel-box { text-align: center; margin: 1.5rem 0; }
+        .wheel-box canvas { max-width: 280px; height: auto; cursor: default; }
+        .url-box {
+            background: var(--bg-el); padding: 1rem; border: 1px solid var(--border);
+            word-break: break-all; font-size: 0.75rem; color: var(--mid); margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-arrows">
+    <button class="nav-arrow-mini" onclick="scrollToPanel(-1)">‹</button>
+    <button class="nav-arrow-mini" onclick="scrollToPanel(1)">›</button>
+</div>
+
+<div class="scroll-track" id="track">
+
+    <!-- PANEL 1: LOSOVÁNÍ FENOMÉNŮ A ÚHLŮ -->
+    <section class="panel" id="panel1">
+        <div class="max-w center">
+            <div class="label">Chceš myš? meziTahy</div>
+            <h2 style="color:var(--accent); margin-bottom:0.3rem;">Krok 1: Fenomény & Úhly</h2>
+            <p style="color:var(--dim); font-size:0.8rem;">Každý hráč si vylosuje fenomén a úhel. Sdílejte si je navzájem přes URL.</p>
+
+            <div class="acc-item" style="margin-top:2rem;">
+                <button class="acc-trigger" onclick="toggleAcc(this)">
+                    <span>Hráč A – Tvůj fenomén a úhel</span><span class="acc-arrow">▼</span>
+                </button>
+                <div class="acc-body">
+                    <div class="acc-inner">
+                        <button class="btn" onclick="losujFenomen('A')">Losovat fenomén</button>
+                        <p id="fenomenA" style="margin-top:0.5rem;">—</p>
+                        <button class="btn" onclick="losujUhel('A')" style="margin-top:0.5rem;">Losovat úhel</button>
+                        <p id="uhelA" style="margin-top:0.5rem;">—</p>
+                        <div id="urlA" class="url-box" style="display:none;"></div>
+                        <button class="btn copy-btn" id="copyA" style="display:none;" onclick="kopiruj('urlA')">📋 Kopírovat URL</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-trigger" onclick="toggleAcc(this)">
+                    <span>Hráč B – Vlož URL partnera</span><span class="acc-arrow">▼</span>
+                </button>
+                <div class="acc-body">
+                    <div class="acc-inner">
+                        <input type="text" class="input-field" id="partnerUrlB" placeholder="Vlož URL otisk partnera (Hráče A)">
+                        <button class="btn" onclick="nactiPartnera('B')">Načíst</button>
+                        <p id="partnerB" style="margin-top:0.5rem;">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANEL 2: NAHRÁNÍ FOTKY KRESBY -->
+    <section class="panel" id="panel2">
+        <div class="max-w center">
+            <h2 style="color:var(--accent); margin-bottom:0.3rem;">Krok 2: Nahraj kresbu</h2>
+            <p id="zadaniKresby" style="color:var(--dim); font-size:0.8rem;">Nakresli [fenomén] očima [úhel partnera] na papír a vyfoť / nahraj.</p>
+
+            <div class="upload-box" id="uploadBox">
+                <p style="color:var(--dim); margin-bottom:1rem;">Přetáhni sem obrázek nebo klikni pro výběr</p>
+                <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Nahrát</button>
+                <button class="btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment'); document.getElementById('fileInput').click()" style="margin-left:0.5rem;">📷 Vyfotit</button>
+            </div>
+            <img id="previewImg" class="preview-img" style="display:none;">
+            <p id="detekceStatus" style="color:var(--dim); font-size:0.75rem; margin-top:0.5rem;"></p>
+            <button class="btn btn-primary" id="goToStruktury" style="margin-top:1rem; display:none;" onclick="scrollToPanel(1)">Pokračovat →</button>
+        </div>
+    </section>
+
+    <!-- PANEL 3: STRUKTURY ČÁRY -->
+    <section class="panel" id="panel3">
+        <div class="max-w">
+            <h2 class="center" style="color:var(--accent); margin-bottom:1rem;">Krok 3: Označ struktury čáry</h2>
+            <p class="center" style="color:var(--dim); font-size:0.8rem; margin-bottom:1.5rem;">Zaškrtni, co v kresbě vidíš, a nastav intenzitu (0–2).</p>
+
+            <div class="structure-list" id="structureList"></div>
+            <div class="center" style="margin-top:1.5rem;">
+                <button class="btn btn-primary" onclick="analyzovat()">Analyzovat</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANEL 4: VÝSLEDEK -->
+    <section class="panel" id="panel4">
+        <div class="max-w center">
+            <h2 style="color:var(--accent); margin-bottom:0.3rem;">Krok 4: Výsledek</h2>
+            <p style="color:var(--dim); font-size:0.8rem;">Úhlový profil tvé kresby</p>
+
+            <div class="wheel-box">
+                <canvas id="resultWheel" width="300" height="300"></canvas>
+            </div>
+
+            <div id="vysledekDetail" style="margin-bottom:1rem;"></div>
+            <div id="urlVysledek" class="url-box" style="display:none;"></div>
+            <button class="btn copy-btn" id="copyVysledek" style="display:none;" onclick="kopiruj('urlVysledek')">📋 Kopírovat URL</button>
+            <button class="btn" id="sdiletPrehlidku" style="display:none; margin-top:0.5rem;" onclick="sdiletNaPrehlidku()">📤 Sdílet na Přehlídku jevů</button>
+        </div>
+    </section>
+</div>
+
+<script>
+// ========================
+// DATA
+// ========================
+const fenomDB = [
+    { id: "kocour", name: "Kocour" }, { id: "ryba", name: "Ryba" },
+    { id: "zajic", name: "Zajíc" }, { id: "motyl", name: "Motýl" },
+    { id: "pav", name: "Páv" }, { id: "krokodyl", name: "Krokodýl" },
+    { id: "pavouk", name: "Pavouk" }, { id: "netopyr", name: "Netopýr" },
+    { id: "lemur", name: "Lemur" }
+];
+
+const uhlyDB = [
+    { nazev: "Analytický", stupne: 0, barva: "#ffffff" },
+    { nazev: "Kulturní", stupne: 30, barva: "#a8d5a2" },
+    { nazev: "Filozofický", stupne: 60, barva: "#b3d4ff" },
+    { nazev: "Naivní", stupne: 90, barva: "#40e0d0" },
+    { nazev: "Jazykový", stupne: 120, barva: "#c8a2c8" },
+    { nazev: "Metaforický", stupne: 150, barva: "#2e8b57" },
+    { nazev: "Asociační", stupne: 180, barva: "#d2b48c" },
+    { nazev: "Introspektivní", stupne: 210, barva: "#ffd700" },
+    { nazev: "Ironický", stupne: 240, barva: "#ffa500" },
+    { nazev: "Groteskní", stupne: 270, barva: "#dc143c" },
+    { nazev: "Absurdní", stupne: 300, barva: "#c71585" },
+    { nazev: "Surrealistický", stupne: 330, barva: "#8b4513" }
+];
+
+const struktury = [
+    { nazev: "Rovné dlouhé čáry", uhel: 0 },
+    { nazev: "Stínování, reálnost", uhel: 1 },
+    { nazev: "Perspektiva, 3D", uhel: 2 },
+    { nazev: "Jedním tahem", uhel: 3 },
+    { nazev: "Pravidelnost", uhel: 4 },
+    { nazev: "Písmo a text", uhel: 5 },
+    { nazev: "Šrafování", uhel: 6 },
+    { nazev: "Detaily", uhel: 7 },
+    { nazev: "Sklon doprava", uhel: 8 },
+    { nazev: "Obtahování, přetahování", uhel: 9 },
+    { nazev: "Vybarvování", uhel: 10 },
+    { nazev: "Nedokončené tahy, náznaky", uhel: 11 }
+];
+
+// Stav hry
+let hracA = { fenom: null, uhel: null };
+let hracB = { fenom: null, uhel: null, partnerUhel: null };
+let nahranyObrazek = null; // data URL
+
+// ========================
+// NAVIGACE
+// ========================
+const track = document.getElementById('track');
+const panely = document.querySelectorAll('.panel');
+let aktualniPanel = 0;
+
+function scrollToPanel(dir) {
+    aktualniPanel = Math.min(Math.max(aktualniPanel + dir, 0), panely.length - 1);
+    panely[aktualniPanel].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+}
+window.scrollToPanel = scrollToPanel;
+
+track.addEventListener('scroll', () => {
+    aktualniPanel = Math.round(track.scrollLeft / window.innerWidth);
+});
+
+// ========================
+// AKORDEONY
+// ========================
+function toggleAcc(btn) {
+    btn.classList.toggle('open');
+    btn.nextElementSibling.classList.toggle('open');
+}
+window.toggleAcc = toggleAcc;
+
+// ========================
+// LOSOVÁNÍ A URL PARTNERA
+// ========================
+function losujFenomen(hrac) {
+    const nahodny = fenomDB[Math.floor(Math.random() * fenomDB.length)];
+    hracA.fenom = nahodny;
+    document.getElementById('fenomenA').innerHTML = `<strong>${nahodny.name}</strong>`;
+    generujURL();
+}
+function losujUhel(hrac) {
+    const nahodny = uhlyDB[Math.floor(Math.random() * uhlyDB.length)];
+    hracA.uhel = nahodny;
+    document.getElementById('uhelA').innerHTML = `<strong>${nahodny.nazev}</strong> (${nahodny.stupne}°)`;
+    generujURL();
+}
+function generujURL() {
+    if (hracA.fenom && hracA.uhel) {
+        const url = `${window.location.origin}${window.location.pathname}?fenomen=${hracA.fenom.id}&uhel=${hracA.uhel.stupne}`;
+        document.getElementById('urlA').style.display = 'block';
+        document.getElementById('urlA').textContent = url;
+        document.getElementById('copyA').style.display = 'inline-block';
+    }
+}
+function nactiPartnera(hrac) {
+    const input = document.getElementById('partnerUrlB').value;
+    try {
+        const url = new URL(input);
+        const fenomId = url.searchParams.get('fenomen');
+        const uhelSt = parseInt(url.searchParams.get('uhel'));
+        const fenom = fenomDB.find(f => f.id === fenomId);
+        const uhel = uhlyDB.find(u => u.stupne === uhelSt);
+        if (fenom && uhel) {
+            hracB.partnerUhel = uhel;
+            document.getElementById('partnerB').innerHTML = `Partnerův úhel: <strong>${uhel.nazev}</strong> – Fenomén: <strong>${fenom.name}</strong>`;
+            document.getElementById('zadaniKresby').textContent = `Nakresli ${fenom.name} očima ${uhel.nazev}`;
+        } else {
+            document.getElementById('partnerB').textContent = 'Neplatný URL otisk.';
+        }
+    } catch(e) {
+        document.getElementById('partnerB').textContent = 'Neplatný formát URL.';
+    }
+}
+
+// ========================
+// NAHRÁNÍ A DETEKCE KRESBY
+// ========================
+const fileInput = document.getElementById('fileInput');
+const previewImg = document.getElementById('previewImg');
+const detekceStatus = document.getElementById('detekceStatus');
+const goToStrukturyBtn = document.getElementById('goToStruktury');
+
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        nahranyObrazek = ev.target.result;
+        previewImg.src = nahranyObrazek;
+        previewImg.style.display = 'block';
+        detekceKresby(nahranyObrazek);
+        goToStrukturyBtn.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+});
+
+function detekceKresby(dataUrl) {
+    const img = new Image();
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxW = 200;
+        const scale = maxW / img.width;
+        canvas.width = maxW;
+        canvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        let saturationSum = 0;
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i], g = data[i+1], b = data[i+2];
+            const max = Math.max(r,g,b), min = Math.min(r,g,b);
+            const s = max === 0 ? 0 : (max - min) / max;
+            saturationSum += s;
+        }
+        const avgSat = saturationSum / (data.length / 4);
+        if (avgSat < 0.15) {
+            detekceStatus.textContent = '✔ Detekována černobílá kresba (tužka).';
+            detekceStatus.style.color = '#a0c0a0';
+        } else {
+            detekceStatus.textContent = '⚠ Obrázek obsahuje barvy. Jsi si jistý, že jde o kresbu?';
+            detekceStatus.style.color = '#c0a060';
+        }
+    };
+    img.src = dataUrl;
+}
+
+// ========================
+// STRUKTURY (CHECKBOXY + SLIDERY)
+// ========================
+const structureList = document.getElementById('structureList');
+struktury.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'structure-row';
+    row.innerHTML = `
+        <input type="checkbox" id="chk-${idx}" onchange="toggleSlider(${idx})">
+        <label for="chk-${idx}">${s.nazev}</label>
+        <div class="intensity-slider" id="slider-${idx}" style="display:none;">
+            <input type="range" min="0" max="2" value="1" step="1" id="range-${idx}">
+            <span id="val-${idx}">1</span>
+        </div>
+    `;
+    structureList.appendChild(row);
+    document.getElementById(`range-${idx}`).addEventListener('input', (e) => {
+        document.getElementById(`val-${idx}`).textContent = e.target.value;
+    });
+});
+
+function toggleSlider(idx) {
+    const chk = document.getElementById(`chk-${idx}`);
+    const slider = document.getElementById(`slider-${idx}`);
+    slider.style.display = chk.checked ? 'flex' : 'none';
+}
+window.toggleSlider = toggleSlider;
+
+// ========================
+// ANALÝZA A UHLOMĚR
+// ========================
+function analyzovat() {
+    const skore = new Array(12).fill(0);
+    let celkem = 0;
+    struktury.forEach((s, idx) => {
+        const chk = document.getElementById(`chk-${idx}`);
+        if (chk.checked) {
+            const intenzita = parseInt(document.getElementById(`range-${idx}`).value);
+            skore[s.uhel] += intenzita;
+            celkem += intenzita;
+        }
+    });
+    if (celkem === 0) {
+        alert('Vyber alespoň jednu strukturu.');
+        return;
+    }
+    const profil = skore.map((s, i) => ({
+        uhel: uhlyDB[i], skore: s,
+        pct: Math.round((s / celkem) * 100)
+    }));
+
+    vykresliUhlomer(profil);
+
+    let detailHTML = '';
+    profil.filter(p => p.pct > 0).forEach(p => {
+        detailHTML += `<p style="font-size:0.8rem; color:${p.uhel.barva}; margin:0.2rem 0;">${p.uhel.nazev}: ${p.pct}%</p>`;
+    });
+    document.getElementById('vysledekDetail').innerHTML = detailHTML;
+
+    const params = new URLSearchParams();
+    profil.filter(p => p.pct > 0).forEach(p => {
+        params.append('uhly', p.uhel.stupne + ':' + p.pct);
+    });
+    const vysledekUrl = `${window.location.origin}${window.location.pathname}?profil=${params.toString()}`;
+    const urlBox = document.getElementById('urlVysledek');
+    urlBox.style.display = 'block';
+    urlBox.textContent = vysledekUrl;
+    document.getElementById('copyVysledek').style.display = 'inline-block';
+    document.getElementById('sdiletPrehlidku').style.display = 'inline-block';
+
+    aktualniPanel = 3;
+    panely[3].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+}
+
+function vykresliUhlomer(profil) {
+    const canvas = document.getElementById('resultWheel');
+    const ctx = canvas.getContext('2d');
+    const CX = 150, CY = 150, RMAX = 132, RMIN = 38;
+    ctx.clearRect(0,0,300,300);
+    const sa = (Math.PI*2)/12;
+    profil.forEach((p, i) => {
+        const startA = -Math.PI/2 + i*sa + 0.04;
+        const endA = startA + sa - 0.08;
+        const fillR = RMIN + (RMAX - RMIN) * (p.pct / 100);
+        ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,fillR,startA,endA); ctx.closePath();
+        ctx.fillStyle = p.uhel.barva + 'aa';
+        ctx.fill();
+        ctx.strokeStyle = p.uhel.barva; ctx.lineWidth = 1; ctx.stroke();
+        const midA = startA + (sa-0.08)/2;
+        const lr = (RMAX+RMIN)/2 + 6;
+        const lx = CX + Math.cos(midA)*lr;
+        const ly = CY + Math.sin(midA)*lr;
+        ctx.save(); ctx.translate(lx,ly); ctx.rotate(midA + Math.PI/2);
+        ctx.fillStyle = p.uhel.barva;
+        ctx.font = '300 7px "Space Grotesk", sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(p.uhel.nazev.split(' ')[0], 0, 0);
+        ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+    ctx.fillStyle = '#050a12'; ctx.fill();
+    ctx.strokeStyle = 'rgba(168,152,128,.2)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(168,152,128,.3)'; ctx.font = '300 9px "Space Grotesk"';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('profil', CX, CY);
+}
+
+function kopiruj(id) {
+    const box = document.getElementById(id);
+    navigator.clipboard.writeText(box.textContent).then(() => alert('URL zkopírováno!'));
+}
+window.kopiruj = kopiruj;
+
+function sdiletNaPrehlidku() {
+    const url = document.getElementById('urlVysledek').textContent;
+    window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html?otisk=' + encodeURIComponent(url), '_blank');
+}
+window.sdiletNaPrehlidku = sdiletNaPrehlidku;
+</script>
+</body>
+</html>
