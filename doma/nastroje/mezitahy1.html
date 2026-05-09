@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chceš myš? meziTahy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #050a12;
+            --bg-el: #0a141e;
+            --text: #e6f0fa;
+            --dim: #3a5a70;
+            --mid: #6a8a9a;
+            --border: #0f1a24;
+            --accent: #b8a0c0;
+            --accent-dim: #2a1e2e;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body {
+            width:100%; height:100%;
+            overflow:hidden;
+            background:var(--bg);
+            color:var(--text);
+            font-family:'Space Grotesk',sans-serif;
+            font-weight:300;
+        }
+        .grain {
+            position:fixed; inset:0; pointer-events:none; z-index:1000; opacity:0.025;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .scroll-track {
+            display:flex; width:100%; height:100vh;
+            overflow-x:auto; overflow-y:hidden;
+            scroll-snap-type:x mandatory; scrollbar-width:none;
+        }
+        .scroll-track::-webkit-scrollbar { display:none; }
+        .panel {
+            flex:0 0 100vw; height:100vh;
+            scroll-snap-align:start;
+            overflow-y:auto; overflow-x:hidden;
+            position:relative; padding:2rem 1.5rem 4rem;
+            scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+        }
+        .panel::-webkit-scrollbar { width:3px; }
+        .panel::-webkit-scrollbar-thumb { background:var(--border); }
+
+        .nav-arrows {
+            position:fixed; top:1rem; right:1rem; display:flex; gap:0.25rem; z-index:500;
+        }
+        .nav-arrow-mini {
+            background:transparent; border:1px solid var(--border);
+            color:var(--dim); font-size:1rem; padding:0.3rem 0.6rem;
+            cursor:pointer; transition:all 0.3s;
+        }
+        .nav-arrow-mini:hover { color:var(--accent); border-color:var(--accent); }
+
+        h2 { font-family:'Spectral',serif; font-weight:400; font-size:clamp(1.2rem,4vw,2rem); letter-spacing:0.2em; text-transform:uppercase; }
+        .label { font-size:0.6rem; letter-spacing:0.4em; text-transform:uppercase; color:var(--dim); margin-bottom:0.4rem; }
+        .center { text-align:center; }
+        .max-w { max-width:680px; margin:0 auto; }
+        .btn {
+            padding:0.6rem 1.2rem; border:1px solid var(--accent);
+            background:transparent; color:var(--accent);
+            font-family:'Space Grotesk',sans-serif; font-size:0.75rem;
+            letter-spacing:0.1em; text-transform:uppercase;
+            cursor:pointer; transition:all 0.3s; margin:0.3rem;
+        }
+        .btn:hover { background:var(--accent); color:var(--bg); }
+        .btn-primary { background:var(--accent); color:var(--bg); }
+        .btn-primary:hover { background:transparent; color:var(--accent); }
+        .btn-small { font-size:0.6rem; padding:0.2rem 0.5rem; }
+        .btn-tool {
+            background:var(--bg-el); border:1px solid var(--border);
+            color:var(--text); padding:0.4rem 0.6rem;
+            font-size:0.7rem; cursor:pointer; transition:all 0.2s;
+            display:flex; align-items:center; gap:0.3rem;
+        }
+        .btn-tool:hover, .btn-tool.active { border-color:var(--accent); color:var(--accent); }
+        .input-field {
+            width:100%; padding:0.7rem; background:var(--bg-el);
+            border:1px solid var(--border); color:var(--text);
+            font-family:'Space Grotesk',sans-serif; font-size:0.85rem; margin:0.5rem 0;
+        }
+        .thumbnail {
+            width:80px; height:80px; object-fit:cover; border:1px solid var(--border);
+            filter:grayscale(1); opacity:0.8; margin:0.5rem;
+        }
+        .canvas-container {
+            position:relative; width:100%; height:calc(100vh - 12rem);
+            background:#fff; border:1px solid var(--border);
+            overflow:hidden; margin:0.5rem 0;
+        }
+        canvas { display:block; cursor:crosshair; touch-action:none; }
+        .toolbar {
+            display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.5rem;
+            background:var(--bg-el); border:1px solid var(--border);
+            align-items:center; justify-content:center;
+        }
+        .toolbar label { color:var(--dim); font-size:0.7rem; margin-right:0.3rem; }
+        .toolbar input[type="range"] { width:60px; accent-color:var(--accent); }
+        .url-box {
+            background:var(--bg-el); padding:1rem; border:1px solid var(--border);
+            word-break:break-all; font-size:0.75rem; color:var(--mid); margin:1rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-arrows">
+    <button class="nav-arrow-mini" onclick="scrollToPanel(-1)">‹</button>
+    <button class="nav-arrow-mini" onclick="scrollToPanel(1)">›</button>
+</div>
+
+<div class="scroll-track" id="track">
+
+    <!-- PANEL 1 – LOSOVÁNÍ FENOMÉNU A DIAGNOSTIKA -->
+    <section class="panel" id="panel1">
+        <div class="max-w center">
+            <div class="label">Chceš myš? meziTahy</div>
+            <h2 style="color:var(--accent);">Krok 1: Fenomén & Úhel</h2>
+            <p style="color:var(--dim); font-size:0.8rem;">Vylosuj si fenomén, přečti pohádku a diagnostikuj svůj úhel.</p>
+            <button class="btn" onclick="losujFenomen()">Losovat fenomén</button>
+            <div id="fenomenDisplay" style="margin:1rem 0;"></div>
+            <a id="kartaLink" href="#" target="_blank" class="btn" style="display:none;">📖 Otevřít pohádku a diagnostikovat</a>
+            <p style="color:var(--dim); font-size:0.7rem; margin-top:1rem;">Po návratu vlož URL nebo vyber náhodný úhel:</p>
+            <input type="text" id="urlDiagnostiky" class="input-field" placeholder="Vlož URL s tvým úhlem...">
+            <button class="btn" onclick="nactiUhelZUrl()">Načíst úhel</button>
+            <button class="btn" onclick="nahodnyUhel()">🎲 Náhodný úhel</button>
+            <p id="vlastniUhel" style="margin-top:0.5rem; color:var(--accent);">—</p>
+            <button class="btn btn-primary" id="pokracovatNaUkol" disabled onclick="prejitNaPanel(1)">Pokračovat →</button>
+        </div>
+    </section>
+
+    <!-- PANEL 2 – KREATIVNÍ ÚKOL -->
+    <section class="panel" id="panel2">
+        <div class="max-w center">
+            <h2 style="color:var(--accent);">Krok 2: Kreativní úkol</h2>
+            <p style="color:var(--dim); font-size:0.8rem;">Vlož URL partnerova úhlu a fenoménu.</p>
+            <input type="text" id="partnerUrl" class="input-field" placeholder="Vlož URL partnera...">
+            <button class="btn" onclick="nactiPartnera()">Načíst partnerův úkol</button>
+            <p id="partnerZadani" style="margin-top:0.5rem; color:var(--accent);">—</p>
+            <div id="ukolGenerativni" style="margin:1rem 0; font-family:'Spectral',serif; color:var(--mid);"></div>
+            <button class="btn btn-primary" id="prejitNaKresbu" disabled onclick="prejitNaPanel(2)">Přejít ke kresbě →</button>
+        </div>
+    </section>
+
+    <!-- PANEL 3 – KRESBA -->
+    <section class="panel" id="panel3" style="padding:1rem;">
+        <h2 class="center" style="color:var(--accent); margin-bottom:0.5rem;">Kresba</h2>
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="drawCanvas"></canvas>
+        </div>
+        <div class="toolbar" id="toolbar">
+            <span style="color:var(--dim); font-size:0.7rem;">Tloušťka:</span>
+            <input type="range" id="brushSize" min="1" max="20" value="3" oninput="ctx.lineWidth=this.value">
+            <button class="btn-tool" onclick="undo()">↩</button>
+            <button class="btn-tool" onclick="redo()">↪</button>
+            <button class="btn-tool" id="gumBtn" onclick="toggleGuma()">🧹 Guma</button>
+            <button class="btn-tool brush-btn" data-brush="tuzka" onclick="setBrush('tuzka')">✏️ Tužka</button>
+            <button class="btn-tool brush-btn" data-brush="pero" onclick="setBrush('pero')">🖊 Pero</button>
+            <button class="btn-tool brush-btn" data-brush="fix" onclick="setBrush('fix')">🖍 Fix</button>
+            <button class="btn-tool brush-btn" data-brush="stetec" onclick="setBrush('stetec')">🖌 Štětec</button>
+            <button class="btn-tool brush-btn" data-brush="sprej" onclick="setBrush('sprej')">💨 Sprej</button>
+            <button class="btn-tool brush-btn" data-brush="valecek" onclick="setBrush('valecek')">🎨 Váleček</button>
+            <button class="btn-tool" onclick="kyblik()">🪣 Kyblík</button>
+            <button class="btn-tool" onclick="sablona()">📐 Šablona</button>
+            <span style="color:var(--dim); font-size:0.7rem;">Zoom:</span>
+            <button class="btn-tool zoom-btn" data-zoom="1" onclick="setZoom(1)">1x</button>
+            <button class="btn-tool zoom-btn" data-zoom="2" onclick="setZoom(2)">2x</button>
+            <button class="btn-tool zoom-btn" data-zoom="4" onclick="setZoom(4)">4x</button>
+        </div>
+        <div class="center" style="margin-top:0.5rem;">
+            <button class="btn btn-primary" onclick="ulozitASdilet()">💾 Uložit a sdílet</button>
+        </div>
+    </section>
+
+    <!-- PANEL 4 – SDÍLENÍ -->
+    <section class="panel" id="panel4">
+        <div class="max-w center">
+            <h2 style="color:var(--accent);">Krok 4: Sdílení</h2>
+            <div class="url-box" id="vysledneUrl"></div>
+            <button class="btn" onclick="kopirujUrl()">📋 Kopírovat</button>
+            <button class="btn" onclick="sdiletNaPrehlidku()">📤 Na Přehlídku jevů</button>
+        </div>
+    </section>
+</div>
+
+<script>
+// ======================== GLOBÁLNÍ STAV ========================
+const fenomDB = [
+    { id:"kocour", name:"Kocour" }, { id:"ryba", name:"Ryba" },
+    { id:"zajic", name:"Zajíc" }, { id:"motyl", name:"Motýl" },
+    { id:"pav", name:"Páv" }, { id:"krokodyl", name:"Krokodýl" },
+    { id:"pavouk", name:"Pavouk" }, { id:"netopyr", name:"Netopýr" },
+    { id:"lemur", name:"Lemur" }
+];
+const uhlyDB = [
+    { nazev:"Analytický", stupne:0, barva:"#ffffff" },
+    { nazev:"Kulturní", stupne:30, barva:"#a8d5a2" },
+    { nazev:"Filozofický", stupne:60, barva:"#b3d4ff" },
+    { nazev:"Naivní", stupne:90, barva:"#40e0d0" },
+    { nazev:"Jazykový", stupne:120, barva:"#c8a2c8" },
+    { nazev:"Metaforický", stupne:150, barva:"#2e8b57" },
+    { nazev:"Asociační", stupne:180, barva:"#d2b48c" },
+    { nazev:"Introspektivní", stupne:210, barva:"#ffd700" },
+    { nazev:"Ironický", stupne:240, barva:"#ffa500" },
+    { nazev:"Groteskní", stupne:270, barva:"#dc143c" },
+    { nazev:"Absurdní", stupne:300, barva:"#c71585" },
+    { nazev:"Surrealistický", stupne:330, barva:"#8b4513" }
+];
+
+let hracFenom = null, hracUhel = null, partnerFenom = null, partnerUhel = null;
+let finalUrl = '';
+
+// ======================== NAVIGACE ========================
+const track = document.getElementById('track');
+const panely = document.querySelectorAll('.panel');
+let aktPanel = 0;
+
+function scrollToPanel(dir) {
+    aktPanel = Math.min(Math.max(aktPanel + dir, 0), panely.length - 1);
+    panely[aktPanel].scrollIntoView({ behavior:'smooth', inline:'start' });
+}
+function prejitNaPanel(idx) { aktPanel = idx; panely[idx].scrollIntoView({ behavior:'smooth', inline:'start' }); }
+window.scrollToPanel = scrollToPanel;
+window.prejitNaPanel = prejitNaPanel;
+
+track.addEventListener('scroll', () => { aktPanel = Math.round(track.scrollLeft / window.innerWidth); });
+
+// ======================== PANEL 1 ========================
+function losujFenomen() {
+    hracFenom = fenomDB[Math.floor(Math.random() * fenomDB.length)];
+    const display = document.getElementById('fenomenDisplay');
+    display.innerHTML = `<img src="doma/ilustrace/${hracFenom.id}.jpg" class="thumbnail" alt="${hracFenom.name}"><br><strong>${hracFenom.name}</strong>`;
+    const link = document.getElementById('kartaLink');
+    link.href = `doma/data/uhly/${hracFenom.id}_uhly.html`;
+    link.style.display = 'inline-block';
+}
+
+function nactiUhelZUrl() {
+    const url = document.getElementById('urlDiagnostiky').value;
+    try {
+        const u = new URL(url);
+        const uhelSt = parseInt(u.searchParams.get('uhel'));
+        const uhel = uhlyDB.find(x => x.stupne === uhelSt);
+        if (uhel) {
+            hracUhel = uhel;
+            document.getElementById('vlastniUhel').textContent = `Tvůj úhel: ${uhel.nazev} (${uhelSt}°)`;
+            document.getElementById('pokracovatNaUkol').disabled = false;
+        }
+    } catch(e) { alert('Neplatná URL'); }
+}
+
+function nahodnyUhel() {
+    hracUhel = uhlyDB[Math.floor(Math.random() * uhlyDB.length)];
+    document.getElementById('vlastniUhel').textContent = `Tvůj úhel: ${hracUhel.nazev} (${hracUhel.stupne}°)`;
+    document.getElementById('pokracovatNaUkol').disabled = false;
+}
+window.losujFenomen = losujFenomen;
+window.nactiUhelZUrl = nactiUhelZUrl;
+window.nahodnyUhel = nahodnyUhel;
+
+// ======================== PANEL 2 ========================
+async function nactiPartnera() {
+    const url = document.getElementById('partnerUrl').value;
+    try {
+        const u = new URL(url);
+        const fenomId = u.searchParams.get('fenomen');
+        const uhelSt = parseInt(u.searchParams.get('uhel'));
+        partnerFenom = fenomDB.find(f => f.id === fenomId);
+        partnerUhel = uhlyDB.find(x => x.stupne === uhelSt);
+        if (partnerFenom && partnerUhel) {
+            document.getElementById('partnerZadani').textContent = `Partnerův fenomén: ${partnerFenom.name} | Úhel: ${partnerUhel.nazev}`;
+            // Načíst generativní větu
+            const resp = await fetch(`doma/data/uhly/${partnerFenom.id}_uhly.html`);
+            const html = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const genVeta = doc.querySelector('.generator-link')?.textContent || `Nakresli ${partnerFenom.name} očima ${partnerUhel.nazev}`;
+            document.getElementById('ukolGenerativni').innerHTML = `<strong>Kreativní úkol:</strong> ${genVeta}`;
+            document.getElementById('prejitNaKresbu').disabled = false;
+        }
+    } catch(e) { alert('Nelze načíst partnera.'); }
+}
+window.nactiPartnera = nactiPartnera;
+
+// ======================== PANEL 3 – KRESBICÍ PLÁTNO ========================
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+const container = document.getElementById('canvasContainer');
+
+let history = [], historyStep = -1;
+let zoomLevel = 1;
+let currentBrush = 'tuzka';
+let isGuma = false;
+let isDrawing = false;
+
+function resizeCanvas() {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    saveHistory();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function saveHistory() {
+    history = history.slice(0, historyStep + 1);
+    history.push(canvas.toDataURL());
+    historyStep++;
+}
+function undo() {
+    if (historyStep > 0) {
+        historyStep--;
+        const img = new Image();
+        img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+        img.src = history[historyStep];
+    }
+}
+function redo() {
+    if (historyStep < history.length - 1) {
+        historyStep++;
+        const img = new Image();
+        img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+        img.src = history[historyStep];
+    }
+}
+window.undo = undo; window.redo = redo;
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mouseleave', stopDraw);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('touchstart', startDraw);
+canvas.addEventListener('touchend', stopDraw);
+canvas.addEventListener('touchmove', draw);
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x, y };
+}
+function startDraw(e) {
+    e.preventDefault();
+    isDrawing = true;
+    ctx.beginPath();
+    const {x, y} = getPos(e);
+    ctx.moveTo(x, y);
+    saveHistory();
+}
+function stopDraw() { isDrawing = false; }
+function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const {x, y} = getPos(e);
+    if (isGuma) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = parseInt(document.getElementById('brushSize').value) * 3;
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = parseInt(document.getElementById('brushSize').value);
+        applyBrushStyle();
+    }
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+function applyBrushStyle() {
+    ctx.lineCap = 'round';
+    if (currentBrush === 'tuzka') { ctx.lineCap = 'butt'; }
+    if (currentBrush === 'pero') { ctx.lineWidth *= 0.5; }
+    if (currentBrush === 'fix') { ctx.lineWidth *= 2; }
+    if (currentBrush === 'stetec') { ctx.lineCap = 'round'; ctx.lineWidth *= 3; }
+    if (currentBrush === 'sprej') {
+        // zjednodušený sprej – tečky místo čáry
+        for (let i=0; i<5; i++) {
+            const offsetX = (Math.random() - 0.5) * 10;
+            const offsetY = (Math.random() - 0.5) * 10;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(ctx.lastX + offsetX, ctx.lastY + offsetY, 2, 2);
+        }
+    }
+}
+
+function toggleGuma() {
+    isGuma = !isGuma;
+    document.getElementById('gumBtn').classList.toggle('active', isGuma);
+}
+function setBrush(type) {
+    currentBrush = type;
+    document.querySelectorAll('.brush-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-brush="${type}"]`).classList.add('active');
+}
+function setZoom(z) {
+    zoomLevel = z;
+    canvas.style.transform = `scale(${z})`;
+    canvas.style.transformOrigin = 'top left';
+    container.style.overflow = z > 1 ? 'auto' : 'hidden';
+    document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-zoom="${z}"]`).classList.add('active');
+}
+function kyblik() { ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width,canvas.height); saveHistory(); }
+function sablona() { alert('Šablona zatím není implementována.'); }
+
+window.toggleGuma = toggleGuma;
+window.setBrush = setBrush;
+window.setZoom = setZoom;
+window.kyblik = kyblik;
+window.sablona = sablona;
+
+function ulozitASdilet() {
+    const dataUrl = canvas.toDataURL('image/png');
+    finalUrl = `${window.location.origin}${window.location.pathname}?fenomen=${hracFenom?.id || ''}&uhel=${hracUhel?.stupne || ''}&partnerFenom=${partnerFenom?.id || ''}&partnerUhel=${partnerUhel?.stupne || ''}&kresba=${encodeURIComponent(dataUrl)}`;
+    document.getElementById('vysledneUrl').textContent = finalUrl.substring(0, 200) + '...';
+    prejitNaPanel(3);
+}
+window.ulozitASdilet = ulozitASdilet;
+
+function kopirujUrl() { navigator.clipboard.writeText(finalUrl); alert('URL zkopírováno!'); }
+function sdiletNaPrehlidku() { window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html?otisk=' + encodeURIComponent(finalUrl), '_blank'); }
+window.kopirujUrl = kopirujUrl;
+window.sdiletNaPrehlidku = sdiletNaPrehlidku;
+</script>
+</body>
+</html>
