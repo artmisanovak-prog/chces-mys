@@ -20,7 +20,7 @@
 - [meziTahy1](doma/nastroje/mezitahy3.html)
 - [meziTahy2](doma/nastroje/mezitahy4.html)
   
-
+- [generator_struktur](doma/nastroje/generator_struktur.html)
 
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
