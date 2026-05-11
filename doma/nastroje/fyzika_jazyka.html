@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Chceš myš? — Fyzika jazyka</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #050a12;
+  --bg-el: #0a141e;
+  --text: #e6f0fa;
+  --dim: #3a5a70;
+  --mid: #6a8a9a;
+  --border: #0f1a24;
+  --accent: #c8a96e;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 300;
+  touch-action: pan-y; /* zakáže horizontální gesta */
+}
+
+.grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.scroll-track {
+  display: flex;
+  width: 100%; height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  touch-action: pan-y; /* zakáže horizontální posun prstem */
+}
+.scroll-track::-webkit-scrollbar { display: none; }
+
+.panel {
+  flex: 0 0 100vw;
+  height: 100vh;
+  scroll-snap-align: start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding: 3rem 1.5rem 5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  touch-action: pan-y; /* uvnitř panelu lze vertikálně scrollovat, ale ne horizontálně */
+}
+.panel::-webkit-scrollbar { width: 3px; }
+.panel::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* ── ŠIPKY VPRAVO POD PROUŽKEM ── */
+.nav-arrows-row {
+  position: fixed;
+  top: 6vh; /* přibližně pod úvodním blokem */
+  right: 1.5rem;
+  display: flex;
+  gap: 0.25rem;
+  z-index: 500;
+  align-items: center;
+}
+.nav-arrow-mini {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.2rem 0.3rem;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.2s;
+  user-select: none;
+}
+.nav-arrow-mini:hover {
+  color: var(--accent);
+  transform: scale(1.15);
+}
+
+/* ── TYPOGRAFIE ── */
+h1, h2, h3 { font-family: 'Spectral', serif; font-weight: 400; }
+h1 { font-size: clamp(2rem, 8vw, 4rem); letter-spacing: 0.2em; text-transform: uppercase; }
+h2 { font-size: clamp(1.2rem, 4vw, 2rem); letter-spacing: 0.25em; text-transform: uppercase; }
+h3 { font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; }
+
+.label {
+  font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 0.4rem;
+}
+.serif { font-family: 'Spectral', serif; }
+
+/* ── AKORDEONY ── */
+.acc-item { border-bottom: 1px solid var(--border); }
+.acc-trigger {
+  width: 100%; background: transparent; border: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 0; cursor: pointer; color: var(--mid);
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem;
+  letter-spacing: 0.15em; text-transform: uppercase; text-align: left;
+  transition: color 0.3s;
+}
+.acc-trigger:hover { color: var(--accent); }
+.acc-trigger.open { color: var(--accent); }
+.acc-arrow { transition: transform 0.3s; font-size: 0.7rem; flex-shrink: 0; }
+.acc-trigger.open .acc-arrow { transform: rotate(180deg); }
+.acc-body {
+  max-height: 0; overflow: hidden; transition: max-height 0.6s ease;
+}
+.acc-body.open { max-height: 3000px; }
+.acc-inner {
+  padding: 0 0 1.5rem;
+  font-family: 'Spectral', serif;
+  font-size: 0.95rem; line-height: 1.9;
+  color: #a0c0d0;
+}
+.acc-inner p { margin-bottom: 0.8rem; }
+.acc-inner strong { color: var(--accent); font-weight: 500; }
+.acc-inner em { color: var(--mid); }
+
+/* ── ILUSTRACE ── */
+.ilu {
+  width: 100%; max-width: 260px; display: block; margin: 0 auto;
+  filter: grayscale(100%) contrast(1.1) brightness(0.9);
+  opacity: 0.85; border-radius: 3px; transition: opacity 0.4s;
+}
+.ilu:hover { opacity: 1; }
+
+/* ── NÁSTROJE ── */
+.tool-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 680px; margin: 0 auto;
+}
+
+.tool-card {
+  border: 1px solid var(--border);
+  background: var(--bg-el);
+  transition: border-color 0.3s;
+  overflow: hidden;
+}
+.tool-card:hover { border-color: var(--accent); }
+
+.tool-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+  cursor: pointer;
+  list-style: none;
+}
+.tool-summary::-webkit-details-marker { display: none; }
+.tool-summary::marker { display: none; content: ""; }
+.tool-name {
+  font-family: 'Spectral', serif; font-size: 1rem;
+  color: var(--accent);
+}
+.tool-arrow {
+  font-size: 0.7rem;
+  color: var(--dim);
+  transition: transform 0.3s;
+}
+.tool-card[open] .tool-arrow {
+  transform: rotate(180deg);
+}
+.tool-details {
+  padding: 0 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tool-desc {
+  font-size: 0.75rem; color: var(--mid); line-height: 1.6;
+}
+.tool-link {
+  font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--border);
+  transition: all 0.3s; align-self: flex-start;
+}
+.tool-link:hover { color: var(--accent); border-color: var(--accent); }
+.tool-sub-acc { margin-top: 0.5rem; }
+
+/* ── UHLY WHEEL MINI ── */
+.angles-list {
+  max-width: 680px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 480px) { .angles-list { grid-template-columns: 1fr; } }
+.angle-row {
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 0.8rem 1rem;
+}
+.angle-row:nth-child(even) { border-right: none; }
+.angle-deg { font-size: 0.55rem; color: var(--dim); letter-spacing: 0.15em; }
+.angle-name {
+  font-family: 'Spectral', serif; color: var(--accent);
+  font-size: 0.9rem; margin: 0.1rem 0;
+}
+.angle-desc { font-size: 0.7rem; color: var(--mid); line-height: 1.4; }
+
+/* ── PANEL SPECIFIKA ── */
+.center { text-align: center; }
+.max-w { max-width: 680px; margin: 0 auto; }
+
+.hero-subtitle {
+  font-size: 0.65rem; letter-spacing: 0.4em; color: var(--dim);
+  text-transform: uppercase; margin-top: 0.5rem;
+}
+.divider { width: 40px; height: 1px; background: var(--accent); opacity: 0.3; margin: 2rem auto; }
+
+.prose {
+  font-family: 'Spectral', serif; font-size: 1rem; line-height: 1.9;
+  color: #a0c0d0;
+}
+.prose p { margin-bottom: 1rem; }
+.prose strong { color: var(--accent); font-weight: 500; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.tag {
+  font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+  border: 1px solid var(--border); color: var(--dim); padding: 0.2rem 0.6rem;
+}
+
+.reorder-hint {
+  font-size: 0.65rem; color: var(--dim); letter-spacing: 0.1em;
+  text-align: center; margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+footer-meta { display: block; }
+.meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  max-width: 500px; margin: 0 auto;
+  font-size: 0.7rem; /* zmenšeno */
+}
+@media (max-width: 480px) { .meta-grid { grid-template-columns: 1fr; } }
+.meta-item .meta-label {
+  font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 0.2rem;
+}
+.meta-item .meta-val {
+  font-family: 'Spectral', serif; font-size: 0.8rem; color: var(--mid);
+}
+.meta-item a { color: var(--mid); text-decoration: none; border-bottom: 1px solid var(--border); transition: all 0.3s; }
+.meta-item a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* FENOMÉNY A7 */
+.fenomen-tile {
+  position: relative; background: var(--bg-el); overflow: hidden;
+  aspect-ratio: 1 / 1.414; /* A7 na výšku */
+  user-select: none; -webkit-user-select: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fenomen-tile img {
+  width: 100%; height: 100%; object-fit: cover; /* zajistí vyplnění, ale nepoměr stran obrázku musí být také A7, jinak ořízne */
+  filter: grayscale(100%) contrast(1.1); opacity: 0.85;
+  transition: opacity 0.3s, filter 0.3s;
+}
+.fenomen-tile:hover img { opacity: 1; filter: grayscale(100%) contrast(1.2) brightness(1.05); }
+.fenomen-tile .tile-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(5,10,18,0.85); color: var(--accent);
+  font-family: 'Spectral', serif; font-size: 0.7rem; text-align: center;
+  padding: 0.3em 0; letter-spacing: 0.1em;
+  border-top: 1px solid var(--border); transition: opacity 0.3s;
+}
+.reorder-mode .fenomen-tile { cursor: grab; border: 2px solid transparent; }
+.reorder-mode .fenomen-tile:active { cursor: grabbing; }
+.reorder-mode .fenomen-tile .tile-caption { opacity: 0; }
+.reorder-mode .fenomen-tile.drag-over { border-color: var(--accent); box-shadow: 0 0 15px rgba(200,169,110,0.3); }
+.reorder-mode .fenomen-tile.dragging { opacity: 0.4; transform: scale(0.95); }
+
+/* MŘÍŽKA 3×3 */
+.fenomen-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--border);
+  gap: 1px;
+  border: 1px solid var(--border);
+  max-width: 600px;
+  margin: 0 auto;
+}
+@media (max-width: 480px) {
+  .fenomen-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Licence fotka */
+.licence-photo {
+  width: 100px; height: 100px; object-fit: cover; border-radius: 3px; filter: grayscale(1); display: block; margin: 0 auto;
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-arrows-row">
+  <button class="nav-arrow-mini" onclick="scrollTo(-1)" title="Předchozí">‹</button>
+  <button class="nav-arrow-mini" onclick="scrollTo(1)" title="Další">›</button>
+</div>
+
+<div class="scroll-track" id="track">
+
+<!-- ══════════════════════════════════════════
+     PANEL 1 — ÚVOD
+══════════════════════════════════════════ -->
+<section class="panel" id="p0">
+  <div class="max-w center" style="padding-top:6vh">
+    <div class="label">Fyzika jazyka</div>
+    <h1 style="color:var(--accent)">Chceš myš?</h1>
+    <p class="hero-subtitle">metoda · nástroje · fenomény</p>
+    <div class="divider"></div>
+    <div class="prose max-w" style="text-align:left;max-width:520px;margin:0 auto">
+      <p>Tato knížka není knížka. Je to rozcestník, pracovní prostor a návod zároveň. Můžeš ji číst lineárně, nebo skákat. Všechno co potřebuješ je tu — nebo z tu vede odkaz.</p>
+      <p>Myš si všímá mezer. Toho, co ostatní přehlédli. Toho, co se zadrhlo ve vzduchu. Toho, co páv přepočítával, když se nikdo nedíval. <strong>Tato metoda dělá totéž s jazykem.</strong></p>
+      <p>Devět zvířat. Devět pohádek. Dvanáct úhlů pohledu. A nástroje, které s tím vším pracují — pro psaní, pro týmy, pro diagnostiku, pro hru.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="tag-row" style="justify-content:center">
+      <span class="tag">kreativní psaní</span>
+      <span class="tag">týmová diagnostika</span>
+      <span class="tag">fyzika jazyka</span>
+      <span class="tag">forenzní analýza</span>
+      <span class="tag">hra pro dva</span>
+      <span class="tag">generátor</span>
+    </div>
+    <div style="margin-top:3rem;font-size:0.65rem;color:var(--dim);letter-spacing:0.2em">
+      MICHAELA NOVÁKOVÁ — REPODUM — 2025
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — MYŠ (načtený z api)
+══════════════════════════════════════════ -->
+<section class="panel" id="p1">
+  <div id="mys-loaded-content" style="max-width:720px; margin:0 auto;">
+    <!-- Zde se vloží načtená stránka mys_uhly.html -->
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3 — 12 ÚHLŮ (s uhloměrem)
+══════════════════════════════════════════ -->
+<section class="panel" id="p2">
+  <div class="max-w" style="max-width:720px;">
+    <div id="mys-uhlomer-modul" style="font-family: 'Space Grotesk', sans-serif; color: var(--text);">
+      <style>
+        #mys-uhlomer-modul .wheel-box { text-align: center; margin: 1.5rem 0; }
+        #mys-uhlomer-modul canvas { max-width: 280px; height: auto; cursor: pointer; display: block; margin: 0 auto; }
+        #mys-uhlomer-modul .mys-acc-item { border-bottom: 1px solid var(--border); }
+        #mys-uhlomer-modul .mys-acc-trigger {
+          width: 100%; background: transparent; border: none;
+          display: flex; justify-content: space-between; align-items: baseline;
+          padding: 0.8rem 0; cursor: pointer; color: var(--accent);
+          font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+          text-align: left; transition: color 0.2s;
+        }
+        #mys-uhlomer-modul .mys-acc-trigger:hover,
+        #mys-uhlomer-modul .mys-acc-trigger.open { color: var(--text); }
+        #mys-uhlomer-modul .mys-acc-trigger .sub { font-size: 0.65rem; color: var(--dim); text-transform: none; margin-left: 0.5rem; }
+        #mys-uhlomer-modul .mys-acc-arrow { font-size: 0.7rem; transition: transform 0.2s; flex-shrink: 0; }
+        #mys-uhlomer-modul .mys-acc-trigger.open .mys-acc-arrow { transform: rotate(180deg); }
+        #mys-uhlomer-modul .mys-acc-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+        #mys-uhlomer-modul .mys-acc-body.open { max-height: 600px; }
+        #mys-uhlomer-modul .mys-acc-inner { padding: 0.5rem 0 1.2rem; font-size: 0.8rem; line-height: 1.9; color: var(--mid); }
+        #mys-uhlomer-modul .mys-acc-inner strong { color: var(--accent); font-weight: 500; }
+        #mys-uhlomer-modul .note { font-size: 0.7rem; color: var(--dim); font-style: italic; margin-top: 1rem; }
+      </style>
+
+      <div class="label center" style="margin-bottom:0.5rem;">Kognitivní mapa</div>
+      <h2 class="center" style="color:var(--accent);margin-bottom:0.3rem;">Klíč k úhlům</h2>
+      <p class="center" style="font-family:'Spectral',serif;font-style:italic;color:var(--mid);font-size:0.9rem;margin-bottom:1.5rem;">aneb Jak myš čte pohádky</p>
+
+      <div class="wheel-box">
+        <canvas id="mysWheelCanvas" width="300" height="300"></canvas>
+        <p style="font-size:0.7rem; color:var(--dim); margin-top:0.5rem;">Klikni na segment → rozbalí se vysvětlení úhlu</p>
+      </div>
+
+      <div id="mysAccordion"></div>
+
+      <p class="note">
+        Myš nesoudí. Myš neříká, který úhel je lepší. Myš počítá.<br>
+        Úhly nejsou protikladné, nejsou to osobnostní typy. Fenomény nejsou lidé, ale jevy v jazyce.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 4 — REPO DŮM
+══════════════════════════════════════════ -->
+<section class="panel" id="p3">
+  <div class="max-w">
+    <div class="label center">Architektura · Filosofie</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">Repo dům</h2>
+    <div class="prose" style="max-width:560px;margin:0 auto">
+      <p><strong>Web bez webu.</strong> Žádný hosting, žádný cloud, žádné databáze, žádný backend, žádné jsony. Jen repozitář na GitHubu, kde jsou nástroje propojené odkazy — a přes GitHub Pages to funguje online i offline.</p>
+      <p>Všechny cesty jsou jednotné. Ilustrace je vždy v <code style="color:var(--accent);font-size:0.85rem">doma/ilustrace/zvire.jpg</code>. Data vždy v <code style="color:var(--accent);font-size:0.85rem">doma/data/uhly/zvire_uhly.html</code>. Díky tomu funguje vše v každém prostředí bez přenastavení.</p>
+      <p><strong>Karta jako API.</strong> Každé zvíře je samostatná HTML stránka, která v sobě nese pohádku, ilustraci, 12 úhlů, generativní věty, audio odkaz, diagnostiku. Nástroje z karet čtou — karta je zdrojem pravdy.</p>
+      <p><strong>URL jako stav.</strong> Místo databáze pracuji s URL otiskem. Otisk nese informaci o dominantních úhlech, o kartách, o sezení. Dá se sdílet, uložit, vrátit.</p>
+      <p><strong>Data vlastní kupující.</strong> Vše běží lokálně nebo přes GitHub Pages. Žádná data neodcházejí nikam, kde by je někdo jiný kontroloval.</p>
+      <p>Tato knížka je sama o sobě Repo dům — rozbal zip, otevři <code style="color:var(--accent);font-size:0.85rem">index.html</code> v prohlížeči. Funguje bez internetu, bez instalace, bez účtu.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="angles-list" style="max-width:500px;margin:0 auto">
+      <div class="angle-row"><div class="angle-deg">Vlastnictví</div><div class="angle-name" style="font-size:0.8rem">Jedno zaplacení, navždy tvoje</div></div>
+      <div class="angle-row"><div class="angle-deg">Nezávislost</div><div class="angle-name" style="font-size:0.8rem">Bez předplatného, bez cloudu</div></div>
+      <div class="angle-row"><div class="angle-deg">Transparentnost</div><div class="angle-name" style="font-size:0.8rem">Kód je otevřený a čitelný</div></div>
+      <div class="angle-row"><div class="angle-deg">Rozšiřitelnost</div><div class="angle-name" style="font-size:0.8rem">Dokup balíček, přidej složku</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 5 — FENOMÉNY (A7, mřížka 3×3)
+══════════════════════════════════════════ -->
+<section class="panel" id="p4">
+  <div style="max-width: 600px; margin: 0 auto; padding: 2rem 0.5rem;">
+    <div class="label center">Devět zvířat · Devět pohádek</div>
+    <h2 class="center" style="color:var(--accent); margin-bottom: 0.3rem;">Fenomény</h2>
+    
+    <div style="display: flex; justify-content: center; align-items: baseline; gap: 1rem; margin: 1rem 0 1.5rem;">
+      <p class="reorder-hint" id="fenomenHint" style="margin:0;">klikni na kartu → otevře pohádku</p>
+      <button id="reorderBtn" style="
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--dim);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0.4rem 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      " onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--dim)'">Přeskládat</button>
+    </div>
+
+    <div id="fenomenGrid" class="fenomen-grid"></div>
+  </div>
+
+  <script>
+    (function() {
+      const animals = [
+        { id: "kocour", name: "Kocour", tag: "dokončovač vět" },
+        { id: "ryba", name: "Ryba", tag: "rappující ticho" },
+        { id: "zajic", name: "Zajíc", tag: "omyl jako hrdina" },
+        { id: "motyl", name: "Motýl", tag: "proměna bez vzpomínky" },
+        { id: "pav", name: "Páv", tag: "přepočítavač ok" },
+        { id: "krokodyl", name: "Krokodýl", tag: "nehybnost jako čin" },
+        { id: "pavouk", name: "Pavouk", tag: "architekt mezer" },
+        { id: "netopyr", name: "Netopýr", tag: "vidí bez světla" },
+        { id: "lemur", name: "Lemur", tag: "dívá se na stranu" }
+      ];
+
+      let fenom = [];
+      try {
+        const saved = localStorage.getItem('fenomeny_order');
+        if (saved) {
+          const order = JSON.parse(saved);
+          const map = new Map(animals.map(a => [a.id, a]));
+          fenom = order.map(id => map.get(id)).filter(Boolean);
+          animals.forEach(a => { if (!fenom.find(f => f.id === a.id)) fenom.push(a); });
+        }
+      } catch(e) {}
+      if (!fenom.length) {
+        fenom = [...animals];
+        for (let i = fenom.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [fenom[i], fenom[j]] = [fenom[j], fenom[i]];
+        }
+      }
+
+      let reorderMode = false;
+      const grid = document.getElementById('fenomenGrid');
+      const btn = document.getElementById('reorderBtn');
+      const hint = document.getElementById('fenomenHint');
+      let draggedIdx = null, draggedTile = null;
+
+      function renderGrid() {
+        grid.innerHTML = '';
+        fenom.forEach((f, idx) => {
+          const tile = document.createElement('div');
+          tile.className = 'fenomen-tile';
+          tile.dataset.idx = idx;
+          tile.draggable = reorderMode;
+          
+          if (!reorderMode) {
+            const link = document.createElement('a');
+            link.href = `doma/data/uhly/${f.id}_uhly.html`;
+            link.target = '_blank';
+            link.style.display = 'block'; link.style.width = '100%'; link.style.height = '100%'; link.style.position = 'relative';
+            link.innerHTML = `<img src="doma/ilustrace/${f.id}.jpg" onerror="this.style.display='none'" alt="${f.name}"><div class="tile-caption">${f.name}</div>`;
+            tile.appendChild(link);
+          } else {
+            tile.innerHTML = `<img src="doma/ilustrace/${f.id}.jpg" onerror="this.style.display='none'" alt="${f.name}"><div class="tile-caption">${f.name}</div>`;
+            tile.addEventListener('dragstart', (e) => { draggedIdx = parseInt(tile.dataset.idx); tile.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedIdx); });
+            tile.addEventListener('dragend', () => { tile.classList.remove('dragging'); document.querySelectorAll('.fenomen-tile').forEach(t => t.classList.remove('drag-over')); });
+            tile.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; tile.classList.add('drag-over'); });
+            tile.addEventListener('dragleave', () => { tile.classList.remove('drag-over'); });
+            tile.addEventListener('drop', (e) => {
+              e.preventDefault(); tile.classList.remove('drag-over');
+              if (draggedIdx === null) return;
+              const targetIdx = parseInt(tile.dataset.idx);
+              if (draggedIdx !== targetIdx) { [fenom[draggedIdx], fenom[targetIdx]] = [fenom[targetIdx], fenom[draggedIdx]]; renderGrid(); }
+              draggedIdx = null;
+            });
+            tile.addEventListener('touchstart', (e) => { draggedTile = tile; draggedIdx = parseInt(tile.dataset.idx); tile.classList.add('dragging'); }, {passive: false});
+            tile.addEventListener('touchmove', (e) => {
+              if (!draggedTile) return; e.preventDefault();
+              const touch = e.touches[0];
+              const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+              document.querySelectorAll('.fenomen-tile').forEach(t => t.classList.remove('drag-over'));
+              if (elem && elem.closest('.fenomen-tile')) { const target = elem.closest('.fenomen-tile'); if (target !== draggedTile) target.classList.add('drag-over'); }
+            }, {passive: false});
+            tile.addEventListener('touchend', (e) => {
+              if (!draggedTile) return; e.preventDefault();
+              const touch = e.changedTouches[0];
+              const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+              if (elem && elem.closest('.fenomen-tile')) {
+                const target = elem.closest('.fenomen-tile');
+                const targetIdx = parseInt(target.dataset.idx);
+                if (targetIdx !== draggedIdx && targetIdx >= 0) { [fenom[draggedIdx], fenom[targetIdx]] = [fenom[targetIdx], fenom[draggedIdx]]; renderGrid(); }
+              }
+              if (draggedTile) draggedTile.classList.remove('dragging');
+              document.querySelectorAll('.fenomen-tile').forEach(t => t.classList.remove('drag-over'));
+              draggedTile = null; draggedIdx = null;
+            });
+          }
+          grid.appendChild(tile);
+        });
+        grid.classList.toggle('reorder-mode', reorderMode);
+      }
+
+      btn.addEventListener('click', () => {
+        reorderMode = !reorderMode;
+        if (reorderMode) {
+          btn.textContent = 'Uložit pořadí';
+          hint.textContent = 'přetáhni karty pro přeskládání';
+          btn.style.color = 'var(--accent)'; btn.style.borderColor = 'var(--accent)';
+        } else {
+          btn.textContent = 'Přeskládat';
+          hint.textContent = 'klikni na kartu → otevře pohádku';
+          btn.style.color = 'var(--dim)'; btn.style.borderColor = 'var(--border)';
+          try { localStorage.setItem('fenomeny_order', JSON.stringify(fenom.map(f => f.id))); } catch(e) {}
+        }
+        renderGrid();
+      });
+
+      renderGrid();
+    })();
+  </script>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 6 — NÁSTROJE (akordeony)
+══════════════════════════════════════════ -->
+<section class="panel" id="p5">
+  <div class="max-w">
+    <div class="label center">Ekosystém</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">Nástroje</h2>
+
+    <div class="tool-grid" id="toolGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 7 — O PROJEKTU
+══════════════════════════════════════════ -->
+<section class="panel" id="p6">
+  <div class="max-w">
+    <div class="label center">Konec · Nebo začátek</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">O projektu</h2>
+
+    <div class="acc-item" style="max-width:600px;margin:0 auto">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Licence</span><span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner" style="display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap;">
+          <img src="doma/ilustrace/michaela_about.jpg" alt="Michaela Nováková" class="licence-photo">
+          <div style="flex:1 1 200px;">
+            <p>Tato metoda a všechny nástroje jsou vydány pod licencí <strong>Creative Commons BY-NC-SA 4.0</strong>.</p>
+            <p>Smíš je volně používat, sdílet, upravovat — s uvedením autorství a nekomerčně.</p>
+            <p style="font-size:0.7rem; color:var(--dim);"><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a> · <a href="https://artmisanovak-prog.github.io/chces-mys/" target="_blank">web</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="acc-item" style="max-width:600px;margin:0 auto">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Zpětná vazba</span><span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <p>Tato metoda vzniká za pohybu. Každá reakce, každý otisk, každý sdílený moment ji formuje.</p>
+          <form id="feedbackForm" style="display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem;">
+            <input type="email" placeholder="Tvůj e-mail (nepovinný)" style="background:var(--bg); border:1px solid var(--border); padding:0.4rem; color:var(--text); font-family:inherit; font-size:0.8rem;">
+            <textarea placeholder="Tvoje zpráva..." style="background:var(--bg); border:1px solid var(--border); padding:0.4rem; color:var(--text); font-family:inherit; font-size:0.8rem; min-height:80px;"></textarea>
+            <button type="submit" style="background:var(--accent); color:var(--bg); border:none; padding:0.4rem 1rem; font-family:inherit; font-size:0.7rem; text-transform:uppercase; cursor:pointer; align-self:flex-start;">Odeslat</button>
+          </form>
+          <p style="font-size:0.7rem; color:var(--dim); margin-top:0.5rem;">Napiš na <strong>chcesmys@gmail.com</strong> nebo sdílej svůj otisk na přehlídce jevů.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="meta-grid">
+      <div class="meta-item"><div class="meta-label">Autorka</div><div class="meta-val">Michaela Nováková</div></div>
+      <div class="meta-item"><div class="meta-label">Metoda</div><div class="meta-val">Chceš myš? Fyzika jazyka</div></div>
+      <div class="meta-item"><div class="meta-label">Architektura</div><div class="meta-val">Repo dům</div></div>
+      <div class="meta-item"><div class="meta-label">Vydáno</div><div class="meta-val">2025</div></div>
+      <div class="meta-item"><div class="meta-label">Kontakt</div><div class="meta-val"><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></div></div>
+      <div class="meta-item"><div class="meta-label">Online</div><div class="meta-val"><a href="https://artmisanovak-prog.github.io/chces-mys/" target="_blank">repo</a></div></div>
+      <div class="meta-item"><div class="meta-label">Licence</div><div class="meta-val">CC BY-NC-SA 4.0</div></div>
+      <div class="meta-item"><div class="meta-label">Balíček</div><div class="meta-val">díl I — 9 karet + myš</div></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /scroll-track -->
+
+<script>
+// ── GLOBÁLNÍ NAVIGACE ──
+const track = document.getElementById('track');
+const panels = document.querySelectorAll('.panel');
+let currentPanel = 0;
+
+function goTo(i) {
+  if (i < 0 || i >= panels.length) return;
+  panels[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+}
+
+function scrollTo(dir) {
+  const next = Math.max(0, Math.min(panels.length-1, currentPanel + dir));
+  goTo(next);
+}
+window.scrollTo = scrollTo;
+
+track.addEventListener('scroll', () => {
+  const idx = Math.round(track.scrollLeft / window.innerWidth);
+  if (idx !== currentPanel) {
+    currentPanel = idx;
+  }
+});
+
+// ── AKORDEONY (obecná funkce) ──
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+window.toggleAcc = toggleAcc;
+
+// ── KLÁVESNICE ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') scrollTo(1);
+  if (e.key === 'ArrowLeft') scrollTo(-1);
+});
+
+// ── NAČTENÍ MYŠÍ STRÁNKY ──
+(async function() {
+  try {
+    const resp = await fetch('doma/data/uhly/mys_uhly.html');
+    const html = await resp.text();
+    document.getElementById('mys-loaded-content').innerHTML = html;
+    // Znovu spustit skripty uvnitř? Vyžadovalo by to extrakci, ale to nechci.
+  } catch(e) {
+    document.getElementById('mys-loaded-content').innerHTML = '<p class="center" style="color:var(--dim)">Stránku se nepodařilo načíst.</p>';
+  }
+})();
+
+// ── UHLOMĚR ──
+(function() {
+  const UHLY_MYS = [
+    { nazev: 'Všeobecný (Konkrétní)', stupne: 0, barva: '#ffffff' },
+    { nazev: 'Analogický (Kulturní)', stupne: 30, barva: '#a8d5a2' },
+    { nazev: 'Filozofický', stupne: 60, barva: '#b3d4ff' },
+    { nazev: 'Naivní', stupne: 90, barva: '#40e0d0' },
+    { nazev: 'Jazykový', stupne: 120, barva: '#c8a2c8' },
+    { nazev: 'Metaforický (Symbolický)', stupne: 150, barva: '#2e8b57' },
+    { nazev: 'Asociační', stupne: 180, barva: '#d2b48c' },
+    { nazev: 'Intro (Introspektivní)', stupne: 210, barva: '#ffd700' },
+    { nazev: 'Ironický', stupne: 240, barva: '#ffa500' },
+    { nazev: 'Groteskní', stupne: 270, barva: '#dc143c' },
+    { nazev: 'Absurdní', stupne: 300, barva: '#c71585' },
+    { nazev: 'Surrealistický', stupne: 330, barva: '#8b4513' }
+  ];
+
+  const canvas = document.getElementById('mysWheelCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const CX = 150, CY = 150, RMAX = 132, RMIN = 38;
+  let activeSegment = -1;
+
+  function drawWheel() {
+    ctx.clearRect(0,0,300,300);
+    const sa = (Math.PI*2)/12;
+    UHLY_MYS.forEach((u,i) => {
+      const startA = -Math.PI/2 + i*sa + 0.04;
+      const endA = startA + sa - 0.08;
+      ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,RMAX,startA,endA); ctx.closePath();
+      ctx.fillStyle = (activeSegment === i) ? u.barva + 'aa' : u.barva + '20';
+      ctx.fill();
+      ctx.strokeStyle = (activeSegment === i) ? u.barva : 'rgba(168,152,128,.2)';
+      ctx.lineWidth = (activeSegment === i) ? 2 : 1;
+      ctx.stroke();
+      const midA = startA + (sa-0.08)/2;
+      const lr = (RMAX+RMIN)/2 + 6;
+      const lx = CX + Math.cos(midA)*lr;
+      const ly = CY + Math.sin(midA)*lr;
+      ctx.save(); ctx.translate(lx,ly); ctx.rotate(midA + Math.PI/2);
+      ctx.fillStyle = (activeSegment === i) ? '#fff' : u.barva;
+      ctx.font = '300 7px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(u.nazev.split(' ')[0], 0, 0);
+      ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+    ctx.fillStyle = '#0f0f0f'; ctx.fill();
+    ctx.strokeStyle = 'rgba(168,152,128,.2)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(168,152,128,.3)'; ctx.font = '300 9px "Space Grotesk"';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('12 úhlů', CX, CY);
+  }
+
+  // Akordeon
+  const accContainer = document.getElementById('mysAccordion');
+  function buildAccordion() {
+    accContainer.innerHTML = '';
+    UHLY_MYS.forEach((u, idx) => {
+      const item = document.createElement('div');
+      item.className = 'mys-acc-item';
+      item.id = 'mys-acc-'+idx;
+      const trigger = document.createElement('div');
+      trigger.className = 'mys-acc-trigger';
+      trigger.innerHTML = `<span>${u.nazev} <span class="sub">${u.stupne}°</span></span><span class="mys-acc-arrow">▼</span>`;
+      trigger.addEventListener('click', () => toggleMysAcc(idx));
+      const body = document.createElement('div');
+      body.className = 'mys-acc-body';
+      body.innerHTML = `<div class="mys-acc-inner"><p><strong>Jádro:</strong> ${u.jadro}</p><p><strong>Myš poznamená:</strong> „${u.poznamka}“</p><p><strong>Stopa v odpovědi:</strong> ${u.stopa}</p></div>`;
+      item.appendChild(trigger);
+      item.appendChild(body);
+      accContainer.appendChild(item);
+    });
+  }
+
+  function toggleMysAcc(idx) {
+    const item = document.getElementById('mys-acc-'+idx);
+    if (!item) return;
+    const trigger = item.querySelector('.mys-acc-trigger');
+    const body = item.querySelector('.mys-acc-body');
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('#mys-uhlomer-modul .mys-acc-body.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('#mys-uhlomer-modul .mys-acc-trigger.open').forEach(t => t.classList.remove('open'));
+    if (!isOpen) {
+      trigger.classList.add('open');
+      body.classList.add('open');
+    }
+  }
+
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scale = 300 / rect.width;
+    const mx = (e.clientX - rect.left) * scale - CX;
+    const my = (e.clientY - rect.top) * scale - CY;
+    const dist = Math.sqrt(mx*mx + my*my);
+    if (dist < RMIN || dist > RMAX) return;
+    let angle = Math.atan2(my, mx) + Math.PI/2;
+    if (angle < 0) angle += Math.PI*2;
+    const idx = Math.floor(angle / (Math.PI*2/12));
+    if (UHLY_MYS[idx]) {
+      activeSegment = idx;
+      drawWheel();
+      toggleMysAcc(idx);
+      document.getElementById('mys-acc-'+idx).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  drawWheel();
+  buildAccordion();
+})();
+
+// ── NÁSTROJE (akordeony) ──
+(function() {
+  const tools = [
+    { name: 'Týmová diagnostika', desc: 'Facilitátor přečte pohádku, tým odpovídá na tři otázky. Systém spočítá přetížené a deficitní úhly a navrhne 90minutovou intervenci.', link: 'https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/' },
+    { name: 'Fyzika jazyka', desc: 'Kreativní úkoly pro jednotlivce. Jedna diagnostická otázka, výběr úhlu, úkol z protilehlého úhlu pro rozšíření myšlení.', link: 'https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/' },
+    { name: 'Metadenik', desc: 'Losování tří karet, volné psaní, analýza textu. URL otisk se uloží na časovou osu.', link: 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html' },
+    { name: 'Přehlídka jevů', desc: 'Anonymní sdílení URL otisků na veřejnou nástěnku.', link: 'https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html' },
+    { name: 'Analyzér jazyka', desc: 'Detekuje jazykové figury v textu.', link: 'https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/analyzer.html' },
+    { name: 'Hra pro dva', desc: 'Mezitahová partnerská hra.', link: '', wip: true },
+    { name: 'Generátor', desc: 'Karty se skládají k sobě a vytvářejí vzory.', link: '', wip: true },
+    { name: 'Forenzní mapování', desc: 'Pro vyšetřovatele a právníky.', link: '', wip: true }
+  ];
+
+  const grid = document.getElementById('toolGrid');
+  tools.forEach(tool => {
+    const card = document.createElement('details');
+    card.className = 'tool-card';
+    card.innerHTML = `
+      <summary class="tool-summary">
+        <span class="tool-name" style="cursor:pointer;" onclick="event.stopPropagation(); window.open('${tool.link || '#'}', '_self')">${tool.name}</span>
+        <span class="tool-arrow">▼</span>
+      </summary>
+      <div class="tool-details">
+        <div class="tool-desc">${tool.desc}</div>
+        <div class="tool-sub-acc">
+          <details class="acc-item"><summary class="acc-trigger" style="font-size:0.7rem;">Návod k použití</summary><div class="acc-body"><div class="acc-inner">Návod v přípravě.</div></div></details>
+          <details class="acc-item"><summary class="acc-trigger" style="font-size:0.7rem;">Myš a úhly</summary><div class="acc-body"><div class="acc-inner">Popis práce myši.</div></div></details>
+          <a href="${tool.link || '#'}" class="tool-link" target="_blank">${tool.wip ? 'v přípravě' : '→ otevřít nástroj'}</a>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+    // Zabraň otevření details při kliknutí na summary jméno
+    const summary = card.querySelector('summary');
+    summary.addEventListener('click', (e) => {
+      if (e.target.classList.contains('tool-name')) {
+        e.preventDefault();
+        if (tool.link) window.open(tool.link, '_self');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
