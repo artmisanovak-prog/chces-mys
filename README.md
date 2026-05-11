@@ -11,7 +11,9 @@
 - [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
-- 
+
+- [fyzika jazyka](doma/nastroje/fyzika_jazyka.html)
+
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy kreslici](doma/nastroje/mezitahy.html)
