@@ -14,10 +14,14 @@
 - 
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
-- [meziTahy](doma/nastroje/mezitahy.html)
-- [meziTahy1](doma/nastroje/mezitahy1.html)
-- [meziTahy2](doma/nastroje/mezitahy2.html)
-- 
+- [meziTahy kreslici](doma/nastroje/mezitahy.html)
+- [meziTahy1 kreslici](doma/nastroje/mezitahy1.html)
+- [meziTahy2foto](doma/nastroje/mezitahy2.html)
+- [meziTahy1](doma/nastroje/mezitahy3.html)
+- [meziTahy2](doma/nastroje/mezitahy4.html)
+  
+
+
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
 
