@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chceš myš? — Fyzika jazyka</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #050a12; --bg-el: #0a141e;
+  --text: #e6f0fa; --dim: #3a5a70; --mid: #6a8a9a;
+  --border: #0f1a24; --accent: #c8a96e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Space Grotesk', sans-serif; font-weight: 300;
+  overflow-x: hidden;
+}
+.grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── NAVIGACE ── */
+.nav-fixed {
+  position: fixed; top: 1.2rem; left: 1.5rem; z-index: 900;
+  display: flex; gap: 0.2rem; align-items: center;
+}
+.nav-fixed::before {
+  content: ''; display: block; width: 24px; height: 1px;
+  background: var(--accent); opacity: 0.5; margin-right: 0.5rem;
+}
+.nav-btn {
+  width: 26px; height: 26px; background: transparent;
+  border: 1px solid var(--border); color: var(--dim);
+  cursor: pointer; font-size: 0.75rem; transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── SEKCE ── */
+.sec {
+  min-height: 100vh; padding: 5rem 1.5rem 4rem;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 0;
+}
+.max-w { max-width: 680px; margin: 0 auto; }
+.center { text-align: center; }
+.label {
+  font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 0.5rem;
+}
+h1 {
+  font-family: 'Spectral', serif; font-weight: 400;
+  font-size: clamp(2rem, 8vw, 4rem); letter-spacing: 0.2em; text-transform: uppercase;
+}
+h2 {
+  font-family: 'Spectral', serif; font-weight: 400;
+  font-size: clamp(1.2rem, 4vw, 2rem); letter-spacing: 0.25em; text-transform: uppercase;
+}
+.divider { width: 40px; height: 1px; background: var(--accent); opacity: 0.3; margin: 2rem auto; }
+.prose {
+  font-family: 'Spectral', serif; font-size: 1rem; line-height: 1.9; color: #a0c0d0;
+}
+.prose p { margin-bottom: 1rem; }
+.prose strong { color: var(--accent); font-weight: 500; }
+
+/* ── AKORDEONY ── */
+.acc-item { border-bottom: 1px solid var(--border); }
+.acc-trigger {
+  width: 100%; background: transparent; border: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 0; cursor: pointer; color: var(--mid);
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem;
+  letter-spacing: 0.15em; text-transform: uppercase; text-align: left;
+  transition: color 0.3s;
+}
+.acc-trigger:hover, .acc-trigger.open { color: var(--accent); }
+.acc-arrow { transition: transform 0.3s; font-size: 0.65rem; flex-shrink: 0; }
+.acc-trigger.open .acc-arrow { transform: rotate(180deg); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.7s ease; }
+.acc-body.open { max-height: 5000px; }
+.acc-inner {
+  padding: 0.5rem 0 1.5rem;
+  font-family: 'Spectral', serif; font-size: 0.95rem; line-height: 1.9; color: #a0c0d0;
+}
+.acc-inner p { margin-bottom: 0.8rem; }
+.acc-inner strong { color: var(--accent); font-weight: 500; }
+.acc-inner em { color: var(--mid); }
+
+/* ── ILUSTRACE ── */
+.ilu {
+  width: 100%; max-width: 240px; display: block; margin: 0 auto;
+  filter: grayscale(100%) contrast(1.1) brightness(0.9);
+  opacity: 0.85; border-radius: 3px; transition: opacity 0.4s;
+}
+.ilu:hover { opacity: 1; }
+
+/* ── TAGY ── */
+.tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; justify-content: center; }
+.tag {
+  font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase;
+  border: 1px solid var(--border); color: var(--dim); padding: 0.2rem 0.6rem;
+}
+
+/* ── ÚHLOMETR SVG ── */
+.protractor-wrap { position: relative; width: 300px; height: 300px; margin: 2rem auto; }
+.seg {
+  cursor: pointer; transition: opacity 0.2s;
+  fill: var(--bg-el); stroke: var(--border); stroke-width: 1;
+}
+.seg:hover { opacity: 0.7; fill: rgba(200,169,110,0.08); stroke: var(--accent); }
+.seg.active { fill: rgba(200,169,110,0.12); stroke: var(--accent); }
+.seg-label {
+  font-family: 'Space Grotesk', sans-serif; font-size: 8px;
+  fill: var(--mid); text-anchor: middle; pointer-events: none;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.seg-label.active { fill: var(--accent); }
+.eye-center {
+  fill: var(--bg); stroke: var(--border); stroke-width: 1;
+}
+.pupil { fill: var(--accent); }
+
+/* ── KLÍČ K ÚHLŮM ── */
+.angle-detail {
+  max-width: 600px; margin: 0 auto 1rem;
+  border: 1px solid var(--border); background: var(--bg-el);
+  display: none; padding: 1.5rem;
+}
+.angle-detail.visible { display: block; }
+.angle-detail-title {
+  font-family: 'Spectral', serif; color: var(--accent);
+  font-size: 1.1rem; margin-bottom: 0.3rem; letter-spacing: 0.1em;
+}
+.angle-detail-sub {
+  font-size: 0.65rem; color: var(--dim); text-transform: uppercase;
+  letter-spacing: 0.2em; margin-bottom: 1rem;
+}
+.angle-detail-row { margin-bottom: 0.8rem; }
+.angle-detail-row .k {
+  font-size: 0.58rem; color: var(--dim); text-transform: uppercase;
+  letter-spacing: 0.2em; margin-bottom: 0.2rem;
+}
+.angle-detail-row .v {
+  font-family: 'Spectral', serif; font-size: 0.9rem; color: #a0c0d0; line-height: 1.7;
+}
+
+/* ── DÍLY ── */
+.dil-header { display: flex; justify-content: space-between; align-items: baseline; width: 100%; }
+.dil-link {
+  font-size: 0.65rem; color: var(--accent); text-decoration: none;
+  border-bottom: 1px solid var(--accent); letter-spacing: 0.1em;
+  text-transform: uppercase; transition: opacity 0.3s;
+}
+.dil-link:hover { opacity: 0.7; }
+.animals-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-top: 1rem;
+}
+@media (max-width: 480px) { .animals-grid { grid-template-columns: repeat(2, 1fr); } }
+.animal-mini {
+  text-align: center; padding: 0.6rem 0.4rem;
+  border: 1px solid var(--border); background: var(--bg);
+}
+.animal-mini img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  filter: grayscale(100%) contrast(1.1); opacity: 0.7;
+  margin-bottom: 0.3rem;
+}
+.animal-mini .aname {
+  font-family: 'Spectral', serif; font-size: 0.8rem; color: var(--mid);
+}
+.animal-mini .adesc { font-size: 0.55rem; color: var(--dim); margin-top: 0.1rem; }
+.dil-placeholder {
+  font-size: 0.75rem; color: var(--dim); font-style: italic;
+  padding: 1rem 0; font-family: 'Spectral', serif;
+}
+
+/* ── GRID ILUSTRACÍ ── */
+.ilu-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; max-width: 600px; margin: 0 auto;
+}
+.ilu-tile {
+  aspect-ratio: 1; overflow: hidden; cursor: pointer;
+  position: relative;
+}
+.ilu-tile img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(100%) contrast(1.1); opacity: 0.8;
+  transition: opacity 0.3s; display: block;
+}
+.ilu-tile:hover img { opacity: 1; }
+.ilu-tile.drag-over { outline: 2px solid var(--accent); }
+.ilu-tile.dragging { opacity: 0.3; }
+.grid-controls { text-align: center; margin-bottom: 1rem; }
+.btn-preskladat {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--mid); padding: 0.5rem 1.2rem; cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem;
+  letter-spacing: 0.15em; text-transform: uppercase; transition: all 0.3s;
+}
+.btn-preskladat:hover, .btn-preskladat.active { color: var(--accent); border-color: var(--accent); }
+.btn-preskladat.active { background: rgba(200,169,110,0.05); }
+
+/* ── POHÁDKY ── */
+.fairy-load-note {
+  font-size: 0.7rem; color: var(--dim); margin-bottom: 1.5rem;
+  font-family: 'Spectral', serif; font-style: italic; text-align: center;
+}
+.fairy-ilu-row {
+  display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem;
+}
+.fairy-ilu-row img {
+  width: 80px; height: 80px; object-fit: cover;
+  filter: grayscale(100%) contrast(1.1); opacity: 0.8; flex-shrink: 0;
+}
+.fairy-card-link {
+  font-size: 0.6rem; color: var(--dim); text-decoration: none;
+  border-bottom: 1px solid var(--border); letter-spacing: 0.1em;
+  text-transform: uppercase; display: inline-block; margin-top: 0.5rem;
+  transition: all 0.3s;
+}
+.fairy-card-link:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── NÁSTROJE ── */
+.tool-note {
+  font-family: 'Spectral', serif; font-size: 0.85rem; color: var(--mid);
+  margin-bottom: 1.5rem; line-height: 1.7; max-width: 560px;
+}
+.tool-link-btn {
+  display: inline-block; margin-top: 0.6rem;
+  font-size: 0.6rem; color: var(--dim); text-decoration: none;
+  border-bottom: 1px solid var(--border); letter-spacing: 0.1em;
+  text-transform: uppercase; transition: all 0.3s;
+}
+.tool-link-btn:hover { color: var(--accent); border-color: var(--accent); }
+.tool-soon { font-size: 0.6rem; color: var(--dim); opacity: 0.5; text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* ── META GRID ── */
+.meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+  max-width: 560px; margin: 0 auto;
+}
+@media (max-width: 480px) { .meta-grid { grid-template-columns: 1fr; } }
+.meta-item .mk { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.2rem; }
+.meta-item .mv { font-family: 'Spectral', serif; font-size: 0.9rem; color: var(--mid); }
+.meta-item a { color: var(--mid); text-decoration: none; border-bottom: 1px solid var(--border); transition: all 0.3s; }
+.meta-item a:hover { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-fixed">
+  <button class="nav-btn" onclick="navSection(-1)" title="Předchozí">↑</button>
+  <button class="nav-btn" onclick="navSection(1)" title="Další">↓</button>
+</div>
+
+<!-- ═══════════════════════════════════
+     S0 — ÚVOD
+═══════════════════════════════════ -->
+<section class="sec" id="s0">
+  <div class="max-w center" style="padding-top:8vh">
+    <div class="label">Fyzika jazyka</div>
+    <h1 style="color:var(--accent)">Chceš myš?</h1>
+    <p style="font-size:0.62rem;letter-spacing:0.4em;color:var(--dim);text-transform:uppercase;margin-top:0.5rem">metoda · nástroje · fenomény</p>
+    <div class="divider"></div>
+    <div class="prose" style="max-width:500px;margin:0 auto;text-align:left">
+      <p>Tato knížka není knížka. Je to rozcestník, pracovní prostor a návod zároveň. Můžeš ji číst lineárně, nebo skákat. Všechno co potřebuješ je tu — nebo odsud vede odkaz.</p>
+      <p>Myš si všímá mezer. Toho, co ostatní přehlédli. Toho, co se zadrhlo ve vzduchu. <strong>Tato metoda dělá totéž s jazykem.</strong></p>
+      <p>Devět zvířat. Devět pohádek. Dvanáct úhlů pohledu. A nástroje, které s tím vším pracují — pro psaní, pro týmy, pro diagnostiku, pro hru.</p>
+    </div>
+    <div class="divider"></div>
+    <div class="tag-row">
+      <span class="tag">kreativní psaní</span>
+      <span class="tag">týmová diagnostika</span>
+      <span class="tag">fyzika jazyka</span>
+      <span class="tag">forenzní analýza</span>
+      <span class="tag">hra pro dva</span>
+      <span class="tag">generátor</span>
+    </div>
+    <div style="margin-top:3rem;font-size:0.6rem;color:var(--dim);letter-spacing:0.2em">
+      MICHAELA NOVÁKOVÁ — REPODUM — 2025
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S1 — MYŠ
+═══════════════════════════════════ -->
+<section class="sec" id="s1">
+  <div class="max-w">
+    <div class="label center">Princip · Střed · Meta-uzel</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:0.3rem">Myš</h2>
+    <p class="center" style="font-family:'Spectral',serif;font-style:italic;color:var(--mid);font-size:0.9rem;margin-bottom:1.5rem">ta, která si všímá</p>
+    <img src="doma/ilustrace/mys.jpg" alt="Myš" class="ilu" style="max-width:200px;margin-bottom:2rem">
+    <div class="prose" style="max-width:540px;margin:0 auto 2rem">
+      <p>Myš je malá a vidí věci z jiného úhlu. Vidí to, čeho si ostatní nevšimnou — zadrhnutou větu ve vzduchu, páva který přepočítává svá oka, čápa který zapomněl koho měl donést. A zapisuje to. Ne na papír. Do ticha, do koutů, <strong>do skulin mezi slovama</strong>.</p>
+      <p>Myš není postavou. Je to princip. Je to způsob pozorování, který tato metoda nabízí každému kdo ji použije. Ostatní zvířata jsou fenomény — každé zachytilo jeden způsob jak existovat v jazyce. <strong>Myš je ta, která je všechny vidí.</strong></p>
+      <p>Ptát se „Chceš myš?" není otázka na ni samotnou. Je to otázka na všechno. Na smysl, na jazyk, na strach, na to co si z nás kdo udělá.</p>
+    </div>
+    <div class="acc-item" style="max-width:600px;margin:0 auto" id="mysFairyAcc">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Křivá pohádka — Rovné svědectví</span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner" id="mysFairyContent">
+          <p style="color:var(--dim);font-style:italic">Načítám pohádku…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S2 — ÚHLOMETR
+═══════════════════════════════════ -->
+<section class="sec" id="s2">
+  <div class="max-w">
+    <div class="label center">Kognitivní mapa · Klíč</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:0.5rem">12 úhlů pohledu</h2>
+    <p class="center" style="font-family:'Spectral',serif;font-style:italic;color:var(--mid);font-size:0.9rem;margin-bottom:0.5rem">klikni na segment</p>
+
+    <!-- SVG úhlometr -->
+    <div class="protractor-wrap">
+      <svg id="protractorSvg" viewBox="0 0 300 300" width="300" height="300"></svg>
+    </div>
+
+    <!-- Detail zvoleného úhlu -->
+    <div class="angle-detail" id="angleDetail">
+      <div class="angle-detail-title" id="adTitle"></div>
+      <div class="angle-detail-sub" id="adSub"></div>
+      <div class="angle-detail-row">
+        <div class="k">Jádro</div>
+        <div class="v" id="adJadro"></div>
+      </div>
+      <div class="angle-detail-row">
+        <div class="k">Myš poznamená</div>
+        <div class="v" id="adMys"></div>
+      </div>
+      <div class="angle-detail-row">
+        <div class="k">Projevy</div>
+        <div class="v" id="adProjevy"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Jak myš pracuje s úhly -->
+    <div class="label" style="margin-bottom:1rem">Jak myš pracuje s úhly</div>
+    <div id="toolsAnglesAcc"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S3 — DÍLY
+═══════════════════════════════════ -->
+<section class="sec" id="s3">
+  <div class="max-w">
+    <div class="label center">Kolekce · Balíčky</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">Křivé pohádky</h2>
+    <div id="dilyAcc"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S4 — GRID ILUSTRACÍ
+═══════════════════════════════════ -->
+<section class="sec" id="s4">
+  <div class="max-w">
+    <div class="label center">Interaktivní přehled</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:1.5rem">Fenomény</h2>
+    <div class="grid-controls">
+      <button class="btn-preskladat" id="btnPreskladat" onclick="toggleDrag()">přeskládat</button>
+    </div>
+    <div class="ilu-grid" id="iluGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S5 — POHÁDKY
+═══════════════════════════════════ -->
+<section class="sec" id="s5">
+  <div class="max-w">
+    <div class="label center">Texty · Záznamy</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:1rem">Pohádky</h2>
+    <p class="fairy-load-note">Pohádky se načítají z karet. Funguje online a lokálně přes server.</p>
+    <div id="pohadkyAcc"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S6 — NÁSTROJE
+═══════════════════════════════════ -->
+<section class="sec" id="s6">
+  <div class="max-w">
+    <div class="label center">Ekosystém</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:1rem">Nástroje</h2>
+    <p class="tool-note">Nástroje fungují s kartami z tohoto balíčku. Fungují ale i samostatně — nebo s libovolnými jinými kartami ve správném formátu. Každý nástroj má 6 slotů pro karty.</p>
+    <div id="nástrojeAcc"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S7 — REPO DŮM
+═══════════════════════════════════ -->
+<section class="sec" id="s7">
+  <div class="max-w">
+    <div class="label center">Architektura · Filosofie</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">Repo dům</h2>
+    <div class="prose" style="max-width:560px;margin:0 auto">
+      <p><strong>Web bez webu.</strong> Žádný hosting, žádný cloud, žádné databáze, žádný backend. Jen repozitář na GitHubu, kde jsou nástroje propojené relativními cestami — a přes GitHub Pages funguje online i offline.</p>
+      <p>Všechny cesty jsou jednotné. Ilustrace je vždy v <code style="color:var(--accent);font-size:0.85rem">doma/ilustrace/zvire.jpg</code>. Data vždy v <code style="color:var(--accent);font-size:0.85rem">doma/data/uhly/zvire_uhly.html</code>. Díky tomu funguje vše v každém prostředí bez přenastavení.</p>
+      <p><strong>Karta jako API.</strong> Každé zvíře je samostatná HTML stránka která v sobě nese pohádku, ilustraci, 12 úhlů, generativní věty, audio odkaz, diagnostiku. Nástroje z karet čtou — karta je zdrojem pravdy. Oprav ji jednou, změní se všude.</p>
+      <p><strong>URL jako stav.</strong> Místo databáze pracuji s URL otiskem. Otisk nese informaci o dominantních úhlech, o kartách, o sezení. Dá se sdílet, uložit, vrátit. Kód je díky tomu třikrát kratší než ekvivalentní serverový nástroj.</p>
+      <p><strong>Data vlastní kupující.</strong> Vše běží lokálně nebo přes GitHub Pages. Žádná data neodcházejí nikam, kde by je někdo jiný kontroloval. Tato knížka je sama Repo dům — rozbal zip, otevři <code style="color:var(--accent);font-size:0.85rem">index.html</code>.</p>
+    </div>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:500px;margin:0 auto">
+      <div style="border:1px solid var(--border);border-right:none;padding:0.8rem 1rem">
+        <div style="font-size:0.52rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.2em">Vlastnictví</div>
+        <div style="font-family:'Spectral',serif;font-size:0.85rem;margin-top:0.2rem">Jedno zaplacení, navždy tvoje</div>
+      </div>
+      <div style="border:1px solid var(--border);padding:0.8rem 1rem">
+        <div style="font-size:0.52rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.2em">Nezávislost</div>
+        <div style="font-family:'Spectral',serif;font-size:0.85rem;margin-top:0.2rem">Bez předplatného, bez cloudu</div>
+      </div>
+      <div style="border:1px solid var(--border);border-right:none;border-top:none;padding:0.8rem 1rem">
+        <div style="font-size:0.52rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.2em">Transparentnost</div>
+        <div style="font-family:'Spectral',serif;font-size:0.85rem;margin-top:0.2rem">Kód je otevřený a čitelný</div>
+      </div>
+      <div style="border:1px solid var(--border);border-top:none;padding:0.8rem 1rem">
+        <div style="font-size:0.52rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.2em">Rozšiřitelnost</div>
+        <div style="font-family:'Spectral',serif;font-size:0.85rem;margin-top:0.2rem">Dokup balíček, přidej složku</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     S8 — LICENCE + METADATA
+═══════════════════════════════════ -->
+<section class="sec" id="s8">
+  <div class="max-w">
+    <div class="label center">Konec · Nebo začátek</div>
+    <h2 class="center" style="color:var(--accent);margin-bottom:2rem">O projektu</h2>
+    <div class="acc-item" style="max-width:600px;margin:0 auto">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Licence</span><span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <p>Tato metoda a všechny nástroje jsou vydány pod licencí <strong>Creative Commons BY-NC-SA 4.0</strong>.</p>
+          <p>Smíš je volně používat, sdílet, upravovat, zařadit do vlastních systémů — za podmínky, že uvedeš autorství a zdroj, a nebudeš to komerčně prodávat bez dohody.</p>
+          <p>Sdílení bez poplatku je záměrné. Šíření je způsob reklamy bez reklamy.</p>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item" style="max-width:600px;margin:0 auto">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>Zpětná vazba</span><span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <p>Tato metoda vzniká za pohybu. Každá reakce ji formuje. Napiš na <strong>chcesmys@gmail.com</strong> nebo sdílej svůj otisk na přehlídce jevů.</p>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meta-grid">
+      <div class="meta-item"><div class="mk">Autorka</div><div class="mv">Michaela Nováková</div></div>
+      <div class="meta-item"><div class="mk">Metoda</div><div class="mv">Chceš myš? Fyzika jazyka</div></div>
+      <div class="meta-item"><div class="mk">Architektura</div><div class="mv">Repo dům</div></div>
+      <div class="meta-item"><div class="mk">Vydáno</div><div class="mv">2025</div></div>
+      <div class="meta-item"><div class="mk">Kontakt</div><div class="mv"><a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></div></div>
+      <div class="meta-item"><div class="mk">Online</div><div class="mv"><a href="https://artmisanovak-prog.github.io/chces-mys/" target="_blank">artmisanovak-prog.github.io</a></div></div>
+      <div class="meta-item"><div class="mk">Licence</div><div class="mv">CC BY-NC-SA 4.0</div></div>
+      <div class="meta-item"><div class="mk">Balíček</div><div class="mv">díl I — 9 karet + myš</div></div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+
+const angles = [
+  { deg:0, name:"Absurdní", sub:"Logika naruby",
+    jadro:"Hledá rozpor, paradox, místo kde svět přestal dávat smysl.",
+    mys:"Zde se někdo nespokojil s vysvětlením. Zde někdo potřeboval, aby svět byl důsledně nedůsledný.",
+    projevy:"Důraz na nesmysl, na zhroucení pravidel, na absurditu systému." },
+  { deg:30, name:"Ironický", sub:"Převrácení ve směšné",
+    jadro:"Vidí propast mezi záměrem a výsledkem, mezi pózou a skutečností.",
+    mys:"Zde někdo ví, že věci nejsou tím čím se zdají. A dělá mu dobře, že to ví dřív než ostatní.",
+    projevy:"Odhalení pokrytectví, trapnosti, sebeklamu. Lehký sarkasmus, hořký úsměv." },
+  { deg:60, name:"Surrealistický", sub:"Volné asociace",
+    jadro:"Spojuje nespojitelné. Myslí v obrazech, ne v argumentech.",
+    mys:"Zde někdo neinterpretuje. Nechá příběh, aby se v něm rozléval. A pak zapíše co vyplavalo.",
+    projevy:"Bizarní spojení, snová logika, obraz bez vysvětlení. Krása která se nehodí." },
+  { deg:90, name:"Naivní", sub:"Dětská logika",
+    jadro:"Ptá se jednoduše. Odpovídá přímo. Nepřidává.",
+    mys:"Zde někdo nepotřebuje být chytrý. Potřebuje být pravdivý. A to je mnohem těžší.",
+    projevy:"Přímočará morálka, jednoduchá emoce, čistý dojem bez racionalizace." },
+  { deg:120, name:"Asociační", sub:"Rychlé spojení",
+    jadro:"Myšlení skrz osobní asociace, nečekané souvislosti.",
+    mys:"Zde někdo nemyslí lineárně. Myslí síťově. Každé slovo je uzel, každá věta spouští deset dalších.",
+    projevy:"Řetěz asociací, odbočky, osobní příhody, skokové myšlení." },
+  { deg:150, name:"Metaforický", sub:"Obraz — význam",
+    jadro:"Vše je symbolem něčeho většího. Nic není jen to co je.",
+    mys:"Zde někdo čte pohádku jako šifru. Každé zvíře, každý pohyb je klíčem k něčemu nevyslovenému.",
+    projevy:"Dekódování symbolů, hledání skrytého významu, převod obrazu do abstrakce." },
+  { deg:180, name:"Jazykový", sub:"Hra se slovy",
+    jadro:"Slyší slovo, větu, rytmus. Forma je obsah.",
+    mys:"Zde někdo nerozlišuje mezi tím co se říká a jak se to říká. Způsob vyjádření je pro něj nejvyšším sdělením.",
+    projevy:"Citace konkrétní formulace, analýza rytmu, hříčka, zvukomalba." },
+  { deg:210, name:"Filozofický", sub:"Existenciální otázky",
+    jadro:"Hledá univerzální pravdu, podstatu bytí, smysl za smyslem.",
+    mys:"Zde někdo neodpovídá na otázku. Odpovídá na otázku která je za otázkou. A možná ani to ne.",
+    projevy:"Obecná pravda, metafyzický tón, důraz na podstatu ne na děj." },
+  { deg:240, name:"Analytický", sub:"Co vidíš to je",
+    jadro:"Drží se faktů. Děj je děj. Není třeba hledat skryté významy.",
+    mys:"Zde někdo důvěřuje tomu co je napsáno. Protože ví, že pod povrchem často nic není.",
+    projevy:"Převyprávění děje, konstatování faktů, odpor k interpretaci." },
+  { deg:270, name:"Groteskní", sub:"Komické do extrému",
+    jadro:"Vidí přehnané, karikující, temně komické. Smích který škrábe.",
+    mys:"Zde někdo ví, že tragédie a komedie jsou sestry. Nejlepší způsob jak mluvit o bolesti je udělat z ní cirkus.",
+    projevy:"Důraz na přehnanost, trapnost, černý humor, karikaturu." },
+  { deg:300, name:"Kulturní", sub:"Vztahy a archetypy",
+    jadro:"Hledá vzorce. Přirovnává k něčemu co už zná.",
+    mys:"Zde někdo věří, že nic není nové pod sluncem. Každý příběh už byl vyprávěn — jen v jiném převleku.",
+    projevy:"Odkaz na jiný příběh, mýtus, archetyp, historickou paralelu." },
+  { deg:330, name:"Introspektivní", sub:"Vnitřní monolog",
+    jadro:"Projekce vlastního prožitku. Příběh je záminka k sebepoznání.",
+    mys:"Zde někdo nereflektuje pohádku. Reflektuje sebe skrze pohádku. A je ochoten to přiznat.",
+    projevy:"Osobní zkušenost, emoce, vzpomínka. „Cítím…", „Dotklo se mě…"" }
+];
+
+const toolsAngles = [
+  { name:"Fyzika jazyka", icon:"✍",
+    desc:"Myš doporučuje kreativní úkol z protilehlého úhlu. Pokud má uživatel dominantní asociační úhel, dostane úkol analytický. Rozšiřuje myšlení přes hranici komfortní zóny.",
+    link:"https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" },
+  { name:"Metadenik", icon:"📔",
+    desc:"Myš analyzuje úhly v napsaném textu a ukládá výsledek jako URL otisk na časovou osu. Postupem času vzniká kognitivní mapa autora — přehled jak se mění dominantní úhly. Pro skupiny lze sdílet skupinovým klíčem a mapy porovnávat.",
+    link:"https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html" },
+  { name:"Mezitahy", icon:"🎲",
+    desc:"Myš pracuje s úhly křížově. Každý hráč losuje kartu a dostane úhel — ale kreslí úkol z úhlu svého partnera, ne vlastního. Výsledná kresba se hodnotí strukturou čar (ne obsahem) a sdílí jako URL. Skicák umožňuje porovnání obou hodnocení.",
+    link:null },
+  { name:"Anotátor", icon:"🖊",
+    desc:"Vrstva uvnitř kódu každé karty. Ikona myši v rohu — pod heslem — umožňuje anotovat stránku přímo na ploše: opravovat text, přidávat poznámky, nahrávat zvukové komentáře. Stav stránky lze sdílet jako URL otisk.",
+    link:null },
+  { name:"HTML pro tisk", icon:"🖨",
+    desc:"Sada tisknutelných souborů: karty, jezdci pro hodnocení struktury kresby, navigace, krabička ke složení, pravidla a QR kódy odkazující na audio pohádky.",
+    link:null },
+  { name:"Týmová diagnostika", icon:"👥",
+    desc:"Facilitátor = myš. Přečte pohádku, tým odpovídá na tři otázky (smysl, zaujetí, aplikace). Myš přiřadí každé odpovědi úhel, spočítá přetížené a deficitní úhly a navrhne 90minutovou intervenci — úkol z protilehlého úhlu.",
+    link:"https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/" }
+];
+
+const dily = [
+  { cislo:1, nazev:"Křivá pohádka — díl první",
+    zvirata:[
+      {id:"mys",name:"Myš",desc:"Meta-uzel. Ta, která si všímá."},
+      {id:"kocour",name:"Kocour",desc:"Dokončovač vět."},
+      {id:"ryba",name:"Ryba",desc:"Rappující ticho."},
+      {id:"zajic",name:"Zajíc",desc:"Omyl jako hrdina."},
+      {id:"motyl",name:"Motýl",desc:"Proměna bez vzpomínky."},
+      {id:"pav",name:"Páv",desc:"Přepočítavač ok."},
+      {id:"krokodyl",name:"Krokodýl",desc:"Nehybnost jako čin."},
+      {id:"pavouk",name:"Pavouk",desc:"Architekt mezer."},
+      {id:"netopyr",name:"Netopýr",desc:"Vidí bez světla."},
+      {id:"lemur",name:"Lemur",desc:"Dívá se na stranu."}
+    ]},
+  { cislo:2, nazev:"Křivá pohádka — díl druhý",
+    zvirata:[
+      {id:"slon",name:"Slon",desc:"Třešně které nedozrají."},
+      {id:"had",name:"Had",desc:"Svléká se ze sebe."},
+      {id:"jednorozec",name:"Jednorožec",desc:"Existuje proto, že věříme."},
+      {id:"plamenak",name:"Plameňák",desc:"Hlavou dolů, srdcem vzhůru."},
+      {id:"kravy",name:"Krávy",desc:"Kolektivní paměť."},
+      {id:"parohy",name:"Parohy",desc:"Tíha ozdoby."},
+      {id:"zelva",name:"Želva",desc:"Domov, který nosí s sebou."}
+    ]},
+  { cislo:3, nazev:"Křivá pohádka — díl třetí",
+    zvirata:[
+      {id:"panda",name:"Panda",desc:"Výjimečnost jako past."},
+      {id:"vlk",name:"Vlk",desc:"Smečka bez smečky."},
+      {id:"liska",name:"Liška",desc:"Chytrost jako osamělost."},
+      {id:"tygr",name:"Tygr",desc:"Pruhy nelze smazat."},
+      {id:"osel",name:"Osel",desc:"Tvrdohlavost jako věrnost."},
+      {id:"hvezdice",name:"Hvězdice",desc:"Roste zpátky."},
+      {id:"veverka",name:"Veverka",desc:"Zásoby na zimu která nepřijde."},
+      {id:"zralok",name:"Žralok",desc:"Pohyb jako nutnost."},
+      {id:"prase",name:"Prase",desc:"Blato jako pohodlí."}
+    ]},
+  { cislo:4, nazev:"Křivá pohádka — díl čtvrtý",
+    zvirata:[
+      {id:"hyeny",name:"Hyeny",desc:"Smích nad tím co bolí."},
+      {id:"zizala",name:"Žížala",desc:"Pohybuje se skrz."},
+      {id:"drak",name:"Drak",desc:"Střeží to co nepotřebuje."},
+      {id:"husy",name:"Husy",desc:"Hluk jako signál."},
+      {id:"beran",name:"Beran",desc:"Čelí hlavou."},
+      {id:"moucha",name:"Moucha",desc:"Vidí tisíci očima."},
+      {id:"vrabec",name:"Vrabec",desc:"Nenápadná přítomnost všude."},
+      {id:"psi_smecka",name:"Psí smečka",desc:"Hierarchie v pohybu."},
+      {id:"opice",name:"Opice",desc:"Napodobuje proto aby pochopila."}
+    ]},
+  { cislo:5, nazev:"Křivá pohádka — díl pátý", zvirata:[] },
+  { cislo:6, nazev:"Křivá pohádka — díl šestý", zvirata:[] }
+];
+
+const cards = [
+  {id:"kocour",name:"Kocour",url:"doma/data/uhly/kocour_uhly.html"},
+  {id:"ryba",name:"Ryba",url:"doma/data/uhly/ryba_uhly.html"},
+  {id:"zajic",name:"Zajíc",url:"doma/data/uhly/zajic_uhly.html"},
+  {id:"motyl",name:"Motýl",url:"doma/data/uhly/motyl_uhly.html"},
+  {id:"pav",name:"Páv",url:"doma/data/uhly/pav_uhly.html"},
+  {id:"krokodyl",name:"Krokodýl",url:"doma/data/uhly/krokodyl_uhly.html"},
+  {id:"pavouk",name:"Pavouk",url:"doma/data/uhly/pavouk_uhly.html"},
+  {id:"netopyr",name:"Netopýr",url:"doma/data/uhly/netopyr_uhly.html"},
+  {id:"lemur",name:"Lemur",url:"doma/data/uhly/lemur_uhly.html"}
+];
+
+const nastroje = [
+  { name:"Fyzika jazyka",
+    desc:"Kreativní jazykové miniatury pro jednotlivce. Jedna diagnostická otázka, výběr úhlu, úkol z protilehlého úhlu. Jazykové figury jako nástroj stylu. Funguje i bez karet — nebo s libovolnými 6 kartami.",
+    link:"https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/",
+    linkText:"→ fenomény" },
+  { name:"Analyzér jazyka",
+    desc:"Detekuje 27 jazykových figur v textu — elipsu, anaforu, epiforu a další. Přiřazuje je k úhlům a vizualizuje rozložení.",
+    link:"https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/analyzer.html",
+    linkText:"→ analyzér" },
+  { name:"Metadenik",
+    desc:"Losování tří karet, volné psaní, analýza textu. URL otisk se uloží na časovou osu jako barevný proužek — vzniká kognitivní mapa autora v čase. Skupinové mapy pro porovnávání.",
+    link:"https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html",
+    linkText:"→ metadenik" },
+  { name:"Přehlídka jevů",
+    desc:"Anonymní sdílení URL otisků na veřejnou nástěnku. Bez textu, bez obrázků — jen kognitivní stopy. Skupinové klíče pro porovnávání v týmech.",
+    link:"https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html",
+    linkText:"→ nástěnka" },
+  { name:"Týmová diagnostika",
+    desc:"Facilitátor přečte pohádku, tým odpovídá na tři otázky. Systém spočítá přetížené a deficitní úhly a navrhne 90minutovou intervenci. Funguje s libovolnými 6 kartami.",
+    link:"https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/",
+    linkText:"→ slovník mezer" },
+  { name:"Mezitahy", desc:"Mezitahová partnerská hra. Každý losuje kartu, dostane úhel partnera, kreslí z jeho úhlu. Hodnocení strukturou čar, sdílení, skicák.", link:null, linkText:null },
+  { name:"Generátor", desc:"Karty se skládají k sobě a vytvářejí vzory. Generátor tvoří scénáře, choreografie, herní prostředí, vědecké teorie, workshopy.", link:null, linkText:null },
+  { name:"Forenzní mapování", desc:"Pro vyšetřovatele a právníky. Mapování jazykových odchylek ve výpovědích. Baseline případu, jazykové mezery, co chybí, co nikdo neřekl.", link:null, linkText:null },
+  { name:"HTML pro tisk", desc:"Tisknutelné karty, jezdci, krabička ke složení, pravidla, QR kódy k audio pohádkám.", link:null, linkText:null }
+];
+
+// ══════════════════════════════════════
+// NAVIGACE
+// ══════════════════════════════════════
+const sections = Array.from(document.querySelectorAll('.sec'));
+let currentSec = 0;
+
+function navSection(dir) {
+  const next = Math.max(0, Math.min(sections.length - 1, currentSec + dir));
+  sections[next].scrollIntoView({ behavior: 'smooth' });
+  currentSec = next;
+}
+
+// track current section on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      currentSec = sections.indexOf(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => observer.observe(s));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') navSection(1);
+  if (e.key === 'ArrowUp') navSection(-1);
+});
+
+// ══════════════════════════════════════
+// AKORDEONY
+// ══════════════════════════════════════
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+window.toggleAcc = toggleAcc;
+
+// ══════════════════════════════════════
+// FETCH POHÁDEK
+// ══════════════════════════════════════
+async function fetchFairy(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('not ok');
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const inner = doc.querySelector('.fairy-inner');
+    return inner ? inner.innerHTML : '<p><em>Obsah nenalezen.</em></p>';
+  } catch(e) {
+    return '<p><em>Pohádku nelze načíst. Otevřete přes GitHub Pages nebo lokální server.</em></p>';
+  }
+}
+
+// Načtení pohádky myši
+fetchFairy('doma/data/uhly/mys_uhly.html').then(html => {
+  document.getElementById('mysFairyContent').innerHTML = html;
+});
+
+// ══════════════════════════════════════
+// ÚHLOMETR SVG
+// ══════════════════════════════════════
+function buildProtractor() {
+  const svg = document.getElementById('protractorSvg');
+  const cx = 150, cy = 150, outerR = 130, innerR = 42;
+
+  angles.forEach((angle, i) => {
+    const startDeg = i * 30 - 90;
+    const endDeg = (i + 1) * 30 - 90;
+    const s1 = startDeg * Math.PI / 180;
+    const e1 = endDeg * Math.PI / 180;
+
+    const x1 = cx + outerR * Math.cos(s1);
+    const y1 = cy + outerR * Math.sin(s1);
+    const x2 = cx + outerR * Math.cos(e1);
+    const y2 = cy + outerR * Math.sin(e1);
+    const ix1 = cx + innerR * Math.cos(s1);
+    const iy1 = cy + innerR * Math.sin(s1);
+    const ix2 = cx + innerR * Math.cos(e1);
+    const iy2 = cy + innerR * Math.sin(e1);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'seg');
+    path.setAttribute('data-idx', i);
+    path.setAttribute('d',
+      `M ${ix1} ${iy1} L ${x1} ${y1} A ${outerR} ${outerR} 0 0 1 ${x2} ${y2} L ${ix2} ${iy2} A ${innerR} ${innerR} 0 0 0 ${ix1} ${iy1} Z`
+    );
+    path.addEventListener('click', () => selectAngle(i));
+    svg.appendChild(path);
+
+    // Label
+    const midDeg = i * 30 - 90 + 15;
+    const midRad = midDeg * Math.PI / 180;
+    const labelR = 88;
+    const tx = cx + labelR * Math.cos(midRad);
+    const ty = cy + labelR * Math.sin(midRad);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('class', 'seg-label');
+    text.setAttribute('id', `seg-label-${i}`);
+    text.setAttribute('x', tx);
+    text.setAttribute('y', ty);
+    text.setAttribute('dominant-baseline', 'middle');
+
+    // Two lines: short name
+    const shortName = angle.name.length > 8 ? angle.name.substring(0, 7) + '.' : angle.name;
+    text.textContent = shortName;
+    svg.appendChild(text);
+  });
+
+  // Center eye
+  const eyeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  eyeCircle.setAttribute('class', 'eye-center');
+  eyeCircle.setAttribute('cx', cx); eyeCircle.setAttribute('cy', cy);
+  eyeCircle.setAttribute('r', innerR - 2);
+  svg.appendChild(eyeCircle);
+
+  const pupil = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  pupil.setAttribute('class', 'pupil');
+  pupil.setAttribute('cx', cx); pupil.setAttribute('cy', cy);
+  pupil.setAttribute('r', 6);
+  svg.appendChild(pupil);
+}
+
+let selectedAngle = null;
+
+function selectAngle(i) {
+  const angle = angles[i];
+
+  // Reset all segments
+  document.querySelectorAll('.seg').forEach((s, idx) => {
+    s.classList.toggle('active', idx === i);
+  });
+  document.querySelectorAll('.seg-label').forEach((l, idx) => {
+    l.classList.toggle('active', idx === i);
+  });
+
+  // Show detail
+  const det = document.getElementById('angleDetail');
+  det.classList.add('visible');
+  document.getElementById('adTitle').textContent = `${angle.deg}° — ${angle.name}`;
+  document.getElementById('adSub').textContent = angle.sub;
+  document.getElementById('adJadro').textContent = angle.jadro;
+  document.getElementById('adMys').textContent = angle.mys;
+  document.getElementById('adProjevy').textContent = angle.projevy;
+
+  selectedAngle = i;
+  det.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ══════════════════════════════════════
+// NÁSTROJE ÚHLŮ (jak myš pracuje)
+// ══════════════════════════════════════
+function buildToolsAngles() {
+  const container = document.getElementById('toolsAnglesAcc');
+  toolsAngles.forEach(tool => {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.innerHTML = `
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>${tool.icon} ${tool.name}</span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <p>${tool.desc}</p>
+          ${tool.link ? `<a href="${tool.link}" target="_blank" class="tool-link-btn">→ otevřít nástroj</a>` : '<span class="tool-soon">v přípravě</span>'}
+        </div>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+// DÍLY
+// ══════════════════════════════════════
+function buildDily() {
+  const container = document.getElementById('dilyAcc');
+  dily.forEach(dil => {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+
+    let animalsHtml = '';
+    if (dil.zvirata.length > 0) {
+      animalsHtml = `<div class="animals-grid">` +
+        dil.zvirata.map(z => `
+          <div class="animal-mini">
+            <img src="doma/ilustrace/${z.id}.jpg" onerror="this.style.display='none'" alt="${z.name}">
+            <div class="aname">${z.name}</div>
+            <div class="adesc">${z.desc}</div>
+          </div>`).join('') +
+        `</div>`;
+    } else {
+      animalsHtml = `<p class="dil-placeholder">Připravujeme…</p>`;
+    }
+
+    item.innerHTML = `
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <div class="dil-header">
+          <span>${dil.nazev}</span>
+          <a href="#" class="dil-link" onclick="event.stopPropagation()">koupit balíček →</a>
+        </div>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">${animalsHtml}</div>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+// GRID ILUSTRACÍ
+// ══════════════════════════════════════
+let gridOrder = cards.map((_, i) => i);
+let dragMode = false;
+let dragSrc = null;
+
+function buildGrid() {
+  const grid = document.getElementById('iluGrid');
+  grid.innerHTML = '';
+  gridOrder.forEach((cardIdx, pos) => {
+    const card = cards[cardIdx];
+    const tile = document.createElement('div');
+    tile.className = 'ilu-tile';
+    tile.dataset.pos = pos;
+    tile.dataset.cardIdx = cardIdx;
+    tile.innerHTML = `<img src="doma/ilustrace/${card.id}.jpg" onerror="this.style.display='none'" alt="${card.name}">`;
+
+    if (dragMode) {
+      tile.draggable = true;
+      tile.addEventListener('dragstart', () => { dragSrc = pos; tile.classList.add('dragging'); });
+      tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+      tile.addEventListener('dragover', e => { e.preventDefault(); tile.classList.add('drag-over'); });
+      tile.addEventListener('dragleave', () => tile.classList.remove('drag-over'));
+      tile.addEventListener('drop', e => {
+        e.preventDefault();
+        tile.classList.remove('drag-over');
+        if (dragSrc !== null && dragSrc !== pos) {
+          const tmp = gridOrder[dragSrc];
+          gridOrder[dragSrc] = gridOrder[pos];
+          gridOrder[pos] = tmp;
+          buildGrid();
+        }
+      });
+    } else {
+      tile.addEventListener('click', () => {
+        window.location.href = card.url;
+      });
+    }
+    grid.appendChild(tile);
+  });
+}
+
+function toggleDrag() {
+  dragMode = !dragMode;
+  const btn = document.getElementById('btnPreskladat');
+  btn.classList.toggle('active', dragMode);
+  btn.textContent = dragMode ? 'hotovo' : 'přeskládat';
+  buildGrid();
+}
+window.toggleDrag = toggleDrag;
+
+// ══════════════════════════════════════
+// POHÁDKY (fetch)
+// ══════════════════════════════════════
+function buildPohadky() {
+  const container = document.getElementById('pohadkyAcc');
+  cards.forEach(card => {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.innerHTML = `
+      <button class="acc-trigger" onclick="toggleAcc(this);loadPohadka(this,'${card.url}','${card.id}','${card.name}')">
+        <span>${card.name}</span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <div class="fairy-ilu-row">
+            <img src="doma/ilustrace/${card.id}.jpg" onerror="this.style.display='none'" alt="${card.name}">
+            <div>
+              <a href="${card.url}" class="fairy-card-link" target="_blank">→ otevřít kartu online</a>
+            </div>
+          </div>
+          <div class="pohadka-text" data-url="${card.url}">
+            <p style="color:var(--dim);font-style:italic">Klikni pro načtení pohádky…</p>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+async function loadPohadka(btn, url, id, name) {
+  const body = btn.nextElementSibling;
+  const textEl = body.querySelector('.pohadka-text');
+  if (textEl.dataset.loaded) return;
+  textEl.innerHTML = '<p style="color:var(--dim);font-style:italic">Načítám…</p>';
+  const html = await fetchFairy(url);
+  textEl.innerHTML = html;
+  textEl.dataset.loaded = '1';
+}
+window.loadPohadka = loadPohadka;
+
+// ══════════════════════════════════════
+// NÁSTROJE
+// ══════════════════════════════════════
+function buildNastroje() {
+  const container = document.getElementById('nástrojeAcc');
+  nastroje.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+    item.innerHTML = `
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        <span>${n.name}</span>
+        <span class="acc-arrow">▼</span>
+      </button>
+      <div class="acc-body">
+        <div class="acc-inner">
+          <p>${n.desc}</p>
+          ${n.link
+            ? `<a href="${n.link}" target="_blank" class="tool-link-btn">${n.linkText}</a>`
+            : '<span class="tool-soon">v přípravě</span>'}
+        </div>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+buildProtractor();
+buildToolsAngles();
+buildDily();
+buildGrid();
+buildPohadky();
+buildNastroje();
+</script>
+</body>
+</html>
