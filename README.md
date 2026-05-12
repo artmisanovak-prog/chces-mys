@@ -27,6 +27,8 @@
   
 - [generator_struktur](doma/nastroje/generator_struktur.html)
 
+- [generator_struktur1](doma/nastroje/generator_struktur1.html)
+  
 - [kreslici_analyzer](doma/nastroje/kreslici_analyzer.html)
   hra perspektiv = mezi vztahy
 
