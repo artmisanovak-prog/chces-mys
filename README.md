@@ -74,7 +74,8 @@ kreativita, fyzika jazyka, metadenik
 - [ebook2](doma/nastroje/ebook2.html)
 - [ebook3](doma/nastroje/ebook3.hml)
 
-
+- [diagnostika tymu](doma/mimo/diagnostika_tymu.html
+- )
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
