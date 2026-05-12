@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Chceš myš? · Kompoziční generátor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1815; color: #e8e0d0; font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 1rem;
+    }
+    .app { width: 100%; max-width: 900px; }
+    h1 { font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0.5rem; color: #d4c8b0; }
+    .subtitle { font-size: 0.8rem; color: #a89880; margin-bottom: 1.5rem; }
+
+    .panel {
+      background: #25221e; border: 1px solid #3a3228; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;
+    }
+    .panel-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #8b7a62; margin-bottom: 0.8rem; }
+
+    .card-pool { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .card-pool img { width: 60px; height: 84px; object-fit: cover; border-radius: 3px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+    .card-pool img.selected { border-color: #c0aa90; opacity: 0.7; }
+
+    .canvas { display: flex; flex-wrap: wrap; gap: 1rem; min-height: 150px; border: 1px dashed #3a3228; padding: 1rem; border-radius: 4px; align-items: center; justify-content: center; }
+    .canvas img { width: 80px; height: 112px; object-fit: cover; border-radius: 4px; cursor: grab; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .canvas img:active { cursor: grabbing; }
+
+    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.8rem 0; }
+    .btn {
+      background: #2a241e; border: 1px solid #5a5248; color: #c0aa90; padding: 0.4rem 1rem;
+      font-size: 0.75rem; border-radius: 4px; cursor: pointer; transition: 0.2s;
+    }
+    .btn:hover { background: #3a3228; border-color: #a89880; }
+    .btn.primary { background: #4a4030; border-color: #a89880; color: #f0e8d8; }
+
+    .output-box {
+      background: #0f0d0a; border: 1px solid #3a3228; padding: 1rem; margin-top: 1rem; font-size: 1rem; line-height: 1.6;
+      white-space: pre-wrap; color: #d4c8b0; min-height: 60px; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <h1>🎴 Kompoziční generátor</h1>
+  <div class="subtitle">Vylosuj, přetáhni na plátno, vygeneruj texty z úhlů.</div>
+
+  <div class="panel">
+    <div class="panel-title">1. Vyber karty (klikej)</div>
+    <div class="card-pool" id="cardPool"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="randomSelect(3)">🎲 Vylosovat 3</button>
+      <button class="btn" onclick="randomSelect(6)">🎲 Vylosovat 6</button>
+      <button class="btn" onclick="randomSelect(9)">🎲 Vylosovat 9</button>
+      <button class="btn" onclick="clearSelection()">🗑 Zrušit výběr</button>
+    </div>
+    <button class="btn" onclick="addSelectedToCanvas()">⬇ Přesunout vybrané na plátno</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">2. Plátno (přetahuj myší)</div>
+    <div class="canvas" id="canvas" ondragover="event.preventDefault()" ondrop="dropToCanvas(event)"></div>
+    <div class="btn-row" style="margin-top:0.8rem;">
+      <button class="btn" onclick="clearCanvas()">🧹 Vyčistit plátno</button>
+      <button class="btn" onclick="sortCanvas()">↔ Seřadit zleva</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">3. Generuj strukturu</div>
+    <button class="btn primary" onclick="generateStructure()">✨ Generovat</button>
+    <button class="btn" onclick="shareComposition()">🔗 Kopírovat odkaz</button>
+    <div class="output-box" id="outputBox">Zde se objeví vygenerovaná struktura...</div>
+  </div>
+</div>
+
+<script>
+  // --- KONFIGURÁCIA KARIET (relatívne cesty, offline) ---
+  const CARD_REGISTRY = [
+    { id: 'mys',      name: 'Myš',       url: 'doma/data/uhly/mys_uhly.html',      img: 'doma/ilustrace/mys.jpg' },
+    { id: 'kocour',   name: 'Kocour',    url: 'doma/data/uhly/kocour_uhly.html',   img: 'doma/ilustrace/kocour.jpg' },
+    { id: 'ryba',     name: 'Ryba',      url: 'doma/data/uhly/ryba_uhly.html',     img: 'doma/ilustrace/ryba.jpg' },
+    { id: 'zajic',    name: 'Zajíc',     url: 'doma/data/uhly/zajic_uhly.html',    img: 'doma/ilustrace/zajic.jpg' },
+    { id: 'pav',      name: 'Páv',       url: 'doma/data/uhly/pav_uhly.html',      img: 'doma/ilustrace/pav.jpg' },
+    { id: 'motyl',    name: 'Motýl',     url: 'doma/data/uhly/motyl_uhly.html',    img: 'doma/ilustrace/motyl.jpg' },
+    { id: 'netopyr',  name: 'Netopýr',   url: 'doma/data/uhly/netopyr_uhly.html',  img: 'doma/ilustrace/netopyr.jpg' },
+    { id: 'krokodyl', name: 'Krokodýl',  url: 'doma/data/uhly/krokodyl_uhly.html', img: 'doma/ilustrace/krokodyl.jpg' },
+    { id: 'pavouk',   name: 'Pavouk',    url: 'doma/data/uhly/pavouk_uhly.html',   img: 'doma/ilustrace/pavouk.jpg' },
+    // --- nové karty ---
+    { id: 'panda',      name: 'Panda',       url: 'doma/data/uhly/panda_uhly.html',      img: 'doma/ilustrace/panda.jpg' },
+    { id: 'vlk',        name: 'Vlk',         url: 'doma/data/uhly/vlk_uhly.html',        img: 'doma/ilustrace/vlk.jpg' },
+    { id: 'jednorozec', name: 'Jednorožec',  url: 'doma/data/uhly/jednorozec_uhly.html', img: 'doma/ilustrace/jednorozec.jpg' },
+    { id: 'lemur',      name: 'Lemur',       url: 'doma/data/uhly/lemur_uhly.html',      img: 'doma/ilustrace/lemur.jpg' },
+    { id: 'plamenak',   name: 'Plameňák',    url: 'doma/data/uhly/plamenak_uhly.html',   img: 'doma/ilustrace/plamenak.jpg' },
+    { id: 'kravy',      name: 'Krávy',       url: 'doma/data/uhly/kravy_uhly.html',      img: 'doma/ilustrace/kravy.jpg' },
+    { id: 'parohy',     name: 'Parohy',      url: 'doma/data/uhly/parohy_uhly.html',     img: 'doma/ilustrace/parohy.jpg' },
+    { id: 'zelva',      name: 'Želva',       url: 'doma/data/uhly/zelva_uhly.html',      img: 'doma/ilustrace/zelva.jpg' },
+    { id: 'prase',      name: 'Prase',       url: 'doma/data/uhly/prase_uhly.html',      img: 'doma/ilustrace/prase.jpg' },
+    { id: 'osel',       name: 'Osel',        url: 'doma/data/uhly/osel_uhly.html',       img: 'doma/ilustrace/osel.jpg' },
+    { id: 'hvezdice',   name: 'Hvězdice',    url: 'doma/data/uhly/hvezdice_uhly.html',   img: 'doma/ilustrace/hvezdice.jpg' },
+    { id: 'hyena',      name: 'Hyena',       url: 'doma/data/uhly/hyena_uhly.html',      img: 'doma/ilustrace/hyena.jpg' },
+    { id: 'liska',      name: 'Liška',       url: 'doma/data/uhly/liska_uhly.html',      img: 'doma/ilustrace/liska.jpg' },
+    { id: 'psi_smecka', name: 'Psí smečka',  url: 'doma/data/uhly/psi_smecka_uhly.html', img: 'doma/ilustrace/psi_smecka.jpg' },
+    { id: 'opice',      name: 'Opice',       url: 'doma/data/uhly/opice_uhly.html',      img: 'doma/ilustrace/opice.jpg' },
+    { id: 'zralok',     name: 'Žralok',      url: 'doma/data/uhly/zralok_uhly.html',     img: 'doma/ilustrace/zralok.jpg' }
+  ];
+
+  let selectedCards = [];
+  let canvasCards = [];
+
+  // --- RENDER ---
+  function renderPool() {
+    const pool = document.getElementById('cardPool');
+    pool.innerHTML = '';
+    CARD_REGISTRY.forEach(card => {
+      const img = document.createElement('img');
+      img.src = card.img;
+      img.alt = card.name;
+      img.dataset.id = card.id;
+      if (selectedCards.includes(card.id)) img.classList.add('selected');
+      img.addEventListener('click', () => toggleCardSelection(card.id));
+      pool.appendChild(img);
+    });
+  }
+
+  function toggleCardSelection(id) {
+    if (selectedCards.includes(id)) {
+      selectedCards = selectedCards.filter(c => c !== id);
+    } else {
+      if (selectedCards.length >= 9) return;
+      selectedCards.push(id);
+    }
+    renderPool();
+  }
+
+  function randomSelect(count) {
+    const shuffled = [...CARD_REGISTRY].sort(() => Math.random() - 0.5);
+    selectedCards = shuffled.slice(0, count).map(c => c.id);
+    renderPool();
+  }
+
+  function clearSelection() {
+    selectedCards = [];
+    renderPool();
+  }
+
+  // --- PLÁTNO ---
+  function renderCanvas() {
+    const canvas = document.getElementById('canvas');
+    canvas.innerHTML = '';
+    canvasCards.forEach((id, index) => {
+      const card = CARD_REGISTRY.find(c => c.id === id);
+      if (!card) return;
+      const img = document.createElement('img');
+      img.src = card.img;
+      img.alt = card.name;
+      img.draggable = true;
+      img.dataset.index = index;
+      img.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', index.toString());
+        e.target.style.opacity = '0.5';
+      });
+      img.addEventListener('dragend', e => { e.target.style.opacity = '1'; });
+      img.addEventListener('dragover', e => e.preventDefault());
+      img.addEventListener('drop', e => {
+        e.preventDefault();
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        const toIndex = parseInt(img.dataset.index, 10);
+        if (!isNaN(fromIndex) && !isNaN(toIndex) && fromIndex !== toIndex) {
+          const moved = canvasCards.splice(fromIndex, 1)[0];
+          canvasCards.splice(toIndex, 0, moved);
+          renderCanvas();
+        }
+      });
+      canvas.appendChild(img);
+    });
+  }
+
+  function dropToCanvas(e) {
+    e.preventDefault();
+    // Ak pretiahneš z card pool, musíme to riešiť cez dátový atribút
+    // V demo režime stačí pridať vybrané karty tlačidlom
+  }
+
+  function addSelectedToCanvas() {
+    selectedCards.forEach(id => {
+      if (!canvasCards.includes(id) && canvasCards.length < 9) {
+        canvasCards.push(id);
+      }
+    });
+    selectedCards = [];
+    renderPool();
+    renderCanvas();
+  }
+
+  function clearCanvas() {
+    canvasCards = [];
+    renderCanvas();
+  }
+
+  function sortCanvas() {
+    canvasCards.sort((a, b) => {
+      const idxA = selectedCards.indexOf(a);
+      const idxB = selectedCards.indexOf(b);
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
+    });
+    renderCanvas();
+  }
+
+  // --- GENEROVANIE ---
+  async function generateStructure() {
+    if (canvasCards.length === 0) {
+      document.getElementById('outputBox').textContent = 'Nejdřív přesuň karty na plátno.';
+      return;
+    }
+
+    const outputBox = document.getElementById('outputBox');
+    outputBox.textContent = 'Načítám úhly z karet...';
+
+    try {
+      const cardTexts = await Promise.all(canvasCards.map(async (cardId) => {
+        const card = CARD_REGISTRY.find(c => c.id === cardId);
+        if (!card) return null;
+
+        try {
+          const response = await fetch(card.url);
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const htmlText = await response.text();
+          const angles = extractAnglesFromHTML(htmlText);
+          if (angles && angles.length > 0) {
+            const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+            return { name: card.name, text: randomAngle.text };
+          }
+          return { name: card.name, text: `[chybí data úhlů v ${card.url}]` };
+        } catch (err) {
+          console.error('Chyba pro kartu ' + card.name, err);
+          return { name: card.name, text: `[nepodařilo se načíst: ${err.message}]` };
+        }
+      }));
+
+      const output = cardTexts
+        .filter(t => t !== null)
+        .map(item => `[${item.name}]: ${item.text}`)
+        .join('\n\n');
+
+      outputBox.textContent = output || 'Nepodařilo se získat žádné texty.';
+    } catch (error) {
+      outputBox.textContent = 'Chyba při generování: ' + error.message;
+    }
+  }
+
+  // Extrahuje pole 'angles' z HTML súboru
+  function extractAnglesFromHTML(html) {
+    const scriptMatch = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+    if (!scriptMatch) return null;
+
+    for (const scriptTag of scriptMatch) {
+      if (scriptTag.includes('const angles = [')) {
+        const scriptContent = scriptTag.replace(/<script[^>]*>/gi, '').replace(/<\/script>/gi, '');
+        try {
+          const getAngles = new Function(scriptContent + '; return angles;');
+          const result = getAngles();
+          return Array.isArray(result) ? result : null;
+        } catch (e) {
+          console.error('Chyba parsování skriptu:', e);
+        }
+      }
+    }
+    return null;
+  }
+
+  function shareComposition() {
+    const params = new URLSearchParams();
+    params.set('cards', canvasCards.join(','));
+    const url = window.location.origin + window.location.pathname + '?' + params.toString();
+    navigator.clipboard?.writeText(url)
+      .then(() => alert('Odkaz zkopírován: ' + url))
+      .catch(() => alert('Odkaz: ' + url));
+  }
+
+  // --- INICIALIZÁCIA ---
+  function init() {
+    renderPool();
+    renderCanvas();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('cards')) {
+      const ids = urlParams.get('cards').split(',').filter(id => CARD_REGISTRY.some(c => c.id === id));
+      canvasCards = ids;
+      renderCanvas();
+    }
+  }
+  init();
+</script>
+</body>
+</html>
