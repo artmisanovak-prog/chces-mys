@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chceš myš? | Diagnostika týmu</title>
+    <style>
+        /* Ponechávám původní elegantní styly – jen drobné rozšíření */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
+        :root{
+            --bg:#fff;--s:#f5f2ed;--s2:#ede7dd;--text:#1a1a1a;--dim:#666;--dim2:#999;
+            --a:#8b5a2b;--a2:#6b4226;--ab:rgba(139,90,43,.08);--ab2:rgba(139,90,43,.18);
+            --border:rgba(139,90,43,.2);--border-hi:rgba(139,90,43,.4);
+            --serif:'Cormorant Garamond',Georgia,serif;--mono:'DM Mono',monospace;
+            --radius:4px;
+        }
+        /* … celý původní CSS, jen přidám pár úprav … */
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:16px;line-height:1.6}
+        .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+        nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+        .nav-back{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-decoration:none}
+        .nav-back:hover{color:var(--text)}
+        .card-selector{display:flex;align-items:center;gap:8px}
+        .card-selector label{font-family:var(--mono);font-size:10px;color:var(--dim);text-transform:uppercase}
+        .card-selector select{font-family:var(--mono);font-size:13px;padding:4px 8px;border:1px solid var(--border);background:var(--s);color:var(--text)}
+        .hero{padding:40px 0 30px;border-bottom:1px solid var(--border)}
+        .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:300;line-height:1.1;margin-bottom:6px}
+        .hero em{font-style:italic;color:var(--a)}
+        .hero-veta{font-style:italic;color:var(--dim);border-left:1px solid var(--a);padding-left:16px;max-width:460px;margin:14px 0 20px;line-height:1.9}
+        .otazky-box{background:var(--ab);border:1px solid var(--border);padding:18px 22px;margin:2rem 0 1.5rem;border-radius:var(--radius)}
+        .otazky-box h3{font-family:var(--serif);font-size:1.3rem;font-weight:300;margin-bottom:12px;color:var(--a)}
+        .otazka-item{margin-bottom:14px}
+        .otazka-item strong{display:block;font-size:.9rem;margin-bottom:4px;color:var(--text)}
+        .otazka-item p{font-size:.9rem;color:var(--dim);line-height:1.5}
+        .setup{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;background:var(--s);padding:16px 20px;border:1px solid var(--border);border-radius:var(--radius)}
+        .setup label{font-family:var(--mono);font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+        .setup input[type=number]{width:70px;padding:8px 10px;border:1px solid var(--border);font-family:var(--mono);font-size:1rem;text-align:center;background:#fff}
+        .btn{ padding:10px 20px;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;background:var(--a);color:#fff;border:1px solid var(--a);cursor:pointer;transition:all .15s;border-radius:var(--radius);display:inline-flex;align-items:center;gap:6px}
+        .btn:hover{background:var(--a2);border-color:var(--a2)}
+        .btn-outline{background:transparent;color:var(--a);border:1px solid var(--a)}
+        .btn-outline:hover{background:var(--ab);color:var(--a2)}
+        .btn-danger{background:transparent;color:var(--dim2);border:1px solid var(--border);font-size:.65rem;padding:6px 12px}
+        .btn-danger:hover{border-color:var(--a);color:var(--a)}
+        .autosave-row{display:none;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:2rem;padding:12px 18px;background:var(--ab);border:1px solid var(--border);border-radius:var(--radius)}
+        .autosave-info{font-family:var(--serif);font-size:.85rem;color:var(--dim);flex:1;font-style:italic}
+        /* karty členů */
+        .clen-details{border:1px solid var(--border);background:#fff;margin-bottom:.8rem;border-radius:var(--radius)}
+        .clen-summary{cursor:pointer;padding:14px 18px;font-size:1rem;list-style:none;display:flex;align-items:center;gap:.8rem;user-select:none}
+        .clen-summary::before{content:"▸";font-family:var(--mono);font-size:.7rem;color:var(--dim);transition:transform .2s}
+        .clen-details[open] .clen-summary::before{transform:rotate(90deg)}
+        .clen-summary:hover{background:var(--ab)}
+        .clen-summary-jmeno{font-weight:500;flex:1;color:var(--text)}
+        .clen-summary-stav{font-family:var(--mono);font-size:.7rem;color:var(--dim2);text-transform:uppercase;letter-spacing:.1em}
+        .stav-hotovo{color:var(--a)!important;font-weight:700}
+        .clen-telo{padding:16px 22px;border-top:1px solid var(--border);background:var(--s)}
+        .otazka-radek{margin-bottom:16px}
+        .otazka-radek label{display:block;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a);margin-bottom:6px}
+        .otazka-radek textarea{width:100%;padding:8px 12px;border:1px solid var(--border);font-family:var(--serif);font-size:.9rem;line-height:1.6;resize:vertical;min-height:60px;background:#fff}
+        .otazka-radek select{width:100%;padding:8px 12px;border:1px solid var(--border);font-family:var(--mono);font-size:.8rem;color:var(--text);background:#fff;margin-top:4px}
+        .select-napoveda{display:block;font-family:var(--serif);font-size:.75rem;color:var(--dim2);font-style:italic;margin-top:4px}
+        .vysledky{margin-top:3rem;border-top:2px solid var(--a);padding-top:2rem}
+        .mapa-tabulka{width:100%;border-collapse:collapse;font-size:.9rem;margin:1.5rem 0}
+        .mapa-tabulka th,.mapa-tabulka td{border:1px solid var(--border);padding:10px 14px;text-align:left}
+        .mapa-tabulka th{background:var(--a);color:#fff;font-family:var(--mono);font-weight:400;font-size:.7rem;text-transform:uppercase}
+        .mapa-tabulka td{background:#fff}
+        .pretizeny{background:var(--ab)!important;font-weight:700}
+        .deficitni{color:var(--dim2)}
+        .sekce-vysledku{margin-bottom:2.5rem}
+        .sekce-vysledku h3{font-family:var(--serif);font-size:1.3rem;font-weight:300;border-bottom:1px solid var(--border);padding-bottom:.5rem;margin-bottom:1rem;color:var(--a)}
+        .workshop-box{background:var(--ab);padding:18px 22px;border:1px solid var(--border);border-radius:var(--radius);margin-top:1rem}
+        @media print{.btn,.setup,.autosave-row,.nav,.select-napoveda{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <a class="nav-back" href="../">← Zpět</a>
+    <div class="card-selector">
+        <label for="kartaSelect">Karta:</label>
+        <select id="kartaSelect"></select>
+    </div>
+</nav>
+<div class="wrap">
+    <section class="hero">
+        <h1 id="cardTitle"></h1>
+        <p class="hero-veta" id="cardVeta"></p>
+        <p id="cardFenomen" style="font-size:0.9rem;color:var(--dim);max-width:600px;"></p>
+    </section>
+
+    <!-- Otázky pro tým (načtou se dynamicky) -->
+    <div class="otazky-box" id="otazkyBox"></div>
+
+    <!-- Nastavení počtu členů -->
+    <div class="setup">
+        <label>Počet členů:</label>
+        <input type="number" id="pocet-clenu" min="1" max="30" value="4">
+        <button class="btn" onclick="vytvorKarty()">Vytvořit zápisník</button>
+    </div>
+
+    <!-- Autosave -->
+    <div class="autosave-row" id="autosave-row">
+        <span class="autosave-info">💾 Zápisník se průběžně ukládá – přežije i zavření prohlížeče.</span>
+        <button class="btn-danger" onclick="smazatZapisnik()">🗑 Vymazat zápisník</button>
+    </div>
+
+    <div id="karty-clenu"></div>
+    <div id="tlacitko-vyhodnotit" style="display:none; margin:2rem 0;">
+        <button class="btn" onclick="vyhodnotit()">Vyhodnotit – kognitivní mapa týmu</button>
+    </div>
+
+    <div id="vysledky" class="vysledky" style="display:none;"></div>
+    <div id="workshopNavrh" style="display:none;"></div>
+</div>
+
+<script>
+// =============================================
+// 1. DATABÁZE KARET (vlož sem všechny karty)
+// =============================================
+const kartyDB = {
+    kocour: {
+        nazev: "Kocour",
+        veta: "„kocour sežral dvě berušky a půl hodiny krkal tečky“",
+        fenomen: "Tyranie předčasného uzavírání v komunikaci. Kocour skáče do řeči koncem věty — dokončuje za ostatní to, co nestačili říct.",
+        otazky: [
+            { label:"Q1 – Smysl", text:"Co je podle vás hlavní pointa nebo sdělení tohoto příběhu?" },
+            { label:"Q2 – Zaujetí", text:"Která konkrétní věta, obraz nebo moment vás nejvíc zaujal/a a proč?" },
+            { label:"Q3 – Aplikace", text:"Kdyby tento příběh byl návodem nebo radou, co by vám radil dělat (nebo nedělat) ve vašem pracovním životě?" }
+        ],
+        uhly: [
+            { id:1, emoji:"🔚", nazev:"Fyzický konec věty", q3:"Zavést pravidlo 'tří teček'. Když někdo něco naznačí, musí mít prostor to rozvést." },
+            { id:2, emoji:"⏱️", nazev:"Kvaziefektivita", q3:"Měřit úspěch schůze nikoli délkou, ale počtem otevřených otázek na konci." },
+            // ... sem vlož všech 12 úhlů Kocoura (máš je ve svém původním kitu)
+            { id:12, emoji:"🍀", nazev:"Navrácené štěstí", q3:"'Beruščí rituál': když někdo cítí, že byl umlčen, položí berušku na stůl." }
+        ],
+        workshop: `<h3>Workshop: "Půl hodiny ticha"</h3>...` // volitelně
+    },
+    gepard: {
+        nazev: "Gepard",
+        veta: "„ještě to stihnu, ještě to stihnu, ještě to stihnu“",
+        fenomen: "Hyperproduktivita jako existence a kolaps z dožití se cíle.",
+        otazky: [
+            { label:"Q1 (Rychlost)", text:"Jaký je ten nekonečný závod, který definuje naši hodnotu?" },
+            { label:"Q2 (Identita)", text:"Kdybychom na měsíc přišli o schopnost být rychlí, kdo bychom byli?" },
+            { label:"Q3 (Konec chvíle)", text:"Zažil tým okamžik po velkém úspěchu, kdy nebylo kam běžet?" }
+        ],
+        uhly: [
+            { id:1, emoji:"⚡", nazev:"Blesk v těle", q3:"Oddělit 'blesk' od 'těla': Kdo jsme, když nepracujeme?" },
+            { id:2, emoji:"🏁", nazev:"Mantra stihnu", q3:"Zavést moratorium na slovo 'stihnout'." },
+            // ... doplň zbylých 10 úhlů Geparda
+            { id:12, emoji:"💺", nazev:"Blesk na penzi", q3:"Pravidelně se ptát: 'Jsme blesky, nebo lidé?'" }
+        ],
+        workshop: `<h3>Workshop: "Na konci chvíle"</h3>...`
+    }
+    // Zde přidej další karty: jedorozec, mys, pav, motyl, osel, vrabec...
+};
+
+// =============================================
+// 2. ZÍSKÁNÍ KARTY Z URL NEBO VÝBĚRU
+// =============================================
+const params = new URLSearchParams(window.location.search);
+let aktualniKartaId = params.get("karta") || "kocour"; // výchozí
+let aktualniKarta = kartyDB[aktualniKartaId];
+
+function prepniKartu(id) {
+    aktualniKartaId = id;
+    aktualniKarta = kartyDB[id];
+    // změna URL bez reloadu
+    history.pushState(null, "", "?karta=" + id);
+    nactiKartu();
+    smazatZapisnik(); // vyčistíme zápisník, protože úhly se mění
+}
+
+// =============================================
+// 3. NAČTENÍ KARTY DO UI
+// =============================================
+function nactiKartu() {
+    document.getElementById("cardTitle").innerHTML = aktualniKarta.nazev;
+    document.getElementById("cardVeta").textContent = aktualniKarta.veta;
+    document.getElementById("cardFenomen").textContent = aktualniKarta.fenomen;
+    
+    // Otázky
+    const otazkyBox = document.getElementById("otazkyBox");
+    otazkyBox.innerHTML = "<h3>Tři diagnostické otázky</h3>";
+    aktualniKarta.otazky.forEach((ot, idx) => {
+        otazkyBox.innerHTML += `
+            <div class="otazka-item">
+                <strong>${ot.label}</strong>
+                <p>${ot.text}</p>
+            </div>`;
+    });
+    
+    // Select box s úhly – vygenerujeme options
+    window.moznostiUhlu = aktualniKarta.uhly.map(u =>
+        `<option value="${u.id}">${u.id}. ${u.emoji} ${u.nazev}</option>`
+    ).join('');
+    
+    // Resetujeme karty, pokud už byly vytvořeny
+    if (document.getElementById("karty-clenu").innerHTML) {
+        vytvorKarty();
+    }
+}
+
+// =============================================
+// 4. ZÁPISNÍK – STEJNÝ JAKO PŘEDTÍM, ALE S DYNAMICKÝMI ÚHLY
+// =============================================
+const SAVE_KEY = 'chcesmys_diagnostika_v1';
+
+function ulozit() {
+    const pocet = parseInt(document.getElementById('pocet-clenu').value) || 0;
+    if (pocet < 1) return;
+    const data = { karta: aktualniKartaId, pocet, clenove: [] };
+    for (let i = 1; i <= pocet; i++) {
+        const jEl = document.getElementById(`jmeno-${i}`);
+        if (!jEl) continue;
+        data.clenove.push({
+            jmeno: jEl.value,
+            o1: document.getElementById(`odpoved-${i}-1`)?.value || '',
+            o2: document.getElementById(`odpoved-${i}-2`)?.value || '',
+            o3: document.getElementById(`odpoved-${i}-3`)?.value || '',
+            u1: document.getElementById(`uhel-${i}-1`)?.value || '',
+            u2: document.getElementById(`uhel-${i}-2`)?.value || '',
+            u3: document.getElementById(`uhel-${i}-3`)?.value || ''
+        });
+    }
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function nacistUlozene() {
+    try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (data.karta && data.karta !== aktualniKartaId) {
+            // Uložený zápisník patří jiné kartě – ignorujeme
+            return;
+        }
+        document.getElementById('pocet-clenu').value = data.pocet;
+        vytvorKartyHTML(data.pocet);
+        data.clenove.forEach((c, idx) => {
+            const i = idx + 1;
+            const jEl = document.getElementById(`jmeno-${i}`);
+            if (!jEl) return;
+            jEl.value = c.jmeno || '';
+            document.getElementById(`odpoved-${i}-1`).value = c.o1 || '';
+            document.getElementById(`odpoved-${i}-2`).value = c.o2 || '';
+            document.getElementById(`odpoved-${i}-3`).value = c.o3 || '';
+            document.getElementById(`uhel-${i}-1`).value = c.u1 || '';
+            document.getElementById(`uhel-${i}-2`).value = c.u2 || '';
+            document.getElementById(`uhel-${i}-3`).value = c.u3 || '';
+            aktualizujStav(i);
+        });
+        document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+        document.getElementById('autosave-row').style.display = 'flex';
+    } catch(e) {}
+}
+
+function smazatZapisnik() {
+    if (!confirm('Opravdu vymazat celý zápisník?')) return;
+    try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+    document.getElementById('karty-clenu').innerHTML = '';
+    document.getElementById('tlacitko-vyhodnotit').style.display = 'none';
+    document.getElementById('vysledky').style.display = 'none';
+    document.getElementById('autosave-row').style.display = 'none';
+}
+
+function aktualizujStav(i) {
+    const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim();
+    const u1 = document.getElementById(`uhel-${i}-1`)?.value;
+    const u2 = document.getElementById(`uhel-${i}-2`)?.value;
+    const u3 = document.getElementById(`uhel-${i}-3`)?.value;
+    const prirazeno = [u1, u2, u3].filter(Boolean).length;
+    document.getElementById(`nadpis-${i}`).textContent = jmeno || `Člen ${i}`;
+    const stavEl = document.getElementById(`stav-${i}`);
+    if (stavEl) {
+        stavEl.textContent = prirazeno === 3 ? '✓ hotovo' : prirazeno > 0 ? `${prirazeno}/3` : 'nevyplněno';
+        stavEl.className = 'clen-summary-stav' + (prirazeno === 3 ? ' stav-hotovo' : '');
+    }
+}
+
+function vytvorKartyHTML(pocet) {
+    const sel = `<option value="">— nevybráno —</option>${window.moznostiUhlu || ''}`;
+    let html = '';
+    for (let i = 1; i <= pocet; i++) {
+        html += `
+        <details class="clen-details" id="karta-${i}" open>
+          <summary class="clen-summary">
+            <span class="clen-summary-jmeno" id="nadpis-${i}">Člen ${i}</span>
+            <span class="clen-summary-stav" id="stav-${i}">nevyplněno</span>
+          </summary>
+          <div class="clen-telo">
+            <div class="clen-hlavicka">
+              <input class="clen-jmeno" type="text" id="jmeno-${i}" placeholder="jméno / iniciály" oninput="aktualizujStav(${i}); ulozit();">
+            </div>
+            <div class="otazka-radek">
+              <label>${aktualniKarta.otazky[0].label}</label>
+              <textarea id="odpoved-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+              <select id="uhel-${i}-1" onchange="aktualizujStav(${i}); ulozit();">${sel}</select>
+              <span class="select-napoveda">Vyber úhel, který nejvíc odpovídá odpovědi</span>
+            </div>
+            <div class="otazka-radek">
+              <label>${aktualniKarta.otazky[1].label}</label>
+              <textarea id="odpoved-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+              <select id="uhel-${i}-2" onchange="aktualizujStav(${i}); ulozit();">${sel}</select>
+            </div>
+            <div class="otazka-radek">
+              <label>${aktualniKarta.otazky[2].label}</label>
+              <textarea id="odpoved-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+              <select id="uhel-${i}-3" onchange="aktualizujStav(${i}); ulozit();">${sel}</select>
+            </div>
+          </div>
+        </details>`;
+    }
+    document.getElementById('karty-clenu').innerHTML = html;
+}
+
+function vytvorKarty() {
+    const pocet = parseInt(document.getElementById('pocet-clenu').value);
+    if (!pocet || pocet < 1) return;
+    try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+    vytvorKartyHTML(pocet);
+    document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+    document.getElementById('vysledky').style.display = 'none';
+    document.getElementById('autosave-row').style.display = 'flex';
+}
+
+// =============================================
+// 5. VYHODNOCENÍ – UPRAVENO PRO AKTUÁLNÍ KARTU
+// =============================================
+function vyhodnotit() {
+    if (!aktualniKarta) return;
+    const pocet = parseInt(document.getElementById('pocet-clenu').value);
+    const uhlyKarty = aktualniKarta.uhly;
+    const pocty = {};
+    uhlyKarty.forEach(u => pocty[u.id] = { count:0, ...u });
+    let celkem = 0;
+    for (let i = 1; i <= pocet; i++) {
+        const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim() || `Člen ${i}`;
+        for (let q = 1; q <= 3; q++) {
+            const val = document.getElementById(`uhel-${i}-${q}`)?.value;
+            if (val && pocty[val]) { pocty[val].count++; celkem++; }
+        }
+    }
+    if (celkem === 0) { alert('Přiřaď aspoň jeden úhel.'); return; }
+
+    // Kognitivní mapa – výpočet
+    const vysledky = uhlyKarty.map(u => ({
+        ...u,
+        ...pocty[u.id],
+        procento: celkem ? pocty[u.id].count / celkem : 0
+    })).sort((a,b) => b.count - a.count);
+
+    // Vykreslení tabulky
+    let html = `<h2>🧠 Kognitivní mapa týmu – ${aktualniKarta.nazev}</h2>`;
+    html += `<p>Celkem přiřazeno úhlů: <strong>${celkem}</strong></p>`;
+    html += `<table class="mapa-tabulka"><tr><th>Úhel</th><th>Počet</th><th>%</th><th>Typ</th></tr>`;
+    vysledky.forEach(p => {
+        const proc = Math.round(p.procento * 100);
+        let typ = '◇ vyvážený', trida = '';
+        if (p.count === 0) { typ = '—'; trida = 'deficitni'; }
+        else if (p.procento >= 0.30) { typ = '▲ přetížený'; trida = 'pretizeny'; }
+        else if (p.procento <= 0.10) { typ = '▽ deficitní'; trida = 'deficitni'; }
+        html += `<tr class="${trida}"><td>${p.emoji} ${p.nazev}</td><td>${p.count}×</td><td>${proc}%</td><td>${typ}</td></tr>`;
+    });
+    html += `</table>`;
+
+    // Doporučení
+    const pretizene = vysledky.filter(p => p.procento >= 0.3);
+    const deficitni = vysledky.filter(p => p.count === 0 || p.procento <= 0.1);
+    if (pretizene.length) {
+        html += `<div class="sekce-vysledku"><h3>▲ Přetížené úhly</h3>`;
+        pretizene.forEach(p => html += `<div class="uhel-vysledek"><strong>${p.emoji} ${p.nazev}</strong><div class="uhel-doporuceni">${p.q3}</div></div>`);
+        html += `</div>`;
+    }
+    if (deficitni.length) {
+        html += `<div class="sekce-vysledku"><h3>▽ Deficitní úhly</h3>`;
+        deficitni.forEach(p => html += `<div class="uhel-vysledek"><strong>${p.emoji} ${p.nazev}</strong><div class="uhel-doporuceni">${p.q3}</div></div>`);
+        html += `</div>`;
+    }
+
+    html += `<button class="btn btn-outline" onclick="window.print()">🖨 Vytisknout</button>`;
+    document.getElementById('vysledky').innerHTML = html;
+    document.getElementById('vysledky').style.display = 'block';
+    document.getElementById('vysledky').scrollIntoView({behavior:'smooth'});
+
+    // Workshop (pokud existuje)
+    if (aktualniKarta.workshop) {
+        document.getElementById('workshopNavrh').innerHTML = `<div class="workshop-box">${aktualniKarta.workshop}</div>`;
+        document.getElementById('workshopNavrh').style.display = 'block';
+    }
+}
+
+// =============================================
+// 6. INICIALIZACE
+// =============================================
+window.addEventListener('DOMContentLoaded', () => {
+    // Naplnit select karetami
+    const select = document.getElementById('kartaSelect');
+    for (let [id, karta] of Object.entries(kartyDB)) {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = karta.nazev;
+        if (id === aktualniKartaId) opt.selected = true;
+        select.appendChild(opt);
+    }
+    select.addEventListener('change', (e) => prepniKartu(e.target.value));
+    
+    nactiKartu();
+    nacistUlozene();
+});
+</script>
+</body>
+</html>
