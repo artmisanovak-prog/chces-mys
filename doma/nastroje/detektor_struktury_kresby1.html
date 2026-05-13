@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektor struktury kresby | Chceš myš?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #1a1a1a;
+            --bg-el: #222222;
+            --text: #f0e6f0;
+            --dim: #8888aa;
+            --mid: #b0a0b0;
+            --border: #333344;
+            --accent: #e0b0d0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background: var(--bg); color: var(--text); font-family: 'Space Grotesk',sans-serif; font-weight: 300; }
+        .grain { position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+        .wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem; }
+        h1,h2,h3 { font-family: 'Spectral',serif; font-weight: 400; }
+        h2 { font-size: clamp(1.2rem, 4vw, 2rem); letter-spacing: 0.2em; text-transform: uppercase; }
+        .label { font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.4rem; }
+        .center { text-align: center; }
+
+        .btn {
+            padding: 0.6rem 1.2rem; border: 1px solid var(--accent); background: transparent; color: var(--accent);
+            font-family: 'Space Grotesk',sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s; margin: 0.2rem;
+        }
+        .btn:hover { background: var(--accent); color: var(--bg); }
+
+        .upload-box {
+            border: 2px dashed var(--border); padding: 2rem; text-align: center; margin: 1rem 0; transition: border-color 0.3s;
+        }
+        .upload-box:hover { border-color: var(--accent); }
+        .preview-img { max-width: 100%; max-height: 40vh; display: block; margin: 1rem auto; border: 1px solid var(--border); }
+
+        /* --- NOVÝ PALETKA + PLÁTNO --- */
+        .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 0.5rem; margin: 1rem 0; }
+        .palette-card {
+            background: var(--bg-el); border: 1px solid var(--border); padding: 0.7rem 0.5rem;
+            text-align: center; cursor: pointer; transition: all 0.2s; user-select: none;
+            font-size: 0.75rem; color: var(--mid);
+        }
+        .palette-card:hover { border-color: var(--accent); color: var(--accent); }
+
+        .canvas-title { margin: 1.5rem 0 0.5rem; font-size: 0.8rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+        .canvas-area {
+            min-height: 4rem; padding: 0.5rem; border: 1px solid var(--border); background: var(--bg-el);
+            display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+        }
+        .canvas-chip {
+            background: var(--bg); border: 1px solid var(--accent); color: var(--accent);
+            padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer;
+            display: flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s; user-select: none;
+        }
+        .canvas-chip .count { font-weight: 500; }
+        .canvas-chip.dragging {
+            opacity: 0.6; transform: scale(1.05); z-index: 10;
+        }
+        .canvas-chip.ghost { opacity: 0.3; }
+
+        .wheel-box { text-align: center; margin: 1.5rem 0; }
+        .wheel-box canvas { max-width: 280px; height: auto; }
+        .bar-section { margin: 1.5rem 0; }
+        .bar-wrap { height: 20px; display: flex; border-radius: 2px; overflow: hidden; border: 1px solid var(--border); }
+        .bar-seg { height: 100%; transition: width 0.4s ease; }
+        .gen-veta { display: block; font-family: 'Spectral',serif; font-style: italic; font-size: 0.85rem; color: #d0c0d0; margin-top: 0.15rem; letter-spacing: 0.02em; }
+        .url-box {
+            background: var(--bg-el); padding: 1rem; border: 1px solid var(--border);
+            word-break: break-all; font-size: 0.75rem; color: var(--mid); margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="wrap">
+    <div class="center" style="margin-bottom:2rem;">
+        <div class="label">Chceš myš? meziTahy</div>
+        <h2 style="color:var(--accent);">Detektor struktury</h2>
+        <p style="color:var(--dim); font-size:0.8rem;">Vyber zvíře nebo nahraj kresbu, pak přidávej karty na plátno.</p>
+    </div>
+
+    <!-- SELEKTOR ZVÍŘETE -->
+    <div class="center" style="margin:1rem 0 1.5rem;">
+        <select id="animalSelect" style="background:var(--bg-el); color:var(--text); border:1px solid var(--border); padding:0.5rem 1rem; font-family:'Space Grotesk',sans-serif; font-size:0.8rem; cursor:pointer;">
+            <option value="">-- Vyber zvíře (nebo nahraj vlastní) --</option>
+            <option value="cap">Čáp</option>
+            <option value="mys">Myš</option>
+            <option value="kocour">Kocour</option>
+            <!-- ostatní zvířata můžeš přidat -->
+        </select>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="uploadSection">
+        <div class="upload-box" id="uploadBox">
+            <p style="color:var(--dim); margin-bottom:1rem;">Přetáhni sem obrázek nebo klikni pro výběr</p>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Nahrát</button>
+            <button class="btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment'); document.getElementById('fileInput').click()">📷 Vyfotit</button>
+        </div>
+        <img id="previewImg" class="preview-img" style="display:none;">
+        <p id="detekceStatus" style="text-align:center; font-size:0.75rem; margin-top:0.5rem;"></p>
+    </div>
+
+    <!-- NOVÁ SEKCIA: KARTY -->
+    <div id="structureSection" style="display:none;">
+        <h3 style="font-family:'Spectral',serif; color:var(--accent); margin-bottom:0.5rem;">Struktury čáry</h3>
+        <p style="color:var(--dim); font-size:0.7rem; margin-bottom:1rem;">Klikni na kartu → přidá se na plátno. Klikni na plátně → uber. Podrž a táhni → přesuneš.</p>
+        <div class="palette" id="paletteContainer"></div>
+        <div class="canvas-title">Plátno (pořadí a počet určuje výsledek)</div>
+        <div class="canvas-area" id="canvasContainer"></div>
+    </div>
+
+    <!-- VÝSLEDEK -->
+    <div id="resultSection" style="display:none;">
+        <div class="center">
+            <h3 style="font-family:'Spectral',serif; color:var(--accent); margin-bottom:1rem;">Výsledek</h3>
+            <div class="wheel-box"><canvas id="resultWheel" width="300" height="300"></canvas></div>
+            <div class="bar-section"><div class="bar-wrap" id="barWrap"></div></div>
+            <div id="vysledekDetail" style="margin-bottom:1rem; font-size:0.8rem; color:var(--mid);"></div>
+            <div class="url-box" id="urlVysledek" style="display:none;"></div>
+            <button class="btn" onclick="kopiruj('urlVysledek')">📋 Kopírovat URL</button>
+            <button class="btn" onclick="otevriMetadenik()">📅 Časová osa</button>
+            <button class="btn" onclick="otevriPorovnavac()">📊 Porovnávač</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===================== DATA =====================
+    const struktury = [
+        { nazev: "Rovné dlouhé čáry", uhelIdx: 0 },
+        { nazev: "Stínování, reálnost", uhelIdx: 1 },
+        { nazev: "Perspektiva, 3D", uhelIdx: 2 },
+        { nazev: "Jedním tahem", uhelIdx: 3 },
+        { nazev: "Pravidelnost", uhelIdx: 4 },
+        { nazev: "Písmo a text", uhelIdx: 5 },
+        { nazev: "Šrafování", uhelIdx: 6 },
+        { nazev: "Detaily", uhelIdx: 7 },
+        { nazev: "Sklon doprava", uhelIdx: 8 },
+        { nazev: "Obtahování, přetahování", uhelIdx: 9 },
+        { nazev: "Vybarvování", uhelIdx: 10 },
+        { nazev: "Nedokončené tahy, náznaky", uhelIdx: 11 }
+    ];
+
+    const defaultUhly = [
+        { nazev: "Analytický", stupne: 0, barva: "#ffffff", key: "" },
+        { nazev: "Kulturní", stupne: 30, barva: "#a8d5a2", key: "" },
+        { nazev: "Filozofický", stupne: 60, barva: "#b3d4ff", key: "" },
+        { nazev: "Naivní", stupne: 90, barva: "#40e0d0", key: "" },
+        { nazev: "Jazykový", stupne: 120, barva: "#c8a2c8", key: "" },
+        { nazev: "Metaforický", stupne: 150, barva: "#2e8b57", key: "" },
+        { nazev: "Asociační", stupne: 180, barva: "#d2b48c", key: "" },
+        { nazev: "Introspektivní", stupne: 210, barva: "#ffd700", key: "" },
+        { nazev: "Ironický", stupne: 240, barva: "#ffa500", key: "" },
+        { nazev: "Groteskní", stupne: 270, barva: "#dc143c", key: "" },
+        { nazev: "Absurdní", stupne: 300, barva: "#c71585", key: "" },
+        { nazev: "Surrealistický", stupne: 330, barva: "#8b4513", key: "" }
+    ];
+
+    // Výchozí data zvířat (pro test: čáp má plná data, ostatní placeholder)
+    const ILUSTRACE_BASE = '../ilustrace/';
+    const zvireData = {
+        cap: {
+            ilustrace: ILUSTRACE_BASE + 'cap.jpg',
+            uhly: [
+                { nazev: "Absurdní", stupne: 0, barva: "#ffffff", key: "nositel možností" },
+                { nazev: "Jazykový", stupne: 30, barva: "#a8d5a2", key: "říkanka jako manifest" },
+                { nazev: "Ironický", stupne: 60, barva: "#b3d4ff", key: "nenosím děti, ale rodím otázky" },
+                { nazev: "Filozofický", stupne: 90, barva: "#40e0d0", key: "podstata nošení" },
+                { nazev: "Surrealistický", stupne: 120, barva: "#c8a2c8", key: "stín co zpívá" },
+                { nazev: "Naivní", stupne: 150, barva: "#2e8b57", key: "prostě letí" },
+                { nazev: "Introspektivní", stupne: 180, barva: "#d2b48c", key: "osobní čáp" },
+                { nazev: "Betonový", stupne: 210, barva: "#ffd700", key: "doslovný let" },
+                { nazev: "Kulturní", stupne: 240, barva: "#ffa500", key: "mytologický čáp" },
+                { nazev: "Groteskní", stupne: 270, barva: "#dc143c", key: "groteska čápa" },
+                { nazev: "Asociační", stupne: 300, barva: "#c71585", key: "vzpomínka na čápy" },
+                { nazev: "Metaforický", stupne: 330, barva: "#8b4513", key: "říkanka jako algoritmus světa" }
+            ]
+        },
+        mys: { ilustrace: ILUSTRACE_BASE + 'mys.jpg', uhly: defaultUhly },
+        kocour: { ilustrace: ILUSTRACE_BASE + 'kocour.jpg', uhly: defaultUhly }
+    };
+
+    let aktivniUhly = defaultUhly;
+    let aktualniZvire = null;
+
+    // Stav plátna: pole objektů { structIndex: number }
+    let canvasCards = [];   // každý prvek = jedna instance karty, pořadí určuje pořadí
+
+    // ===================== VÝBĚR ZVÍŘETE =====================
+    const animalSelect = document.getElementById('animalSelect');
+    const previewImg = document.getElementById('previewImg');
+    const detekceStatus = document.getElementById('detekceStatus');
+    const structureSection = document.getElementById('structureSection');
+    const resultSection = document.getElementById('resultSection');
+
+    animalSelect.addEventListener('change', function() {
+        const klic = this.value;
+        if (!klic) {
+            aktualniZvire = null;
+            aktivniUhly = defaultUhly;
+            previewImg.style.display = 'none';
+            detekceStatus.textContent = '';
+            structureSection.style.display = 'none';
+            resultSection.style.display = 'none';
+            canvasCards = [];
+            renderCanvas();
+            return;
+        }
+        const data = zvireData[klic];
+        if (!data) return;
+        aktualniZvire = klic;
+        aktivniUhly = data.uhly;
+        previewImg.src = data.ilustrace;
+        previewImg.style.display = 'block';
+        previewImg.onerror = () => {
+            detekceStatus.textContent = '⚠ Ilustraci se nepodařilo načíst.';
+            detekceStatus.style.color = '#c0a060';
+        };
+        previewImg.onload = () => {
+            detekceStatus.textContent = '✔ Načteno: ' + animalSelect.options[animalSelect.selectedIndex].text;
+            detekceStatus.style.color = '#a0c0a0';
+        };
+        structureSection.style.display = 'block';
+        resultSection.style.display = 'none';
+        canvasCards = [];
+        renderCanvas();
+        structureSection.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+
+    // ===================== UPLOAD VLASTNÍ =====================
+    const fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        animalSelect.value = '';
+        aktualniZvire = null;
+        aktivniUhly = defaultUhly;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            previewImg.src = ev.target.result;
+            previewImg.style.display = 'block';
+            // detekce saturace
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxW = 200;
+                const scale = maxW / img.width;
+                canvas.width = maxW;
+                canvas.height = img.height * scale;
+                ctx.drawImage(img, 0,0, canvas.width, canvas.height);
+                const idata = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+                let sat = 0;
+                for (let i=0;i<idata.length;i+=4) {
+                    const r=idata[i], g=idata[i+1], b=idata[i+2];
+                    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+                    sat += max===0?0:(max-min)/max;
+                }
+                const avg = sat/(idata.length/4);
+                detekceStatus.textContent = avg<0.15 ? '✔ Černobílá kresba' : '⚠ Barevný obrázek';
+                detekceStatus.style.color = avg<0.15?'#a0c0a0':'#c0a060';
+                structureSection.style.display = 'block';
+                resultSection.style.display = 'none';
+                canvasCards = [];
+                renderCanvas();
+                structureSection.scrollIntoView({ behavior:'smooth', block:'start' });
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ===================== PALETA KARET =====================
+    const paletteContainer = document.getElementById('paletteContainer');
+    struktury.forEach((s, idx) => {
+        const card = document.createElement('div');
+        card.className = 'palette-card';
+        card.textContent = s.nazev;
+        card.addEventListener('click', () => {
+            // přidat na plátno
+            canvasCards.push({ structIndex: idx });
+            renderCanvas();
+            updateResult();
+        });
+        paletteContainer.appendChild(card);
+    });
+
+    // ===================== PLÁTNO (SORTABLE) =====================
+    const canvasContainer = document.getElementById('canvasContainer');
+    let draggedItem = null;          // element, se kterým se táhne
+    let dragStartX, dragStartY;
+    let dragOffsetX, dragOffsetY;
+    let isDragging = false;
+    let sourceIndex = -1;
+
+    function renderCanvas() {
+        // Seskupíme po sobě jdoucí stejné karty? NE, chceme jednotlivé instance, ale můžeme je sloučit pro čitelnost.
+        // Podle požadavku: "kdyz se prida vickrat ukaze se u ni cislonkolikrat" → slučujeme identické struktury.
+        // Takže z canvasCards (pole instancí) uděláme pole skupin se zachovaným pořadím.
+        const groups = [];
+        let lastStruct = null;
+        canvasCards.forEach(card => {
+            if (lastStruct && lastStruct.structIndex === card.structIndex) {
+                lastStruct.count++;
+            } else {
+                groups.push({ structIndex: card.structIndex, count: 1 });
+                lastStruct = groups[groups.length-1];
+            }
+        });
+        // Vykreslíme
+        canvasContainer.innerHTML = '';
+        groups.forEach((group, displayIndex) => {
+            const chip = document.createElement('div');
+            chip.className = 'canvas-chip';
+            chip.draggable = false;  // budeme používat vlastní drag
+            chip.dataset.structIndex = group.structIndex;
+            chip.dataset.count = group.count;
+            chip.dataset.displayIndex = displayIndex;
+            chip.innerHTML = `${struktury[group.structIndex].nazev} <span class="count">×${group.count}</span>`;
+            chip.addEventListener('click', (e) => {
+                if (isDragging) return; // přetažení nevyvolá klik
+                // odebrat jednu instanci
+                const idx = findFirstInstanceIndex(group.structIndex, displayIndex);
+                if (idx !== -1) {
+                    canvasCards.splice(idx, 1);
+                    renderCanvas();
+                    updateResult();
+                }
+            });
+            // Drag události
+            chip.addEventListener('mousedown', dragStart);
+            chip.addEventListener('touchstart', dragStart, {passive: false});
+            canvasContainer.appendChild(chip);
+        });
+    }
+
+    // Pomocná: najde první výskyt instance dané struktury, která odpovídá zobrazené skupině (musí být ve správném pořadí)
+    function findFirstInstanceIndex(structIndex, displayIndex) {
+        // displayIndex = index v groups (seskupených)
+        // Potřebujeme zjistit, kolik instancí předchází tuto skupinu.
+        const groups = getGroups();
+        let targetGroup = groups[displayIndex];
+        if (!targetGroup || targetGroup.structIndex !== structIndex) return -1;
+        let pos = 0;
+        for (let i=0; i<displayIndex; i++) {
+            pos += groups[i].count;
+        }
+        // V canvasCards od pozice pos by mělo být count instancí se structIndex.
+        // Vrátíme pozici první z nich.
+        for (let i=pos; i<pos+targetGroup.count; i++) {
+            if (canvasCards[i].structIndex === structIndex) return i;
+        }
+        return -1;
+    }
+
+    function getGroups() {
+        const groups = [];
+        let last = null;
+        canvasCards.forEach(card => {
+            if (last && last.structIndex === card.structIndex) last.count++;
+            else { groups.push({ structIndex: card.structIndex, count:1 }); last = groups[groups.length-1]; }
+        });
+        return groups;
+    }
+
+    // ===================== DRAG AND DROP =====================
+    function dragStart(e) {
+        if (e.target.classList.contains('count')) return; // nebrat číslo
+        e.preventDefault();
+        const chip = e.target.closest('.canvas-chip');
+        if (!chip) return;
+        draggedItem = chip;
+        const rect = chip.getBoundingClientRect();
+        if (e.type === 'mousedown') {
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+        } else {
+            dragStartX = e.touches[0].clientX;
+            dragStartY = e.touches[0].clientY;
+            dragOffsetX = e.touches[0].clientX - rect.left;
+            dragOffsetY = e.touches[0].clientY - rect.top;
+            document.addEventListener('touchmove', dragMove, {passive: false});
+            document.addEventListener('touchend', dragEnd);
+        }
+        sourceIndex = parseInt(chip.dataset.displayIndex);
+        isDragging = false;
+    }
+
+    function dragMove(e) {
+        e.preventDefault();
+        const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+        const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+        const dist = Math.hypot(clientX - dragStartX, clientY - dragStartY);
+        if (!isDragging && dist > 5) {
+            isDragging = true;
+            draggedItem.classList.add('dragging');
+            // vytvoříme ghost element
+            draggedItem.style.position = 'fixed';
+            draggedItem.style.zIndex = '1000';
+            draggedItem.style.left = (clientX - dragOffsetX) + 'px';
+            draggedItem.style.top = (clientY - dragOffsetY) + 'px';
+            draggedItem.style.width = draggedItem.offsetWidth + 'px';
+        }
+        if (isDragging) {
+            draggedItem.style.left = (clientX - dragOffsetX) + 'px';
+            draggedItem.style.top = (clientY - dragOffsetY) + 'px';
+            // Zvýraznění možné pozice: projít ostatní chipy a zjistit, kam patří
+            highlightDropPosition(clientX, clientY);
+        }
+    }
+
+    function dragEnd(e) {
+        document.removeEventListener('mousemove', dragMove);
+        document.removeEventListener('mouseup', dragEnd);
+        document.removeEventListener('touchmove', dragMove);
+        document.removeEventListener('touchend', dragEnd);
+        if (!draggedItem) return;
+        draggedItem.classList.remove('dragging');
+        draggedItem.style.position = '';
+        draggedItem.style.zIndex = '';
+        draggedItem.style.left = '';
+        draggedItem.style.top = '';
+        if (isDragging) {
+            const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+            const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+            const dropIndex = getDropIndex(clientX, clientY);
+            if (dropIndex !== -1 && dropIndex !== sourceIndex) {
+                // přesunout skupinu v canvasCards
+                moveGroup(sourceIndex, dropIndex);
+            }
+            clearHighlights();
+        } else {
+            // Bylo to kliknutí, už ošetřeno v click handleru
+        }
+        isDragging = false;
+        draggedItem = null;
+        sourceIndex = -1;
+    }
+
+    function getDropIndex(clientX, clientY) {
+        const chips = Array.from(canvasContainer.querySelectorAll('.canvas-chip'));
+        // Určíme, mezi které chipy patří přetahovaný prvek (podle X)
+        let targetIdx = -1;
+        for (let i=0; i<chips.length; i++) {
+            const rect = chips[i].getBoundingClientRect();
+            if (clientX < rect.left + rect.width/2) {
+                targetIdx = i;
+                break;
+            }
+        }
+        if (targetIdx === -1) targetIdx = chips.length; // na konec
+        // Ošetření, aby se nepřesunulo na stejné místo
+        if (targetIdx === sourceIndex || (targetIdx === sourceIndex+1 && sourceIndex < chips.length)) return sourceIndex;
+        return targetIdx;
+    }
+
+    function moveGroup(fromDisplayIndex, toDisplayIndex) {
+        const groups = getGroups();
+        if (fromDisplayIndex < 0 || fromDisplayIndex >= groups.length || toDisplayIndex < 0 || toDisplayIndex > groups.length) return;
+        const group = groups[fromDisplayIndex];
+        // Zjistit počet instancí před skupinou
+        let startPos = 0;
+        for (let i=0; i<fromDisplayIndex; i++) startPos += groups[i].count;
+        const count = group.count;
+        // Odstranit z canvasCards
+        const removed = canvasCards.splice(startPos, count);
+        // Zjistit novou pozici v canvasCards
+        let insertPos = 0;
+        const newGroups = [...groups];
+        newGroups.splice(fromDisplayIndex, 1);
+        newGroups.splice(toDisplayIndex > fromDisplayIndex ? toDisplayIndex-1 : toDisplayIndex, 0, group);
+        // Spočítat pozici v canvasCards pro vložení
+        for (let i=0; i< (toDisplayIndex < fromDisplayIndex ? toDisplayIndex : toDisplayIndex > fromDisplayIndex ? toDisplayIndex-1 : toDisplayIndex); i++) {
+            insertPos += (i < newGroups.length ? newGroups[i].count : 0);
+        }
+        canvasCards.splice(insertPos, 0, ...removed);
+        renderCanvas();
+        updateResult();
+    }
+
+    function highlightDropPosition(clientX, clientY) {
+        clearHighlights();
+        const chips = Array.from(canvasContainer.querySelectorAll('.canvas-chip'));
+        let target = null;
+        for (let i=0; i<chips.length; i++) {
+            const rect = chips[i].getBoundingClientRect();
+            if (clientX < rect.left + rect.width/2) {
+                target = i;
+                break;
+            }
+        }
+        // přidáme třídu 'ghost' na souseda, kam by šlo vložit (před target)
+        if (target !== null && chips[target]) {
+            chips[target].classList.add('ghost');
+        } else if (chips.length > 0) {
+            chips[chips.length-1].classList.add('ghost');
+        }
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.canvas-chip.ghost').forEach(c => c.classList.remove('ghost'));
+    }
+
+    // ===================== VÝSLEDKOVÁ ANALÝZA =====================
+    function updateResult() {
+        if (canvasCards.length === 0) {
+            resultSection.style.display = 'none';
+            return;
+        }
+        // Spočítáme skóre pro každý úhel podle výskytů v canvasCards
+        const skore = new Array(12).fill(0);
+        canvasCards.forEach(card => {
+            const uhelIdx = struktury[card.structIndex].uhelIdx;
+            skore[uhelIdx]++;
+        });
+        const maxSkore = Math.max(...skore, 1);
+        // Vytvoříme profil, ale zobrazíme v pořadí, jak jsou karty na plátně (unikátní úhly)
+        const usedAnglesOrder = [];
+        const groups = getGroups();
+        groups.forEach(group => {
+            const uhelIdx = struktury[group.structIndex].uhelIdx;
+            if (!usedAnglesOrder.includes(uhelIdx)) {
+                usedAnglesOrder.push(uhelIdx);
+            }
+        });
+        // Doplníme případné úhly, které nejsou použity, na konec
+        for (let i=0; i<12; i++) {
+            if (!usedAnglesOrder.includes(i) && skore[i] > 0) usedAnglesOrder.push(i);
+        }
+        const profil = usedAnglesOrder.map(uhelIdx => ({
+            uhel: aktivniUhly[uhelIdx],
+            pct: Math.round((skore[uhelIdx] / maxSkore) * 100)
+        }));
+
+        vykresliUhlomer(profil);
+        vykresliBar(profil);
+
+        let detailHTML = '';
+        profil.forEach(p => {
+            detailHTML += `<p style="color:${p.uhel.barva}; margin-bottom:0.5rem;">
+                <strong>${p.uhel.nazev}:</strong> ${p.pct}%`;
+            if (p.uhel.key) {
+                detailHTML += `<span class="gen-veta">„${p.uhel.key}“</span>`;
+            }
+            detailHTML += `</p>`;
+        });
+        document.getElementById('vysledekDetail').innerHTML = detailHTML;
+
+        // URL
+        const params = new URLSearchParams();
+        if (aktualniZvire) params.append('zvire', aktualniZvire);
+        profil.forEach(p => params.append('uhly', p.uhel.stupne + ':' + p.pct));
+        const urlBox = document.getElementById('urlVysledek');
+        urlBox.style.display = 'block';
+        urlBox.textContent = `${window.location.origin}${window.location.pathname}?profil=${params.toString()}`;
+
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    // ===================== VYKRESLENÍ =====================
+    function vykresliUhlomer(profil) {
+        const canvas = document.getElementById('resultWheel');
+        const ctx = canvas.getContext('2d');
+        const CX = 150, CY = 150, RMAX = 132, RMIN = 38;
+        ctx.clearRect(0,0,300,300);
+        const sa = (Math.PI*2)/12;
+        // Vykreslíme všech 12 pozic, ale jen použité vyplníme
+        for (let i=0; i<12; i++) {
+            const uhelData = aktivniUhly[i];
+            const found = profil.find(p => p.uhel === uhelData);
+            const pct = found ? found.pct : 0;
+            const startA = -Math.PI/2 + i*sa + 0.04;
+            const endA = startA + sa - 0.08;
+            const fillR = RMIN + (RMAX - RMIN) * (pct / 100);
+            ctx.beginPath();
+            ctx.moveTo(CX,CY);
+            ctx.arc(CX,CY, fillR, startA, endA);
+            ctx.closePath();
+            ctx.fillStyle = uhelData.barva + (pct > 0 ? 'aa' : '10');
+            ctx.fill();
+            ctx.strokeStyle = uhelData.barva;
+            ctx.lineWidth = pct > 0 ? 1.5 : 0.5;
+            ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+        ctx.fillStyle = '#1a1a1a'; ctx.fill();
+        ctx.fillStyle = 'rgba(200,180,200,.3)'; ctx.font = '300 9px "Space Grotesk"';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('profil', CX, CY);
+    }
+
+    function vykresliBar(profil) {
+        const barWrap = document.getElementById('barWrap');
+        barWrap.innerHTML = '';
+        profil.forEach(p => {
+            const seg = document.createElement('div');
+            seg.className = 'bar-seg';
+            seg.style.width = p.pct + '%';
+            seg.style.backgroundColor = p.uhel.barva;
+            seg.title = p.uhel.nazev + ': ' + p.pct + '%';
+            barWrap.appendChild(seg);
+        });
+    }
+
+    function kopiruj(id) {
+        navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert('URL zkopírováno!'));
+    }
+    function otevriMetadenik() {
+        const url = document.getElementById('urlVysledek').textContent;
+        window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/denik_url.html?otisk=' + encodeURIComponent(url), '_blank');
+    }
+    function otevriPorovnavac() {
+        const url = document.getElementById('urlVysledek').textContent;
+        window.open('https://artmisanovak-prog.github.io/chces-mys/doma/nastroje/prehlidka_jevu.html?otisk=' + encodeURIComponent(url), '_blank');
+    }
+    window.kopiruj = kopiruj;
+    window.otevriMetadenik = otevriMetadenik;
+    window.otevriPorovnavac = otevriPorovnavac;
+
+    // ===================== INIT =====================
+    // Při načtení stránky nic neskrýváme, dokud uživatel nevybere
+</script>
+</body>
+</html>
