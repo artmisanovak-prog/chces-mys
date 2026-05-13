@@ -27,7 +27,7 @@
 - [meziTahy5](doma/nastroje/mezitahy5.html)
 - [meziTahy6](doma/nastroje/mezitahy6.html)
 
-  
+- [ofline generator z karet](doma/nastroje/ofline_generator_z_karet.html)  
 - [generator_struktur](doma/nastroje/generator_struktur.html)
 
 - [generator_struktur1](doma/nastroje/generator_struktur1.html)
