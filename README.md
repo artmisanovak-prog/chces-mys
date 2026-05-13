@@ -15,6 +15,9 @@
 - [fyzika jazyka](doma/nastroje/fyzika_jazyka.html)
 
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
+- [detektor struktury kresby 1](doma/nastroje/detektor_struktury_kresby1.html)
+ 
+
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy kreslici](doma/nastroje/mezitahy.html)
 - [meziTahy1 kreslici](doma/nastroje/mezitahy1.html)
