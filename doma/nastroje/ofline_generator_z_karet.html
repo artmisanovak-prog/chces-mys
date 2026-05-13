@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🔮 Offline generátor z karet • 3×3 • úhly</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #1a1a2e;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .app-container {
+            max-width: 780px;
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 28px 22px;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 500;
+            font-size: 2.1rem;
+            letter-spacing: 2px;
+            color: #f0e6d2;
+            text-shadow: 0 0 15px rgba(255,200,150,0.5);
+        }
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .mode-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #aaa;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .mode-btn.active {
+            background: #e8b86d;
+            border-color: #e8b86d;
+            color: #1a1a2e;
+            box-shadow: 0 0 20px rgba(232,184,109,0.5);
+            font-weight: bold;
+        }
+        .grid-3x3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            aspect-ratio: 1 / 1;
+            background: rgba(0,0,0,0.3);
+            padding: 14px;
+            border-radius: 28px;
+            border: 1px dashed rgba(255,255,255,0.25);
+        }
+        .slot {
+            background: rgba(20,20,35,0.75);
+            backdrop-filter: blur(8px);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            color: #ccc;
+            transition: 0.2s;
+            border: 2px solid transparent;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .slot:active { cursor: grabbing; }
+        .slot.sortable-chosen { opacity:0.5; transform:scale(0.95); }
+        .slot.sortable-ghost {
+            opacity:0.4;
+            background:#e8b86d33;
+            border:2px dashed #e8b86d;
+        }
+        .card-label {
+            position: absolute;
+            bottom: 5px;
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: #ddd;
+            white-space: nowrap;
+        }
+        .generate-btn {
+            background: linear-gradient(135deg, #e8b86d, #d4a24e);
+            border: none;
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 1.3rem;
+            padding: 16px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(232,184,109,0.3);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .generate-btn:hover {
+            background: #f5ce7a;
+            transform: translateY(-2px);
+        }
+        .output-panel {
+            background: #0e0e1a;
+            border-radius: 24px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-height: 140px;
+            white-space: pre-wrap;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #cfcfcf;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(15px);
+            font-family: 'Georgia', serif;
+        }
+        .angle-header {
+            color: #e8b86d;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .signature {
+            text-align: right;
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>🔮 3×3 ÚHLY</h1>
+
+    <div class="mode-switch">
+        <button id="modeSolo" class="mode-btn active">🧍 Jednotlivec</button>
+        <button id="modeTeam" class="mode-btn">👥 Tým</button>
+    </div>
+
+    <div id="cardGrid" class="grid-3x3"></div>
+
+    <button id="generateBtn" class="generate-btn">✨ SLOŽIT Z ÚHLŮ</button>
+
+    <div id="outputBox" class="output-panel">
+        🌀 Zde se objeví poskládaný text podle karet a úhlů buněk...
+    </div>
+    <div class="signature">MICHAELA NOVÁKOVÁ — METODA REPODOM</div>
+</div>
+
+<script>
+(function() {
+    // ========== DATA KARET S ÚHLOVÝMI TEXTY (offline) ==========
+    const cardAngleData = {
+        "krása co se nehodí": {
+            emoji: "🦇", // netopýr jako symbol
+            angles: {
+                "0": {
+                    label: "ABSURDNÍ",
+                    text: "NETOPÝR, KTERÝ NELÉTÁ ZA POTRAVOU, ALE ZA ATMOSFÉROU. KRÁSA, KTERÁ JE V NOCI PRAVDIVÁ A RÁNO TRAPNÁ. LIDÉ, KTERÍ JSOU KRÁSNÍ, PROTOŽE NEJSOU VIDĚT. PARADOX NOCI A DNE – OBOJÍ JE PRAVDA, ALE JEN JEDNA SE HODÍ."
+                },
+                "30": {
+                    label: "JAZYKOVÝ",
+                    text: "„KRÁSA, KTERÁ RÁNO SE UŽ NEHODÍ“ – VĚTA, KTERÁ DRHNE, JAKO BY SAMA PATŘILA DO NOCI. NETOPÝR, ŽIL V NOCI ESTETICKÝ, FILOZOFICKÝ – JAZYK SE TADY POKOUŠÍ POPSAT NĚCO, CO SE VYMYKÁ DENNÍ LOGICE. A NAKONEC PŘIROVNÁNÍ KE KOCOVINĚ: BOLÍ TO, ALE VÍŠ, ŽE JSI ŽIL."
+                },
+                "120": {
+                    label: "SURREALISTICKÝ FILOZOFICKÝ",
+                    text: "Sleduje Slova, Rytmus, DVOJZNAČNOST, IRONICKÝ. 120° 5h – čas, kdy se realita ohýbá a krása nepotřebuje světlo."
+                }
+            }
+        },
+        "Liška": {
+            emoji: "🦊",
+            angles: {
+                "0": {
+                    label: "VYCHYTRALOST",
+                    text: "Liška, která ráno předstírá, že je nevinná, ale v noci přepisuje mapy hvězd. Každý její krok je lež, která se stala pravdou."
+                },
+                "30": {
+                    label: "IRONIE",
+                    text: "Liška se směje lovci, protože ví, že stopa, kterou zanechala, je jen začátek jiného příběhu. Ironie je její druhá srst."
+                },
+                "120": {
+                    label: "SNOVÁ KRAJINA",
+                    text: "Ve 120° úhlu se liška rozpouští v oranžovou mlhu a stává se myšlenkou, na kterou nelze zapomenout."
+                }
+            }
+        },
+        "Les": {
+            emoji: "🌲",
+            angles: {
+                "0": { label: "TICHO", text: "Les, který polyká zvuky a vrací je jako ozvěnu o sto let později. Ticho je tu tak husté, že se dá krájet." },
+                "30": { label: "RŮST", text: "Každý strom je věta, kterou les píše do nebe. Ve 30° se čte mezi řádky." },
+                "120": { label: "TEMNOTA", text: "Les ve 120° už není lesem, ale vzpomínkou na světlo, které kdysi bývalo." }
+            }
+        },
+        "Měsíc": {
+            emoji: "🌕",
+            angles: {
+                "0": { label: "ODRAZ", text: "Měsíc, který svítí jen proto, že zapomněl, že je kámen. Jeho krása je vypůjčená, ale o to skutečnější." },
+                "30": { label: "PŘÍLIV", text: "Slzy moře přitahované lunou – ve 30° je každá kapka slaná jinak." },
+                "120": { label: "ŠÍLENSTVÍ", text: "Ve 120° se měsíc směje a vlkodlaci nejsou výjimkou, ale pravidlem." }
+            }
+        },
+        "Tygr": {
+            emoji: "🐅",
+            angles: {
+                "0": { label: "SÍLA", text: "Tygr, který se nikdy nepodívá do zrcadla, protože by v něm uviděl jen dalšího tygra." },
+                "30": { label: "POHYB", text: "Jeho pruhy jsou blesky zamrzlé v srsti. Ve 30° se dávají do pohybu." },
+                "120": { label: "INSTINKT", text: "Ve 120° se tygr stává pouhým stínem hladu, který prochází džunglí." }
+            }
+        },
+        "Motýl": {
+            emoji: "🦋",
+            angles: {
+                "0": { label: "KŘEHKOST", text: "Motýl, který třepotá křídly a způsobí zemětřesení v jiném vesmíru." },
+                "30": { label: "BAREVNOST", text: "Jeho křídla jsou mapou všech květin, které nikdy nevykvetou." },
+                "120": { label: "EFEMÉRNOST", text: "Motýl ve 120° zmizí dřív, než ho stihneš pojmenovat." }
+            }
+        },
+        "Oheň": {
+            emoji: "🔥",
+            angles: {
+                "0": { label: "VÁŠEŇ", text: "Oheň, který nehoří pro teplo, ale pro tanec. Jeho plameny jsou otázky bez odpovědí." },
+                "30": { label: "DESTRUKCE", text: "Ve 30° se oheň ptá, co všechno může sežrat, a odpovědí je vždycky víc." },
+                "120": { label: "POPEL", text: "Ve 120° je oheň už jen vzpomínkou, ale popel šeptá jeho jméno." }
+            }
+        },
+        "Vlna": {
+            emoji: "🌊",
+            angles: {
+                "0": { label: "RYTMUS", text: "Vlna, která se nikdy nezlomí – jen se nadechuje a vydechuje věčnost." },
+                "30": { label: "HLOUBKA", text: "Pod hladinou ve 30° je ticho, které mluví všemi jazyky najednou." },
+                "120": { label: "ZRCADLENÍ", text: "Vlna ve 120° odráží oblohu tak dokonale, že nebe závidí." }
+            }
+        },
+        "Čas": {
+            emoji: "⏳",
+            angles: {
+                "0": { label: "TEĎ", text: "Čas, který stojí, protože neví, kam jít. Vteřina, která trvá celý život." },
+                "30": { label: "MINULOST", text: "Ve 30° se čas vrací a opravuje chyby, které se nikdy nestaly." },
+                "120": { label: "BUDOUCNOST", text: "Čas ve 120° běží pozpátku, aby stihl začátek." }
+            }
+        }
+    };
+
+    // Výchozí seznam karet pro mřížku (jména klíčů z cardAngleData)
+    const cardNames = Object.keys(cardAngleData);
+    // Pro jistotu doplníme, kdyby v mřížce byla karta bez dat (nemělo by nastat)
+    const defaultAngleText = { label: "NEZNÁMÝ ÚHEL", text: "Tato karta nemá definovaný text pro tento úhel." };
+
+    // Přiřazení úhlů k buňkám mřížky (index 0–8)
+    const cellAngles = ["0", "30", "120", "0", "30", "120", "0", "30", "120"];
+    // Můžeš si pole změnit podle své logiky (např. kompasové úhly)
+
+    let currentMode = "solo";
+    let gridCards = []; // jména karet v pořadí buněk
+
+    // DOM
+    const gridEl = document.getElementById('cardGrid');
+    const outputBox = document.getElementById('outputBox');
+    const generateBtn = document.getElementById('generateBtn');
+    const modeSoloBtn = document.getElementById('modeSolo');
+    const modeTeamBtn = document.getElementById('modeTeam');
+
+    // Pomocné funkce
+    function getRandomCardName() {
+        return cardNames[Math.floor(Math.random() * cardNames.length)];
+    }
+
+    function renderGrid() {
+        if (gridCards.length !== 9) {
+            gridCards = Array.from({length: 9}, () => getRandomCardName());
+        }
+        gridEl.innerHTML = '';
+        gridCards.forEach((name, idx) => {
+            const card = cardAngleData[name] || { emoji: "❓" };
+            const slot = document.createElement('div');
+            slot.className = 'slot';
+            slot.setAttribute('data-index', idx);
+            slot.innerHTML = `${card.emoji}<span class="card-label">${name}</span>`;
+            gridEl.appendChild(slot);
+        });
+
+        if (window.sortableInstance) window.sortableInstance.destroy();
+        window.sortableInstance = new Sortable(gridEl, {
+            animation: 250,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: function(evt) {
+                const oldIdx = evt.oldIndex;
+                const newIdx = evt.newIndex;
+                if (oldIdx !== newIdx && oldIdx !== undefined && newIdx !== undefined) {
+                    const moved = gridCards.splice(oldIdx, 1)[0];
+                    gridCards.splice(newIdx, 0, moved);
+                }
+            }
+        });
+    }
+
+    function generateOutput() {
+        if (gridCards.length !== 9) {
+            outputBox.innerHTML = '⚠️ Mřížka není plná.';
+            return;
+        }
+
+        let resultHtml = '';
+        const modeLabel = currentMode === 'solo' ? '🔹 Jednotlivec' : '🔹 Tým';
+
+        gridCards.forEach((cardName, index) => {
+            const angle = cellAngles[index];
+            const card = cardAngleData[cardName];
+            if (!card) return; // nemělo by nastat
+
+            const angleData = card.angles[angle] || defaultAngleText;
+            const row = Math.floor(index / 3) + 1;
+            const col = (index % 3) + 1;
+
+            resultHtml += `<div class="angle-header">${angle}° — ${angleData.label}  (${card.emoji} ${cardName} [${row},${col}])</div>`;
+            resultHtml += `<p style="margin: 0 0 12px 0;">${angleData.text}</p>`;
+        });
+
+        // Patička
+        resultHtml += `<div class="signature" style="margin-top:15px;">${modeLabel} · MICHAELA NOVÁKOVÁ — METODA REPODOM</div>`;
+        outputBox.innerHTML = resultHtml;
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        modeSoloBtn.classList.toggle('active', mode==='solo');
+        modeTeamBtn.classList.toggle('active', mode==='team');
+    }
+
+    // Eventy
+    modeSoloBtn.addEventListener('click', ()=> setMode('solo'));
+    modeTeamBtn.addEventListener('click', ()=> setMode('team'));
+    generateBtn.addEventListener('click', generateOutput);
+
+    // Dvojklik mimo karty = nový náhodný výběr
+    document.addEventListener('dblclick', function(e) {
+        if (!e.target.closest('.slot')) {
+            gridCards = Array.from({length:9}, ()=> getRandomCardName());
+            renderGrid();
+            outputBox.innerHTML = '🔄 Nové karty vylosovány. Přeskládej je a generuj.';
+        }
+    });
+
+    // Start
+    renderGrid();
+})();
+</script>
+</body>
+</html>
