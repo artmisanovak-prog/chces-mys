@@ -56,6 +56,9 @@ kreativita, fyzika jazyka, metadenik
   mezi-vztahy, forenzni mapovani struktur, benchmarky, dataset multimedialnich bloku pro dalsi generatory, ...
 
 - [analyzer9](doma/nastroje/analyzer9.html)
+- [analyzer10](doma/nastroje/analyzer10.html)
+
+  
 - [analyzer_rucni_cap](doma/nastroje/analyzer_rucni_cap.html)
 - [knihovna_figur](doma/nastroje/knihovna_figur.html)
 
