@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chceš myš? – Průvodce systémem</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #050a12;
+            --bg-el: #0a141e;
+            --text: #e6f0fa;
+            --dim: #3a5a70;
+            --mid: #6a8a9a;
+            --border: #0f1a24;
+            --accent: #6a9ec8;
+            --accent-hover: #8bb8dd;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 780px;
+            width: 100%;
+        }
+
+        h1, h2, h3 { font-family: 'Spectral', serif; font-weight: 400; }
+        h1 { font-size: clamp(2rem, 6vw, 3rem); letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem; }
+        h2 { font-size: 1.4rem; letter-spacing: 0.1em; color: var(--accent); margin: 1.5rem 0 0.8rem; }
+        h3 { font-size: 1rem; letter-spacing: 0.08em; color: var(--mid); }
+
+        .subtitle {
+            font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+            color: var(--dim); margin-bottom: 2rem;
+        }
+
+        .label {
+            font-size: 0.6rem; letter-spacing: 0.4em; text-transform: uppercase;
+            color: var(--dim); margin-bottom: 0.3rem;
+        }
+
+        .prose {
+            font-family: 'Spectral', serif;
+            font-size: 0.95rem;
+            line-height: 1.9;
+            color: #a0c0d0;
+        }
+        .prose p { margin-bottom: 0.8rem; }
+        .prose strong { color: var(--accent); font-weight: 500; }
+        .prose code {
+            color: var(--accent);
+            font-size: 0.85rem;
+            background: rgba(106,158,200,0.1);
+            padding: 0.1rem 0.3rem;
+            border-radius: 2px;
+        }
+
+        .divider {
+            width: 40px; height: 1px; background: var(--accent); opacity: 0.3;
+            margin: 2rem auto;
+        }
+
+        /* Akordeony */
+        .acc-item { border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
+        .acc-trigger {
+            width: 100%; background: transparent; border: none;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.9rem 0; cursor: pointer; color: var(--mid);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem;
+            letter-spacing: 0.1em; text-transform: uppercase; text-align: left;
+            transition: color 0.3s;
+        }
+        .acc-trigger:hover { color: var(--accent); }
+        .acc-trigger.open { color: var(--accent); }
+        .acc-arrow { transition: transform 0.3s; font-size: 0.7rem; flex-shrink: 0; }
+        .acc-trigger.open .acc-arrow { transform: rotate(180deg); }
+        .acc-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.6s ease;
+        }
+        .acc-body.open { max-height: 3000px; }
+        .acc-inner {
+            padding: 0 0 1.5rem;
+            font-family: 'Spectral', serif;
+            font-size: 0.9rem; line-height: 1.9;
+            color: var(--mid);
+        }
+        .acc-inner p { margin-bottom: 0.8rem; }
+        .acc-inner strong { color: var(--accent); font-weight: 500; }
+
+        /* Tlačítka */
+        .btn {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0.5rem 0;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background: rgba(106,158,200,0.1);
+            border-color: var(--accent-hover);
+            color: var(--accent-hover);
+        }
+
+        .upload-status {
+            font-size: 0.7rem;
+            color: var(--dim);
+            margin-top: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        @media (max-width: 500px) { .tool-grid { grid-template-columns: 1fr; } }
+
+        .tool-card {
+            border: 1px solid var(--border);
+            padding: 1rem;
+            background: var(--bg-el);
+            transition: border-color 0.3s;
+        }
+        .tool-card:hover { border-color: var(--accent); }
+        .tool-name {
+            font-family: 'Spectral', serif;
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .tool-desc {
+            font-size: 0.7rem;
+            color: var(--dim);
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+        .tool-link {
+            font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .tool-link:hover { color: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="label">Chceš myš? · Repo dům</div>
+    <h1>Průvodce systémem</h1>
+    <p class="subtitle">Fenomény · Nástroje · Diagnostika · Offline režim</p>
+
+    <div class="prose" style="margin-bottom:2rem;">
+        <p>Tento průvodce je součástí všech nástrojů. Obsahuje základní informace o tom, jak systém funguje, kolik je fenoménů, jak pracovat s úhly a diagnostikou, a jak používat offline režim. Jednotlivé sekce rozbalíš kliknutím.</p>
+    </div>
+
+    <!-- AKORDEONY -->
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>🌍 O projektu &amp; fenomény (40)</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p><strong>Chceš myš? – Fyzika jazyka</strong> je autorský digitální ekosystém Michaely Novákové. V jádru stojí <strong>fenomény</strong> – zvířata, která nejsou jen ilustrace, ale samostatné HTML karty (API). Každý fenomén má vlastní pohádku, dvanáct úhlů pohledu a generativní větu.</p>
+                <p>Aktuálně existuje <strong>40 fenoménů</strong> – od Myši přes Kocoura, Rybu, Páva, Zajíce, Motýla, Netopýra, Krokodýla, Pavouka, Čápa, Plameňáka, Jednorožce, Slona a mnoho dalších. Každý fenomén je zdrojem dat pro všechny nástroje.</p>
+                <p>Nástroje z karet čtou jako z API – nemusíš nic kopírovat, stačí, když jsou karty ve složce <code>doma/data/uhly/</code>. Jednou kartu upravíš a změna se projeví ve všech nástrojích.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>🧭 Jak pracovat s úhly</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p>Každý fenomén lze číst <strong>dvanácti způsoby</strong> – to jsou úhly pohledu (0°–330°). Nejsou to osobnostní typy, ale kognitivní nástroje: Analytický, Kulturní, Filozofický, Naivní, Jazykový, Metaforický, Asociační, Introspektivní, Ironický, Groteskní, Absurdní, Surrealistický.</p>
+                <p>V různých nástrojích se úhly používají různě:</p>
+                <p><strong>Generátor:</strong> Uživatel vybírá vizuální prvky na kartách a ty se mapují na úhly. Tři karty = tři úhly = jeden generativní blok.</p>
+                <p><strong>Analyzér:</strong> Automaticky detekuje jazykové figury a přiřazuje je k úhlům. Uživatel vidí, které úhly v textu dominují.</p>
+                <p><strong>Metadeník:</strong> Uživatel píše text, analyzuje ho a úhly se ukládají do časové osy jako barevné proužky.</p>
+                <p><strong>Diagnostika:</strong> Facilitátor pracuje s úhly, které tým použil při odpovědích na otázky k pohádce.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>🩺 Diagnostika</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p><strong>Týmová diagnostika</strong> je metoda, jak zjistit kognitivní profil týmu. Facilitátor přečte pohádku (např. O Myši), tým odpovídá na tři otevřené otázky. Odpovědi se nehodnotí obsahově – analyzují se podle úhlů, které se v nich objevují.</p>
+                <p>Systém spočítá, které úhly jsou <strong>přetížené</strong> (používané příliš) a které <strong>deficitní</strong> (chybějící). Výsledkem je doporučení pro facilitátora: jakou intervenci zvolit, na jaký úhel zaměřit pozornost.</p>
+                <p>Diagnostika funguje na principu URL otisku – výsledek se dá sdílet, porovnávat v čase nebo mezi týmy.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>📁 Offline režim</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p>Systém funguje <strong>offline-first</strong> – po stažení ZIP balíčku můžeš všechno používat bez internetu. Aby však prohlížeč mohl načítat karty, potřebuje od tebe svolení.</p>
+                <p><strong>Jak na to:</strong></p>
+                <p>1. Rozbal si ZIP balíček (obsahuje složku <code>doma</code> a soubor <code>index.html</code>).</p>
+                <p>2. Klikni na tlačítko níže a vyber <strong>celou rozbalenou složku</strong> (nebo jen složku <code>doma</code> uvnitř).</p>
+                <p>3. Prohlížeč si načte všechny HTML karty do paměti. Od té chvíle fungují všechny nástroje offline – včetně generátoru, analyzéru a prohlížeče pohádek.</p>
+                <p>Tvoje data zůstávají jen u tebe. Nic se nikam neodesílá.</p>
+
+                <input type="file" id="folderInput" webkitdirectory directory multiple style="display:none;">
+                <button class="btn" onclick="document.getElementById('folderInput').click()">
+                    📁 Nahrát složku s knihou
+                </button>
+                <div id="upload-status" class="upload-status"></div>
+                <p style="margin-top:0.8rem; font-size:0.7rem; color:var(--dim);">Po nahrání se zde zobrazí počet načtených karet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>✍️ Anotátor</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p><strong>Anotátor</strong> je nástroj pro ruční označování vizuálních prvků na kartách. Každá karta nese ilustraci, která obsahuje různé grafické vzorce – lineární spád, bodový šum, geometrickou skořápku, typografickou explozi atd.</p>
+                <p>Uživatel si otevře kartu, prohlédne si ji a v tabulce zaškrtne, které prvky na ní vidí. Každý prvek je propojen s jedním úhlem pohledu. Tím kartu „odemkne“ – systém podle vybraného prvku vytáhne z karty generativní větu pro odpovídající úhel.</p>
+                <p>Anotátor se používá především v <strong>generátoru</strong> a při <strong>ručním režimu</strong> (festivaly, výstavy), kde účastníci sami čtou karty a přiřazují jim úhly podle toho, co vidí.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>🔗 Sdílení otisků &amp; Přehlídka jevů</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p>Každý výsledek – ať už z generátoru, analyzéru nebo metadeníku – lze uložit jako <strong>URL otisk</strong>. Otisk obsahuje informace o použitých kartách, úhlech a dalších parametrech. Je to jako digitální stopa tvé práce.</p>
+                <p><strong>Sdílení:</strong> Otisk se dá poslat dalším lidem, kteří si ho mohou otevřít ve svém nástroji a vidět stejný výsledek. Při sdílení systém automaticky vytvoří název (např. „14. 5. · Generátor #1“), který můžeš přejmenovat.</p>
+                <p><strong>Přehlídka jevů</strong> je veřejná nástěnka, kam můžeš svůj otisk anonymně sdílet. Ostatní vidí jenom kognitivní stopu – karty, úhly, datum – bez textu a bez obrázků. Je to způsob, jak porovnávat své výsledky s ostatními nebo jak se inspirovat.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+            <span>🧠 Kognitivní mapa</span>
+            <span class="acc-arrow">▼</span>
+        </button>
+        <div class="acc-body">
+            <div class="acc-inner">
+                <p><strong>Kognitivní mapa</strong> je zápisník, který sbírá úhly ze všech nástrojů na jednom místě. Když pracuješ s generátorem, analyzérem nebo metadeníkem, můžeš si každý výsledek odeslat do Kognitivní mapy.</p>
+                <p>Mapa ti ukáže, které úhly používáš nejčastěji, jak se tvůj kognitivní profil mění v čase, a kde máš mezery. Je to osobní diagnostický nástroj pro jednotlivce.</p>
+                <p>Propojení funguje přes odkaz – stačí, když do nového nástroje přidáš tlačítko „Uložit do mapy“ s odpovídající URL. Mapa si data přečte a uloží. Nic víc není potřeba.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Rozcestník nástrojů -->
+    <h2>🧰 Nástroje</h2>
+    <div class="tool-grid">
+        <div class="tool-card">
+            <div class="tool-name">Generátor</div>
+            <div class="tool-desc">Skládání karet, výběr vizuálních prvků, generování multimediálních bloků.</div>
+            <a href="doma/nastroje/generator.html" class="tool-link">→ otevřít</a>
+        </div>
+        <div class="tool-card">
+            <div class="tool-name">Analyzér jazyka</div>
+            <div class="tool-desc">Detekce jazykových figur, přiřazení k úhlům, vizualizace.</div>
+            <a href="doma/nastroje/analyzer.html" class="tool-link">→ otevřít</a>
+        </div>
+        <div class="tool-card">
+            <div class="tool-name">Metadeník</div>
+            <div class="tool-desc">Losování karet, volné psaní, časová osa s úhly.</div>
+            <a href="doma/nastroje/denik_url.html" class="tool-link">→ otevřít</a>
+        </div>
+        <div class="tool-card">
+            <div class="tool-name">Přehlídka jevů</div>
+            <div class="tool-desc">Veřejná nástěnka kognitivních stop, skupinové klíče.</div>
+            <a href="doma/nastroje/prehlidka_jevu.html" class="tool-link">→ otevřít</a>
+        </div>
+        <div class="tool-card">
+            <div class="tool-name">Kognitivní mapa</div>
+            <div class="tool-desc">Osobní zápisník úhlů napříč všemi nástroji.</div>
+            <a href="doma/nastroje/kognitivni_mapa.html" class="tool-link">→ otevřít</a>
+        </div>
+        <div class="tool-card">
+            <div class="tool-name">Fyzika jazyka (e-book)</div>
+            <div class="tool-desc">Interaktivní kniha s pohádkami, úhly a návody.</div>
+            <a href="index.html" class="tool-link">→ otevřít</a>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+    <p style="text-align:center; font-size:0.65rem; color:var(--dim); margin-top:2rem;">
+        Michaela Nováková · Repo dům · 2025–2026 · Licence CC BY-NC-SA 4.0
+    </p>
+</div>
+
+<script>
+    // ── AKORDEONY ──
+    function toggleAcc(btn) {
+        const body = btn.nextElementSibling;
+        const isOpen = body.classList.contains('open');
+        btn.classList.toggle('open', !isOpen);
+        body.classList.toggle('open', !isOpen);
+    }
+
+    // ── NAHRÁVÁNÍ SLOŽKY ──
+    const folderInput = document.getElementById('folderInput');
+    const statusDiv = document.getElementById('upload-status');
+    window.repoFiles = {};
+    window.KARTA_DATA = {};
+
+    folderInput.addEventListener('change', async function() {
+        const files = this.files;
+        if (!files || files.length === 0) return;
+
+        statusDiv.textContent = 'Procházím složku...';
+        let loadedCount = 0;
+
+        for (const file of files) {
+            const path = file.webkitRelativePath || file.name;
+            if (path.includes('_uhly.html')) {
+                const text = await file.text();
+                window.repoFiles[path] = text;
+
+                // Extrakce jména zvířete z názvu souboru
+                const match = path.match(/([^/]+)_uhly\.html$/);
+                if (match) {
+                    const animalId = match[1];
+                    // Jednoduchá extrakce generativních vět (hledáme elementy s data-angle)
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const angleElements = doc.querySelectorAll('[data-angle]');
+                    if (angleElements.length > 0) {
+                        window.KARTA_DATA[animalId] = {};
+                        angleElements.forEach(el => {
+                            const angle = el.getAttribute('data-angle');
+                            const sentence = el.textContent.trim();
+                            if (angle && sentence) {
+                                window.KARTA_DATA[animalId][angle] = sentence;
+                            }
+                        });
+                    }
+                }
+                loadedCount++;
+            }
+        }
+
+        const dataCount = Object.keys(window.KARTA_DATA).length;
+        statusDiv.textContent = `✓ Načteno ${loadedCount} HTML karet (${dataCount} s extrahovanými daty). Systém je připraven pro offline práci.`;
+    });
+</script>
+</body>
+</html>
