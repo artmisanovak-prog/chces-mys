@@ -18,7 +18,8 @@
 
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
 - [detektor struktury kresby 1](doma/nastroje/detektor_struktury_kresby1.html)
- 
+
+ ---
 
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy kreslici](doma/nastroje/mezitahy.html)
@@ -28,6 +29,8 @@
 - [meziTahy4](doma/nastroje/mezitahy4.html)
 - [meziTahy5](doma/nastroje/mezitahy5.html)
 - [meziTahy6](doma/nastroje/mezitahy6.html)
+
+---
 
 - [ofline generator z karet](doma/nastroje/ofline_generator_z_karet.html)
 
@@ -43,6 +46,8 @@
 - [vizualni_analyzer](doma/nastroje/vizualni_analyzer.html)
  hra perspektiv = mezi vztahy
 
+---
+
 - [graficky generator](doma/nastroje/graficky_generator.html)
 
 - [graficky generator1](doma/nastroje/graficky_generator1.html)
@@ -50,6 +55,16 @@
 - [graficky generator2](doma/nastroje/graficky_generator2.html)
 
 - [graficky generator3](doma/nastroje/graficky_generator3.html)
+
+  
+- [graficky generator_v01](doma/nastroje/graficky_generator_v01.html)
+  
+- [graficky](doma/nastroje/graficky.html)
+- [uhlovy](doma/nastroje/uhlovy.html)
+
+- [graficky generator3](doma/nastroje/graficky_generator3.html)
+
+---
 
 - [přehlídka jevů](doma/nastroje/prehlidka_jevu.html)
  galerie, nastenka, url stooy v case a prostoru, sdileni otisku
