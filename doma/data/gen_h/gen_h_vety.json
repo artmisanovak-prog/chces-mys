@@ -4055,7 +4055,429 @@
     "intenzita": "střední",
     "kvalita_tela": "tělo, co je součástí země; hlína ožívá",
     "zvuk": "dýchání půdy, čvachtání"
-  }
+  },
+
+{
+    "id": "panda",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "vlk",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+{
+    "id": "veverka",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "beran",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "husy",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "osel",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "opice",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "psi_smecka",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+{
+    "id": "kohout",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "gepard",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  
+{
+    "id": "lev",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "snek",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+{
+    "id": "vcela",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "zebra",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "papousek",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "tucnak",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "kozel",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "lev",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "straka",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "kun",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "morsky_konik",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "kralik",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "mamut",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "musle",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "jaguar",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "vlastovky",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "vazky",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "zirafa",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+{
+    "id": "rybi_kost",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "pes",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+
+  {
+    "id": "chameleon",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "sova",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+{
+    "id": "jezek",
+    "uhel": "filozoficky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  {
+    "id": "lasička",
+    "uhel": "analyticky",
+    "nazev": "X",
+    "typ": "X",
+    "funkce": "X",
+    "pole": ["X"],
+    "pohyb": "X",
+    "intenzita": "X",
+    "kvalita_tela": "X",
+    "zvuk": "X"
+  },
+  
 ]
 
 
