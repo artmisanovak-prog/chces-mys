@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Chceš myš? fyzika linky – multigenerátor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg:#0f0d0a; --surface:#171410; --surface2:#1e1a14;
+            --cream:#e8e0d0; --dim:rgba(232,224,208,.42); --accent:#b8c5d6;
+            --serif:'Cormorant Garamond',Georgia,serif; --mono:'DM Mono',monospace;
+        }
+        body {
+            background:var(--bg); color:var(--cream); font-family:var(--mono);
+            font-size:13px; padding:0; user-select:none;
+            touch-action:manipulation; overflow-x:hidden;
+        }
+        .wrap { max-width:750px; margin:0 auto; padding:1rem; }
+
+        /* Navigace */
+        .nav { display:flex; align-items:center; justify-content:center; gap:0.8rem; padding:0.8rem 0; }
+        .nav-btn {
+            background:var(--surface); color:var(--accent); border:1px solid var(--accent);
+            width:36px; height:36px; border-radius:50%; font-size:1.2rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; transition:all .15s;
+        }
+        .nav-btn:hover { background:var(--accent); color:var(--bg); }
+        .nav-btn:disabled { opacity:0.25; pointer-events:none; }
+        .nav-dots { display:flex; gap:6px; }
+        .nav-dot {
+            width:8px; height:8px; border-radius:50%; background:var(--surface2);
+            border:1px solid rgba(184,197,214,.2); cursor:pointer; transition:all .15s;
+        }
+        .nav-dot.active { background:var(--accent); border-color:var(--accent); }
+        .nav-dot.filled { background:rgba(184,197,214,.4); }
+
+        /* Kroky */
+        .step { display:none; animation:fadeIn 0.3s ease; }
+        .step.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateX(10px);} to{opacity:1;transform:translateX(0);} }
+
+        h1 { font-family:var(--serif); font-size:1.6rem; margin-bottom:0.3rem; font-weight:300; }
+        h1 em { color:var(--accent); font-style:italic; }
+        .subtitle { color:var(--dim); margin-bottom:1.5rem; font-size:0.75rem; line-height:1.5; }
+
+        /* Banner */
+        .banner { width:100%; margin-bottom:1rem; border-radius:4px; }
+        .banner img { width:100%; height:auto; display:block; border-radius:4px; opacity:0.9; }
+
+        .panel {
+            background:var(--surface); border:1px solid rgba(184,197,214,.12);
+            padding:1.2rem; margin-bottom:1.5rem; border-radius:4px;
+        }
+        .panel-label {
+            font-size:0.7rem; color:var(--dim); text-transform:uppercase; letter-spacing:.1em;
+            margin-bottom:.8rem;
+        }
+
+        /* URL input */
+        .url-input {
+            display:flex; gap:0.5rem; margin-top:0.5rem;
+        }
+        .url-input input {
+            flex:1; background:var(--surface2); color:var(--cream); border:1px solid rgba(184,197,214,.2);
+            padding:0.5rem 0.8rem; font-family:var(--mono); font-size:0.7rem; border-radius:4px; outline:none;
+        }
+        .url-input input:focus { border-color:var(--accent); }
+
+        /* Karty */
+        .cards-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(80px, 1fr));
+            gap:8px;
+        }
+        .card {
+            background:var(--surface2);
+            border:1px solid rgba(184,197,214,.15);
+            padding:3px; cursor:pointer;
+            display:flex; flex-direction:column; align-items:center;
+            border-radius:3px; position:relative;
+            transition:border-color .15s;
+        }
+        .card:hover { border-color:var(--accent); }
+        .card img {
+            width:100%; aspect-ratio:74/105;
+            object-fit:cover; display:block; border-radius:2px;
+            filter:grayscale(100%) contrast(1.05);
+        }
+        .card.landscape img { aspect-ratio:105/74; }
+        .card-name {
+            font-size:0.6rem; color:var(--dim); margin-top:.2rem;
+            text-align:center; line-height:1.2; width:100%;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+        }
+        .badge {
+            position:absolute; top:-6px; right:-6px;
+            background:var(--accent); color:var(--bg);
+            width:18px; height:18px; border-radius:50%;
+            font-size:0.6rem; font-weight:bold;
+            display:none; align-items:center; justify-content:center;
+            pointer-events:none;
+        }
+        .badge.show { display:flex; }
+
+        /* Layout */
+        .layout {
+            min-height:60px;
+            background:transparent;
+            padding:4px;
+            margin-bottom:1rem;
+            display:grid;
+            gap:4px;
+            align-content:start;
+        }
+        .layout .card {
+            background:transparent; border:none; padding:0; margin:0; cursor:pointer;
+        }
+        .layout .card img { width:100%; aspect-ratio:74/105; object-fit:cover; border-radius:2px; filter:grayscale(100%) contrast(1.05); }
+        .layout .card.landscape img { aspect-ratio:105/74; }
+        .layout .card .card-name { display:none; }
+        .layout .card.dragging { opacity:0.4; }
+
+        /* Mřížka select */
+        .grid-btns { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.5rem; }
+        .grid-btn {
+            background:var(--surface2); color:var(--dim); border:1px solid rgba(184,197,214,.2);
+            padding:0.3rem 0.6rem; font-family:var(--mono); font-size:0.6rem;
+            cursor:pointer; border-radius:3px; transition:all .15s;
+        }
+        .grid-btn:hover { color:var(--cream); }
+        .grid-btn.active { background:var(--accent); color:var(--bg); border-color:var(--accent); }
+
+        /* Úhloměr */
+        .wheel-area { display:flex; flex-direction:column; align-items:center; gap:1rem; }
+        .wheel-area canvas { cursor:pointer; outline:none; max-width:260px; width:100%; height:auto; }
+        .cards-list { display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; }
+        .card-select {
+            background:var(--surface2); border:2px solid transparent; padding:3px; cursor:pointer;
+            border-radius:3px; transition:all .15s; display:flex; flex-direction:column; align-items:center;
+        }
+        .card-select.active { border-color:var(--accent); }
+        .card-select img {
+            width:60px; aspect-ratio:74/105; object-fit:cover; border-radius:2px;
+            filter:grayscale(100%) contrast(1.05);
+        }
+        .card-select .angle-info { font-size:0.55rem; color:var(--dim); margin-top:0.2rem; text-align:center; }
+        .angle-verse { font-size:0.7rem; color:var(--accent); margin-top:0.5rem; text-align:center; min-height:2em; }
+
+        /* Tlačítka */
+        .btn {
+            background:var(--accent); color:var(--bg); border:none;
+            padding:0.6rem 1.3rem; font-family:var(--mono); font-size:0.7rem;
+            letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+            transition:background .15s; border-radius:4px; margin:0.3rem;
+        }
+        .btn:hover { background:#cdd7e2; }
+        .btn-secondary {
+            background:transparent; color:var(--accent);
+            border:1px solid var(--accent);
+        }
+        .btn-secondary:hover { background:rgba(184,197,214,.08); }
+        .btn-row { display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; justify-content:center; }
+
+        /* Výstup */
+        .result {
+            background:var(--surface2); border:2px solid var(--accent);
+            padding:1.5rem; border-radius:4px; margin-top:1rem;
+            max-height:65vh; overflow-y:auto;
+        }
+        .result h2 { font-family:var(--serif); font-weight:300; color:var(--accent); margin-bottom:1rem; }
+        .result h3 { font-family:var(--serif); font-weight:300; color:var(--accent); margin-top:1.5rem; margin-bottom:0.5rem; }
+        .result p { margin:0.5rem 0; line-height:1.5; }
+        .result ul { margin:0.5rem 0 1rem 1.5rem; }
+        .result .miniatures { display:flex; gap:4px; margin-bottom:1rem; flex-wrap:wrap; }
+        .result .miniatures img { width:35px; aspect-ratio:74/105; object-fit:cover; border-radius:1px; filter:grayscale(100%) contrast(1.05); }
+
+        @media print {
+            body { background:#fff; color:#000; }
+            .nav, .btn, .btn-secondary, .panel, .grid-btns, .url-input, .wheel-area, .cards-list { display:none; }
+            .step { display:none !important; }
+            .step.active { display:block !important; }
+            .result { border:none; background:#fff; color:#000; max-height:none; overflow:visible; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <!-- Navigace -->
+    <div class="nav">
+        <button class="nav-btn" id="navPrev" onclick="goStep(-1)" disabled>←</button>
+        <div class="nav-dots" id="navDots"></div>
+        <button class="nav-btn" id="navNext" onclick="goStep(1)">→</button>
+    </div>
+
+    <!-- Krok 1: Uvítání -->
+    <div class="step active" id="step0">
+        <div class="banner">
+            <img src="https://artmisanovak-prog.github.io/dataset_multi_fenomen/doma/ilustrace/mix1.jpg" alt="Mix fenoménů">
+        </div>
+        <h1>Chceš myš? <em>fyzika linky – multigenerátor</em></h1>
+        <p class="subtitle">
+            Vytvoř si vlastní choreografii, herní koncept, scénář nebo performativní přednášku.<br>
+            Skládej karty, vybírej úhly a nech vygenerovat výstup.
+        </p>
+        <div class="panel">
+            <div class="panel-label">Máš odkaz? Vlož ho sem</div>
+            <div class="url-input">
+                <input type="text" id="urlInput" placeholder="Vlož URL z Deníku, Analyzéru…">
+                <button class="btn" onclick="loadFromURL()">Načíst</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Krok 2: Skládání karet -->
+    <div class="step" id="step1">
+        <div class="panel">
+            <div class="panel-label">Karty · klikni pro přidání do layoutu (lze víc stejných)</div>
+            <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-label">Layout · přetahuj a přehazuj</div>
+            <div class="grid-btns" id="gridBtns"></div>
+            <div class="layout" id="layout"
+                 ondragover="allowDrop(event)"
+                 ondrop="drop(event)">
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="randomFill()">Náhodně naplnit</button>
+                <button class="btn btn-secondary" onclick="clearLayout()">Vyprázdnit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Krok 3: Úhloměry -->
+    <div class="step" id="step2">
+        <div class="panel">
+            <div class="panel-label">Úhloměr · klikni na kartu a vyber úhel</div>
+            <div class="wheel-area">
+                <canvas id="wheelCanvas" width="260" height="260"></canvas>
+                <div class="angle-verse" id="angleVerse"></div>
+            </div>
+            <div class="cards-list" id="cardsList"></div>
+        </div>
+    </div>
+
+    <!-- Krok 4: Generátor -->
+    <div class="step" id="step3">
+        <div class="panel">
+            <div class="panel-label">Vyber typ výstupu</div>
+            <div class="btn-row">
+                <button class="btn" onclick="generateOutput('choreography')">Choreografická partitura</button>
+                <button class="btn" onclick="generateOutput('game')">Herní koncept</button>
+                <button class="btn" onclick="generateOutput('installation')">Instalační plán</button>
+                <button class="btn" onclick="generateOutput('lecture')">Performativní přednáška</button>
+                <button class="btn" onclick="generateOutput('screenplay')">Scénář krátkého filmu</button>
+            </div>
+            <div class="result" id="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Krok 5: Export a tisk -->
+    <div class="step" id="step4">
+        <div class="panel">
+            <div class="panel-label">Výstup</div>
+            <div class="result" id="finalResult"></div>
+            <div class="btn-row" style="margin-top:1rem;">
+                <button class="btn" onclick="window.print()">🖨️ Vytisknout</button>
+                <button class="btn btn-secondary" onclick="exportJSON()">📥 Stáhnout JSON</button>
+                <button class="btn btn-secondary" onclick="copyLink()">📋 Kopírovat odkaz</button>
+                <button class="btn btn-secondary" onclick="shareToGallery()">🔗 Sdílet na přehlídku jevů</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ================================================================
+// DATA – ZDE VLOŽ OBSAH SOUBORU gen_h_vety.json
+// ================================================================
+const GEN_DATA = /* ZDE VLOŽ OBSAH SOUBORU gen_h_vety.json */ [];
+
+// ================================================================
+// Definice úhlů (barvy, názvy, stupně)
+// ================================================================
+const UHLY_DEF = [
+    { id:'analyticky', nazev:'Analytický', barva:'#ffffff', stupne:0 },
+    { id:'kulturni', nazev:'Kulturní', barva:'#a8d5a2', stupne:30 },
+    { id:'filozoficky', nazev:'Filozofický', barva:'#b3d4ff', stupne:60 },
+    { id:'naivni', nazev:'Naivní', barva:'#40e0d0', stupne:90 },
+    { id:'jazykovy', nazev:'Jazykový', barva:'#c8a2c8', stupne:120 },
+    { id:'metaforicky', nazev:'Metaforický', barva:'#2e8b57', stupne:150 },
+    { id:'asociacni', nazev:'Asociační', barva:'#d2b48c', stupne:180 },
+    { id:'introspektivni', nazev:'Introspektivní', barva:'#ffd700', stupne:210 },
+    { id:'ironicky', nazev:'Ironický', barva:'#ffa500', stupne:240 },
+    { id:'groteskni', nazev:'Groteskní', barva:'#dc143c', stupne:270 },
+    { id:'absurdni', nazev:'Absurdní', barva:'#c71585', stupne:300 },
+    { id:'surrealisticky', nazev:'Surrealistický', barva:'#8b4513', stupne:330 }
+];
+const UHLY_MAP = {}; UHLY_DEF.forEach(u => UHLY_MAP[u.id]=u);
+
+// ================================================================
+// Extrakce karet z dat
+// ================================================================
+function extractCards(){ const m=new Map(); GEN_DATA.forEach(i=>{ if(!m.has(i.id)){ m.set(i.id,{ id:i.id, name:i.id.charAt(0).toUpperCase()+i.id.slice(1), file:i.id+'.jpg', landscape:['had','krokodyl'].includes(i.id) }); } }); return Array.from(m.values()); }
+const ALL_CARDS = extractCards();
+const CARDS_MAP = {}; ALL_CARDS.forEach(c => CARDS_MAP[c.id]=c);
+const baseUrl = "https://artmisanovak-prog.github.io/dataset_multi_fenomen/doma/ilustrace/";
+
+// ================================================================
+// Stav
+// ================================================================
+let currentStep = 0;
+let layoutCounts = {};
+let draggedElement = null;
+let isDragging = false;
+let currentGridType = 'auto'; // 'auto', '3', '6', '9'
+let selectedCards = []; // { id, angleId }
+let activeCardIndex = 0; // pro úhloměr
+let currentOutputHTML = '';
+
+// ================================================================
+// Navigace
+// ================================================================
+function buildNav(){
+    const dots = document.getElementById('navDots');
+    dots.innerHTML = '';
+    for(let i=0; i<5; i++){
+        const d = document.createElement('div');
+        d.className = 'nav-dot';
+        if(i===currentStep) d.classList.add('active');
+        if(i<currentStep) d.classList.add('filled');
+        d.addEventListener('click', ()=>goStep(i-currentStep));
+        dots.appendChild(d);
+    }
+    document.getElementById('navPrev').disabled = currentStep===0;
+    document.getElementById('navNext').disabled = currentStep===4;
+}
+
+function goStep(dir){
+    const newStep = currentStep + dir;
+    if(newStep<0 || newStep>4) return;
+    // Validace při přechodu z kroku 1 na 2
+    if(currentStep===1 && dir===1){
+        const layoutEl = document.getElementById('layout');
+        const cards = layoutEl.querySelectorAll('.card');
+        if(cards.length<3){ alert('Vyber aspoň 3 karty.'); return; }
+        // Uložit vybrané karty
+        selectedCards = [];
+        cards.forEach(el => {
+            selectedCards.push({ id:el.dataset.cardId, angleId:null });
+        });
+        activeCardIndex = 0;
+        renderCardsList();
+        drawWheel();
+    }
+    // Při přechodu z kroku 3 na 4
+    if(currentStep===3 && dir===1){
+        const result = document.getElementById('result');
+        if(!result.innerHTML || result.style.display==='none'){
+            alert('Nejdřív vygeneruj výstup.');
+            return;
+        }
+        currentOutputHTML = result.innerHTML;
+        document.getElementById('finalResult').innerHTML = currentOutputHTML;
+    }
+    // Přechod z kroku 4 zpět na 3
+    if(currentStep===4 && dir===-1 && currentOutputHTML){
+        document.getElementById('result').innerHTML = currentOutputHTML;
+        document.getElementById('result').style.display = 'block';
+    }
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    currentStep = newStep;
+    document.getElementById('step'+currentStep).classList.add('active');
+    buildNav();
+    window.scrollTo(0,0);
+}
+
+// ================================================================
+// Krok 2 – Skládání karet
+// ================================================================
+function initCards(){
+    renderCards();
+    buildGridBtns();
+    clearLayout();
+}
+
+function renderCards(){
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+    ALL_CARDS.forEach(card => {
+        const el = document.createElement('div');
+        el.className = 'card'+(card.landscape?' landscape':'');
+        el.dataset.cardId = card.id;
+        el.title = card.name+' (klikni pro přidání)';
+        el.innerHTML = `<img src="${baseUrl}${card.file}" alt="${card.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2274%22 height=%22105%22><rect fill=%22%23333%22 width=%2274%22 height=%22105%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%228%22>${card.name}</text></svg>'"><span class="card-name">${card.name}</span><span class="badge" id="badge-${card.id}"></span>`;
+        el.addEventListener('click', e => { e.stopPropagation(); addCardToLayout(card.id); });
+        grid.appendChild(el);
+    });
+}
+
+function buildGridBtns(){
+    const container = document.getElementById('gridBtns');
+    const opts = [
+        { label:'Auto', val:'auto' },
+        { label:'3 v řadě', val:'3' },
+        { label:'6 v řadě', val:'6' },
+        { label:'9 v řadě', val:'9' }
+    ];
+    container.innerHTML = '';
+    opts.forEach(o => {
+        const btn = document.createElement('button');
+        btn.className = 'grid-btn'+(o.val===currentGridType?' active':'');
+        btn.textContent = o.label;
+        btn.addEventListener('click', ()=>{
+            currentGridType = o.val;
+            applyGrid();
+            container.querySelectorAll('.grid-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+        container.appendChild(btn);
+    });
+    applyGrid();
+}
+
+function applyGrid(){
+    const layout = document.getElementById('layout');
+    if(currentGridType==='auto'){
+        layout.style.gridTemplateColumns = 'repeat(auto-fill, minmax(70px, 1fr))';
+    } else {
+        const cols = parseInt(currentGridType);
+        layout.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    }
+}
+
+function updateBadge(cardId){
+    const badge = document.getElementById('badge-'+cardId);
+    if(!badge) return;
+    const count = layoutCounts[cardId]||0;
+    badge.textContent = count;
+    badge.classList.toggle('show', count>0);
+}
+
+function addCardToLayout(cardId){
+    const card = ALL_CARDS.find(c=>c.id===cardId);
+    if(!card) return;
+    layoutCounts[cardId] = (layoutCounts[cardId]||0)+1;
+    updateBadge(cardId);
+    const layout = document.getElementById('layout');
+    const clone = document.createElement('div');
+    clone.className = 'card'+(card.landscape?' landscape':'');
+    clone.dataset.cardId = card.id;
+    clone.draggable = true;
+    clone.innerHTML = `<img src="${baseUrl}${card.file}" alt="${card.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2274%22 height=%22105%22><rect fill=%22%23333%22 width=%2274%22 height=%22105%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%228%22>${card.name}</text></svg>'">`;
+    clone.addEventListener('dragstart', e => { isDragging=true; draggedElement=clone; e.dataTransfer.setData('text/plain',cardId); e.dataTransfer.effectAllowed='move'; });
+    clone.addEventListener('dragend', e => { isDragging=false; draggedElement=null; });
+    clone.addEventListener('click', e => { if(isDragging) return; e.stopPropagation(); removeCardFromLayout(clone,cardId); });
+    layout.appendChild(clone);
+}
+
+function removeCardFromLayout(el, cardId){
+    if(layoutCounts[cardId]>0){ layoutCounts[cardId]--; updateBadge(cardId); }
+    el.remove();
+}
+
+function allowDrop(ev){ ev.preventDefault(); }
+function drop(ev){
+    ev.preventDefault();
+    if(draggedElement){
+        const layout = document.getElementById('layout');
+        const after = getDragAfterElement(layout, ev.clientX);
+        if(!after) layout.appendChild(draggedElement); else layout.insertBefore(draggedElement, after);
+    }
+}
+function getDragAfterElement(container, x){
+    return [...container.querySelectorAll('.card:not(.dragging)')].reduce((closest, child)=>{
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width/2;
+        if(offset<0 && offset>closest.offset) return {offset, element:child};
+        return closest;
+    }, {offset:Number.NEGATIVE_INFINITY}).element;
+}
+
+function clearLayout(){
+    document.getElementById('layout').innerHTML = '';
+    for(const id in layoutCounts){ layoutCounts[id]=0; updateBadge(id); }
+    document.getElementById('result').style.display = 'none';
+}
+
+function randomFill(){
+    clearLayout();
+    const count = currentGridType==='auto'?9:parseInt(currentGridType);
+    for(let i=0;i<count;i++){
+        const rc = ALL_CARDS[Math.floor(Math.random()*ALL_CARDS.length)];
+        addCardToLayout(rc.id);
+    }
+}
+
+// ================================================================
+// Krok 3 – Úhloměr
+// ================================================================
+function renderCardsList(){
+    const container = document.getElementById('cardsList');
+    container.innerHTML = '';
+    selectedCards.forEach((sc, i)=>{
+        const card = CARDS_MAP[sc.id];
+        if(!card) return;
+        const el = document.createElement('div');
+        el.className = 'card-select'+(i===activeCardIndex?' active':'');
+        el.innerHTML = `<img src="${baseUrl}${card.file}" alt="${card.name}" onerror="this.style.display='none'"><span class="angle-info">${sc.angleId&&UHLY_MAP[sc.angleId]?UHLY_MAP[sc.angleId].nazev:'?'}</span>`;
+        el.addEventListener('click', ()=>{ activeCardIndex=i; renderCardsList(); drawWheel(); });
+        container.appendChild(el);
+    });
+}
+
+function drawWheel(){
+    const canvas = document.getElementById('wheelCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const CX=130, CY=130, RMAX=120, RMIN=35;
+    ctx.clearRect(0,0,260,260);
+    const sa = Math.PI*2/12;
+    const currentAngleId = selectedCards[activeCardIndex]?.angleId;
+    UHLY_DEF.forEach((u,i)=>{
+        const startA = -Math.PI/2 + i*sa + 0.04;
+        const endA = startA + sa - 0.08;
+        ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,RMAX,startA,endA); ctx.closePath();
+        ctx.fillStyle = (u.id===currentAngleId) ? u.barva+'60' : u.barva+'18';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(184,197,214,.15)'; ctx.lineWidth=1; ctx.stroke();
+        const midA = startA+(sa-0.08)/2;
+        const lr = (RMAX+RMIN)/2+8;
+        ctx.save(); ctx.translate(CX+Math.cos(midA)*lr, CY+Math.sin(midA)*lr); ctx.rotate(midA+Math.PI/2);
+        ctx.fillStyle = (u.id===currentAngleId)?'#fff':u.barva;
+        ctx.font = '300 7px "DM Mono", monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(u.nazev.split(' ')[0],0,0);
+        ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2); ctx.fillStyle='#0f0f0f'; ctx.fill();
+    ctx.strokeStyle='rgba(184,197,214,.15)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='rgba(184,197,214,.3)'; ctx.font='300 8px "DM Mono"'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('úhel',CX,CY);
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+    const canvas = document.getElementById('wheelCanvas');
+    if(canvas){
+        canvas.addEventListener('click', e => {
+            const rect = canvas.getBoundingClientRect();
+            const scale = 260/rect.width;
+            const mx = (e.clientX-rect.left)*scale - 130;
+            const my = (e.clientY-rect.top)*scale - 130;
+            const dist = Math.sqrt(mx*mx+my*my);
+            if(dist<35 || dist>120) return;
+            let angle = Math.atan2(my,mx) + Math.PI/2;
+            if(angle<0) angle += Math.PI*2;
+            const idx = Math.floor(angle/(Math.PI*2/12));
+            if(UHLY_DEF[idx] && selectedCards[activeCardIndex]){
+                selectedCards[activeCardIndex].angleId = UHLY_DEF[idx].id;
+                drawWheel();
+                renderCardsList();
+                updateAngleVerse();
+            }
+        });
+    }
+});
+
+function updateAngleVerse(){
+    const sc = selectedCards[activeCardIndex];
+    if(!sc || !sc.angleId){
+        document.getElementById('angleVerse').textContent = '';
+        return;
+    }
+    const data = GEN_DATA.find(d => d.id===sc.id && d.uhel===sc.angleId);
+    document.getElementById('angleVerse').textContent = data ? data.nazev : '';
+}
+
+// ================================================================
+// Krok 4 – Generování
+// ================================================================
+function generateOutput(mode){
+    if(selectedCards.length===0){ alert('Nejdřív vyber karty a úhly.'); return; }
+    const items = selectedCards.map(sc => {
+        const card = CARDS_MAP[sc.id];
+        const data = sc.angleId ? GEN_DATA.find(d=>d.id===sc.id && d.uhel===sc.angleId) : null;
+        return { card, angleId:sc.angleId, angleDef:sc.angleId?UHLY_MAP[sc.angleId]:null, data };
+    });
+    let html = '';
+    switch(mode){
+        case 'choreography': html = buildChoreography(items); break;
+        case 'game': html = buildGame(items); break;
+        case 'installation': html = buildInstallation(items); break;
+        case 'lecture': html = buildLecture(items); break;
+        case 'screenplay': html = buildScreenplay(items); break;
+    }
+    document.getElementById('result').innerHTML = html;
+    document.getElementById('result').style.display = 'block';
+}
+
+function miniHTML(items){
+    let h = '<div class="miniatures">';
+    items.forEach(it => { if(it.card) h+=`<img src="${baseUrl}${it.card.file}" alt="${it.card.name}" onerror="this.style.display='none'">`; });
+    h+='</div>'; return h;
+}
+
+function buildChoreography(items){
+    let h = '<h2>Choreografická partitura</h2>'+miniHTML(items);
+    items.forEach((it,i)=>{
+        h+=`<h3>Sólo ${i+1}: ${it.card?.name||'?'} – ${it.angleDef?.nazev||'?'}</h3>`;
+        if(it.data){ h+=`<p><strong>Tělo:</strong> ${it.data.kvalita_tela||'—'}</p><p><strong>Pohyb:</strong> ${it.data.pohyb||'—'}</p><p><strong>Zvuk:</strong> ${it.data.zvuk||'—'}</p><p><strong>Intenzita:</strong> ${it.data.intenzita||'—'}</p>`; }
+        else h+='<p><em>Úhel není vybrán.</em></p>';
+        if(i<items.length-1) h+=`<p><em>→ přechod: ${items[i+1].card?.name||'?'} vstupuje</em></p>`;
+    });
+    return h;
+}
+
+function buildGame(items){
+    let h = '<h2>Herní koncept</h2>'+miniHTML(items);
+    const f = items[0]?.data, l = items[items.length-1]?.data;
+    h+=`<h3>Název: ${(f?.pole?.[0]||'')+' '+(l?.pole?.[0]||'')}</h3><ul>`;
+    items.forEach(it => h+=`<li><strong>${it.card?.name||'?'}</strong> – ${it.data?.funkce||'?'}</li>`);
+    h+='</ul><h3>Struktura úrovní</h3><p>';
+    items.forEach((it,i)=> h+=`Úroveň ${i+1}: ${it.data?.pohyb||'?'}. `);
+    h+='</p>'; return h;
+}
+
+function buildInstallation(items){
+    let h = '<h2>Instalační plán</h2>'+miniHTML(items)+'<ul>';
+    items.forEach((it,i)=> h+=`<li><strong>Zóna ${i+1} (${it.card?.name||'?'}):</strong> ${it.data?.kvalita_tela||'?'}. Zvuk: ${it.data?.zvuk||'?'}</li>`);
+    h+='</ul>'; return h;
+}
+
+function buildLecture(items){
+    let h = '<h2>Performativní přednáška</h2>'+miniHTML(items);
+    items.forEach((it,i)=> h+=`<p><strong>Část ${i+1}:</strong> ${it.data?.nazev||'?'} – ${it.data?.funkce||'?'}</p>`);
+    return h;
+}
+
+function buildScreenplay(items){
+    let h = '<h2>Scénář krátkého filmu</h2>'+miniHTML(items);
+    h+='<h3>Postavy</h3><ul>';
+    items.forEach(it => h+=`<li><strong>${it.card?.name||'?'}:</strong> ${it.data?.typ||'?'}. ${it.data?.kvalita_tela||'?'}</li>`);
+    h+='</ul><h3>Scénosled</h3>';
+    items.forEach((it,i)=> h+=`<p><strong>Scéna ${i+1}:</strong> ${it.data?.pohyb||'?'}. Zvuk: ${it.data?.zvuk||'?'}.</p>`);
+    return h;
+}
+
+// ================================================================
+// Krok 5 – Export
+// ================================================================
+function exportJSON(){
+    const out = selectedCards.map(sc => {
+        const data = sc.angleId ? GEN_DATA.find(d=>d.id===sc.id && d.uhel===sc.angleId) : null;
+        return { cardId:sc.id, angleId:sc.angleId, angleName:sc.angleId?UHLY_MAP[sc.angleId]?.nazev:null, data };
+    });
+    const blob = new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fyzika_linky_vystup.json'; a.click();
+}
+
+function copyLink(){
+    const hash = buildHash();
+    const url = window.location.origin + window.location.pathname + '#' + hash;
+    navigator.clipboard.writeText(url).then(()=>alert('✅ Odkaz zkopírován')).catch(()=>prompt('Zkopíruj si odkaz:',url));
+}
+
+function shareToGallery(){
+    const hash = buildHash();
+    const url = window.location.origin + window.location.pathname + '#' + hash;
+    navigator.clipboard.writeText(url).then(()=>alert('✅ Odkaz pro přehlídku jevů zkopírován')).catch(()=>prompt('Zkopíruj si odkaz:',url));
+}
+
+function buildHash(){
+    const state = { c:selectedCards.map(s=>s.id), u:selectedCards.map(s=>s.angleId||null) };
+    return btoa(JSON.stringify(state));
+}
+
+function loadFromURL(){
+    const input = document.getElementById('urlInput').value;
+    let hash = input;
+    if(input.includes('#')) hash = input.split('#')[1];
+    try {
+        const state = JSON.parse(atob(hash));
+        if(state.c && Array.isArray(state.c)){
+            selectedCards = state.c.map((id,i)=>({ id, angleId:state.u?.[i]||null }));
+            activeCardIndex = 0;
+            renderCardsList();
+            drawWheel();
+            goStep(2-currentStep);
+        }
+    } catch(e){ alert('Neplatný odkaz.'); }
+}
+
+// Automatické načtení z URL při startu
+function autoLoadHash(){
+    const hash = window.location.hash.substring(1);
+    if(!hash) return;
+    try {
+        const state = JSON.parse(atob(hash));
+        if(state.c && Array.isArray(state.c) && state.c.length>0){
+            selectedCards = state.c.map((id,i)=>({ id, angleId:state.u?.[i]||null }));
+            activeCardIndex = 0;
+            renderCardsList();
+            drawWheel();
+            // Když jsou úhly vyplněné, skoč na krok 3, jinak na krok 2
+            const hasAngles = state.u && state.u.some(a=>a!==null);
+            if(hasAngles) goStep(2);
+            else goStep(1);
+        }
+    } catch(e){}
+}
+
+// ================================================================
+// Inicializace
+// ================================================================
+buildNav();
+initCards();
+autoLoadHash();
+</script>
+</body>
+</html>
