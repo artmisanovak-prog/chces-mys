@@ -90,6 +90,7 @@ kreativita, fyzika jazyka, metadenik
 
 - [analyzer9](doma/nastroje/analyzer9.html)
 - [analyzer10](doma/nastroje/analyzer10.html)
+- [analyzer11](doma/nastroje/analyzator11.html)
 
   
 - [analyzer_rucni_cap](doma/nastroje/analyzer_rucni_cap.html)
