@@ -10,6 +10,7 @@
 
 - [pruvodce](doma/nastroje/pruvodce.html)
 - [carofyzika](doma/nastroje/carofyzika.html)
+- [carofyzika](doma/nastroje/carofyzika1.html)
 
 - [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
