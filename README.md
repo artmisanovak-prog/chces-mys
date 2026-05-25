@@ -18,10 +18,11 @@
 
 - [fyzika jazyka](doma/nastroje/fyzika_jazyka.html)
 
+--- 
+
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
 - [detektor struktury kresby 1](doma/nastroje/detektor_struktury_kresby1.html)
 
- ---
 
 - [meziTahy_digitalne](doma/nastroje/mezitahy_digi.html)
 - [meziTahy kreslici](doma/nastroje/mezitahy.html)
@@ -30,7 +31,17 @@
 - [meziTahy3](doma/nastroje/mezitahy3.html)
 - [meziTahy4](doma/nastroje/mezitahy4.html)
 - [meziTahy5](doma/nastroje/mezitahy5.html)
+- 
 - [meziTahy6](doma/nastroje/mezitahy6.html)
+
+---
+
+- [carofyzika](doma/nastroje/carofyzika.html)
+- [carofyzika1](doma/nastroje/carofyzika1.html)
+- [multigenerator](doma/nastroje/multigenerator.html)
+
+- [anotator_poznamky](doma/funkce/anotator_poznamky.html)
+- [mezernik](doma/nastroje/mezernik.html)
 
 ---
 
