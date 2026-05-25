@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chceš myš? · Metadeník</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0d0a;--s:#171410;--s2:#1e1b17;
+  --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.18);
+  --acc:#d4a574;--acc2:#a89880;
+  --border:rgba(212,165,116,.15);--border-hi:rgba(212,165,116,.4);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'DM Mono','Courier New',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.75;-webkit-font-smoothing:antialiased}
+
+/* ── SECTIONS ── */
+#sections-wrap{
+  display:flex;width:500vw;height:100vh;
+  transition:transform 0.45s cubic-bezier(.77,0,.18,1);
+}
+.section{
+  width:100vw;height:100vh;overflow-y:auto;overflow-x:hidden;
+  display:flex;flex-direction:column;
+  scrollbar-width:thin;scrollbar-color:var(--acc2) transparent;
+}
+.section::-webkit-scrollbar{width:3px}
+.section::-webkit-scrollbar-thumb{background:var(--acc2)}
+
+/* ── NAV ARROWS ── */
+#nav-arrows{
+  position:fixed;bottom:1.8rem;right:1.8rem;z-index:500;
+  display:flex;gap:0.5rem;align-items:center;
+}
+.nav-arr{
+  width:36px;height:36px;background:rgba(15,13,10,.8);
+  border:1px solid var(--border);color:var(--acc2);
+  cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;border-radius:2px;
+}
+.nav-arr:hover{border-color:var(--acc);color:var(--cream);background:rgba(212,165,116,.08)}
+.nav-arr:disabled{opacity:.2;cursor:default}
+#nav-dots{display:flex;gap:5px;align-items:center}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--dim2);cursor:pointer;transition:background .2s}
+.nav-dot.on{background:var(--acc)}
+#section-label{
+  position:fixed;bottom:1.8rem;left:1.8rem;z-index:500;
+  font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);
+}
+
+/* ── WRAP ── */
+.wrap{max-width:860px;margin:0 auto;padding:2.5rem 2rem;width:100%}
+.pt{padding-top:0}
+
+/* ── TYPOGRAPHY ── */
+h1{font-family:var(--serif);font-size:clamp(2.4rem,6vw,4rem);font-weight:300;line-height:1.02;margin-bottom:1.2rem}
+h1 em{font-style:italic;color:var(--acc)}
+h2{font-family:var(--serif);font-size:1.5rem;font-weight:300;margin-bottom:.6rem}
+.lbl{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:.7rem}
+.dim{color:var(--dim);font-size:.8rem;line-height:1.85}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:.45rem 1.2rem;font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);
+  color:var(--dim);background:transparent;cursor:pointer;transition:all .12s;border-radius:2px;
+}
+.btn:hover{border-color:var(--acc);color:var(--cream);background:rgba(212,165,116,.06)}
+.btn-p{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:400}
+.btn-p:hover{background:#e0b888;border-color:#e0b888}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+
+/* ── ACCORDION ── */
+.accord{border-bottom:1px solid var(--border);margin-bottom:0}
+.accord-head{
+  display:flex;align-items:center;gap:.5rem;padding:.7rem 0;cursor:pointer;
+  font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);
+  transition:color .15s;
+}
+.accord-head:hover{color:var(--cream)}
+.accord-icon{font-size:.55rem;transition:transform .2s;opacity:.5}
+.accord-head.open .accord-icon{transform:rotate(90deg)}
+.accord-body{display:none;padding:.5rem 0 1rem 1rem}
+.accord-body.open{display:block}
+
+/* ── POEM ── */
+.poem{
+  font-family:var(--serif);font-size:1.05rem;line-height:2.1;color:rgba(232,224,208,.72);
+  border-left:2px solid var(--border);padding-left:1.2rem;margin:1.8rem 0;
+}
+.poem strong{color:var(--cream);font-weight:400}
+.poem .last-line{color:var(--acc);font-style:italic}
+
+/* ── MIX ILLUSTRATION ── */
+.mix-wrap{
+  width:100%;max-width:400px;margin:1.5rem 0;
+  aspect-ratio:222/105; /* 3×A7 vedle sebe: 3×74:105 */
+  overflow:hidden;border:1px solid var(--border);
+}
+.mix-wrap img{width:100%;height:100%;object-fit:cover;filter:grayscale(.15)}
+
+/* ── CARD SLOTS ── */
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:1rem 0}
+@media(max-width:600px){.slots-grid{grid-template-columns:repeat(2,1fr)}}
+.slot{
+  aspect-ratio:74/105;background:var(--s2);border:1px dashed var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s;
+}
+.slot:hover{border-color:var(--acc)}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.slot-preview{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.slot-label{font-size:.6rem;color:var(--dim2);text-align:center;padding:.3rem;z-index:1;pointer-events:none}
+.slot-num{position:absolute;top:.3rem;left:.4rem;font-size:.55rem;color:var(--dim2)}
+.slot-del{position:absolute;top:.3rem;right:.4rem;background:rgba(15,13,10,.7);border:none;color:var(--acc);cursor:pointer;font-size:.7rem;display:none;z-index:2}
+.slot:hover .slot-del{display:block}
+.slot-count{position:absolute;bottom:.3rem;right:.4rem;font-size:.55rem;color:var(--acc);background:rgba(15,13,10,.8);padding:.1rem .3rem}
+
+/* ── ZÁPISNÍK — CARDS ── */
+#zap-cards{
+  display:flex;gap:0;width:100%;
+  border-bottom:1px solid var(--border);
+  margin-bottom:0;
+}
+.zap-card{
+  flex:1;aspect-ratio:74/105;overflow:hidden;
+  background:var(--s2);
+}
+.zap-card img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(.2)}
+.zap-card-empty{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:var(--dim2);font-family:var(--mono);
+}
+
+/* ── EDITOR ── */
+#editor-wrap{flex:1;display:flex;flex-direction:column;padding:1.5rem 2rem}
+.editor-toolbar{
+  display:flex;gap:.3rem;flex-wrap:wrap;padding-bottom:.6rem;
+  border-bottom:1px solid var(--border);margin-bottom:1rem;
+}
+.t-btn{
+  background:transparent;border:1px solid transparent;color:var(--dim);
+  padding:.15rem .5rem;font-family:var(--mono);font-size:.7rem;cursor:pointer;
+  border-radius:2px;transition:all .1s;
+}
+.t-btn:hover{border-color:var(--border);color:var(--cream)}
+.t-btn.on{border-color:var(--acc);color:var(--acc)}
+#font-input{
+  background:transparent;border:1px solid var(--border);color:var(--cream);
+  padding:.15rem .5rem;font-size:.68rem;font-family:var(--mono);width:130px;
+  border-radius:2px;
+}
+#font-input::placeholder{color:var(--dim2)}
+#font-size-sel{
+  background:var(--s);border:1px solid var(--border);color:var(--cream);
+  font-family:var(--mono);font-size:.68rem;padding:.1rem .3rem;border-radius:2px;
+}
+#entry-editor{
+  flex:1;min-height:200px;font-family:var(--serif);font-size:1.15rem;
+  line-height:1.85;color:var(--cream);background:transparent;
+  border:none;resize:none;outline:none;width:100%;
+  caret-color:var(--acc);
+}
+#entry-editor[contenteditable=true]:empty::before{
+  content:attr(data-placeholder);color:var(--dim2);font-style:italic;
+}
+#entry-editor h1,#entry-editor h2,#entry-editor h3{
+  font-family:var(--serif);font-weight:300;margin:.4rem 0;
+}
+
+/* ── ANGLE NOTE ── */
+#angle-note-wrap{
+  border-top:1px solid var(--border);padding:.7rem 0;margin-top:.5rem;
+}
+#angle-note-toggle{
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  cursor:pointer;background:none;border:none;padding:0;font-family:var(--mono);
+}
+#angle-note-toggle:hover{color:var(--acc2)}
+#angle-note-body{display:none;margin-top:.6rem}
+#angle-sel{
+  background:var(--s);border:1px solid var(--border);color:var(--cream);
+  font-family:var(--mono);font-size:.72rem;padding:.3rem .5rem;margin-right:.5rem;
+}
+#angle-note-txt{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);
+  color:var(--cream);font-family:var(--mono);font-size:.72rem;padding:.3rem 0;
+  outline:none;margin-top:.4rem;
+}
+#angle-note-txt::placeholder{color:var(--dim2)}
+
+/* ── TIMELINE ── */
+.tl-wrap{display:flex;gap:1px;align-items:stretch;overflow-x:auto;padding:.5rem 0;min-height:52px}
+.tl-wrap::-webkit-scrollbar{height:2px}
+.tl-wrap::-webkit-scrollbar-thumb{background:var(--acc2)}
+.tl-entry{
+  min-width:18px;max-width:42px;flex:1;cursor:pointer;
+  display:flex;flex-direction:column;transition:opacity .15s;
+}
+.tl-entry:hover{opacity:.75}
+.tl-seg{flex:1}
+
+/* ── HISTORY LIST ── */
+.hist-entry{
+  padding:.9rem 0;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:start;
+}
+.hist-title{font-family:var(--serif);font-size:1rem;font-weight:300;cursor:pointer}
+.hist-title:hover{color:var(--acc)}
+.hist-meta{font-size:.62rem;color:var(--dim);margin-top:.2rem}
+.hist-strip{display:flex;height:6px;gap:1px;margin-top:.4rem;max-width:120px}
+.hist-seg{flex:1;border-radius:1px}
+.hist-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+
+/* ── MODAL ── */
+.modal{
+  display:none;position:fixed;inset:0;background:rgba(8,6,4,.88);
+  backdrop-filter:blur(8px);z-index:900;align-items:center;justify-content:center;padding:1rem;
+}
+.modal.on{display:flex}
+.modal-box{
+  background:var(--s);border:1px solid var(--border-hi);padding:1.8rem;
+  max-width:600px;width:100%;max-height:85vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.modal-head h2{font-family:var(--serif);font-weight:300}
+.modal-close{background:none;border:none;color:var(--acc2);font-size:1.4rem;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--cream)}
+
+/* ── SHARE PANEL ── */
+.share-url-box{
+  background:var(--s2);border:1px solid var(--border);padding:.6rem .8rem;
+  font-size:.65rem;word-break:break-all;color:var(--dim);margin-top:.6rem;
+  cursor:pointer;
+}
+.share-url-box:hover{border-color:var(--acc2)}
+
+/* ── ABOUT ── */
+.about-block{max-width:520px}
+.about-block p{color:var(--dim);font-size:.8rem;line-height:1.9;margin-bottom:1rem}
+.about-block a{color:var(--acc);text-decoration:none}
+.about-block a:hover{text-decoration:underline}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:4.5rem;left:50%;transform:translateX(-50%);
+  background:rgba(212,165,116,.12);border:1px solid var(--acc2);color:var(--cream);
+  padding:.4rem 1.2rem;font-size:.68rem;font-family:var(--mono);z-index:9999;
+  display:none;border-radius:2px;backdrop-filter:blur(8px);
+  pointer-events:none;white-space:nowrap;
+}
+
+/* ── PŘEHLÍDKA FENOMÉNŮ PANEL ── */
+.gallery-group{margin-top:1rem;padding:.8rem;background:var(--s2);border:1px solid var(--border)}
+.gallery-key-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+#gallery-key-in{
+  flex:1;min-width:120px;background:transparent;border:1px solid var(--border);
+  color:var(--cream);padding:.3rem .6rem;font-family:var(--mono);font-size:.72rem;outline:none;
+}
+#gallery-key-in:focus{border-color:var(--acc)}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.filter-bar select, .filter-bar input{
+  background:var(--s2);border:1px solid var(--border);color:var(--cream);
+  font-family:var(--mono);font-size:.68rem;padding:.25rem .5rem;border-radius:2px;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .wrap{padding:1.5rem 1rem}
+  #editor-wrap{padding:1rem}
+}
+</style>
+</head>
+<body>
+
+<div id="sections-wrap">
+
+  <!-- ══════════════════════ SEKCE 0 — ÚVOD ══════════════════════ -->
+  <section class="section" id="sec-0">
+  <div class="wrap">
+    <p class="lbl">Chceš myš? · Systém deníků a nástrojů</p>
+    <h1>Meta<em>deník</em></h1>
+
+    <!-- Ilustrace mix2 (3 karty A7 vedle sebe) -->
+    <div class="mix-wrap">
+      <img src="doma/ilustrace/mix2.jpg" alt="Tři karty Chceš myš?" loading="lazy"
+           onerror="this.style.background='#1e1b17';this.style.display='block'">
+    </div>
+
+    <!-- Básnička -->
+    <div class="poem">
+      Bude to deník, co se dá napsat o neděli<br>
+      a použít už v pondělí.<br>
+      Deník, co můžou psát děti i dospělí,<br>
+      člověk sám, ale i s přáteli.<br>
+      Deníček bez klíčků a zámečků,<br>
+      naopak ke sdílení a materiál na knížku.<br>
+      Deník, co tvé běžné dny v mytologii promění.<br>
+      <strong>Chceš myš?</strong><br>
+      <span class="last-line" id="poemLastLine"></span>
+    </div>
+
+    <!-- Accordiony — O nástrojích -->
+    <div style="margin-bottom:1.5rem">
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> O deníku · jak funguje
+        </div>
+        <div class="accord-body">
+          <p class="dim">Metadeník je prostor pro psaní s kartami. Vylososuješ tři karty — každá je jiné zvíře s jiným kognitivním stylem — a píšeš. Text pak můžeš poslat do analyzéru, který identifikuje jazykové figury a přiřadí je k 12 úhlům pohledu. Výsledek se ukládá na časovou osu jako barevný proužek.</p>
+          <p class="dim" style="margin-top:.6rem">Deník funguje plně offline. Data jsou v tvém prohlížeči (localStorage). Sdílení je vždy dobrovolné — přes URL nebo skupinový klíč.</p>
+        </div>
+      </div>
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Analyzér · jazykové figury a 12 úhlů
+        </div>
+        <div class="accord-body">
+          <p class="dim">Analyzér hledá ve tvém textu jazykové figury — elipsy, metafory, anafory, paradoxy, personifikace... Přiřazuje je k 12 kognitivním úhlům (Analytický, Kulturní, Filozofický, Naivní, Jazykový, Metaforický, Asociační, Introspektivní, Ironický, Groteskní, Absurdní, Surrealistický). Výsledek je procentuální zastoupení každého úhlu v textu.</p>
+          <p class="dim" style="margin-top:.6rem">Procenta = podíl vět obsahujících figury daného úhlu. Nestanovuje co jsi chtěl/a říct, ale jak jsi to řekl/a.</p>
+          <div class="btn-row"><a href="doma/nastroje/analyzator.html" class="btn" target="_blank">Otevřít analyzér →</a></div>
+        </div>
+      </div>
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Přehlídka fenoménů · skupinové srovnání
+        </div>
+        <div class="accord-body">
+          <p class="dim">Přehlídka fenoménů slouží ke srovnání analýz v rámci skupiny — třídy, týmu, kroužku, komunity. Každý člen má skupinový klíč. Sdílí své analýzy přes URL a přehlídka zobrazí kognitivní mapu skupiny.</p>
+          <p class="dim" style="margin-top:.6rem">Funguje i pro jednotlivce — srovnáváš sám sebe v čase. Klíč si vytvoříš níže.</p>
+        </div>
+      </div>
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Časová osa · barevné proužky
+        </div>
+        <div class="accord-body">
+          <p class="dim">Každý analyzovaný zápis se zobrazuje jako barevný proužek na časové ose. Barva odpovídá dominantnímu kognitivnímu úhlu (nebo dvěma, pokud jsou blízko sobě). Šířka proužku odpovídá počtu vět textu.</p>
+          <p class="dim" style="margin-top:.6rem">Kliknutím na proužek otevřeš detail zápisu.</p>
+        </div>
+      </div>
+
+    </div><!-- konec accordionů -->
+
+    <!-- Nahrát balíček karet -->
+    <div style="margin-bottom:2rem">
+      <p class="lbl">Balíčky karet · 6 slotů</p>
+      <p class="dim" style="margin-bottom:.8rem">Každý slot přijme jeden soubor: buď obrázek (1 karta), nebo ZIP balíček s 9 kartami. Max. 6 slotů = 54 karet. Výchozí karty jsou vždy k dispozici.</p>
+      <div class="slots-grid" id="slotsGrid"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="resetSlots()">↺ Obnovit výchozí karty</button>
+      </div>
+    </div>
+
+    <!-- Skupinový klíč -->
+    <div class="gallery-group">
+      <p class="lbl">Skupinový klíč · přehlídka fenoménů</p>
+      <p class="dim" style="margin-bottom:.6rem">Klíč slouží ke sdílení analýz ve skupině. Ostatní se připojí tímto klíčem.</p>
+      <div class="gallery-key-row">
+        <input type="text" id="gallery-key-in" placeholder="Zadej nebo vygeneruj klíč skupiny..." value="">
+        <button class="btn" onclick="generateKey()">🔑 Generovat</button>
+        <button class="btn btn-p" onclick="saveKey()">Uložit klíč</button>
+      </div>
+      <div id="current-key-display" style="margin-top:.5rem;font-size:.65rem;color:var(--dim)"></div>
+    </div>
+
+  </div><!-- .wrap -->
+  </section>
+
+  <!-- ══════════════════════ SEKCE 1 — ZÁPISNÍK ══════════════════════ -->
+  <section class="section" id="sec-1" style="overflow:hidden;display:flex;flex-direction:column">
+
+    <!-- Karty (přes celou šířku, bez mezer) -->
+    <div id="zap-cards"></div>
+
+    <!-- Tlačítka nad editorem -->
+    <div style="display:flex;gap:.5rem;padding:.5rem 1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;flex-shrink:0">
+      <button class="btn" onclick="drawCards()">🎲 Nový los</button>
+      <button class="btn" onclick="shareDrawUrl()">🔗 Sdílet los</button>
+      <button class="btn btn-p" onclick="openAnalyzer()">🔍 Analyzovat</button>
+      <button class="btn" onclick="saveEntry()">💾 Uložit</button>
+      <div style="flex:1"></div>
+      <button class="btn" onclick="goSection(2)" style="font-size:.6rem">Časová osa →</button>
+    </div>
+
+    <!-- Editor s toolbarem -->
+    <div id="editor-wrap">
+      <div class="editor-toolbar">
+        <button class="t-btn" onclick="fmt('bold')"><b>B</b></button>
+        <button class="t-btn" onclick="fmt('italic')"><i>I</i></button>
+        <button class="t-btn" onclick="fmt('underline')"><u>U</u></button>
+        <button class="t-btn" onclick="fmtBlock('h1')">H1</button>
+        <button class="t-btn" onclick="fmtBlock('h2')">H2</button>
+        <button class="t-btn" onclick="fmtBlock('h3')">H3</button>
+        <button class="t-btn" onclick="fmtBlock('p')">¶</button>
+        <select id="font-size-sel" onchange="fmt('fontSize',this.value)">
+          <option value="">vel.</option>
+          <option value="1">XS</option>
+          <option value="3">M</option>
+          <option value="5">L</option>
+          <option value="7">XL</option>
+        </select>
+        <input type="text" id="font-input" placeholder="Google font..." onkeydown="if(event.key==='Enter')applyFont(this.value)">
+        <button class="t-btn" onclick="applyFont(document.getElementById('font-input').value)">Aa</button>
+      </div>
+
+      <div id="entry-editor" contenteditable="true" data-placeholder="Piš tady — text se roztáhne přes celou stránku…" spellcheck="false"></div>
+
+      <!-- Poznámka o vlastním úhlu (nepovinné) -->
+      <div id="angle-note-wrap">
+        <button id="angle-note-toggle" onclick="toggleAngleNote()">+ Poznámka o záměrném úhlu (nepovinné)</button>
+        <div id="angle-note-body">
+          <p class="dim" style="margin-bottom:.4rem;font-size:.7rem">Píšeš vědomě v určitém kognitivním úhlu? Zaznamenej záměr pro pozdější srovnání s analyzérem.</p>
+          <select id="angle-sel">
+            <option value="">— vybrat úhel —</option>
+            <option value="0">0° Analytický</option>
+            <option value="30">30° Kulturní</option>
+            <option value="60">60° Filozofický</option>
+            <option value="90">90° Naivní</option>
+            <option value="120">120° Jazykový</option>
+            <option value="150">150° Metaforický</option>
+            <option value="180">180° Asociační</option>
+            <option value="210">210° Introspektivní</option>
+            <option value="240">240° Ironický</option>
+            <option value="270">270° Groteskní</option>
+            <option value="300">300° Absurdní</option>
+            <option value="330">330° Surrealistický</option>
+          </select>
+          <input type="text" id="angle-note-txt" placeholder="Poznámka k záměru (volitelně)…">
+        </div>
+      </div>
+
+    </div><!-- editor-wrap -->
+  </section>
+
+  <!-- ══════════════════════ SEKCE 2 — ČASOVÁ OSA ══════════════════════ -->
+  <section class="section" id="sec-2">
+  <div class="wrap">
+    <p class="lbl">Časová osa · zápisy v čase</p>
+    <h2>Chronologie zápisů</h2>
+    <p class="dim" style="margin-bottom:1.2rem">Každý analyzovaný zápis je jeden barevný proužek. Barva = dominantní kognitivní úhel. Šířka = počet vět. Kliknutím otevřeš detail.</p>
+    <div class="tl-wrap" id="timeline"></div>
+    <div style="margin-top:1rem;font-size:.65rem;color:var(--dim)" id="tl-empty" style="display:none">Zatím žádné analyzované zápisy.</div>
+
+    <!-- Legenda -->
+    <div style="margin-top:1.2rem">
+      <p class="lbl" style="margin-bottom:.5rem">Legenda úhlů</p>
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="tl-legend"></div>
+    </div>
+
+    <!-- Mini přehlídka pro skupinu -->
+    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+      <p class="lbl">Přehlídka fenoménů · skupinová mapa</p>
+      <p class="dim" style="margin-bottom:.8rem">Sdílej svůj zápis do skupinové přehlídky. Ostatní uvidí tvůj barevný proužek vedle svých.</p>
+      <div id="share-to-gallery-wrap">
+        <p class="dim" style="font-size:.7rem" id="gallery-key-status">Skupinový klíč není nastaven. Nastav ho v Úvodu.</p>
+        <div class="btn-row">
+          <button class="btn" onclick="shareLastToGallery()">📊 Sdílet poslední zápis do přehlídky</button>
+          <button class="btn" onclick="openGallery()">Otevřít přehlídku →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- ══════════════════════ SEKCE 3 — HISTORIE ══════════════════════ -->
+  <section class="section" id="sec-3">
+  <div class="wrap">
+    <p class="lbl">Historie zápisů</p>
+    <h2>Všechny zápisy</h2>
+
+    <div class="filter-bar">
+      <input type="text" placeholder="Hledat…" oninput="filterHistory(this.value)" style="flex:1;min-width:120px">
+      <select onchange="sortHistory(this.value)">
+        <option value="new">Nejnovější</option>
+        <option value="old">Nejstarší</option>
+        <option value="name">Název A–Z</option>
+      </select>
+      <select id="cat-filter" onchange="filterByCat(this.value)">
+        <option value="">Všechny kategorie</option>
+      </select>
+      <button class="btn" onclick="exportBook()">📚 Exportovat jako knížku</button>
+    </div>
+
+    <div id="history-list"></div>
+    <div id="history-empty" style="display:none;color:var(--dim);font-size:.8rem;padding:2rem 0">Žádné zápisy. Napiš první v zápisníku.</div>
+  </div>
+  </section>
+
+  <!-- ══════════════════════ SEKCE 4 — O PROJEKTU ══════════════════════ -->
+  <section class="section" id="sec-4">
+  <div class="wrap">
+    <p class="lbl">O projektu</p>
+    <h1>Chceš <em>myš?</em></h1>
+
+    <div class="about-block">
+      <p>Systém jazykových nástrojů pro diagnostiku a kreativní práci s textem. Vychází z myšlenky, že způsob, <em>jak</em> mluvíme, odráží způsob, <em>jak</em> myslíme — nezávisle na tématu.</p>
+      <p>Každá sada obsahuje 9 karet s originálními ilustracemi, pohádkami a 12 kognitivními úhly pohledu. Nástroje — analyzér, deník, přehlídka fenoménů — fungují samostatně i bez karet.</p>
+
+      <div class="accord" style="margin-top:1.5rem">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Licence
+        </div>
+        <div class="accord-body">
+          <p class="dim">Nástroje (HTML soubory) jsou k dispozici zdarma pro osobní a vzdělávací použití. Ilustrace a texty pohádek jsou autorská díla — nelze je šířit bez souhlasu.</p>
+          <p class="dim" style="margin-top:.5rem">Nástroje jsou součástí filozofie Repo dům: server-free, lokálně vlastněné soubory bez předplatného.</p>
+        </div>
+      </div>
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Autorka
+        </div>
+        <div class="accord-body">
+          <p class="dim">Michaela Nováková — česká autorka, výtvarnice a designérka kognitivních systémů. Chceš myš? vznikalo od 2024 jako nástroj pro diagnostiku týmů a kreativní vzdělávání.</p>
+        </div>
+      </div>
+
+      <div class="accord">
+        <div class="accord-head" onclick="toggleAccord(this)">
+          <span class="accord-icon">▶</span> Kontakt
+        </div>
+        <div class="accord-body">
+          <p class="dim">
+            Web: <a href="https://artmisanovak-prog.github.io/chces-mys" target="_blank">artmisanovak-prog.github.io/chces-mys</a><br>
+            GitHub: <a href="https://github.com/artmisanovak-prog" target="_blank">github.com/artmisanovak-prog</a>
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <p style="font-size:.65rem;color:var(--dim2)">Verze 2.0 · Metadeník · © 2026 Michaela Nováková</p>
+        <p style="font-size:.65rem;color:var(--dim2);margin-top:.3rem">Repo dům — žádný server, žádné předplatné, žádná cloud závislost.</p>
+      </div>
+    </div>
+  </div>
+  </section>
+
+</div><!-- sections-wrap -->
+
+<!-- NAV -->
+<div id="section-label">Úvod</div>
+<div id="nav-arrows">
+  <button class="nav-arr" id="arr-l" onclick="goSection(currentSection-1)" disabled>←</button>
+  <div id="nav-dots"></div>
+  <button class="nav-arr" id="arr-r" onclick="goSection(currentSection+1)">→</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modal-title">Detail</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+// ═══════════════════════════════════
+// KONFIGURACE
+// ═══════════════════════════════════
+const ANGLES = [
+  {st:0,   name:'Analytický',     color:'#4a6075'},
+  {st:30,  name:'Kulturní',       color:'#6a9e72'},
+  {st:60,  name:'Filozofický',    color:'#9b72b5'},
+  {st:90,  name:'Naivní',         color:'#5fa8a0'},
+  {st:120, name:'Jazykový',       color:'#8e7248'},
+  {st:150, name:'Metaforický',    color:'#5a8a5a'},
+  {st:180, name:'Asociační',      color:'#a85a5a'},
+  {st:210, name:'Introspektivní', color:'#c8a832'},
+  {st:240, name:'Ironický',       color:'#c8722a'},
+  {st:270, name:'Groteskní',      color:'#a83060'},
+  {st:300, name:'Absurdní',       color:'#6080a0'},
+  {st:330, name:'Surrealistický', color:'#8060b0'},
+];
+const ANG = Object.fromEntries(ANGLES.map(a=>[a.st,a]));
+
+const POEM_ENDINGS = [
+  'Jazyk a myšlení.',
+  'Pochop vlastní myšlení.',
+  'Metajazyk a struktura myšlení.',
+  'Figury a fenomény.',
+  'Měj vlastní styl pro psaní.',
+  'Úhly a myšlení.',
+];
+
+const DEFAULT_CARDS = [
+  {id:'mys',     name:'Myš',     src:'doma/ilustrace/mys.jpg'},
+  {id:'kocour',  name:'Kocour',  src:'doma/ilustrace/kocour.jpg'},
+  {id:'zajic',   name:'Zajíc',   src:'doma/ilustrace/zajic.jpg'},
+  {id:'ryba',    name:'Ryba',    src:'doma/ilustrace/ryba.jpg'},
+  {id:'pav',     name:'Páv',     src:'doma/ilustrace/pav.jpg'},
+  {id:'netopyr', name:'Netopýr', src:'doma/ilustrace/netopyr.jpg'},
+  {id:'motyl',   name:'Motýl',   src:'doma/ilustrace/motyl.jpg'},
+  {id:'pavouk',  name:'Pavouk',  src:'doma/ilustrace/pavouk.jpg'},
+  {id:'krokodyl',name:'Krokodýl',src:'doma/ilustrace/krokodyl.jpg'},
+];
+
+const SLOT_COUNT = 6;
+const ANALYZER_URL = 'doma/nastroje/analyzator.html';
+const GALLERY_URL  = 'doma/nastroje/prehlidka.html';
+
+// ═══════════════════════════════════
+// STAV
+// ═══════════════════════════════════
+let currentSection = 0;
+let entries = [];
+let slots = [null,null,null,null,null,null]; // každý: null nebo [{id,name,src}]
+let activeCards = [...DEFAULT_CARDS]; // všechny dostupné karty
+let drawnCards = [];     // aktuálně vylosované 3
+let currentEntryId = null;
+let galleryKey = '';
+let historyFilter = '';
+let historySort = 'new';
+let historyCat = '';
+
+const SECTIONS = ['Úvod','Zápisník','Časová osa','Historie','O projektu'];
+
+// ═══════════════════════════════════
+// SEKCE / NAVIGACE
+// ═══════════════════════════════════
+function goSection(n) {
+  if(n<0||n>=SECTIONS.length) return;
+  currentSection = n;
+  document.getElementById('sections-wrap').style.transform = `translateX(-${n*100}vw)`;
+  document.getElementById('section-label').textContent = SECTIONS[n];
+  document.getElementById('arr-l').disabled = (n===0);
+  document.getElementById('arr-r').disabled = (n===SECTIONS.length-1);
+  document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('on',i===n));
+  // lazy init
+  if(n===2) renderTimeline();
+  if(n===3) renderHistory();
+}
+
+function buildDots() {
+  const wrap = document.getElementById('nav-dots');
+  wrap.innerHTML = '';
+  SECTIONS.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className = 'nav-dot'+(i===0?' on':'');
+    d.onclick = ()=>goSection(i);
+    wrap.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════
+// ACCORDION
+// ═══════════════════════════════════
+function toggleAccord(head) {
+  const body = head.nextElementSibling;
+  head.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ═══════════════════════════════════
+// BÁSNIČKA — náhodný konec
+// ═══════════════════════════════════
+function setPoem() {
+  const el = document.getElementById('poemLastLine');
+  const pick = POEM_ENDINGS[Math.floor(Math.random()*POEM_ENDINGS.length)];
+  el.textContent = pick;
+}
+
+// ═══════════════════════════════════
+// KARTY — SLOTY
+// ═══════════════════════════════════
+function buildSlots() {
+  const grid = document.getElementById('slotsGrid');
+  grid.innerHTML = '';
+  for(let i=0;i<SLOT_COUNT;i++) {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.id = `slot-${i}`;
+    slot.innerHTML = `
+      <span class="slot-num">${i+1}</span>
+      <input type="file" accept="image/*,.zip,application/zip" data-idx="${i}" onchange="handleSlotFile(event,${i})">
+      <span class="slot-label">Přetáhni obrázek nebo ZIP balíček</span>
+    `;
+    if(slots[i]) renderSlotFilled(slot, i);
+    grid.appendChild(slot);
+  }
+}
+
+function renderSlotFilled(slot, i) {
+  const pack = slots[i];
+  if(!pack||!pack.length) return;
+  // Show first card as preview
+  const img = document.createElement('img');
+  img.className = 'slot-preview';
+  img.src = pack[0].src;
+  img.onerror = ()=>{ img.style.display='none'; };
+  slot.appendChild(img);
+  const cnt = document.createElement('span');
+  cnt.className = 'slot-count';
+  cnt.textContent = pack.length+'×';
+  slot.appendChild(cnt);
+  const del = document.createElement('button');
+  del.className = 'slot-del';
+  del.textContent = '✕';
+  del.onclick = (e)=>{ e.stopPropagation(); clearSlot(i); };
+  slot.appendChild(del);
+  const lbl = slot.querySelector('.slot-label');
+  if(lbl) lbl.style.display='none';
+}
+
+async function handleSlotFile(e, idx) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const isZip = file.type==='application/zip'||file.name.endsWith('.zip');
+  if(isZip) {
+    await loadZipSlot(file, idx);
+  } else if(file.type.startsWith('image/')) {
+    await loadImageSlot(file, idx);
+  } else {
+    toast('Nepodporovaný formát — použij obrázek nebo ZIP.');
+  }
+}
+
+async function loadImageSlot(file, idx) {
+  const src = await fileToDataUrl(file);
+  slots[idx] = [{id:'custom_'+idx+'_0', name:file.name.replace(/\.[^.]+$/,''), src}];
+  rebuildActiveCards();
+  buildSlots();
+  toast('Karta nahrána do slotu '+(idx+1));
+}
+
+async function loadZipSlot(file, idx) {
+  if(typeof JSZip==='undefined') { toast('JSZip se nenačetl — zkontroluj připojení.'); return; }
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const imgFiles = Object.keys(zip.files).filter(n=>/\.(jpg|jpeg|png|webp|gif)$/i.test(n)).slice(0,9);
+    if(!imgFiles.length) { toast('ZIP neobsahuje obrázky.'); return; }
+    const pack = [];
+    for(const fn of imgFiles) {
+      const blob = await zip.files[fn].async('blob');
+      const src = await blobToDataUrl(blob);
+      pack.push({id:`slot${idx}_${fn}`, name:fn.replace(/\.[^.]+$/,''), src});
+    }
+    slots[idx] = pack;
+    rebuildActiveCards();
+    buildSlots();
+    toast(`Balíček nahrán: ${pack.length} karet do slotu ${idx+1}`);
+  } catch(err) {
+    toast('Chyba při čtení ZIP: '+err.message);
+  }
+}
+
+function clearSlot(idx) {
+  slots[idx] = null;
+  rebuildActiveCards();
+  buildSlots();
+}
+
+function resetSlots() {
+  slots = [null,null,null,null,null,null];
+  rebuildActiveCards();
+  buildSlots();
+  toast('Výchozí karty obnoveny.');
+}
+
+function rebuildActiveCards() {
+  // Začni s default kartami
+  activeCards = [...DEFAULT_CARDS];
+  // Přidej karty ze slotů
+  slots.forEach(pack=>{
+    if(pack) pack.forEach(c=>{ if(!activeCards.find(x=>x.id===c.id)) activeCards.push(c); });
+  });
+}
+
+// ═══════════════════════════════════
+// ZÁPISNÍK — LOSOVÁNÍ KARET
+// ═══════════════════════════════════
+function drawCards(forceIds) {
+  const pool = [...activeCards];
+  if(pool.length<3) {
+    // fallback — použij to co máme
+    drawnCards = pool.slice(0,3);
+  } else if(forceIds) {
+    drawnCards = forceIds.map(id=>pool.find(c=>c.id===id)||pool[0]);
+  } else {
+    // Fisher-Yates shuffle, vezmi 3
+    for(let i=pool.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+    drawnCards = pool.slice(0,3);
+  }
+  renderZapCards();
+}
+
+function renderZapCards() {
+  const wrap = document.getElementById('zap-cards');
+  wrap.innerHTML = '';
+  drawnCards.forEach(card=>{
+    const div = document.createElement('div');
+    div.className = 'zap-card';
+    if(card.src) {
+      const img = document.createElement('img');
+      img.src = card.src;
+      img.alt = card.name;
+      img.onerror = ()=>{ div.innerHTML=`<div class="zap-card-empty">${card.name}</div>`; };
+      div.appendChild(img);
+    } else {
+      div.innerHTML = `<div class="zap-card-empty">${card.name}</div>`;
+    }
+    wrap.appendChild(div);
+  });
+}
+
+function shareDrawUrl() {
+  if(!drawnCards.length) { toast('Nejdřív vylosuj karty.'); return; }
+  const ids = drawnCards.map(c=>c.id).join(',');
+  const url = location.href.split('#')[0]+'#zap='+btoa(encodeURIComponent(ids));
+  copyToClipboard(url);
+  showShareBox(url);
+}
+
+// ═══════════════════════════════════
+// EDITOR
+// ═══════════════════════════════════
+function fmt(cmd, val) {
+  document.execCommand(cmd, false, val||null);
+  document.getElementById('entry-editor').focus();
+}
+function fmtBlock(tag) {
+  document.execCommand('formatBlock', false, tag);
+  document.getElementById('entry-editor').focus();
+}
+function applyFont(name) {
+  if(!name) return;
+  // Načíst Google Font
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name)}&display=swap`;
+  document.head.appendChild(link);
+  document.getElementById('entry-editor').style.fontFamily = `'${name}', serif`;
+  toast('Font '+name+' aplikován.');
+}
+
+// ═══════════════════════════════════
+// POZNÁMKA O ÚHLU
+// ═══════════════════════════════════
+function toggleAngleNote() {
+  const body = document.getElementById('angle-note-body');
+  const btn  = document.getElementById('angle-note-toggle');
+  const open = body.style.display==='block';
+  body.style.display = open?'none':'block';
+  btn.textContent = open ? '+ Poznámka o záměrném úhlu (nepovinné)' : '− Poznámka o záměrném úhlu';
+}
+
+// ═══════════════════════════════════
+// ULOŽIT ZÁPIS
+// ═══════════════════════════════════
+function saveEntry(analysisScores) {
+  const html = document.getElementById('entry-editor').innerHTML;
+  const text = document.getElementById('entry-editor').innerText.trim();
+  if(!text) { toast('Editor je prázdný.'); return; }
+
+  const title = prompt('Název zápisu:', 'Zápis '+new Date().toLocaleDateString('cs-CZ'));
+  if(title===null) return;
+  const cat = prompt('Kategorie (nech prázdné pro bez kategorie):', '') || '';
+
+  const angleSel = document.getElementById('angle-sel').value;
+  const angleTxt = document.getElementById('angle-note-txt').value;
+
+  const entry = {
+    id: currentEntryId || 'e_'+Date.now(),
+    ts: Date.now(),
+    title,
+    cat,
+    html,
+    text,
+    cards: drawnCards.map(c=>c.id),
+    scores: analysisScores || {},
+    userAngle: angleSel ? parseInt(angleSel) : null,
+    userAngleNote: angleTxt,
+  };
+
+  const idx = entries.findIndex(e=>e.id===entry.id);
+  if(idx>=0) entries[idx]=entry; else entries.push(entry);
+  persistEntries();
+  renderTimeline();
+  toast('Zápis "'+title+'" uložen.');
+  currentEntryId = null;
+}
+
+function persistEntries() {
+  localStorage.setItem('chcesmys_denik', JSON.stringify(entries));
+}
+function loadEntries() {
+  try { entries = JSON.parse(localStorage.getItem('chcesmys_denik')||'[]'); } catch(e){}
+}
+
+// ═══════════════════════════════════
+// ANALYZÉR — otevřít s textem
+// ═══════════════════════════════════
+function openAnalyzer() {
+  const text = document.getElementById('entry-editor').innerText.trim();
+  if(!text) { toast('Napiš text.'); return; }
+  const enc = btoa(encodeURIComponent(text.slice(0,2000)));
+  const url = ANALYZER_URL + '#vstup=' + enc;
+  window.open(url, '_blank');
+}
+
+// ═══════════════════════════════════
+// ČASOVÁ OSA
+// ═══════════════════════════════════
+function renderTimeline() {
+  const strip = document.getElementById('timeline');
+  const empty = document.getElementById('tl-empty');
+  strip.innerHTML = '';
+
+  const analyzed = entries.filter(e=>Object.keys(e.scores||{}).length>0);
+  if(!analyzed.length) {
+    if(empty) empty.style.display='block';
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  analyzed.slice().reverse().forEach(e=>{
+    const doms = getDomAngles(e.scores);
+    if(!doms.length) return;
+    const total = doms.reduce((s,st)=>s+(e.scores[st]||0),0);
+    const sentCount = (e.text.match(/[.!?]/g)||[]).length || 3;
+    const w = Math.max(14, Math.min(50, 10+sentCount*1.5));
+
+    const div = document.createElement('div');
+    div.className = 'tl-entry';
+    div.style.width = w+'px';
+    div.title = e.title+' · '+new Date(e.ts).toLocaleDateString('cs-CZ');
+
+    doms.forEach(st=>{
+      const seg = document.createElement('div');
+      seg.className = 'tl-seg';
+      seg.style.backgroundColor = ANG[st]?.color||'#888';
+      const w2 = total>0 ? (e.scores[st]/total)*100 : 100/doms.length;
+      seg.style.width = w2+'%';
+      div.appendChild(seg);
+    });
+
+    div.addEventListener('click',()=>showEntryDetail(e));
+    strip.appendChild(div);
+  });
+
+  renderTlLegend();
+}
+
+function getDomAngles(scores) {
+  const ents = Object.entries(scores).map(([st,v])=>({st:parseInt(st),v})).sort((a,b)=>b.v-a.v);
+  if(!ents.length) return [];
+  if(ents[0].v>=80) return ents.slice(0,3).map(e=>e.st);
+  if(ents[0].v>=50) return ents.slice(0,2).map(e=>e.st);
+  if(ents[1]&&ents[0].v-ents[1].v<=12) return [ents[0].st,ents[1].st];
+  return [ents[0].st];
+}
+
+function renderTlLegend() {
+  const wrap = document.getElementById('tl-legend');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  ANGLES.forEach(a=>{
+    const d = document.createElement('div');
+    d.style.cssText = `display:flex;align-items:center;gap:5px;font-size:.6rem;color:rgba(232,224,208,.45);cursor:pointer`;
+    d.innerHTML = `<span style="width:10px;height:10px;border-radius:1px;background:${a.color};flex-shrink:0"></span>${a.name}`;
+    wrap.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════
+// DETAIL ZÁPISU — MODAL
+// ═══════════════════════════════════
+function showEntryDetail(e) {
+  document.getElementById('modal-title').textContent = e.title;
+  const angStr = Object.entries(e.scores||{}).map(([st,v])=>`${ANG[st]?.name||st} ${v}%`).join(', ')||'—';
+  const userAng = e.userAngle ? `${ANG[e.userAngle]?.name||e.userAngle}° (záměr: ${e.userAngleNote||'—'})` : '—';
+  const cardsStr = (e.cards||[]).join(' + ');
+  const dt = new Date(e.ts).toLocaleString('cs-CZ');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-size:.68rem;color:var(--dim);margin-bottom:.6rem">${dt} · ${cardsStr}</div>
+    <div style="font-size:.7rem;color:var(--dim2);margin-bottom:.3rem">Úhly: ${angStr}</div>
+    <div style="font-size:.7rem;color:var(--dim2);margin-bottom:.8rem">Záměrný úhel: ${userAng}</div>
+    ${e.cat?`<div style="font-size:.65rem;color:var(--acc2);margin-bottom:.6rem">Kategorie: ${e.cat}</div>`:''}
+    <div style="background:var(--bg);padding:1rem;margin-bottom:1rem;font-family:'Cormorant Garamond',serif;font-size:.9rem;line-height:1.8;border-left:2px solid var(--border)">${e.html||e.text}</div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn" onclick="loadEntryToEditor('${e.id}')">✏️ Načíst do editoru</button>
+      <button class="btn" onclick="openAnalyzerForEntry('${e.id}')">🔍 Analyzovat</button>
+      <button class="btn" onclick="shareEntryUrl('${e.id}')">🔗 Sdílet URL</button>
+      <button class="btn" onclick="deleteEntry('${e.id}')">🗑 Smazat</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+
+function loadEntryToEditor(id) {
+  const e = entries.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('entry-editor').innerHTML = e.html||e.text;
+  currentEntryId = e.id;
+  if(e.userAngle) document.getElementById('angle-sel').value = e.userAngle;
+  if(e.userAngleNote) document.getElementById('angle-note-txt').value = e.userAngleNote;
+  // Načíst karty
+  const pool = [...activeCards];
+  drawnCards = (e.cards||[]).map(id=>pool.find(c=>c.id===id)||null).filter(Boolean);
+  if(drawnCards.length<3) drawCards(); else renderZapCards();
+  goSection(1);
+  closeModal();
+}
+
+function openAnalyzerForEntry(id) {
+  const e = entries.find(x=>x.id===id);
+  if(!e) return;
+  const enc = btoa(encodeURIComponent(e.text.slice(0,2000)));
+  window.open(ANALYZER_URL+'#vstup='+enc, '_blank');
+  closeModal();
+}
+
+function shareEntryUrl(id) {
+  const e = entries.find(x=>x.id===id);
+  if(!e) return;
+  const payload = btoa(encodeURIComponent(JSON.stringify({
+    t:e.title, tx:e.text.slice(0,400), sc:e.scores, ts:e.ts, cards:e.cards
+  })));
+  const url = location.href.split('#')[0]+'#sdileni='+payload;
+  copyToClipboard(url);
+  showShareBox(url);
+}
+
+function deleteEntry(id) {
+  if(!confirm('Smazat zápis?')) return;
+  entries = entries.filter(e=>e.id!==id);
+  persistEntries();
+  renderTimeline();
+  renderHistory();
+  closeModal();
+  toast('Zápis smazán.');
+}
+
+// ═══════════════════════════════════
+// PŘEHLÍDKA FENOMÉNŮ — SDÍLENÍ
+// ═══════════════════════════════════
+function shareLastToGallery() {
+  if(!galleryKey) { toast('Nastav skupinový klíč v Úvodu.'); return; }
+  const last = entries.filter(e=>Object.keys(e.scores||{}).length).slice(-1)[0];
+  if(!last) { toast('Žádný analyzovaný zápis.'); return; }
+  const sc = Object.entries(last.scores).map(([st,v])=>st+':'+v).join(',');
+  const url = GALLERY_URL+'?key='+encodeURIComponent(galleryKey)+'&angles='+encodeURIComponent(sc)+'&cards='+(last.cards||[]).join(',')+'&nick=';
+  copyToClipboard(url);
+  showShareBox(url);
+}
+
+function openGallery() {
+  const url = galleryKey ? GALLERY_URL+'?key='+encodeURIComponent(galleryKey) : GALLERY_URL;
+  window.open(url,'_blank');
+}
+
+// ═══════════════════════════════════
+// SKUPINOVÝ KLÍČ
+// ═══════════════════════════════════
+function generateKey() {
+  const k = 'mys-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  document.getElementById('gallery-key-in').value = k;
+}
+
+function saveKey() {
+  const k = document.getElementById('gallery-key-in').value.trim();
+  if(!k) return;
+  galleryKey = k;
+  localStorage.setItem('chcesmys_groupkey', k);
+  document.getElementById('current-key-display').textContent = 'Aktivní klíč: '+k;
+  document.getElementById('gallery-key-status').textContent = 'Skupinový klíč: '+k;
+  toast('Klíč uložen.');
+}
+
+// ═══════════════════════════════════
+// HISTORIE
+// ═══════════════════════════════════
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const empty = document.getElementById('history-empty');
+  list.innerHTML = '';
+
+  let show = [...entries];
+  if(historyFilter) show = show.filter(e=>e.title.toLowerCase().includes(historyFilter)||e.text.toLowerCase().includes(historyFilter));
+  if(historyCat) show = show.filter(e=>e.cat===historyCat);
+  if(historySort==='old') show.sort((a,b)=>a.ts-b.ts);
+  else if(historySort==='new') show.sort((a,b)=>b.ts-a.ts);
+  else if(historySort==='name') show.sort((a,b)=>a.title.localeCompare(b.title,'cs'));
+
+  if(!show.length) { empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  // Kategorie pro filtr
+  const cats = [...new Set(entries.map(e=>e.cat).filter(Boolean))];
+  const catSel = document.getElementById('cat-filter');
+  catSel.innerHTML = '<option value="">Všechny kategorie</option>';
+  cats.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o); });
+
+  show.forEach(e=>{
+    const div = document.createElement('div');
+    div.className = 'hist-entry';
+    const doms = getDomAngles(e.scores||{});
+    const stripHtml = doms.length ? `<div class="hist-strip">${doms.map(st=>`<div class="hist-seg" style="background:${ANG[st]?.color||'#888'}"></div>`).join('')}</div>` : '';
+    div.innerHTML = `
+      <div>
+        <div class="hist-title" onclick="showEntryDetail(entries.find(x=>x.id==='${e.id}'))">${e.title}</div>
+        <div class="hist-meta">${new Date(e.ts).toLocaleDateString('cs-CZ')} ${e.cat?'· '+e.cat:''}</div>
+        ${stripHtml}
+      </div>
+      <div class="hist-actions">
+        <button class="btn" style="padding:.2rem .6rem;font-size:.6rem" onclick="loadEntryToEditor('${e.id}')">✏️</button>
+        <button class="btn" style="padding:.2rem .6rem;font-size:.6rem" onclick="shareEntryUrl('${e.id}')">🔗</button>
+        <button class="btn" style="padding:.2rem .6rem;font-size:.6rem" onclick="deleteEntry('${e.id}')">🗑</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function filterHistory(q) { historyFilter = q.toLowerCase(); renderHistory(); }
+function sortHistory(v) { historySort = v; renderHistory(); }
+function filterByCat(v) { historyCat = v; renderHistory(); }
+
+function exportBook() {
+  const show = entries.filter(e=>!historyCat||e.cat===historyCat);
+  if(!show.length) { toast('Žádné zápisy.'); return; }
+  const sorted = show.slice().sort((a,b)=>a.ts-b.ts);
+  const html = `<!DOCTYPE html><html lang="cs"><head><meta charset="UTF-8"><title>Deník · Chceš myš?</title>
+<style>body{font-family:Georgia,serif;max-width:700px;margin:2rem auto;padding:1rem;background:#fff}
+h1{font-weight:300;font-size:2rem;margin-bottom:.3rem}
+.meta{font-size:.75rem;color:#888;margin-bottom:1.5rem}
+.entry{margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid #eee}
+</style></head><body>
+<h1>Deník</h1><div class="meta">Chceš myš? · Exportováno ${new Date().toLocaleDateString('cs-CZ')}</div>
+${sorted.map(e=>`<div class="entry"><h2>${e.title}</h2><div class="meta">${new Date(e.ts).toLocaleDateString('cs-CZ')}${e.cat?' · '+e.cat:''}</div><div>${e.html||e.text.replace(/\n/g,'<br>')}</div></div>`).join('')}
+</body></html>`;
+  const blob = new Blob([html],{type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'denik-'+Date.now()+'.html';
+  a.click();
+  toast('Knížka exportována.');
+}
+
+// ═══════════════════════════════════
+// SDÍLENÍ POMOCÍ URL
+// ═══════════════════════════════════
+function showShareBox(url) {
+  const existing = document.getElementById('share-box-toast');
+  if(existing) existing.remove();
+  const box = document.createElement('div');
+  box.id = 'share-box-toast';
+  box.style.cssText = 'position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#171410;border:1px solid rgba(212,165,116,.4);padding:1rem 1.2rem;z-index:9998;max-width:90vw;font-family:DM Mono,monospace;font-size:.65rem;color:#a89880;word-break:break-all;cursor:pointer';
+  box.innerHTML = `<div style="margin-bottom:.4rem;color:#e8e0d0">URL zkopírována do schránky — klikni pro zavření</div>${url}`;
+  box.onclick = ()=>box.remove();
+  document.body.appendChild(box);
+  setTimeout(()=>box.remove(), 8000);
+}
+
+function copyToClipboard(text) {
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(()=>toast('URL zkopírována ✓')).catch(()=>prompt('Zkopíruj URL:',text));
+  } else {
+    prompt('Zkopíruj URL:', text);
+  }
+}
+
+// ═══════════════════════════════════
+// URL HASH — načtení sdíleného stavu
+// ═══════════════════════════════════
+function processHash() {
+  const hash = location.hash;
+  if(!hash) return;
+
+  if(hash.includes('zap=')) {
+    // Sdílený los karet
+    const enc = hash.split('zap=')[1];
+    try {
+      const ids = decodeURIComponent(atob(enc)).split(',');
+      drawCards(ids);
+      goSection(1);
+    } catch(e){}
+    history.replaceState(null,'',location.pathname);
+    return;
+  }
+
+  if(hash.includes('sdileni=')) {
+    // Sdílený zápis
+    const enc = hash.split('sdileni=')[1];
+    try {
+      const obj = JSON.parse(decodeURIComponent(atob(enc)));
+      // Zobraz jako nový zápis (nepřepisuj local)
+      openSharedEntry(obj);
+    } catch(e){}
+    history.replaceState(null,'',location.pathname);
+    return;
+  }
+
+  if(hash.includes('vstup=')) {
+    // Příchod z analyzéru s textem
+    const enc = hash.split('vstup=')[1];
+    try {
+      const text = decodeURIComponent(atob(enc));
+      document.getElementById('entry-editor').innerText = text;
+      goSection(1);
+    } catch(e){}
+    history.replaceState(null,'',location.pathname);
+  }
+}
+
+function openSharedEntry(obj) {
+  const modalBody = document.getElementById('modal-body');
+  document.getElementById('modal-title').textContent = obj.t || 'Sdílený zápis';
+  const angStr = obj.sc ? Object.entries(obj.sc).map(([st,v])=>`${ANG[st]?.name||st} ${v}%`).join(', ') : '—';
+  modalBody.innerHTML = `
+    <div style="font-size:.68rem;color:var(--dim);margin-bottom:.8rem">Sdílený zápis · ${obj.ts?new Date(obj.ts).toLocaleDateString('cs-CZ'):''}</div>
+    <div style="font-size:.7rem;color:var(--dim2);margin-bottom:.8rem">Úhly: ${angStr}</div>
+    <div style="background:var(--bg);padding:1rem;font-family:'Cormorant Garamond',serif;font-size:.9rem;line-height:1.8;border-left:2px solid var(--border)">${obj.tx||''}</div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="btn btn-p" onclick="importShared(${JSON.stringify(obj).replace(/"/g,'&quot;')})">Importovat do deníku</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+window.importShared = function(obj) {
+  const entry = {
+    id:'shared_'+Date.now(),
+    ts: obj.ts||Date.now(),
+    title: (obj.t||'Sdílený zápis')+' (importováno)',
+    cat:'', html:'', text: obj.tx||'',
+    cards: obj.cards||[],
+    scores: obj.sc||{},
+    userAngle:null, userAngleNote:'',
+  };
+  entries.push(entry);
+  persistEntries();
+  toast('Zápis importován.');
+  closeModal();
+  renderHistory();
+};
+
+// ═══════════════════════════════════
+// HELPER — file → dataURL
+// ═══════════════════════════════════
+function fileToDataUrl(file) {
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+    r.readAsDataURL(file);
+  });
+}
+function blobToDataUrl(blob) {
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+// ═══════════════════════════════════
+// TOAST
+// ═══════════════════════════════════
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>{ t.style.display='none'; }, 2800);
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+function init() {
+  loadEntries();
+  buildDots();
+  setPoem();
+  buildSlots();
+  drawCards();
+  renderTimeline();
+  processHash();
+
+  // Skupinový klíč
+  const savedKey = localStorage.getItem('chcesmys_groupkey')||'';
+  if(savedKey) {
+    galleryKey = savedKey;
+    document.getElementById('gallery-key-in').value = savedKey;
+    document.getElementById('current-key-display').textContent = 'Aktivní klíč: '+savedKey;
+    document.getElementById('gallery-key-status').textContent = 'Skupinový klíč: '+savedKey;
+  }
+
+  // Mezerník / zápisník (chcesmys_mezernik) — import zápisů odsud
+  const mez = JSON.parse(localStorage.getItem('chcesmys_mezernik')||'{}');
+  if(mez._zaznamy && mez._zaznamy.length) {
+    mez._zaznamy.forEach(z=>{
+      if(!entries.find(e=>e.id===z.id)) {
+        entries.push({
+          id: z.id,
+          ts: z.ts,
+          title: z.nazev||'Import',
+          cat:'analyzér', html:'', text: z.text_snippet||'',
+          cards:[], scores: Object.fromEntries((z.sc||[]).map((v,i)=>[ANGLES[i]?.st,v])),
+          userAngle:null, userAngleNote:'',
+        });
+      }
+    });
+    persistEntries();
+  }
+}
+
+init();
+
+// Zpřístupni funkce voláné z HTML
+window.toggleAccord = toggleAccord;
+window.generateKey = generateKey;
+window.saveKey = saveKey;
+window.resetSlots = resetSlots;
+window.drawCards = drawCards;
+window.shareDrawUrl = shareDrawUrl;
+window.openAnalyzer = openAnalyzer;
+window.saveEntry = saveEntry;
+window.toggleAngleNote = toggleAngleNote;
+window.fmt = fmt;
+window.fmtBlock = fmtBlock;
+window.applyFont = applyFont;
+window.shareLastToGallery = shareLastToGallery;
+window.openGallery = openGallery;
+window.closeModal = closeModal;
+window.showEntryDetail = showEntryDetail;
+window.loadEntryToEditor = loadEntryToEditor;
+window.openAnalyzerForEntry = openAnalyzerForEntry;
+window.shareEntryUrl = shareEntryUrl;
+window.deleteEntry = deleteEntry;
+window.filterHistory = filterHistory;
+window.sortHistory = sortHistory;
+window.filterByCat = filterByCat;
+window.exportBook = exportBook;
+window.goSection = goSection;
+
+</script>
+</body>
+</html>
