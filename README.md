@@ -96,7 +96,10 @@ kreativita, fyzika jazyka, metadenik
 - [analyzer_rucni_cap](doma/nastroje/analyzer_rucni_cap.html)
 - [knihovna_figur](doma/nastroje/knihovna_figur.html)
 
-- [metadeník](doma/nastroje/denik_minimal.html)
+- [metadeník_minimal](doma/nastroje/denik_minimal.html)
+- [metadeník](doma/nastroje/metadenik.html)
+- [metadeník1](doma/nastroje/metadenik1.html)
+
 
 - [licence a zpetna vazba](doma/licence_a_zpetna_vazba.html)
 
@@ -116,8 +119,9 @@ kreativita, fyzika jazyka, metadenik
 - [ebook2](doma/nastroje/ebook2.html)
 - [ebook3](doma/nastroje/ebook3.hml)
 
-- [diagnostika tymu](doma/mimo/diagnostika_tymu.html
-- )
+- [diagnostika tymu](doma/mimo/diagnostika_tymu.html)
+
+  
 ---
 
 # [GALERIE FENOMÉNŮ](doma/data/uhly/mys_uhly.html)
