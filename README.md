@@ -38,6 +38,9 @@
 
 - [carofyzika](doma/nastroje/carofyzika.html)
 - [carofyzika1](doma/nastroje/carofyzika1.html)
+  - [carofyzika1](doma/nastroje/carofyzika1.html)
+  - [carofyzika2](doma/nastroje/carofyzika2.html)
+  
 - [multigenerator](doma/nastroje/multigenerator.html)
 
 - [anotator_poznamky](doma/funkce/anotator_poznamky.html)
