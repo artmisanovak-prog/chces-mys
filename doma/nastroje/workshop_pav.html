@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop · Karta Páv · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0d0a;
+      --bg2: #181410;
+      --bg3: #201c17;
+      --accent: #d4a574;
+      --accent2: #b8895a;
+      --text: #e8e0d4;
+      --text-dim: #9a8f82;
+      --border: #2a241e;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-serif);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 52px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-right: 2.5rem;
+      opacity: 0.75;
+      white-space: nowrap;
+    }
+
+    .nav-steps { display: flex; }
+
+    .nav-step {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0 1.2rem;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .nav-step:hover { color: var(--text); }
+    .nav-step.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* SECTIONS */
+    section {
+      display: none;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    section.visible { display: block; }
+
+    /* TYPOGRAPHY */
+    h1 {
+      font-weight: 300;
+      font-size: 3.8rem;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 1.9rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: var(--text-dim);
+      margin-bottom: 0.9rem;
+      line-height: 1.75;
+    }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+    .flex-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+
+    /* CARD HEADER */
+    .card-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-subtitle {
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+    }
+
+    /* BUTTONS */
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      border-radius: 1px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn:hover { background: var(--accent); color: var(--bg); }
+
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+
+    .btn-ghost {
+      border-color: var(--border);
+      color: var(--text-dim);
+    }
+    .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); background: transparent; }
+
+    /* INPUTS */
+    input[type="text"] {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 1px;
+      padding: 0.55rem 1rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+    /* MEMBERS */
+    .members-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .member-chip {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text);
+    }
+
+    .member-chip .remove {
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .member-chip .remove:hover { color: var(--accent); }
+
+    .add-member {
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .empty-state {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      padding: 2rem;
+      text-align: center;
+      border: 1px dashed var(--border);
+    }
+
+    /* FAIRY TALE */
+    .tale-container {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tale-title {
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 0.2rem;
+    }
+
+    .tale-sub {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+
+    .tale-para {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.9rem;
+      line-height: 1.85;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid transparent;
+      border-radius: 1px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .tale-para.selectable { cursor: pointer; }
+    .tale-para.selectable:hover {
+      background: rgba(212, 165, 116, 0.07);
+      border-color: rgba(212, 165, 116, 0.25);
+    }
+    .tale-para.selected {
+      background: rgba(212, 165, 116, 0.12);
+      border-color: var(--accent);
+    }
+
+    /* Q2 MODE BANNER */
+    .q2-banner {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      margin-bottom: 1.2rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid rgba(212, 165, 116, 0.35);
+      background: rgba(212, 165, 116, 0.05);
+    }
+    .q2-banner.visible { display: flex; justify-content: space-between; align-items: center; }
+    .q2-banner .cancel { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+    /* MEMBER TABS */
+    .member-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .member-tab {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      letter-spacing: 0.08em;
+      padding: 0.42rem 1rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-radius: 1px;
+      transition: all 0.15s;
+    }
+    .member-tab:hover { color: var(--text); border-color: var(--text-dim); }
+    .member-tab.active { color: var(--accent); border-color: var(--accent); background: rgba(212,165,116,0.06); }
+    .member-tab.done::after { content: ' ·'; color: var(--accent); }
+
+    /* Q BLOCKS */
+    .q-block {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .q-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .q-text {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Q1 */
+    .q1-options { display: grid; gap: 0.45rem; }
+
+    .q1-option {
+      border: 1px solid var(--border);
+      padding: 0.85rem 1.1rem;
+      cursor: pointer;
+      background: var(--bg2);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .q1-option:hover {
+      border-color: rgba(212, 165, 116, 0.4);
+      background: rgba(212, 165, 116, 0.04);
+    }
+    .q1-option.selected {
+      border-color: var(--accent);
+      background: rgba(212, 165, 116, 0.08);
+    }
+
+    .q1-option-num {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+    }
+    .q1-option.selected .q1-option-num { color: var(--accent); }
+
+    .q1-option-desc {
+      font-size: 0.93rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Q2 */
+    .q2-display {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 1rem 1.2rem;
+      font-style: italic;
+      font-size: 0.93rem;
+      color: var(--text-dim);
+      min-height: 58px;
+      margin-bottom: 0.6rem;
+      line-height: 1.6;
+      transition: border-color 0.2s;
+    }
+    .q2-display.filled { color: var(--text); border-color: rgba(212, 165, 116, 0.35); }
+
+    .q2-link {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      color: var(--accent);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Q3 */
+    .q3-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .q3-option {
+      border: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      background: var(--bg2);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .q3-option:hover { border-color: rgba(212, 165, 116, 0.4); }
+    .q3-option.selected {
+      border-color: var(--accent);
+      background: rgba(212, 165, 116, 0.08);
+    }
+
+    .q3-title {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+    }
+    .q3-desc {
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    .save-note {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      margin-top: 1.2rem;
+      letter-spacing: 0.04em;
+    }
+    .save-note.ok { color: var(--accent); }
+
+    /* ANALYSIS */
+    .angle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .angle-cell {
+      background: var(--bg2);
+      padding: 1rem;
+    }
+    .angle-cell.dominant { background: rgba(212, 165, 116, 0.09); }
+    .angle-cell.zero { background: var(--bg); opacity: 0.5; }
+
+    .ac-name {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .ac-bar {
+      height: 2px;
+      background: var(--border);
+      margin-bottom: 0.45rem;
+      overflow: hidden;
+    }
+    .ac-fill { height: 100%; background: var(--accent); transition: width 0.5s ease; }
+
+    .ac-count {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+    .angle-cell.zero .ac-count { color: var(--border); }
+
+    .ac-who {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    /* DIAG BOX */
+    .diag-box {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      background: var(--bg2);
+      margin-bottom: 1rem;
+    }
+    .diag-box.warm { border-color: rgba(212, 165, 116, 0.45); }
+
+    .diag-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+    .diag-label.hi { color: var(--accent); }
+
+    .diag-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .diag-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .diag-name {
+      flex: 0 0 175px;
+      font-size: 0.97rem;
+      color: var(--text);
+    }
+    .diag-action {
+      flex: 1;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* WORKSHOP TIMELINE */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.6rem; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .tl-step { position: relative; padding-bottom: 2rem; }
+    .tl-step::before {
+      content: '';
+      position: absolute;
+      left: -2rem; top: 0.55rem;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translateX(-2.5px);
+    }
+
+    .tl-time {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .tl-title { font-size: 1.05rem; color: var(--text); margin-bottom: 0.3rem; }
+    .tl-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.6rem; }
+      .q3-options { grid-template-columns: 1fr; }
+      .angle-grid { grid-template-columns: 1fr 1fr; }
+      nav { padding: 0 1rem; }
+      section { padding: 2rem 1rem; }
+      .nav-logo { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Chceš myš? · Páv</div>
+  <div class="nav-steps">
+    <div class="nav-step active" onclick="showSection('s-tym',this)">Tým</div>
+    <div class="nav-step" onclick="showSection('s-pohadka',this)">Pohádka</div>
+    <div class="nav-step" onclick="showSection('s-otazky',this)">Otázky</div>
+    <div class="nav-step" onclick="showSection('s-analyza',this)">Analýza</div>
+  </div>
+</nav>
+
+<!-- TÝM -->
+<section id="s-tym" class="visible">
+  <div class="card-header">
+    <div class="card-meta">Workshop · Diagnostická karta · Chceš myš?</div>
+    <h1>Páv</h1>
+    <div class="card-subtitle">Narcistická deformace vnímání reality</div>
+  </div>
+
+  <h3>Členové týmu</h3>
+
+  <div class="add-member">
+    <input type="text" id="member-input" placeholder="Jméno člena" maxlength="30"
+           onkeydown="if(event.key==='Enter')addMember()">
+    <button class="btn btn-primary" onclick="addMember()">Přidat</button>
+  </div>
+
+  <div class="members-grid" id="members-grid"></div>
+  <div id="no-members" class="empty-state" style="margin-bottom:2rem;">
+    Zatím nikdo. Přidejte členy týmu výše.
+  </div>
+
+  <hr class="divider">
+
+  <h3>O workshopu</h3>
+  <p>Pohádka O Pávovi slouží jako zrcadlo pro odhalení kognitivních vzorců — jak tým vidí sebe, druhé a problémy. Každý člen odpovídá na tři otázky. Výsledky se zobrazí jako kognitivní mapa týmu s diagnózou a doporučeními.</p>
+  <p>Délka: 90 minut. Počet účastníků: 3–15.</p>
+
+  <div class="flex-row" style="margin-top:2rem;">
+    <button class="btn btn-primary" onclick="showSection('s-pohadka',document.querySelectorAll('.nav-step')[1])">Začít workshop →</button>
+  </div>
+</section>
+
+<!-- POHÁDKA -->
+<section id="s-pohadka">
+  <div class="q2-banner" id="q2-banner">
+    <span>↓ Klikněte na odstavec, který vás nejvíce zaujal — pro: <strong id="q2-banner-name"></strong></span>
+    <span class="cancel" onclick="cancelQ2()">× zrušit</span>
+  </div>
+
+  <div class="tale-container">
+    <div class="tale-title">O Pávovi</div>
+    <div class="tale-sub">pohádka · karta páv · oko za okem, páv za pávem</div>
+    <div id="tale-text"></div>
+  </div>
+
+  <div class="flex-row">
+    <button class="btn btn-ghost" onclick="showSection('s-tym',document.querySelectorAll('.nav-step')[0])">← Tým</button>
+    <button class="btn btn-primary" onclick="showSection('s-otazky',document.querySelectorAll('.nav-step')[2])">Otázky →</button>
+  </div>
+</section>
+
+<!-- OTÁZKY -->
+<section id="s-otazky">
+  <h3>Odpovědi na otázky</h3>
+  <div id="no-members-q" class="empty-state" style="margin-bottom:2rem;display:none;">
+    Nejprve přidejte členy týmu v sekci Tým.
+  </div>
+  <div class="member-tabs" id="member-tabs"></div>
+  <div id="member-form"></div>
+
+  <hr class="divider">
+  <div class="flex-row">
+    <button class="btn btn-ghost" onclick="showSection('s-pohadka',document.querySelectorAll('.nav-step')[1])">← Pohádka</button>
+    <button class="btn btn-primary" onclick="showSection('s-analyza',document.querySelectorAll('.nav-step')[3]);renderAnalysis()">Zobrazit analýzu →</button>
+  </div>
+</section>
+
+<!-- ANALÝZA -->
+<section id="s-analyza">
+  <div class="card-header" style="margin-bottom:2rem;">
+    <div class="card-meta">Výsledky · Kognitivní mapa · Páv</div>
+    <h2>Diagnostika týmu</h2>
+  </div>
+
+  <div id="analyza-content"></div>
+
+  <hr class="divider">
+
+  <h3>Struktura workshopu · 90 minut</h3>
+  <div class="timeline">
+    <div class="tl-step">
+      <div class="tl-time">0–5 min · Zahájení</div>
+      <div class="tl-title">Vstup do světa páva</div>
+      <div class="tl-desc">Facilitátor: „Představte si, že vše, co vidíte ve svém okolí, je jen odrazem vašeho myšlení..."</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">5–10 min · Pohádka</div>
+      <div class="tl-title">Čtení pohádky O Pávovi</div>
+      <div class="tl-desc">Nahlas nebo individuálně. Každý si podtrhne moment, který ho zaujal nejvíce.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">10–20 min · Individuálně</div>
+      <div class="tl-title">Tři otázky</div>
+      <div class="tl-desc">Každý člen samostatně odpovídá na Q1, Q2, Q3 — bez konzultace s ostatními.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">20–35 min · Trojice</div>
+      <div class="tl-title">Sdílení: Co vás zasáhlo?</div>
+      <div class="tl-desc">Ve skupinách po třech: „Která myšlenka z pohádky vás nejvíce zasáhla a proč?"</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">35–55 min · Hluboká práce</div>
+      <div class="tl-title">Cvičení: Páví zrcadlo</div>
+      <div class="tl-desc">Každý napíše: „Kdybych byl pávem v našem týmu, viděl bych v druhých..." Sdílení: Co to odhaluje o našich projekcích?</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">55–70 min · Akce</div>
+      <div class="tl-title">Cvičení: Odtržení pera</div>
+      <div class="tl-desc">Každý napíše jedno „péro" — image, předsudek, zažitý vzorec — které by bylo zdravé odtrhnout.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-time">70–90 min · Plán</div>
+      <div class="tl-title">Týmový rituál</div>
+      <div class="tl-desc">„Jaké je naše hlavní páví pero jako tým?" Návrh pravidelného rituálu revize projekcí.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="flex-row">
+    <button class="btn btn-ghost" onclick="showSection('s-otazky',document.querySelectorAll('.nav-step')[2])">← Otázky</button>
+    <button class="btn" onclick="exportTxt()">Exportovat výsledky</button>
+    <button class="btn btn-ghost" onclick="resetAll()">Resetovat data</button>
+  </div>
+</section>
+
+<script>
+/* ───────────────────────────────
+   DATA
+─────────────────────────────── */
+const TALE = [
+  "Byl jednou jeden páv, který měl tolik ok na ocase, že se mu začaly dívat zpátky. Ne on na svět, ale svět na něj — skrz jeho vlastní pera. A to byl problém.",
+  "Protože když se díváš na svět skrz sebe, všechno vypadá jako ty. A páv si začal myslet, že celý svět je páv. Že stromy jsou pávové, jen bez per. Že mraky jsou pávové, co se rozplynuli. A že myš je jen páv, co se zapomněl rozvinout.",
+  "A tak začal pávy počítat. Ne podle počtu nohou, ale podle počtu ok. Kdo měl víc než jedno oko, byl podezřelý. Kdo měl méně než jedno, byl prorok.",
+  "Jednou potkal lemura, co se díval jen na stranu. Páv se zarazil: „To je páv, co se otočil dovnitř." Pak potkal kocoura, co krkal tečky. „To je páv, co spolkl interpunkci."",
+  "A když potkal zaječici, co prošla ohněm, řekl: „To je páv, co se přepálil."",
+  "A tak vznikla nová teorie: Každé zvíře je páv v jiném stádiu rozpadu. A každé oko je jen zrcadlo, co se snaží zapomenout, co vidělo.",
+  "Páv si začal odtrhávat pera. Ne proto, že by chtěl být méně krásný. Ale proto, že chtěl být méně páv.",
+  "A když mu zbylo jen jedno oko, konečně uviděl: Že není páv. Že je pohádka. A že pohádka se nedá rozvinout jako ocas."
+];
+
+const Q1 = [
+  { id:1,  desc:"Vidí: jak tým projektuje vlastní schéma na druhé. Neschopnost vidět ostatní jako samostatné bytosti — jejich ocas s oky je jejich ego." },
+  { id:2,  desc:"Vidí: základní filosofický problém. Jak poznáme, že to, co vidíme, je skutečné? Naše mysl deformuje realitu a potvrzuje předsudky." },
+  { id:3,  desc:"Vidí: ztrátu spojení s realitou skrz jazyk. Žargon nahrazuje smysl. Znaky přestávají odkazovat na skutečné věci." },
+  { id:4,  desc:"Vidí: přílišnou introspekci jako past. Když se příliš díváš do sebe, přestaneš vidět svět. Analýza se stává paralýzou." },
+  { id:5,  desc:"Vidí: formu vítězící nad obsahem. Estetická identita se stává vězením. Image je důležitější než to, co se skutečně dělá." },
+  { id:6,  desc:"Vidí: rozmazané hranice mezi rolemi. Splývání zodpovědností — každý dělá všechno, ale nikdo nic pořádně." },
+  { id:7,  desc:"Vidí: obsesi měřením. Metriky se stávají realitou samotnou. Počítáme věci, abychom si vytvořili iluzi kontroly." },
+  { id:8,  desc:"Vidí: echo komoru. Všichni odrážejí nejsilnější hlas. Autentické perspektivy chybí, tým je osamělý narcis." },
+  { id:9,  desc:"Vidí: image bránící přiznání chyb. Dokonalá fasáda skrývá problémy. Strach z autenticity jako hrozba identitě." },
+  { id:10, desc:"Vidí: ztotožnění s rigidní rolí místo poslání. „Jsme vývojáři" místo „vytváříme užitečné věci"." },
+  { id:11, desc:"Vidí: falešnou jednoduchost jako únik před složitostí. Komplexní problémy redukujeme na jedno heslo. Povrchní analýza." },
+  { id:12, desc:"Vidí: příležitost k sebeironii a zdravému odstupu. Tým se bere příliš vážně. Chybí schopnost zasmát se vlastním vzorcům." }
+];
+
+const Q3 = [
+  { id:1,  title:"Rolová výměna",           desc:"Každý měsíc den v roli jiného stakeholdera — zákazníka, dodavatele, nováčka. Denní empatické cvičení." },
+  { id:2,  title:"Cizí epistemologie",       desc:"Pozvat lidi z úplně jiných oborů ke komentáři projektů. Jejich otázky odhalí slepá místa." },
+  { id:3,  title:"Detox od žargonu",         desc:"Týden bez firemních frází. Mluvit jednoduše. Kdo použije ‚disrupt' nebo ‚pivot', platí do prasátka." },
+  { id:4,  title:"Inspekční kvóta",          desc:"Max. 20 % času na reflexi, 80 % na akci. Každá reflexe musí vést k jednomu konkrétnímu kroku." },
+  { id:5,  title:"Den ošklivých prototypů",  desc:"Hodnotit pouze funkčnost, ne estetiku. Forma se řeší až po ověření obsahu a smyslu." },
+  { id:6,  title:"Mapa hranic",              desc:"Nakreslit explicitní RACI mapu — kdo za co zodpovídá. A pak tyto hranice vědomě testovat." },
+  { id:7,  title:"Qualitative Wednesday",    desc:"Středa bez čísel. Pouze příběhy, popisy, pozorování. Žádné dashboardy ani metriky." },
+  { id:8,  title:"Den zrcadla",              desc:"Každý říká názor v přímém rozporu s názorem většiny. Bez následků. Povinná autentická odlišnost." },
+  { id:9,  title:"Slavnost chyb",            desc:"Každý měsíc každý prezentuje jednu svou chybu a co se z ní naučil. Oslava nedokonalosti." },
+  { id:10, title:"Příběhová revoluce",       desc:"Přepsat pracovní pozice jako příběhy. Místo ‚PM' — ‚Vypravěč potřeb zákazníků'." },
+  { id:11, title:"5 perspektiv",             desc:"U každého problému povinně hledat 5 různých perspektiv. Zakázat jednoduchá hesla jako řešení." },
+  { id:12, title:"Páví ceremoniál",          desc:"Jednou za čtvrtletí karikovat vlastní procesy. Karnevalová verze sebe sama. Oslava absurdity." }
+];
+
+const NAMES = [
+  "Narcistická deformace","Epistemologická krize","Semiotický kolaps",
+  "Katastrofická introspekce","Krása jako vězení","Kontaktní schizofrenie",
+  "Kvantifikační obsese","Zrcadlová fasáda","Autodestruktivní autenticita",
+  "Narrativní probuzení","Ontologické zjednodušení","Metamoderní ironie"
+];
+
+const DIAGNOSES = [
+  "Tým projektuje vlastní myšlení na zákazníky a kolegy. Egocentrický přístup.",
+  "Rozhodovací procesy potvrzují existující předsudky. Slepá místa v poznání.",
+  "Jazyk se odtrhl od reality. Žargon nahradil smysl.",
+  "Paralýza analýzou. Více se přemýšlí než jedná. Meetingy o meetingách.",
+  "Forma vítězí nad obsahem. Prezentace jsou důležitější než výsledky.",
+  "Nejasné role a zodpovědnosti. Chaos v tom, kdo rozhoduje o čem.",
+  "Metriky nahradily zdravý úsudek. Vše se měří, ale ne vše, co se měří, má smysl.",
+  "Echo komora. Silný hlas přehlušuje ostatní. Chybí autentické perspektivy.",
+  "Image je důležitější než realita. Chyby se skrývají, ne řeší.",
+  "Tým se identifikuje s funkcí, ne s posláním. Rigidita rolí.",
+  "Komplexní problémy se řeší zjednodušeně. Povrchní analýza.",
+  "Přílišná vážnost. Chybí sebeironie a schopnost zasmát se vlastním vzorcům."
+];
+
+/* ───────────────────────────────
+   STATE
+─────────────────────────────── */
+let S = { members:[], answers:{}, active:null, q2mode:false };
+const KEY = 'chcesmys_pav_v1';
+
+function load() { try { const d=localStorage.getItem(KEY); if(d) S=JSON.parse(d); } catch(e){} }
+function save() { try { localStorage.setItem(KEY,JSON.stringify(S)); } catch(e){} }
+
+/* ───────────────────────────────
+   INIT
+─────────────────────────────── */
+function init() {
+  load();
+  buildTale();
+  renderMembers();
+  renderMemberTabs();
+  renderMemberForm();
+}
+
+/* ───────────────────────────────
+   NAV
+─────────────────────────────── */
+function showSection(id, el) {
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('visible'));
+  document.querySelectorAll('.nav-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  if (el) el.classList.add('active');
+  if (id==='s-otazky') { renderMemberTabs(); renderMemberForm(); }
+  if (id==='s-analyza') renderAnalysis();
+  window.scrollTo(0,0);
+}
+
+/* ───────────────────────────────
+   MEMBERS
+─────────────────────────────── */
+function addMember() {
+  const inp = document.getElementById('member-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  const id = Date.now();
+  S.members.push({id,name});
+  if (!S.answers[id]) S.answers[id]={};
+  if (!S.active) S.active=id;
+  inp.value='';
+  save();
+  renderMembers();
+  renderMemberTabs();
+}
+
+function removeMember(id) {
+  S.members = S.members.filter(m=>m.id!==id);
+  delete S.answers[id];
+  if (S.active===id) S.active = S.members.length ? S.members[0].id : null;
+  save();
+  renderMembers();
+  renderMemberTabs();
+  renderMemberForm();
+}
+
+function renderMembers() {
+  const g = document.getElementById('members-grid');
+  const nm = document.getElementById('no-members');
+  g.innerHTML = S.members.map(m=>`
+    <div class="member-chip">${m.name}<span class="remove" onclick="removeMember(${m.id})">✕</span></div>
+  `).join('');
+  nm.style.display = S.members.length ? 'none' : 'block';
+}
+
+/* ───────────────────────────────
+   TALE
+─────────────────────────────── */
+function buildTale() {
+  document.getElementById('tale-text').innerHTML =
+    TALE.map((p,i)=>`<div class="tale-para" id="tp-${i}" data-i="${i}" onclick="paraClick(${i})">${p}</div>`).join('');
+}
+
+function paraClick(i) {
+  if (!S.q2mode) return;
+  if (!S.answers[S.active]) S.answers[S.active]={};
+  S.answers[S.active].q2 = i;
+  save();
+  highlightTale();
+  setTimeout(()=>exitQ2(),500);
+}
+
+function highlightTale() {
+  document.querySelectorAll('.tale-para').forEach(p=>p.classList.remove('selected'));
+  if (S.q2mode && S.active != null) {
+    const sel = S.answers[S.active]?.q2;
+    if (sel!=null) document.getElementById(`tp-${sel}`)?.classList.add('selected');
+  }
+}
+
+function setQ2Mode(memberId) {
+  S.q2mode = true;
+  S.active = memberId;
+  const m = S.members.find(m=>m.id===memberId);
+  document.querySelectorAll('.tale-para').forEach(p=>p.classList.add('selectable'));
+  const b = document.getElementById('q2-banner');
+  b.classList.add('visible');
+  document.getElementById('q2-banner-name').textContent = m ? m.name : '';
+  highlightTale();
+  showSection('s-pohadka', document.querySelectorAll('.nav-step')[1]);
+}
+
+function cancelQ2() { exitQ2(); showSection('s-otazky', document.querySelectorAll('.nav-step')[2]); }
+
+function exitQ2() {
+  S.q2mode = false;
+  document.querySelectorAll('.tale-para').forEach(p=>p.classList.remove('selectable','selected'));
+  document.getElementById('q2-banner').classList.remove('visible');
+}
+
+/* ───────────────────────────────
+   MEMBER TABS + FORM
+─────────────────────────────── */
+function renderMemberTabs() {
+  const tabs = document.getElementById('member-tabs');
+  const nm = document.getElementById('no-members-q');
+  if (!S.members.length) { tabs.innerHTML=''; nm.style.display='block'; return; }
+  nm.style.display='none';
+  tabs.innerHTML = S.members.map(m=>{
+    const a = S.answers[m.id]||{};
+    const done = a.q1 && a.q3;
+    const active = S.active===m.id;
+    return `<div class="member-tab ${active?'active':''} ${done?'done':''}" onclick="setActive(${m.id})">${m.name}</div>`;
+  }).join('');
+}
+
+function setActive(id) {
+  S.active=id; save();
+  renderMemberTabs();
+  renderMemberForm();
+}
+
+function renderMemberForm() {
+  const form = document.getElementById('member-form');
+  if (!S.active || !S.members.length) { form.innerHTML=''; return; }
+  const m = S.members.find(m=>m.id===S.active);
+  if (!m) return;
+  const a = S.answers[S.active]||{};
+  const q2text = a.q2!=null ? `„${TALE[a.q2].substring(0,130)}${TALE[a.q2].length>130?'…':''}"` : null;
+
+  form.innerHTML = `
+    <!-- Q1 -->
+    <div class="q-block">
+      <div class="q-label">Q1 · Smysl</div>
+      <div class="q-text">„Co je podle vás hlavní pointa nebo sdělení tohoto příběhu?"</div>
+      <div class="q1-options">
+        ${Q1.map(o=>`
+          <div class="q1-option ${a.q1===o.id?'selected':''}" onclick="selQ1(${o.id})">
+            <div class="q1-option-num">${a.q1===o.id?'·':'—'}</div>
+            <div class="q1-option-desc">${o.desc}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-block">
+      <div class="q-label">Q2 · Zaujetí</div>
+      <div class="q-text">„Která konkrétní věta nebo moment vás nejvíc zaujal/a — a proč?"</div>
+      <div class="q2-display ${q2text?'filled':''}">${q2text||'Zatím nevybráno.'}</div>
+      <span class="q2-link" onclick="setQ2Mode(${S.active})">→ Označit pasáž v pohádce</span>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-block">
+      <div class="q-label">Q3 · Aplikace</div>
+      <div class="q-text">„Kdyby tento příběh byl radou — co by vám radil dělat ve vašem pracovním životě?"</div>
+      <div class="q3-options">
+        ${Q3.map(o=>`
+          <div class="q3-option ${a.q3===o.id?'selected':''}" onclick="selQ3(${o.id})">
+            <div class="q3-title">${o.title}</div>
+            <div class="q3-desc">${o.desc}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="save-note ${a.q1&&a.q3?'ok':''}">
+      ${a.q1&&a.q3 ? '· Odpovědi uloženy.' : '· Vyberte alespoň Q1 a Q3 pro zahrnutí do analýzy.'}
+    </div>
+  `;
+}
+
+function selQ1(id) {
+  if (!S.answers[S.active]) S.answers[S.active]={};
+  S.answers[S.active].q1=id; save();
+  renderMemberForm(); renderMemberTabs();
+}
+
+function selQ3(id) {
+  if (!S.answers[S.active]) S.answers[S.active]={};
+  S.answers[S.active].q3=id; save();
+  renderMemberForm(); renderMemberTabs();
+}
+
+/* ───────────────────────────────
+   ANALYSIS
+─────────────────────────────── */
+function renderAnalysis() {
+  const c = document.getElementById('analyza-content');
+  if (!S.members.length) { c.innerHTML='<div class="empty-state">Přidejte členy týmu a vyplňte odpovědi.</div>'; return; }
+
+  const q1c={}, q3c={}, q1who={}, q3who={};
+  for(let i=1;i<=12;i++) { q1c[i]=0; q3c[i]=0; q1who[i]=[]; q3who[i]=[]; }
+
+  S.members.forEach(m=>{
+    const a=S.answers[m.id]||{};
+    if(a.q1){ q1c[a.q1]++; q1who[a.q1].push(m.name); }
+    if(a.q3){ q3c[a.q3]++; q3who[a.q3].push(m.name); }
+  });
+
+  const combined={};
+  for(let i=1;i<=12;i++) combined[i]=q1c[i]+q3c[i];
+
+  const total = S.members.length;
+  const maxC = Math.max(...Object.values(combined),1);
+  const thresh = Math.max(total*0.3, 1);
+
+  const dominant = Object.entries(combined).filter(([,v])=>v>=thresh&&v>0).sort((a,b)=>b[1]-a[1]);
+  const deficit  = Object.entries(combined).filter(([,v])=>v===0).map(([k])=>+k);
+
+  let html='';
+
+  // Summary bar
+  html+=`<div class="diag-box warm" style="margin-bottom:2rem;">
+    <div class="diag-label hi">Přehled · ${total} ${total===1?'člen':total<5?'členové':'členů'}</div>
+    <p style="margin:0;font-size:0.95rem;color:var(--text-dim);">
+      ${dominant.length
+        ? `Tým silně rezonuje s: <strong style="color:var(--text)">${dominant.slice(0,2).map(([id])=>NAMES[+id-1]).join(', ')}</strong>.`
+        : 'Odpovědi jsou rovnoměrně rozloženy.'}
+      ${deficit.length
+        ? ` Slepé úhly: <strong style="color:var(--text-dim)">${deficit.slice(0,3).map(id=>NAMES[id-1]).join(', ')}</strong>.`
+        : ' Žádné výrazné slepé úhly.'}
+    </p>
+  </div>`;
+
+  // Grid
+  html+=`<h3>Kognitivní mapa · 12 úhlů</h3><div class="angle-grid">`;
+  for(let i=1;i<=12;i++){
+    const cnt=combined[i];
+    const pct=Math.round((cnt/maxC)*100);
+    const dom=cnt>=thresh&&cnt>0;
+    const zero=cnt===0;
+    const who=[...new Set([...q1who[i],...q3who[i]])];
+    html+=`<div class="angle-cell ${dom?'dominant':''} ${zero?'zero':''}">
+      <div class="ac-name">${NAMES[i-1]}</div>
+      <div class="ac-bar"><div class="ac-fill" style="width:${pct}%"></div></div>
+      <div class="ac-count">${cnt>0?cnt:'—'}</div>
+      ${who.length?`<div class="ac-who">${who.join(', ')}</div>`:''}
+    </div>`;
+  }
+  html+=`</div>`;
+
+  // Dominant diagnosis
+  if(dominant.length){
+    html+=`<div class="diag-box warm" style="margin-bottom:1rem;">
+      <div class="diag-label hi">Přetížené úhly · doporučená intervence</div>
+      ${dominant.map(([id])=>`
+        <div class="diag-row">
+          <div class="diag-name">${NAMES[+id-1]}</div>
+          <div class="diag-action">${DIAGNOSES[+id-1]}<br><em>Intervence: ${Q3[+id-1].title}</em> — ${Q3[+id-1].desc}</div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  // Deficit
+  if(deficit.length){
+    html+=`<div class="diag-box" style="margin-bottom:1rem;">
+      <div class="diag-label">Slepé úhly · perspektivy, které tým přirozeně nepoužívá</div>
+      ${deficit.slice(0,6).map(id=>`
+        <div class="diag-row">
+          <div class="diag-name">${NAMES[id-1]}</div>
+          <div class="diag-action">Zkuste zavést: <em>${Q3[id-1].title}</em></div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  // Individual
+  html+=`<h3 style="margin-top:2rem;">Individuální profily</h3>
+  <div class="diag-box">
+    <div class="diag-label">Úhly per člen · odhaleno až po sběru</div>
+    ${S.members.map(m=>{
+      const a=S.answers[m.id]||{};
+      return `<div class="diag-row">
+        <div class="diag-name">${m.name}</div>
+        <div class="diag-action">
+          <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--accent);">Q1</span> ${a.q1?NAMES[a.q1-1]:'—'}
+          &nbsp;&nbsp;
+          <span style="font-family:var(--font-mono);font-size:0.6rem;color:var(--accent);">Q3</span> ${a.q3?NAMES[a.q3-1]:'—'}
+          ${a.q2!=null?`<br><span style="font-style:italic;font-size:0.84rem;color:var(--text-dim);">„${TALE[a.q2].substring(0,90)}…"</span>`:''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  c.innerHTML=html;
+}
+
+/* ───────────────────────────────
+   EXPORT
+─────────────────────────────── */
+function exportTxt() {
+  let t=`WORKSHOP · KARTA PÁV · Chceš myš?\nDiagnostika týmu · ${new Date().toLocaleDateString('cs-CZ')}\n\n`;
+  S.members.forEach(m=>{
+    const a=S.answers[m.id]||{};
+    t+=`─── ${m.name} ───\n`;
+    t+=`Q1 (Smysl):   ${a.q1?NAMES[a.q1-1]:'—'}\n`;
+    t+=`Q2 (Pasáž):   ${a.q2!=null?'"'+TALE[a.q2].substring(0,100)+'…"':'—'}\n`;
+    t+=`Q3 (Akce):    ${a.q3?Q3[a.q3-1].title+' — '+Q3[a.q3-1].desc:'—'}\n\n`;
+  });
+  const b=new Blob([t],{type:'text/plain;charset=utf-8'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');
+  a.href=u; a.download='pav-workshop.txt'; a.click();
+  URL.revokeObjectURL(u);
+}
+
+function resetAll() {
+  if(!confirm('Smazat všechna data workshopu?')) return;
+  S={members:[],answers:{},active:null,q2mode:false};
+  save();
+  renderMembers(); renderMemberTabs(); renderMemberForm();
+  showSection('s-tym', document.querySelectorAll('.nav-step')[0]);
+}
+
+/* ───────────────────────────────
+   BOOT
+─────────────────────────────── */
+init();
+</script>
+</body>
+</html>
