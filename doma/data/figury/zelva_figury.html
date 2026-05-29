@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Želva — Fyzika jazyka · Chceš myš?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0f0d0a;--s:#171410;--s2:#1e1a14;
+            --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.2);
+            --a:#6b9e7a;--a2:#4a6a5a;--ab:rgba(107,158,122,.1);--ab2:rgba(107,158,122,.22);
+            --border:rgba(107,158,122,.15);--border-hi:rgba(107,158,122,.32);
+            --serif:'Cormorant Garamond',Georgia,serif;--mono:'DM Mono',monospace;
+        }
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+        a{color:inherit;text-decoration:none}
+        .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+        nav{position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:rgba(15,13,10,.94);backdrop-filter:blur(14px);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+        .nav-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);transition:color .2s}
+        .nav-back:hover{color:var(--cream)}
+        .nav-links{display:flex;gap:4px;flex-wrap:wrap}
+        .nav-link{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:4px 9px;border:1px solid transparent;transition:all .12s}
+        .nav-link:hover{color:var(--cream);border-color:var(--border)}
+        .nav-link.active{color:var(--a);border-color:var(--border-hi)}
+        .hero{padding:0 0 44px;border-bottom:1px solid var(--border)}
+        .hero-img{width:100%;max-height:460px;overflow:hidden;margin-bottom:28px;position:relative}
+        .hero-img img{width:100%;height:460px;object-fit:cover;object-position:center 35%;filter:grayscale(100%) contrast(1.1);display:block}
+        .hero-img-cap{position:absolute;bottom:8px;right:12px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,224,208,.22)}
+        .hero-label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--a);margin-bottom:12px}
+        h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,5rem);font-weight:300;line-height:1.0;margin-bottom:6px}
+        h1 em{font-style:italic;color:var(--a)}
+        .hero-veta{font-family:var(--serif);font-size:clamp(.88rem,2vw,1.1rem);font-style:italic;color:var(--dim);border-left:1px solid var(--a);padding-left:16px;max-width:460px;margin:14px 0 20px;line-height:1.9}
+        .fenomen-box{border:1px solid var(--a);padding:14px 18px;margin-bottom:12px;background:var(--ab)}
+        .fenomen-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--a);margin-bottom:6px}
+        .fenomen-text{font-size:12px;color:rgba(232,224,208,.7);line-height:1.85}
+        .audio-link{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--border);color:var(--dim);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;transition:all .15s;margin-bottom:16px}
+        .audio-link:hover{border-color:var(--a);color:var(--a)}
+        .var-bar{display:flex;gap:1px;background:var(--border);border:1px solid var(--border)}
+        .var-btn{flex:1;padding:11px 6px;background:var(--s);border:none;cursor:pointer;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);transition:all .12s;text-align:center}
+        .var-btn:hover{background:var(--s2);color:var(--cream)}
+        .var-btn.active{background:var(--a);color:var(--bg)}
+        .var-popis{padding:9px 12px;font-size:.74rem;color:var(--dim);border:1px solid var(--border);border-top:none;background:var(--s)}
+        .sekce{padding:40px 0;border-bottom:1px solid var(--border)}
+        .sekce-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--a);margin-bottom:12px}
+        h2{font-family:var(--serif);font-size:clamp(1.3rem,3.5vw,2rem);font-weight:300;margin-bottom:12px}
+        h2 em{font-style:italic;color:var(--a)}
+        .scroll-box{max-height:380px;overflow-y:auto;border:1px solid var(--border);background:var(--s);padding:18px 22px;font-family:var(--serif);font-size:.9rem;line-height:2.05;color:rgba(232,224,208,.82);white-space:pre-wrap}
+        .scroll-box::-webkit-scrollbar{width:2px}
+        .scroll-box::-webkit-scrollbar-thumb{background:var(--a2)}
+        .pd{display:block;padding:.12em 0}
+        .pd.br{padding:.4em 0}
+        [data-fig]{}
+        .f-elipsa.hl{border-bottom:2px dashed rgba(107,158,122,.6)!important;cursor:help}
+        .f-fragment.hl{border-bottom:1px dotted rgba(107,158,122,.5)!important;cursor:help}
+        .f-anafora.hl{border-bottom:1px dotted rgba(107,158,122,.75)!important;cursor:help}
+        .f-paradox.hl{text-decoration:line-through!important;text-decoration-color:rgba(107,158,122,.55)!important;cursor:help}
+        .f-aforismus.hl{border-bottom:2px dotted rgba(107,158,122,.7)!important;border-top:1px dotted rgba(107,158,122,.3)!important;padding-top:1px;cursor:help}
+        .f-ironie.hl{background:rgba(107,158,122,.22)!important;padding:0 2px;cursor:help}
+        .f-fyzikalizace.hl{text-decoration:underline wavy rgba(107,158,122,.65)!important;cursor:help}
+        .f-personifikace.hl{border-bottom:1px solid rgba(107,158,122,.5)!important;cursor:help}
+        .legenda-row{margin-top:6px;padding:7px 12px;background:var(--s);border:1px solid var(--border);font-size:.62rem;color:var(--dim);display:flex;flex-wrap:wrap;gap:3px 14px;line-height:2}
+        .fig-tbl{margin-top:8px;border:1px solid var(--border)}
+        .fig-tbl-hdr{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--a);padding:7px 12px;border-bottom:1px solid var(--border);background:var(--s);display:flex;justify-content:space-between;align-items:center}
+        .fig-vse-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;padding:3px 8px;transition:all .1s}
+        .fig-vse-btn:hover,.fig-vse-btn.active{border-color:var(--a);color:var(--a)}
+        .fig-r{display:grid;grid-template-columns:28px 1fr 28px;gap:6px;padding:7px 12px;cursor:pointer;border-bottom:1px solid var(--border);align-items:center;transition:background .1s;font-size:.72rem}
+        .fig-r:last-child{border-bottom:none}
+        .fig-r:hover{background:var(--s2)}
+        .fig-r.hl{background:var(--ab);color:var(--a)}
+        .fig-r-mark{text-align:center;font-size:.7rem;width:24px}
+        .fig-r-cnt{font-size:.58rem;color:var(--dim2);text-align:right}
+        .diag-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;padding:20px}
+        .diag-modal.open{display:flex}
+        .diag-box{background:var(--s);border:1px solid var(--border-hi);max-width:540px;width:100%;padding:22px;max-height:88vh;overflow-y:auto}
+        .diag-box::-webkit-scrollbar{width:2px}
+        .diag-box::-webkit-scrollbar-thumb{background:var(--a2)}
+        .diag-close{float:right;background:none;border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.6rem;padding:3px 8px;cursor:pointer;transition:all .12s}
+        .diag-close:hover{color:var(--cream);border-color:var(--border-hi)}
+        .q-lbl{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--a);margin-bottom:4px;margin-top:14px}
+        .q-lbl:first-of-type{margin-top:0}
+        .q-text{font-size:.86rem;margin-bottom:5px;color:var(--cream);line-height:1.55}
+        .diag-ta{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--cream);padding:9px 12px;font-family:var(--mono);font-size:.8rem;line-height:1.7;resize:vertical;min-height:54px}
+        .diag-ta:focus{outline:1px solid var(--a)}
+        .diag-ta::placeholder{color:var(--dim2);font-style:italic}
+        .navrh-btn{display:block;width:100%;padding:9px 14px;margin-top:4px;background:transparent;border:1px solid var(--border);color:var(--cream);font-family:var(--mono);font-size:.76rem;text-align:left;cursor:pointer;transition:all .12s}
+        .navrh-btn:hover{background:var(--a);border-color:var(--a);color:var(--bg)}
+        .uhly-intro{font-size:.76rem;color:var(--dim);margin-bottom:16px;line-height:1.8}
+        .uhel{border-bottom:1px solid var(--border)}
+        .uhel-h{display:grid;grid-template-columns:44px 1fr auto auto;padding:14px 0;cursor:pointer;align-items:center;gap:6px}
+        .uhel-h:hover .uhel-nazev{color:var(--a)}
+        .u-num{font-family:var(--serif);font-size:1.5rem;font-weight:300;color:rgba(107,158,122,.14);line-height:1}
+        .uhel.open .u-num{color:rgba(107,158,122,.38)}
+        .uhel-nazev{font-size:.84rem;color:var(--cream)}
+        .uhel-poet{font-family:var(--serif);font-style:italic;font-size:.76rem;color:var(--a);display:block;margin-top:1px}
+        .u-deg{font-size:.6rem;color:var(--a);font-family:var(--mono)}
+        .u-tog{font-size:.64rem;color:var(--dim);transition:transform .2s}
+        .uhel.open .u-tog{transform:rotate(180deg)}
+        .uhel-body{display:none;padding:0 0 20px 44px}
+        .uhel-body.open{display:block}
+        .uhel-co{font-size:.74rem;color:var(--dim);margin-bottom:12px;line-height:1.8}
+        .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:2px}
+        @media(max-width:460px){.dl-grid{grid-template-columns:1fr}}
+        .dl{background:var(--s);padding:12px 14px;cursor:pointer;transition:background .1s}
+        .dl:hover,.dl.open{background:var(--s2)}
+        .dl-icon{font-size:1rem;margin-bottom:4px}
+        .dl-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--a);margin-bottom:2px}
+        .dl-text{font-size:.68rem;color:var(--dim);line-height:1.45}
+        .dl-detail{display:none;background:var(--s2);border:1px solid var(--border);border-top:none;padding:14px 16px;margin-bottom:2px}
+        .dl-detail.open{display:block}
+        .dl-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--a);margin-bottom:5px;margin-top:10px}
+        .dl-lbl:first-child{margin-top:0}
+        .dl-txt{font-size:.78rem;color:rgba(232,224,208,.67);line-height:1.8}
+        .dl-txt em{font-style:italic;color:var(--cream)}
+        .fig-uhel-item{padding:9px 0;border-bottom:1px solid var(--border)}
+        .fig-uhel-item:last-child{border-bottom:none}
+        .fui-nazev{font-size:.72rem;color:var(--a);margin-bottom:3px}
+        .fui-ukazka{font-family:var(--serif);font-style:italic;font-size:.82rem;color:rgba(232,224,208,.8);margin-bottom:3px}
+        .fui-proc{font-size:.7rem;color:var(--dim);line-height:1.7;margin-bottom:2px}
+        .fui-uhel{font-size:.62rem;color:var(--a2);font-style:italic}
+        .jazyk-blok{background:var(--ab);border-left:2px solid var(--a2);padding:9px 12px;margin:10px 0;font-size:.76rem;color:rgba(232,224,208,.65);line-height:1.8}
+        .jazyk-blok strong{color:var(--a);font-weight:400}
+        .cviceni-ta{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--cream);padding:10px 14px;font-family:var(--serif);font-size:.9rem;line-height:1.85;resize:none;min-height:60px;transition:min-height .2s,border-color .15s;margin-top:8px;display:block}
+        .cviceni-ta:focus{outline:none;border-color:var(--a);min-height:220px}
+        .cviceni-ta::placeholder{color:var(--dim2);font-style:italic}
+        .akce-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+        .akce-btn{padding:7px 12px;font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+        .akce-btn:hover{color:var(--cream);border-color:var(--border-hi)}
+        .akce-btn.prim{background:var(--a);color:var(--bg);border-color:var(--a)}
+        .akce-btn.prim:hover{background:#7aae8a}
+        .share-wrap{position:relative;display:inline-block}
+        .share-menu{display:none;position:absolute;z-index:50;background:var(--s2);border:1px solid var(--border-hi);padding:4px 0;min-width:150px;bottom:100%;left:0}
+        .share-menu.open{display:block}
+        .share-item{display:block;width:100%;padding:6px 12px;font-family:var(--mono);font-size:.62rem;background:transparent;border:none;color:var(--dim);cursor:pointer;text-align:left;transition:background .1s}
+        .share-item:hover{background:var(--ab);color:var(--cream)}
+        .az-out{display:none;margin-top:8px}
+        .az-header{background:var(--ab);border:1px solid var(--border-hi);padding:8px 12px;font-size:.7rem;margin-bottom:2px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+        .az-item{border:1px solid var(--border);padding:6px 10px;margin-bottom:2px;display:flex;gap:7px;align-items:flex-start;font-size:.68rem}
+        .az-item.hit{border-color:var(--border-hi);background:var(--ab)}
+        .az-n{color:rgba(107,158,122,.22);min-width:18px}
+        .az-item.hit .az-n{color:var(--a)}
+        .az-nazev{color:rgba(232,224,208,.28);flex:1}
+        .az-item.hit .az-nazev{color:var(--cream)}
+        .az-tags{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px}
+        .az-tag{font-size:.58rem;color:var(--a);padding:1px 4px;background:var(--ab);border:1px solid var(--border-hi)}
+        .az-hit{color:var(--a);font-size:.64rem}
+        .az-miss{color:rgba(232,224,208,.16);font-size:.64rem}
+        .az-note{font-size:.64rem;color:var(--dim);font-style:italic;margin-top:6px;padding:7px 10px;border-left:1px solid var(--border-hi);line-height:1.7}
+        .btn{padding:8px 16px;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:all .12s;display:inline-block}
+        .btn-p{background:var(--a);color:var(--bg)}
+        .btn-p:hover{background:#7aae8a}
+        .btn-g{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-g:hover{color:var(--cream);border-color:var(--border-hi)}
+        .btn-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+        footer{padding:20px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px}
+        footer p{font-size:.68rem;color:var(--dim2)}
+        footer a{color:var(--a)}
+    </style>
+</head>
+<body>
+<nav>
+    <a class="nav-back" href="../../../index.html">← Všechna zvířata</a>
+    <div class="nav-links">
+        <a class="nav-link active" href="index.html">Pohádka</a>
+        <a class="nav-link" href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/knihovna_figur.html">Figury ↗</a>
+        <a class="nav-link" href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/zapisnik.html">Zápisník ↗</a>
+        <a class="nav-link" href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/analyzer.html">Analyzátor ↗</a>
+    </div>
+</nav>
+<div class="wrap">
+    <section class="hero">
+        <div class="hero-img">
+            <img src="doma/ilustrace/zelva.jpg" alt="Želva" onerror="this.parentElement.style.display='none'">
+            <span class="hero-img-cap">ilustrace · želva</span>
+        </div>
+        <p class="hero-label">Fyzika jazyka · Karta Želva</p>
+        <h1>Želva</h1>
+        <p class="hero-veta">„Želva běží závod celé roky. Zajíc poslal už čtyři pohlednice."</p>
+        <div class="fenomen-box">
+            <div class="fenomen-label">Fenomén Želvy — závod, který není o čase / pohlednice jako směr</div>
+            <p class="fenomen-text">Želva běží závod celé roky – ne pomalu, ale důkladně. Zajíc už dávno doběhl a začal psát. Posílá pohlednice ze Sicílie, Madridu, Grónska a Nemanic. Každá pohlednice přistane želvě na krunýři a ona je nese jako důkazy, sny, mapy míst, kde nikdy nebyla. Zajíc píše, protože želva běží. Želva čte, aby zajíc mohl psát. Závod není o čase – je o tom, kdo si pamatuje, proč vůbec závodí.</p>
+        </div>
+        <div class="var-bar">
+            <button class="var-btn active" onclick="setVar('A',this)">🎲 Náhodně</button>
+            <button class="var-btn" onclick="setVar('B',this)">🧭 Podle nálady</button>
+            <button class="var-btn" onclick="setVar('C',this)">🔍 Diagnosticky</button>
+        </div>
+        <div class="var-popis" id="var-popis">Zavřete oči, ťukněte prstem — a jděte na úhel, který vybere prst.</div>
+    </section>
+
+    <section class="sekce" id="pohadka">
+        <p class="sekce-label">Pohádka · čtěte pomalu</p>
+        <h2>O želvě, <em>která běží závod, a zajíci, který posílá pohlednice.</em></h2>
+        <p style="font-size:.72rem;color:var(--dim);margin-bottom:12px">Přejeďte myší přes podtržené místo pro popis figury. Kliknutím na figuru v tabulce se označí v textu.</p>
+        <div class="scroll-box" id="poh-text"></div>
+        <div class="legenda-row" id="legenda"></div>
+        <div class="fig-tbl" id="fig-tbl"></div>
+    </section>
+
+    <section class="sekce" id="uhly">
+        <p class="sekce-label">12 úhlů pohledu</p>
+        <h2>Vyberte úhel pohledu</h2>
+        <div id="uhly-list"></div>
+    </section>
+
+    <footer>
+        <p>Karta Želva · Fyzika jazyka · Chceš myš? · © 2026 Michaela Nováková</p>
+        <p>kontakt<a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+    </footer>
+</div>
+
+<div class="diag-modal" id="diag-modal">
+    <div class="diag-box">
+        <button class="diag-close" onclick="closeDiag()">✕ zavřít</button>
+        <div style="font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:14px;padding-right:60px">Tři otázky k pohádce</div>
+        <p style="font-size:.74rem;color:var(--dim);margin-bottom:14px;line-height:1.8">Odpovězte rychle, bez opravování. Hledáme váš přirozený úhel pohledu.</p>
+        <div class="q-lbl">Smysl</div>
+        <div class="q-text">Co je podle vás hlavní pointa nebo sdělení tohoto příběhu?</div>
+        <textarea class="diag-ta" id="q1" placeholder="Pište první co vás napadne…"></textarea>
+        <div class="q-lbl">Zaujetí</div>
+        <div class="q-text">Která konkrétní věta, obraz nebo moment vás nejvíc zaujal — a proč?</div>
+        <textarea class="diag-ta" id="q2" placeholder="Konkrétní věta nebo moment…"></textarea>
+        <div class="q-lbl">Aplikace</div>
+        <div class="q-text">Kdyby tento příběh byl radou, co by vám říkal dělat ve vašem životě?</div>
+        <textarea class="diag-ta" id="q3" placeholder="Konkrétní situace nebo protiargument…"></textarea>
+        <div style="display:flex;gap:6px;margin-top:12px">
+            <button class="btn btn-p" onclick="runDiag()">Zjistit úhel →</button>
+            <button class="btn btn-g" onclick="closeDiag()">Zrušit</button>
+        </div>
+        <div id="diag-res" style="display:none;margin-top:14px;border:1px solid var(--a);padding:14px;background:var(--bg)">
+            <div style="font-size:.7rem;color:var(--a);margin-bottom:4px">Váš dominantní úhel</div>
+            <div style="font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:4px" id="d-nazev"></div>
+            <div style="font-size:.72rem;color:var(--dim);margin-bottom:10px" id="d-sub"></div>
+            <div id="d-btns"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rawPohadka = `Želva běží závod.
+
+Celé roky.
+
+Ne pomalu.
+
+Jen důkladně.
+
+Každý krok je jako otisk.
+
+Každý otisk stopy jako razítko.
+
+Každý den jako další stránka v kalendáři, co nikdo neotáčí.
+
+
+Zajíc už dávno doběhl.
+
+Pak se vrátil.
+
+Pak zase odběhl.
+
+Pak si sedl.
+
+Pak si lehl.
+
+A pak začal psát.
+
+
+Poslal pohlednici ze Sicílie.
+
+„Tady je slunce, co se tváří jako výmluva.“
+
+Poslal pohlednici z Madridu.
+
+„Tady se běhá akorát v myšlenkách.“
+
+Poslal pohlednici z Grónska.
+
+„Tady je ticho, co se nedá doběhnout.“
+
+A nakonec z Nemanic.
+
+„Tady není nic. Ale to nevadí.“
+
+
+Želva běží.
+
+Dlouho.
+
+Nečte hned.
+
+Času má dost.
+
+Ale každý pohled jí přistane na krunýři.
+
+A ona je nese.
+
+Jako důkazy.
+
+Jako sny.
+
+Jako možnosti.
+
+Jako mapy míst, kde nikdy nebyla, ale možná jednou bude.
+
+
+Ale někdy po cestě,
+
+když se zastaví,
+
+na chvíli
+
+třeba kvůli křoví, co se tváří
+
+jako večeře — vytáhne jednu.
+
+
+Sicílie.
+
+Slunce, co se tváří jako výmluva.
+
+A želva si řekne: „Tam bych mohla jednou dojít.“
+
+A běží dál.
+
+
+Madrid.
+
+Město, kde se běhá jenom v myšlenkách.
+
+To ji zaujme.
+
+Protože ona běží tělem.
+
+Ale možná by mohla i v myšlenkách?
+
+A tak si to poznamená.
+
+Do krunýře.
+
+Do vzoru.
+
+
+Grónsko.
+
+Ticho, který se nedá předběhnout.
+
+To ji dojme.
+
+Protože to ona zná.
+
+Ale nikdy to nepředběhla.
+
+Jen jí to něco přesně připomíná.
+
+
+Nemanice.
+
+Nic.
+
+Ale to nevadí.
+
+To je její oblíbená.
+
+Protože nic je místo, kde se může stát všechno.
+
+
+A tak želva běží.
+
+A čte.
+
+A každý pohled má jako směr.
+
+Ne cíl.
+
+Ale důvod.
+
+
+Zajíc mezitím píše dál.
+
+Ne proto, že by musel.
+
+Ale protože želva běží.
+
+A dokud běží, má komu psát.
+
+
+Jednou napíše:
+
+„Tady jsem si uvědomil, že možná nejde o to, kdo doběhne.
+
+Ale o to, kdo má kam psát.“
+
+
+A želva si to přečte.
+
+A usměje se.
+
+Ne proto, že by to bylo vtipné.
+
+Ale protože to je pravda.
+
+
+A tak běží dál.
+
+A pohlednice jí šustí na zádech.
+
+Slova se splétají jako mašle.
+
+A vítr je čte s ní.
+
+A slunce je bledne.
+
+A déšť je rozmazává.
+
+
+A zajíc píše dál.
+
+Z míst, která možná
+
+ani neexistují.
+
+Ale pokud je želva
+
+jednou přečte,
+
+možná začnou.
+
+
+A každý z nich běží závod.
+
+Jiný cíl, stejný důvod.
+
+„Zajíc běží, aby mohl psát.
+
+A želva běží, aby mohla číst.“
+
+
+a želva čte, aby zajíc mohl psát.
+
+a zajíc píše, aby želva měla co číst.
+
+
+A že závod není o čase.
+
+Je o tom, kdo si pamatuje, proč vůbec závodí.`;
+
+    const figuryDef = [
+        { id: 'elipsa1', nazev: 'Elipsa', cls: 'f-elipsa', mark: '──', fraze: ['Ne pomalu. Jen důkladně.','Dlouho.','Ne cíl. Ale důvod.'] },
+        { id: 'fragment1', nazev: 'Fragment', cls: 'f-fragment', mark: '──', fraze: ['Sicílie. Slunce, co se tváří jako výmluva.','Madrid. Město, kde se běhá jenom v myšlenkách.','Grónsko. Ticho, který se nedá předběhnout.','Nemanice. Nic. Ale to nevadí.'] },
+        { id: 'anafora1', nazev: 'Anafora', cls: 'f-anafora', mark: '──', fraze: ['Jako důkazy. Jako sny. Jako možnosti. Jako mapy míst, kde nikdy nebyla, ale možná jednou bude.'] },
+        { id: 'aforismus1', nazev: 'Aforismus', cls: 'f-aforismus', mark: '──', fraze: ['Závod není o čase. Je o tom, kdo si pamatuje, proč vůbec závodí.','Nic je místo, kde se může stát všechno.'] },
+        { id: 'paradox1', nazev: 'Paradox', cls: 'f-paradox', mark: '──', fraze: ['Z míst, která možná ani neexistují. Ale pokud je želva jednou přečte, možná začnou.'] },
+        { id: 'fyzikalizace1', nazev: 'Fyzikalizace', cls: 'f-fyzikalizace', mark: '──', fraze: ['pohlednice jí šustí na zádech','Slova se splétají jako mašle.','A vítr je čte s ní.','každý pohled jí přistane na krunýři'] },
+        { id: 'ironie1', nazev: 'Ironie', cls: 'f-ironie', mark: 'ir', fraze: ['Zajíc už dávno doběhl. Pak se vrátil. Pak zase odběhl. Pak si sedl. Pak si lehl. A pak začal psát.'] },
+        { id: 'personifikace1', nazev: 'Personifikace', cls: 'f-personifikace', mark: '──', fraze: ['slunce, co se tváří jako výmluva','ticho, co se nedá doběhnout'] },
+    ];
+
+    const figMap = {}; figuryDef.forEach(f => { f.fraze.forEach(fr => { figMap[fr] = f.id; }); });
+    const activeFigs = new Set(); let vseOn = false;
+
+    function renderPohadka() {
+        const container = document.getElementById('poh-text');
+        const lines = rawPohadka.split('\n');
+        let html = '';
+        lines.forEach(line => {
+            if (line.trim() === '') { html += '<span class="pd br"></span>'; return; }
+            let processed = line;
+            for (const [fraze, figId] of Object.entries(figMap)) {
+                if (processed.includes(fraze)) {
+                    const fDef = figuryDef.find(f => f.id === figId);
+                    processed = processed.replace(fraze, `<span class="${fDef.cls}" data-fig="${figId}" title="${fDef.nazev}">${fraze}</span>`);
+                }
+            }
+            html += `<span class="pd">${processed}</span>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderFigTable() {
+        const tbl = document.getElementById('fig-tbl');
+        const counts = {};
+        document.querySelectorAll('#poh-text [data-fig]').forEach(el => { const id = el.getAttribute('data-fig'); counts[id] = (counts[id] || 0) + 1; });
+        let rows = '';
+        figuryDef.forEach(f => {
+            const cnt = counts[f.id] || 0;
+            rows += `<div class="fig-r" onclick="togFig('${f.id}')" id="fr-${f.id}"><span class="fig-r-mark"><span class="${f.cls} hl" style="font-size:.5rem;">${f.mark}</span></span><span>${f.nazev}</span><span class="fig-r-cnt">${cnt}×</span></div>`;
+        });
+        tbl.innerHTML = `<div class="fig-tbl-hdr"><span>Figury v pohádce · kliknutím označíte v textu</span><button class="fig-vse-btn" id="btn-vse" onclick="toggleVse()">Zobrazit vše</button></div>${rows}`;
+    }
+
+    function renderLegenda() {
+        document.getElementById('legenda').innerHTML = figuryDef.map(f => `<span><span class="${f.cls} hl">${f.mark}</span> = ${f.nazev}</span>`).join(' ');
+    }
+
+    function applyFig() {
+        document.querySelectorAll('#poh-text [data-fig]').forEach(el => {
+            el.classList.toggle('hl', activeFigs.has(el.getAttribute('data-fig')));
+        });
+    }
+
+    function togFig(id) {
+        const row = document.getElementById('fr-' + id);
+        if (activeFigs.has(id)) { activeFigs.delete(id); row.classList.remove('hl'); }
+        else { activeFigs.add(id); row.classList.add('hl'); }
+        applyFig();
+    }
+
+    function toggleVse() {
+        vseOn = !vseOn;
+        const btn = document.getElementById('btn-vse');
+        btn.classList.toggle('active', vseOn); btn.textContent = vseOn ? 'Skrýt vše' : 'Zobrazit vše';
+        document.querySelectorAll('#poh-text [data-fig]').forEach(el => el.classList.toggle('hl', vseOn));
+        document.querySelectorAll('.fig-r').forEach(r => r.classList.toggle('hl', vseOn));
+        if (!vseOn) activeFigs.clear();
+    }
+
+    renderPohadka();
+    renderFigTable();
+    renderLegenda();
+
+    const U = [
+        { i:0, st:0, n:'Důkladného kroku', gen:'analytický · data a struktura',
+            co:'Analytický úhel vidí redefinici bajky: želva neběží pomalu, ale důkladně. Každý krok je jako razítko. Čtyři lokace tvoří spektrum od plnosti k prázdnotě. Závod je komunikační kanál mezi odesílatelem a adresátem.',
+            figury:[{n:'Elipsa',f:'elipsa1',u:'"Ne pomalu. Jen důkladně." "Dlouho." "Ne cíl. Ale důvod."',proc:'Strohé věty bez sloves jako programové prohlášení.',vyznam:'Definice želvího tempa – ne pomalost, ale hloubka.'},{n:'Anafora',f:'anafora1',u:'"Jako důkazy. Jako sny. Jako možnosti. Jako mapy…"',proc:'Opakování "Jako" buduje řadu významů.',vyznam:'Každá pohlednice je víc než papír – je to celý svět.'}],
+            ukol:'Vytvoř si vlastní „trasu závodu" o pěti zastaveních, kde každé reprezentuje jinou hodnotu na škále od „všeho" po „nic". Ke každému napiš jednu větu, která by se dala poslat jako pohlednice.',
+            jazyk:'Elipsa, anafora, výčet.',
+            prot:1,
+            kresliciUkol:'Nakresli mapu závodu jako trasu se čtyřmi zastávkami: Sicílie (slunce), Madrid (myšlenky), Grónsko (ticho), Nemanice (nic). Každé zastavení označ symbolem.' },
+        { i:1, st:30, n:'Rychlosti', gen:'kulturní · převrácená bajka',
+            co:'Kulturní úhel vidí parafrázi Ezopovy bajky. Původní ponaučení je nahrazeno novým: „nejde o to, kdo doběhne, ale o to, kdo má kam psát". Nemanice jako české „místo, kde nic není".',
+            figury:[{n:'Ironie',f:'ironie1',u:'"Zajíc už dávno doběhl. Pak se vrátil. Pak zase odběhl. Pak si sedl. Pak si lehl. A pak začal psát."',proc:'Rychlý zajíc končí jako trpělivý pisatel.',vyznam:'Ironické převrácení rolí – ten, kdo vyhrál, není šťastnější.'},{n:'Aforismus',f:'aforismus1',u:'"Nic je místo, kde se může stát všechno."',proc:'Nemanice jako prázdnota plná potenciálu.',vyznam:'Český kulturní kód – místo, kde nic není, je nejoblíbenější.'}],
+            ukol:'Vyber si jinou známou bajku a přepiš ji jako příběh o dvou bytostech, které si posílají zprávy. Co by si psaly? A jak by se změnilo ponaučení?',
+            jazyk:'Intertextualita, ironie, kulturní reference.',
+            prot:0,
+            kresliciUkol:'Nakresli dvě verze stejné scény: vlevo klasická bajka (zajíc spí, želva běží), vpravo nová verze (zajíc píše pohlednici, želva ji nese na krunýři).' },
+        { i:2, st:60, n:'Proč závodíme', gen:'filozofický · smysl pohybu',
+            co:'Filozofický úhel se ptá: Proč vůbec závodit? Pohyb tu není prostředkem k cíli, nýbrž podmínkou komunikace. Zajícovo zjištění, že „nejde o to, kdo doběhne, ale o to, kdo má kam psát", je posunem od teleologie ke vztahovosti.',
+            figury:[{n:'Aforismus',f:'aforismus1',u:'"Závod není o čase. Je o tom, kdo si pamatuje, proč vůbec závodí."',proc:'Gnómická pointa celého příběhu.',vyznam:'Smysl není v cíli, ale v paměti důvodu.'},{n:'Paradox',f:'paradox1',u:'"Z míst, která možná ani neexistují. Ale pokud je želva jednou přečte, možná začnou."',proc:'Čtení jako akt stvoření.',vyznam:'Místa začínají existovat ve chvíli, kdy je někdo čte.'}],
+            ukol:'Formuluj vlastní odpověď na otázku „Proč závodíš?" ve třech větách, z nichž poslední bude aforismus. Nemusíš použít slovo „závod" – může to být i „běžím", „pracuji", „snažím se".',
+            jazyk:'Aforismus, paradox, otázky.',
+            prot:3,
+            kresliciUkol:'Nakresli dvě cesty, které se proplétají. Na jedné běží želva, na druhé zajíc. Mezi nimi létají pohlednice jako mosty.' },
+        { i:3, st:90, n:'Pohlednic', gen:'naivní · obrázky z cest',
+            co:'Naivní úhel vidí příběh o želvě a zajíci, kteří si posílají obrázky z cest. Zajíc píše, želva čte. Je to jako pohádka pro děti o tom, že i když jsi pomalý, můžeš dostávat krásné pohlednice.',
+            figury:[{n:'Personifikace',f:'personifikace1',u:'"slunce, co se tváří jako výmluva" "ticho, co se nedá doběhnout"',proc:'Přírodní jevy dostávají lidské vlastnosti.',vyznam:'Svět je živý – slunce se tváří, ticho se nedá doběhnout.'}],
+            ukol:'Převyprávěj pohádku o želvě a zajíci jako příběh pro malé dítě. Přidej k pohlednicím obrázky, které by želvě udělaly radost, a vymysli, co by želva zajíci napsala zpátky.',
+            jazyk:'Personifikace, jednoduché věty.',
+            prot:4,
+            kresliciUkol:'Nakresli čtyři pohlednice – jednu z každého místa (Sicílie, Madrid, Grónsko, Nemanice). Každá ať má obrázek a jednu větu.' },
+        { i:4, st:120, n:'Nošení na krunýři', gen:'jazykový · fyzikalizace',
+            co:'Jazykový úhel sleduje fyzikalizaci: pohlednice přistávají na krunýři, slova se splétají jako mašle, vítr čte s želvou. Krunýř se stává archivem, tělem textu.',
+            figury:[{n:'Fyzikalizace',f:'fyzikalizace1',u:'"pohlednice jí šustí na zádech" "Slova se splétají jako mašle." "A vítr je čte s ní."',proc:'Abstraktní úkony se stávají hmotnými.',vyznam:'Jazyk dostává fyzickou podobu – šustí, splétá se, je čten větrem.'}],
+            ukol:'Napiš tři pohlednice, ve kterých se nějaký abstraktní pojem (radost, únava, zvědavost) promění ve fyzický předmět, který si adresát může položit na stůl, do kapsy nebo na krunýř.',
+            jazyk:'Fyzikalizace, metafora.',
+            prot:5,
+            kresliciUkol:'Nakresli želví krunýř jako archiv – jsou na něm nalepené pohlednice, lístky, vzkazy. Vítr je čte a slova se splétají do copů.' },
+        { i:5, st:150, n:'Krunýř jako paměť', gen:'metaforický · obraz vzpomínek',
+            co:'Metaforický úhel vidí krunýř jako metaforu paměti, která nese obrazy míst, kde jsme nikdy nebyli. Závod je metaforou života. Pohlednice jsou sdílené okamžiky.',
+            figury:[{n:'Metafora',f:'',u:'Krunýř = paměť; pohlednice = sdílené okamžiky; závod = život; běh = existence.',proc:'Celý příběh je rozvedenou metaforou.',vyznam:'Pohádka se stává podobenstvím o dvou životních principech.'}],
+            ukol:'Popiš svůj vlastní „krunýř" – co na něm nosíš za pohlednice? Vyber tři „místa" (zážitky, rady, věty), která si neseš s sebou, a ke každému napiš jednu větu jako z pohlednice.',
+            jazyk:'Metafora, symbol, obraz.',
+            prot:6,
+            kresliciUkol:'Nakresli svůj vlastní krunýř – co na něm nosíš? Jaké pohlednice, vzkazy, vzpomínky? Každou znázorni jako malý obrázek.' },
+        { i:6, st:180, n:'Proudu asociací', gen:'asociační · volné řetězení',
+            co:'Asociační úhel sleduje proud: želva, běh, roky, důkladnost, otisky, razítka, kalendář, zajíc, doběh, návrat, psaní, pohlednice, Sicílie, slunce, výmluva… Jedno slovo za druhým jako kroky želvy.',
+            figury:[{n:'Fragment',f:'fragment1',u:'"Sicílie. Slunce, co se tváří jako výmluva." "Madrid. Město, kde se běhá jenom v myšlenkách."',proc:'Každé místo je samostatný fragment.',vyznam:'Mozaika z míst a významů.'}],
+            ukol:'Začni slovem „Pohlednice." a piš 5 minut proud asociací, který tě napadne. Nezastavuj se, neopravuj. Potom si podtrhni větu, ze které by se dala poslat skutečná pohlednice.',
+            jazyk:'Fragmenty, volné asociace, proud vědomí.',
+            prot:7,
+            kresliciUkol:'Automatická kresba na téma "pohlednice". Začni slovem POHLEDNICE uprostřed a kresli vše, co ti asociuje. Po pěti minutách zvýrazni tři nejsilnější prvky.' },
+        { i:7, st:210, n:'Vnitřního čtení', gen:'introspektivní · tiché rozjímání',
+            co:'Introspektivní úhel nahlíží do nitra želvy: každá pohlednice vyvolá vnitřní reakci – Sicílie touhu, Madrid sebereflexi, Grónsko dojetí, Nemanice přijetí. Zajícovo uvědomění přichází v závěru.',
+            figury:[{n:'Vnitřní hlas',f:'',u:'"Tam bych mohla jednou dojít." "Ale možná by mohla i v myšlenkách?"',proc:'Želva vede vnitřní dialog.',vyznam:'Každá přečtená pohlednice je impuls k zamyšlení.'}],
+            ukol:'Napiš vnitřní monolog želvy ve chvíli, kdy jí na krunýř přistane úplně nová, ještě nepřečtená pohlednice. Co cítí? Těší se? Bojí se? A co udělá, než ji otevře?',
+            jazyk:'Vnitřní monolog, první osoba.',
+            prot:8,
+            kresliciUkol:'Detailní portrét želvy, jak čte pohlednici. Oči má přivřené, usmívá se. V pozadí náznaky míst ze vzkazu.' },
+        { i:8, st:240, n:'Ironie pomalosti', gen:'ironický · převrácení rolí',
+            co:'Ironický úhel vidí, jak se rychlý zajíc stává trpělivým pisatelem a pomalá želva čtenářem s nekonečným časem. Závod nikdo nevyhrává – oba běží z jiného důvodu.',
+            figury:[{n:'Ironie',f:'ironie1',u:'"Zajíc už dávno doběhl… A pak začal psát."',proc:'Vítěz soutěže se mění v pisatele.',vyznam:'Výhra neuspokojuje – důležitější je mít komu psát.'}],
+            ukol:'Napiš ironickou pohlednici z místa, které jsi nenáviděl/a, ale teď ho zpětně oceňuješ. Použij tón „tady není nic, ale to nevadí" a rozveď, proč to nevadí.',
+            jazyk:'Ironie, kontrast, paradox.',
+            prot:9,
+            kresliciUkol:'Ironický plakát: "Závod století – vyhrál zajíc!" Ale zajíc sedí na pařezu a píše pohlednici želvě, která se ani nedívá na cílovou pásku.' },
+        { i:9, st:270, n:'Šustění na zádech', gen:'groteskní · želva s pohlednicemi',
+            co:'Groteskní úhel vidí želvu, jak se plazí s hřbetem obloženým pohlednicemi, které šustí, blednou na slunci a rozmazávají se deštěm. Zajíc píše z míst, která možná neexistují.',
+            figury:[{n:'Fyzikalizace',f:'fyzikalizace1',u:'"A pohlednice jí šustí na zádech. A slunce je bledne. A déšť je rozmazává."',proc:'Pohlednice podléhají zkáze.',vyznam:'Groteskní obraz komunikace, která se rozpadá, ale stále funguje.'}],
+            ukol:'Popiš, jak vypadá želva po deseti letech závodu. Co má na krunýři? Kolik pohlednic? Jak se změnily ty staré? A co dělá, když fouká vítr a jednu jí odfoukne?',
+            jazyk:'Hyperbola, absurdní obraz.',
+            prot:10,
+            kresliciUkol:'Nakresli želvu po deseti letech. Krunýř je celý polepený pohlednicemi – některé jsou staré a vybledlé, jiné nové. Z krunýře trčí větvičky.' },
+        { i:10, st:300, n:'Místa začínají čtením', gen:'absurdní · logika neexistence',
+            co:'Absurdní úhel hledá nesmysl, který dává smysl: místa, která neexistují, začnou existovat, až je želva přečte. Závod nemá cíl, jen pokračuje. Celek je postaven na absurdní, přesto pravdivé myšlence.',
+            figury:[{n:'Paradox',f:'paradox1',u:'"Z míst, která možná ani neexistují. Ale pokud je želva jednou přečte, možná začnou."',proc:'Čtení jako akt stvoření reality.',vyznam:'Absurdní logika, kde slovo má moc tvořit.'}],
+            ukol:'Vymysli a napiš krátký „průvodce" po městě, které ještě neexistuje, ale začne existovat ve chvíli, kdy si ho někdo přečte. Jak se jmenuje? Co v něm je?',
+            jazyk:'Absurdní logika, paradox.',
+            prot:11,
+            kresliciUkol:'Nakresli mapu města, které ještě neexistuje. Prázdné ulice, ale názvy už jsou napsané. Uprostřed stojí želva a čte pohlednici.' },
+        { i:11, st:330, n:'Sen o závodu', gen:'surrealistický · snová krajina',
+            co:'Surrealistický úhel vidí snový obraz: želva kráčí s krunýřem pokrytým šustícími pohlednicemi, vítr je čte, slova se splétají. Zajíc píše z míst, která začínají existovat až přečtením.',
+            figury:[{n:'Snový obraz',f:'',u:'"pohlednice jí šustí na zádech. Slova se splétají jako mašle. A vítr je čte s ní."',proc:'Prolínání hmotného a nehmotného.',vyznam:'Surrealistická krajina, kde jazyk, vítr a pohyb jsou jedno.'}],
+            ukol:'Popiš sen, ve kterém ti na záda přistávají pohlednice od někoho, koho jsi dávno neviděl/a. Každá je z místa, které neznáš. Když ji přečteš, místo se kolem tebe na okamžik zhmotní.',
+            jazyk:'Snová logika, metamorfózy, prolínání realit.',
+            prot:5,
+            kresliciUkol:'Nakresli snovou krajinu: želva běží a za ní se táhne stopa z písmen. Kolem ní poletují pohlednice, které se mění v krajinu – slunce, město, ledovec, prázdno.' },
+    ];
+
+    const DIAG_K = U.map((u, i) => {
+        const keywords = u.n.toLowerCase().split(/\s+/).concat(u.gen.toLowerCase().split(/\s+/));
+        return { i, k: [...new Set(keywords)] };
+    });
+
+    function buildUhly() {
+        const list = document.getElementById('uhly-list');
+        U.forEach((u, i) => {
+            const pU = U[u.prot];
+            const figHTML = u.figury.map(f => `
+                <div class="fig-uhel-item">
+                    <div class="fui-nazev">${f.n}</div>
+                    <div class="fui-ukazka">${f.u}</div>
+                    <div class="fui-proc">${f.proc}</div>
+                    <div class="fui-uhel">Co dělá s významem: ${f.vyznam}</div>
+                </div>`).join('');
+            const div = document.createElement('div');
+            div.className = 'uhel'; div.id = 'u' + i;
+            div.innerHTML = `
+                <div class="uhel-h" onclick="toggleUhel(${i})">
+                    <span class="u-num">${String(i+1).padStart(2,'0')}</span>
+                    <div><div class="uhel-nazev">${u.n}<span class="uhel-poet">${u.gen}</span></div></div>
+                    <span class="u-deg">${u.st}°</span><span class="u-tog">▾</span>
+                </div>
+                <div class="uhel-body" id="b${i}">
+                    <div class="uhel-co">${u.co}</div>
+                    <div class="dl-grid">
+                        <div class="dl" onclick="togDl(${i},0)"><div class="dl-icon">🤺</div><div class="dl-label">Figury v pohádce</div><div class="dl-text">Co vidí tento úhel</div></div>
+                        <div class="dl" onclick="togDl(${i},1)"><div class="dl-icon">🧤</div><div class="dl-label">Kreativní úkol</div><div class="dl-text">20 minut · psaní</div></div>
+                        <div class="dl" onclick="togDl(${i},2)"><div class="dl-icon">🌪️</div><div class="dl-label">Protilehlý úhel</div><div class="dl-text">${pU.n}</div></div>
+                        <div class="dl" onclick="togDl(${i},3)"><div class="dl-icon">🗝️</div><div class="dl-label">Jak to čte Myš</div><div class="dl-text">Klíče k tomuto úhlu</div></div>
+                        <div class="dl" onclick="togDl(${i},4)"><div class="dl-icon">🪬</div><div class="dl-label">Nástroje</div><div class="dl-text">Zápisník · analyzátor</div></div>
+                        <div class="dl" onclick="togDl(${i},5)"><div class="dl-icon">🎨</div><div class="dl-label">Kreslicí úkol</div><div class="dl-text">Vizuální interpretace</div></div>
+                    </div>
+                    <div class="dl-detail" id="d${i}_0"><div class="dl-lbl">Proč jsou tyto figury v pohádce a co dělají s významem</div>${figHTML}</div>
+                    <div class="dl-detail" id="d${i}_1">
+                        <div class="dl-lbl">Kreativní úkol · 20 minut</div><div class="dl-txt">${u.ukol}</div>
+                        <div class="jazyk-blok"><strong>Jazykové zaměření:</strong> ${u.jazyk}</div>
+                        <div class="dl-lbl">Váš text</div>
+                        <textarea class="cviceni-ta" id="ta${i}" placeholder="Pište sem …"></textarea>
+                        <div class="akce-row">
+                            <button class="akce-btn prim" onclick="analyzuj(${i})">Analyzovat →</button>
+                            <button class="akce-btn" onclick="ulozit(${i})">💾 Uložit do zápisníku</button>
+                            <button class="akce-btn" onclick="stahnout(${i})">↓ Stáhnout</button>
+                            <button class="akce-btn" onclick="tisk(${i})">🖨 Tisk</button>
+                            <div class="share-wrap">
+                                <button class="akce-btn" onclick="toggleShare(${i})">↗ Sdílet</button>
+                                <div class="share-menu" id="sm${i}">
+                                    <button class="share-item" onclick="shareVia('email',${i})">📧 E-mail</button>
+                                    <button class="share-item" onclick="shareVia('whatsapp',${i})">WhatsApp</button>
+                                    <button class="share-item" onclick="shareVia('telegram',${i})">Telegram</button>
+                                    <button class="share-item" onclick="shareVia('copy',${i})">📋 Kopírovat</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="az-out" id="az${i}"></div>
+                    </div>
+                    <div class="dl-detail" id="d${i}_2">
+                        <div class="dl-lbl">Protilehlý úhel — prostor pro rozvoj</div>
+                        <div class="dl-txt"><em>${pU.st}° ${pU.n}</em> — ${pU.gen}</div>
+                        <div class="dl-txt" style="margin-top:6px">${pU.co}</div>
+                        <button class="btn btn-g" style="font-size:.62rem;margin-top:6px" onclick="openUhel(${u.prot})">Přejít na ${pU.n} →</button>
+                    </div>
+                    <div class="dl-detail" id="d${i}_3">
+                        <div class="dl-lbl">Jak pohádku čte Myš — klíče k tomuto úhlu</div>
+                        <div class="dl-txt">Myš si staví pelíšek z odstřižků pohlednic. Všímá si, že želva a zajíc nejsou soupeři, ale dva konce jedné nitě. Zapíše si: „Závod je vyhrán ve chvíli, kdy máš komu napsat, že běžíš."</div>
+                    </div>
+                    <div class="dl-detail" id="d${i}_4">
+                        <div class="dl-lbl">Nástroje pro práci s textem</div>
+                        <div class="btn-row">
+                            <a class="btn btn-g" href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/zapisnik.html" target="_blank">📓 Otevřít zápisník</a>
+                            <a class="btn btn-g" href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/doma/nastroje/analyzer.html" target="_blank">🔍 Otevřít analyzátor</a>
+                        </div>
+                    </div>
+                    <div class="dl-detail" id="d${i}_5">
+                        <div class="dl-lbl">Kreslicí úkol</div>
+                        <div class="dl-txt">${u.kresliciUkol}</div>
+                    </div>
+                </div>`;
+            list.appendChild(div);
+        });
+    }
+
+    function toggleUhel(i) { document.getElementById('u'+i).classList.toggle('open'); document.getElementById('b'+i).classList.toggle('open'); }
+    function openUhel(i) { document.getElementById('u'+i).classList.add('open'); document.getElementById('b'+i).classList.add('open'); setTimeout(()=>document.getElementById('u'+i).scrollIntoView({behavior:'smooth',block:'start'}),100); }
+    function togDl(i,j) {
+        const el = document.getElementById(`d${i}_${j}`);
+        const wasOpen = el.classList.contains('open');
+        document.querySelectorAll(`#b${i} .dl-detail`).forEach(d=>d.classList.remove('open'));
+        document.querySelectorAll(`#b${i} .dl`).forEach(d=>d.classList.remove('open'));
+        if(!wasOpen){ el.classList.add('open'); document.querySelectorAll(`#b${i} .dl`)[j].classList.add('open'); }
+    }
+
+    buildUhly();
+
+    function setVar(v,btn){
+        document.querySelectorAll('.var-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const p={A:'Zavřete oči, ťukněte prstem — a jděte na úhel, který vybere prst.',B:'Projděte záhlaví 12 úhlů níže a vyberte ten, který vás teď přitahuje.',C:'Odpovězte na tři otázky — systém nabídne váš úhel.'};
+        document.getElementById('var-popis').textContent=p[v];
+        if(v==='C'){document.getElementById('diag-modal').classList.add('open');return;}
+        if(v==='B'){document.getElementById('uhly').scrollIntoView({behavior:'smooth'});return;}
+        if(v==='A'){const idx=Math.floor(Math.random()*U.length);document.getElementById('uhly').scrollIntoView({behavior:'smooth'});setTimeout(()=>openUhel(idx),500);}
+    }
+
+    function closeDiag(){document.getElementById('diag-modal').classList.remove('open');}
+    document.getElementById('diag-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDiag();});
+
+    function runDiag(){
+        const txt=[document.getElementById('q1').value,document.getElementById('q2').value,document.getElementById('q3').value].join(' ');
+        if(!txt.trim())return;
+        const sc={};U.forEach(u=>sc[u.i]=0);
+        DIAG_K.forEach(u=>u.k.forEach(k=>{const re=new RegExp(`(?<![a-záčďéěíňóřšťůúýž])${k}(?![a-záčďéěíňóřšťůúýž])`,'gi');sc[u.i]+=(txt.match(re)||[]).length;}));
+        const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+        const domI=parseInt(sorted[0][0]);
+        const domU=U[domI];
+        const protU=U[domU.prot];
+        document.getElementById('diag-res').style.display='block';
+        document.getElementById('d-nazev').innerHTML=`<span style="color:var(--a)">${domU.st}° ${domU.n}</span>`;
+        document.getElementById('d-sub').textContent=domU.gen;
+        document.getElementById('d-btns').innerHTML=`
+            <button class="navrh-btn" onclick="closeDiag();openUhel(${domI})">→ Otevřít: ${domU.n}</button>
+            <button class="navrh-btn" onclick="closeDiag();openUhel(${domU.prot})">→ Protilehlý: ${protU.n}</button>`;
+    }
+
+    function analyzuj(i){alert('Analyzátor spuštěn (demo).');}
+    function ulozit(i){alert('Uloženo do zápisníku (demo).');}
+    function stahnout(i){alert('Staženo (demo).');}
+    function tisk(i){window.print();}
+    function toggleShare(i){document.getElementById('sm'+i).classList.toggle('open');}
+    function shareVia(via,i){alert('Sdílení (demo).');}
+    document.addEventListener('click',e=>{if(!e.target.closest('.share-wrap'))document.querySelectorAll('.share-menu.open').forEach(m=>m.classList.remove('open'));});
+</script>
+</body>
+</html>
