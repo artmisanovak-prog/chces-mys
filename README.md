@@ -182,6 +182,39 @@ kreativita, fyzika jazyka, metadenik
 
 ---
 
+- [kocour figury](doma/data/figury/kocour_figury.html)
+- [ryba figury](doma/data/figury/ryba_figury.html)
+- [zajic figury](doma/data/figury/zajic_figury.html)
+- [motyl figury](doma/data/figury/motyl_figury.html)
+- [pav figury](doma/data/figury/pav_figury.html)
+- [krokodyl figury](doma/data/figury/krokodyl_figury.html)
+- [netopyr figury](doma/data/figury/netopyr_figury.html)
+- [pavouk figury](doma/data/figury/pavouk_figury.html)
+- [jednorozec figury](doma/data/figury/jednorozec_figury.html)
+- [plamenak figury](doma/data/figury/plamenak_figury.html)
+- [lemur figury](doma/data/figury/lemur_figury.html)
+- [parohy figury](doma/data/figury/parohy_figury.html)
+- [kravy figury](doma/data/figury/kravy_figury.html)
+- [cap figury](doma/data/figury/cap_figury.html)
+- [hvezdice figury](doma/data/figury/hvezdice_figury.html)
+- [hyeny figury](doma/data/figury/hyeny_figury.html)
+- [husy figury](doma/data/figury/husy_figury.html)
+- [tygr figury](doma/data/figury/tygr_figury.html)
+- [drak figury](doma/data/figury/drak_figury.html)
+- [osel figury](doma/data/figury/osel_figury.html)
+- [beran figury](doma/data/figury/beran_figury.html)
+- [prase figury](doma/data/figury/prase_figury.html)
+- [liska figury](doma/data/figury/liska_figury.html)
+- [veverka figury](doma/data/figury/veverka_figury.html)
+- [vrabec figury](doma/data/figury/vrabec_figury.html)
+- [zelva figury](doma/data/figury/zelva_figury.html)
+- [zralok figury](doma/data/figury/zralok_figury.html)
+- [zizala figury](doma/data/figury/zizala_figury.html)
+- [kliste figury](doma/data/figury/kliste_figury.html)
+- [slon figury](doma/data/figury/slon_figury.html)
+- [moucha figury](doma/data/figury/moucha_figury.html)
+- [gepard figury](doma/data/figury/gepard_figury.html)
+
 
 ---
 
