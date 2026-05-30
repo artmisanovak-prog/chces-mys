@@ -616,19 +616,51 @@ A to znamená, že čáp, který nic nenosí, je ten, který nese všechno. Akor
     }
 
     function ulozit(i){
-        const txt=document.getElementById('ta'+i).value.trim();
-        if(!txt){alert('Napište nejprve text.');return;}
-        const u=U[i];const ts=Date.now();
-        try{
-            const key='chcesmys_zapisnik';
-            const data=JSON.parse(localStorage.getItem(key)||'{}');
-            const mid='map_'+ts;
-            if(!data[mid])data[mid]={name:'Zápisník mezer',popis:'',entries:[],created:ts};
-            data[mid].entries.unshift({id:'e_'+ts,ts,karta:'Čáp',uhel:u.st,nazev:u.n,poeticky:u.n,text:txt});
-            localStorage.setItem(key,JSON.stringify(data));
-            alert('Text uložen do zápisníku!');
-        }catch(e){alert('Nepodařilo se uložit.');}
+    const txt=document.getElementById('ta'+i).value.trim();
+    if(!txt){alert('Napište nejprve text.');return;}
+    const u=U[i];
+    const entry={
+        uhel: u.st,
+        karta: 'Čáp',
+        text: txt,
+        analysis: '',   // můžeš doplnit později, např. výsledek analyzátoru
+        anomalie: ''    // případně vyplnit
+    };
+    
+    // Pokud je mapa otevřená, použij její globální funkci (okamžitě se projeví)
+    if(window.kogMapaUlozit){
+        window.kogMapaUlozit(entry);
+        alert('Text uložen do aktivní mapy!');
+        return;
     }
+    
+    // Jinak ulož přímo do localStorage pod stejným klíčem jako mapa
+    try{
+        const key='chcesmys_kogmapa';
+        const data=JSON.parse(localStorage.getItem(key)||'{}');
+        // Vytvoř výchozí mapu, pokud žádná neexistuje
+        const maps=Object.keys(data);
+        let activeMap='map_default';
+        if(maps.length>0){
+            // Vezmi poslední aktivní mapu (tu s nejvyšším ID)
+            activeMap=maps.sort((a,b)=>data[b].created-data[a].created)[0];
+        } else {
+            // Vytvoř novou výchozí mapu
+            data['map_default']={
+                name:'Moje mapa',
+                popis:'',
+                entries:[],
+                created:Date.now()
+            };
+        }
+        // Přidej záznam
+        entry.id='e_'+Date.now();
+        entry.ts=Date.now();
+        data[activeMap].entries.unshift(entry);
+        localStorage.setItem(key,JSON.stringify(data));
+        alert('Text uložen do mapy „'+data[activeMap].name+'“!');
+    }catch(e){alert('Nepodařilo se uložit.');}
+}
 
     function stahnout(i){
         const txt=document.getElementById('ta'+i).value.trim();if(!txt)return;
