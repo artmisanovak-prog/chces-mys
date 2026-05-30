@@ -27,7 +27,16 @@
         .nav-link.active{color:var(--a);border-color:var(--border-hi)}
         .hero{padding:0 0 44px;border-bottom:1px solid var(--border)}
         .hero-img{width:100%;max-height:460px;overflow:hidden;margin-bottom:28px;position:relative}
-        .hero-img img{width:100%;height:460px;object-fit:cover;object-position:center 35%;filter:grayscale(100%) contrast(1.1);display:block}
+        /* Nový styl – zobrazí celý obrázek */
+.hero-img img {
+    width: 100%;
+    height: auto;           /* výška se přizpůsobí obrázku */
+    max-height: 460px;      /* maximální výška, aby karta nebyla příliš vysoká */
+    object-fit: contain;    /* zobrazí celý obrázek bez ořezu */
+    filter: grayscale(100%) contrast(1.1);
+    display: block;
+    margin: 0 auto;         /* vycentruje obrázek, pokud je menší než kontejner */
+}
         .hero-img-cap{position:absolute;bottom:8px;right:12px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,224,208,.22)}
         .hero-label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--a);margin-bottom:12px}
         h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,5rem);font-weight:300;line-height:1.0;margin-bottom:6px}
