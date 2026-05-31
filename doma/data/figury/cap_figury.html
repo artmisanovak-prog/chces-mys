@@ -600,21 +600,122 @@ A to znamená, že čáp, který nic nenosí, je ten, který nese všechno. Akor
             <button class="navrh-btn" onclick="closeDiag();openUhel(${domI})">→ Otevřít: ${domU.n}</button>
             <button class="navrh-btn" onclick="closeDiag();openUhel(${domU.prot})">→ Protilehlý: ${protU.n}</button>`;
     }
+function analyzuj(i){
+    const txt = document.getElementById('ta' + i).value.trim();
+    if (!txt) { alert('Napište nejprve text.'); return; }
 
-    function analyzuj(i){
-        const txt=document.getElementById('ta'+i).value.trim();
-        if(!txt){alert('Napište nejprve text.');return;}
-        const slova=txt.split(/\s+/).filter(Boolean).length;
-        const vety=txt.split(/[.!?…]+/).filter(s=>s.trim().length>2).length;
-        const figuryNalezeny=figuryDef.filter(f=>f.fraze.some(fr=>txt.includes(fr)));
-        const out=document.getElementById('az'+i);
-        out.innerHTML=`
-            <div class="az-header"><span>Analýza textu: ${slova} slov, ${vety} vět</span></div>
-            ${figuryNalezeny.length>0?figuryNalezeny.map(f=>`<div class="az-item hit"><span class="az-n">✓</span><div><div class="az-nazev">${f.nazev}</div><div class="az-tags">${f.fraze.join(', ')}</div></div></div>`).join(''):'<div class="az-item"><span class="az-n">—</span><div class="az-nazev">Žádné figury nenalezeny</div></div>'}
-            <div class="az-note">Analýza hledá shody s figurami definovanými v pohádce. Zkuste použít některou z vyznačených frází.</div>`;
-        out.style.display='block';
-    }
+    // Obecné detektory figur – fungují pro jakýkoli text
+    const patterns = [
+        { 
+            nazev: 'Elipsa', 
+            detekce: (t) => {
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 1);
+                const elipsy = vety.filter(v => !/[aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]{2,}\s+[aábcčdďeéěfghiíjklmnňoópqrřsštťuúůvwxyýzž]{2,}/i.test(v) && v.trim().split(/\s+/).length <= 4);
+                return elipsy.slice(0, 3);
+            }
+        },
+        { 
+            nazev: 'Fragment', 
+            detekce: (t) => {
+                const fragmenty = t.split(/[.!?…]+/).filter(s => s.trim().split(/\s+/).length <= 3 && s.trim().length > 0);
+                return fragmenty.slice(0, 3);
+            }
+        },
+        { 
+            nazev: 'Anafora', 
+            detekce: (t) => {
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 3);
+                const prvniSlova = vety.map(v => v.trim().split(/\s+/)[0]?.toLowerCase()).filter(Boolean);
+                const opakovane = prvniSlova.filter((s, i, arr) => arr.indexOf(s) !== i);
+                return [...new Set(opakovane)].slice(0, 3).map(s => 'začátek: "' + s + '"');
+            }
+        },
+        { 
+            nazev: 'Paradox', 
+            detekce: (t) => {
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 5);
+                const paradoxy = vety.filter(v => /\b(ale|a přesto|ačkoli|přitom|zároveň|naopak)\b/i.test(v) && v.split(/\s+/).length > 4);
+                return paradoxy.slice(0, 3).map(v => v.trim().slice(0, 60) + '…');
+            }
+        },
+        { 
+            nazev: 'Aforismus', 
+            detekce: (t) => {
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 5);
+                const aforismy = vety.filter(v => {
+                    const slova = v.trim().split(/\s+/);
+                    return slova.length >= 4 && slova.length <= 12 && /\b(je|není|vždy|nikdy|všechno|nic|smysl|pravda|čas|láska|život)\b/i.test(v);
+                });
+                return aforismy.slice(0, 2).map(v => v.trim().slice(0, 60) + '…');
+            }
+        },
+        { 
+            nazev: 'Ironie', 
+            detekce: (t) => {
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 5);
+                const ironie = vety.filter(v => /\b(samozřejmě|pochopitelně|přesně tak|jenomže|bohužel|naštěstí)\b/i.test(v) && /\b(ale|a přesto|přitom)\b/i.test(v));
+                return ironie.slice(0, 2).map(v => v.trim().slice(0, 60) + '…');
+            }
+        },
+        { 
+            nazev: 'Fyzikalizace', 
+            detekce: (t) => {
+                const abstraktni = /\b(paměť|slova|čas|ticho|strach|radost|smutek|láska|nenávist|myšlenka|vzpomínka|nápad|možnost|naděje|bolest|pravda|lež|význam|smysl)\b/gi;
+                const akcniSlovesa = /\b(padá|leží|nese|nosí|tíží|teče|plyne|roste|kvete|umírá|dýchá|křičí|šeptá|zpívá|tančí|běží|letí|plave|hoří|mrzne|taje)\b/gi;
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 3);
+                const fyzikalizace = vety.filter(v => abstraktni.test(v) && akcniSlovesa.test(v));
+                return fyzikalizace.slice(0, 3).map(v => v.trim().slice(0, 60) + '…');
+            }
+        },
+        { 
+            nazev: 'Personifikace', 
+            detekce: (t) => {
+                const nezive = /\b(strom|řeka|kámen|vítr|déšť|slunce|měsíc|hvězda|země|obloha|moře|hora|dům|zeď|okno|stůl|židle|kniha|stín|tma|světlo|oheň|voda|tráva|květina|les|pole|cesta)\b/gi;
+                const lidske = /\b(pamatuje|mluví|cítí|směje se|pláče|myslí|ví|rozumí|chápe|čeká|doufá|bojí se|zpívá|tančí|objímá|líba|šeptá|křičí|odpovídá|ptá se|odpouští|odmítá|přijímá)\b/gi;
+                const vety = t.split(/[.!?…]+/).filter(s => s.trim().length > 3);
+                const personifikace = vety.filter(v => nezive.test(v) && lidske.test(v));
+                return personifikace.slice(0, 3).map(v => v.trim().slice(0, 60) + '…');
+            }
+        }
+    ];
 
+    let celkemNalezeno = 0;
+    let htmlVysledky = '';
+
+    patterns.forEach((p, idx) => {
+        const nalezene = p.detekce(txt);
+        if (nalezene.length > 0) {
+            celkemNalezeno++;
+            htmlVysledky += `
+                <div class="az-item hit">
+                    <span class="az-n">✓</span>
+                    <div style="flex:1">
+                        <div class="az-nazev">${p.nazev}</div>
+                        <div class="az-tags">${nalezene.map(n => '<span class="az-tag">' + n + '</span>').join('')}</div>
+                    </div>
+                </div>`;
+        } else {
+            htmlVysledky += `
+                <div class="az-item">
+                    <span class="az-n">—</span>
+                    <div class="az-nazev">${p.nazev}</div>
+                </div>`;
+        }
+    });
+
+    const slova = txt.split(/\s+/).filter(Boolean).length;
+    const vety = txt.split(/[.!?…]+/).filter(s => s.trim().length > 2).length;
+    const out = document.getElementById('az' + i);
+    out.innerHTML = `
+        <div class="az-header">
+            <span>Nalezené struktury: <strong style="color:var(--a)">${celkemNalezeno}</strong> z ${patterns.length}</span>
+            <span>${slova} slov · ${vety} vět</span>
+        </div>
+        ${htmlVysledky}
+        <div class="az-note">Analýza hledá jazykové struktury bez ohledu na téma textu. Funguje pro jakýkoli text.</div>`;
+    out.style.display = 'block';
+}
+    
     function ulozit(i){
     const txt=document.getElementById('ta'+i).value.trim();
     if(!txt){alert('Napište nejprve text.');return;}
