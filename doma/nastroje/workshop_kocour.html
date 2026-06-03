@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kocour · Chceš myš?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f0d0a;--bg2:#181410;--bg3:#201c17;--bg4:#261f18;
+      --accent:#d4a574;--accent2:#b8895a;
+      --text:#e8e0d4;--dim:#9a8f82;
+      --border:#2a241e;--borderhi:rgba(212,165,116,.4);
+      --serif:'Cormorant Garamond',Georgia,serif;
+      --mono:'DM Mono',monospace;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height:1.7;-webkit-font-smoothing:antialiased}
+
+    /* NAV */
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:50px;background:rgba(15,13,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2rem;gap:2rem}
+    .topnav-logo{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);opacity:.8;white-space:nowrap}
+    .topnav-links{display:flex;margin-left:auto}
+    .tnl{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:0 .85rem;height:50px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+    .tnl:hover{color:var(--text)}
+    .tnl.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+    /* SIDE DOTS */
+    .sidenav{position:fixed;right:1.4rem;top:50%;transform:translateY(-50%);z-index:190;display:flex;flex-direction:column;gap:.55rem}
+    .sdot{width:7px;height:7px;border-radius:50%;border:1px solid rgba(212,165,116,.5);background:transparent;cursor:pointer;transition:all .2s;position:relative}
+    .sdot.active{background:var(--accent);border-color:var(--accent)}
+    .sdot:hover::after{content:attr(data-lbl);position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:.55rem;color:var(--accent);white-space:nowrap;letter-spacing:.1em;text-transform:uppercase;background:var(--bg2);padding:2px 6px;border:1px solid var(--border)}
+
+    /* SECTIONS */
+    .sec{max-width:900px;margin:0 auto;padding:5rem 2rem 4rem}
+    .sec-sep{border-top:1px solid var(--border)}
+
+    /* SCROLL HINT */
+    .sh{display:flex;align-items:center;gap:.5rem;justify-content:center;margin-top:3rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);cursor:pointer;animation:shp 2.5s infinite}
+    .sh::after{content:' ↓'}
+    @keyframes shp{0%,100%{opacity:.4}50%{opacity:.9}}
+
+    /* TYPOGRAPHY */
+    h1{font-weight:300;font-size:5.5rem;line-height:.9;color:var(--accent);letter-spacing:-.02em}
+    h2{font-weight:300;font-size:2.4rem;color:var(--text);margin-bottom:.3rem}
+    h3{font-weight:400;font-size:1.2rem;color:var(--text);margin-bottom:.5rem}
+    .lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem}
+    p{font-size:.97rem;color:var(--dim);line-height:1.8;margin-bottom:.8rem}
+    p strong{color:var(--text);font-weight:600}
+    em{color:var(--accent);font-style:italic}
+    .divider{border:none;border-top:1px solid var(--border);margin:2rem 0}
+
+    /* ACCORDION */
+    .acc{border:1px solid var(--border);margin-bottom:.4rem;overflow:hidden}
+    .acc-h{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;cursor:pointer;background:var(--bg2);transition:background .15s;user-select:none;gap:.8rem}
+    .acc-h:hover,.acc.open .acc-h{background:var(--bg3)}
+    .acc-title{font-size:1rem;color:var(--text);flex:1}
+    .acc-tag{font-family:var(--mono);font-size:.55rem;color:var(--dim);font-style:italic}
+    .acc-num{font-family:var(--mono);font-size:.58rem;color:var(--accent);min-width:1.6rem}
+    .acc-emoji{font-size:.95rem;min-width:1.4rem;text-align:center}
+    .acc-tog{font-family:var(--mono);font-size:.75rem;color:var(--accent);width:18px;text-align:center;flex-shrink:0}
+    .acc-b{display:none;padding:1.2rem;border-top:1px solid var(--border);background:var(--bg2)}
+    .acc.open .acc-b{display:block}
+
+    /* TILES */
+    .tile{border:1px solid var(--border);padding:1rem 1.2rem;background:var(--bg3);margin-bottom:.4rem}
+    .tile-lbl{font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.3rem}
+    .tile-body{font-size:.88rem;color:var(--dim);line-height:1.6}
+    .tile-body strong{color:var(--text)}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
+
+    /* HERO */
+    .hero-grid{display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;margin-bottom:2rem}
+    .hero-img{width:150px;filter:grayscale(100%) sepia(15%) brightness(.85);opacity:.75}
+    .hero-tags{display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap}
+    .hero-tag{font-family:var(--mono);font-size:.55rem;color:var(--dim);letter-spacing:.08em}
+
+    /* TALE */
+    .tale{background:var(--bg2);border:1px solid var(--border);padding:2.5rem;font-size:1rem;line-height:1.95}
+    .tale p{color:var(--text);margin-bottom:1rem;font-size:1.02rem}
+    .tale p:last-child{margin-bottom:0}
+    .tale-pre{white-space:pre-line;font-size:.92rem;color:var(--text);line-height:1.85;font-family:var(--serif)}
+
+    /* TABLE */
+    .dtable{width:100%;border-collapse:collapse;font-size:.82rem;margin:1rem 0}
+    .dtable th{background:var(--bg3);border:1px solid var(--border);padding:.55rem .8rem;text-align:left;font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+    .dtable td{border:1px solid var(--border);padding:.55rem .8rem;color:var(--dim);vertical-align:top;line-height:1.5}
+    .dtable td strong{color:var(--text)}
+    .dtable tr:hover td{background:rgba(212,165,116,.04)}
+
+    /* INPUTS */
+    input[type=text],input[type=number],textarea,select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--serif);font-size:.9rem;padding:.5rem .8rem;outline:none;transition:border-color .2s;width:100%}
+    input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent)}
+    textarea{resize:vertical;min-height:52px;line-height:1.6;font-size:.88rem}
+    select{appearance:none;cursor:pointer;font-family:var(--mono);font-size:.7rem}
+    select option{background:var(--bg2)}
+    input[type=number]{width:68px;text-align:center;font-family:var(--mono);font-size:.95rem}
+    input[type=number]:focus{border-color:var(--accent)}
+
+    .fr{margin-bottom:1rem}
+    .fl{font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.35rem}
+    .fh{font-family:var(--mono);font-size:.55rem;color:var(--dim);margin-top:.25rem;font-style:italic}
+
+    /* MEMBER CARDS */
+    .mc{border:1px solid var(--border);margin-bottom:.7rem;background:var(--bg2)}
+    .mc-h{display:flex;align-items:center;padding:.8rem 1.2rem;cursor:pointer;background:var(--bg3);user-select:none;gap:.8rem;transition:background .15s}
+    .mc-h:hover,.mc.open .mc-h{background:var(--bg4)}
+    .mc-name{flex:1;font-size:.95rem;color:var(--text)}
+    .mc-st{font-family:var(--mono);font-size:.58rem;color:var(--dim);transition:color .2s}
+    .mc-st.ok{color:var(--accent)}
+    .mc-body{display:none;padding:1.2rem;border-top:1px solid var(--border)}
+    .mc.open .mc-body{display:block}
+
+    /* BUTTONS */
+    .btn{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.52rem 1.3rem;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all .15s}
+    .btn:hover{background:var(--accent);color:var(--bg)}
+    .btn.p{background:var(--accent);color:var(--bg)}
+    .btn.p:hover{background:var(--accent2);border-color:var(--accent2)}
+    .btn.g{border-color:var(--border);color:var(--dim)}
+    .btn.g:hover{border-color:var(--dim);color:var(--text);background:transparent}
+    .btn.d{border-color:var(--border);color:var(--dim)}
+    .btn.d:hover{border-color:#c05050;color:#c05050;background:transparent}
+
+    .setup-row,.flex-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+    .setup-row{margin-bottom:1.5rem}
+    .autosave-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem}
+    .autosave-info{font-family:var(--mono);font-size:.6rem;color:var(--dim)}
+
+    /* PROGRESS */
+    .pgbar{height:2px;background:var(--border);margin-bottom:.4rem}
+    .pgfill{height:100%;background:var(--accent);transition:width .4s ease}
+    .pglbl{font-family:var(--mono);font-size:.58rem;color:var(--dim);text-align:right}
+
+    /* WORKSHOP STEPS */
+    .wss{border:1px solid var(--border);margin-bottom:.5rem;background:var(--bg2)}
+    .wss.done{background:var(--bg);opacity:.65}
+    .wss.active{border-color:var(--accent)}
+    .wss-h{display:flex;align-items:center;gap:.9rem;padding:.85rem 1.2rem;cursor:pointer;user-select:none}
+    .wss-chk{width:22px;height:22px;border:1.5px solid var(--accent);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.62rem;color:transparent;transition:all .2s}
+    .wss.done .wss-chk{background:var(--accent);color:var(--bg)}
+    .wss-title{flex:1;font-size:.92rem;color:var(--text)}
+    .wss.done .wss-title{text-decoration:line-through;color:var(--dim)}
+    .wss-time{font-family:var(--mono);font-size:.6rem;color:var(--dim);white-space:nowrap}
+    .wss-body{display:none;padding:0 1.2rem 1.2rem;font-size:.88rem;line-height:1.7;color:var(--dim)}
+    .wss.active .wss-body{display:block}
+    .wss-body ul,.wss-body ol{margin-left:1.2rem;margin-top:.4rem}
+    .wss-body li{margin-bottom:.35rem}
+    .wss-body strong{color:var(--text)}
+    .rule-box{border-left:2px solid var(--accent);padding:.75rem 1rem;margin:.75rem 0;background:rgba(212,165,116,.05);font-style:italic;font-size:.87rem}
+    .ws-part{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:2rem 0 1rem}
+
+    /* TIMER */
+    .timer-block{display:flex;align-items:center;gap:1rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);flex-wrap:wrap}
+    .tdsp{font-family:var(--mono);font-size:1.75rem;min-width:80px;color:var(--text)}
+    .tdsp.run{color:var(--accent)}
+    .tdsp.fin{color:#c05050}
+
+    /* COG GRID */
+    .cog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin:1.5rem 0;overflow:hidden}
+    .cog-cell{background:var(--bg2);padding:.8rem}
+    .cog-cell.dom{background:rgba(212,165,116,.1)}
+    .cog-cell.def{background:var(--bg);opacity:.5}
+    .cog-nm{font-family:var(--mono);font-size:.52rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-bottom:.4rem;line-height:1.3}
+    .cog-bar{height:2px;background:var(--border);margin-bottom:.35rem}
+    .cog-fill{height:100%;background:var(--accent)}
+    .cog-cnt{font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+    .cog-who{font-family:var(--mono);font-size:.52rem;color:var(--dim);margin-top:.25rem;line-height:1.3}
+
+    /* RESULT BOXES */
+    .rbox{border:1px solid var(--border);padding:1.2rem 1.4rem;margin-bottom:.6rem;background:var(--bg2)}
+    .rbox.w{border-color:rgba(212,165,116,.5)}
+    .rlbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:.85rem}
+    .rlbl.a{color:var(--accent)}
+    .rrow{display:flex;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+    .rrow:last-child{border-bottom:none;padding-bottom:0}
+    .rname{flex:0 0 165px;font-size:.93rem;color:var(--text)}
+    .ract{flex:1;font-size:.86rem;color:var(--dim);line-height:1.55}
+
+    /* GENERATIVNI */
+    .combo-box{border:1px solid var(--border);margin-bottom:.6rem;background:var(--bg2);overflow:hidden}
+    .combo-head{background:var(--bg3);padding:.9rem 1.2rem;border-bottom:1px solid var(--border)}
+    .combo-label{font-family:var(--mono);font-size:.6rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem}
+    .combo-name{font-size:1.05rem;color:var(--text)}
+    .combo-goal{font-size:.85rem;font-style:italic;color:var(--dim);border-left:2px solid var(--accent);padding-left:.75rem;margin:.75rem 0}
+    .combo-body{padding:1.1rem 1.2rem;font-size:.87rem;line-height:1.7;color:var(--dim)}
+    .combo-body ol{margin-left:1.2rem;margin-top:.5rem}
+    .combo-body li{margin-bottom:.4rem}
+    .combo-body strong{color:var(--text)}
+    .combo-body p{margin-bottom:.5rem}
+    .vlastni-selects{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+    .sel-group label{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.35rem}
+    .uhel-panel{border:1px solid var(--border);padding:1rem 1.2rem;background:var(--bg3);margin-bottom:.4rem}
+    .uhel-panel strong{display:block;font-size:.95rem;color:var(--accent);margin-bottom:.3rem}
+    .uhel-panel .meta{font-size:.82rem;color:var(--dim);font-style:italic;margin-bottom:.5rem}
+    .uhel-panel .q3t{font-size:.87rem;border-left:2px solid var(--accent);padding-left:.8rem;color:var(--dim);line-height:1.65}
+    .hint-box{background:rgba(212,165,116,.05);border:1px solid var(--border);padding:.9rem 1.1rem;font-size:.84rem;font-style:italic;color:var(--dim);margin-top:.75rem}
+
+    /* MANIFEST */
+    .manifest{border:1px solid var(--borderhi);padding:1.5rem;margin-top:1rem}
+    .manifest h4{font-size:1rem;font-weight:400;color:var(--accent);margin-bottom:1rem}
+    .manifest-line{display:flex;align-items:center;gap:.75rem;margin-bottom:.7rem;font-size:.9rem}
+    .manifest-line span{font-family:var(--mono);font-size:.65rem;color:var(--accent);min-width:1.2rem}
+    .manifest-input{flex:1;border:none;border-bottom:1px solid var(--border);font-family:var(--serif);font-size:.9rem;padding:.3rem 0;background:transparent;outline:none;color:var(--text)}
+    .manifest-input:focus{border-bottom-color:var(--accent)}
+
+    /* FINISH */
+    .finish-box{display:none;margin-top:2.5rem;border:1px solid var(--accent);padding:2rem;text-align:center;background:rgba(212,165,116,.05)}
+    .finish-box h3{font-weight:300;font-size:1.4rem;color:var(--accent);margin-bottom:.6rem}
+
+    /* MISC */
+    .empty{font-family:var(--mono);font-size:.7rem;color:var(--dim);text-align:center;padding:2rem;border:1px dashed var(--border)}
+    .q-reminder{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--accent);padding:1rem 1.3rem;margin-bottom:1.5rem;font-size:.88rem}
+    .q-reminder p{margin:0 0 .3rem;font-size:.9rem}
+    .q-reminder p:last-child{margin:0}
+    .navod-box{background:var(--bg2);border:1px solid var(--border);padding:1.2rem 1.4rem;margin-bottom:1.5rem}
+    .navod-box ul{margin-left:1.2rem;font-size:.88rem;color:var(--dim)}
+    .navod-box li{margin-bottom:.4rem}
+
+    @media(max-width:640px){
+      h1{font-size:3.5rem}
+      .hero-grid{grid-template-columns:1fr}
+      .hero-img{width:90px}
+      .g2,.g3{grid-template-columns:1fr}
+      .cog-grid{grid-template-columns:repeat(3,1fr)}
+      .vlastni-selects{grid-template-columns:1fr}
+      .sidenav{display:none}
+      .tnl{padding:0 .6rem}
+    }
+    @media print{
+      .topnav,.sidenav,.btn,.timer-block,.sh,#btn-vyh,.setup-row,.autosave-row{display:none!important}
+      .acc-b{display:block!important}
+      .mc-body{display:block!important}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-logo">Chceš myš? · Karta Kocour</div>
+  <div class="topnav-links">
+    <div class="tnl active" onclick="goTo('intro')">Karta</div>
+    <div class="tnl" onclick="goTo('fenomen')">Fenomén</div>
+    <div class="tnl" onclick="goTo('pohadka')">Pohádka</div>
+    <div class="tnl" onclick="goTo('uhly')">Úhly</div>
+    <div class="tnl" onclick="goTo('klic')">Klíč</div>
+    <div class="tnl" onclick="goTo('zapisnik')">Zápisník</div>
+    <div class="tnl" onclick="goTo('generativni')">Generátor</div>
+    <div class="tnl" onclick="goTo('workshop')">Workshop</div>
+  </div>
+</nav>
+
+<!-- SIDE DOTS -->
+<nav class="sidenav">
+  <div class="sdot active" data-id="intro"       data-lbl="Karta"      onclick="goTo('intro')"></div>
+  <div class="sdot"        data-id="fenomen"     data-lbl="Fenomén"    onclick="goTo('fenomen')"></div>
+  <div class="sdot"        data-id="pohadka"     data-lbl="Pohádka"    onclick="goTo('pohadka')"></div>
+  <div class="sdot"        data-id="uhly"        data-lbl="12 úhlů"    onclick="goTo('uhly')"></div>
+  <div class="sdot"        data-id="klic"        data-lbl="Klíč myši"  onclick="goTo('klic')"></div>
+  <div class="sdot"        data-id="zapisnik"    data-lbl="Zápisník"   onclick="goTo('zapisnik')"></div>
+  <div class="sdot"        data-id="mapa"        data-lbl="Mapa"       onclick="goTo('mapa')"></div>
+  <div class="sdot"        data-id="generativni" data-lbl="Generátor"  onclick="goTo('generativni')"></div>
+  <div class="sdot"        data-id="workshop"    data-lbl="Workshop"   onclick="goTo('workshop')"></div>
+</nav>
+
+
+<!-- ═══════════════════════════ 1. INTRO ═══════════════════════════ -->
+<section id="intro" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:50px">
+<div class="sec">
+  <div class="hero-grid">
+    <div>
+      <div class="lbl">Diagnostická karta · Chceš myš?</div>
+      <h1>Kocour</h1>
+      <p style="font-size:1.15rem;font-style:italic;color:var(--dim);margin-top:.4rem;">Jak kocour sežral dvě berušky a půl hodiny krkal tečky.</p>
+      <p style="max-width:520px;margin-top:1.2rem;">Karta pro diagnostiku <strong>tyranie předčasného uzavírání v komunikaci</strong>. Kocour skáče lidem do řeči — dokončuje věty za druhé, uzavírá diskuse dřív, než skončily, vynucuje konsenzus tlakem.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">· 90min workshop</span>
+        <span class="hero-tag">· 12 kognitivních úhlů</span>
+        <span class="hero-tag">· zápisník pro tým</span>
+        <span class="hero-tag">· generativní kombinace</span>
+      </div>
+    </div>
+    <img src="kocour.jpg" alt="Kocour" class="hero-img" onerror="this.style.display='none'">
+  </div>
+  <div class="sh" onclick="goTo('fenomen')">Fenomén</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 2. FENOMÉN ═══════════════════════════ -->
+<section id="fenomen" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Jádrová dysfunkce</div>
+  <h2>Tyranie předčasného uzavírání</h2>
+  <p style="max-width:600px;font-size:1.05rem;color:var(--text);margin:1rem 0 1.5rem">Tým nebo člověk uzavírá diskuse dřív, než skončily. Dokončuje věty za druhé. Vynucuje konsenzus — ne přesvědčením, ale přerušením.</p>
+
+  <div class="acc open" id="ac-co">
+    <div class="acc-h" onclick="togAcc('ac-co')">
+      <span class="acc-title">Co se v týmu děje</span>
+      <span class="acc-tog">−</span>
+    </div>
+    <div class="acc-b">
+      <p>Kocour skáče lidem do řeči — dokončuje větu za druhého, vždy <em>o něco málo dřív</em>, než měla věta skončit. Celou půlhodinu nemohl nikdo nic dokončit. Nešlo to.</p>
+      <p>Berušky nesou <strong>nespolknuté konce vět</strong> — věci, které jsou nepříjemné, nezpracované, složité. Kocour je spolkl. Ale tělo je odmítlo — vykrkal je zpět jako tečky.</p>
+      <p>I když kocour přestal, <em>něco nebylo stejné.</em> Jednorázové narušení zanechává trvalou jizvu. Lidé se podvědomě bojí znovu otevřít ústa.</p>
+    </div>
+  </div>
+
+  <div class="acc" id="ac-kdo">
+    <div class="acc-h" onclick="togAcc('ac-kdo')">
+      <span class="acc-title">Kde se Kocour objevuje</span>
+      <span class="acc-tog">+</span>
+    </div>
+    <div class="acc-b">
+      <div class="g2" style="margin-top:.5rem">
+        <div class="tile"><div class="tile-lbl">Porady · Schůze</div><div class="tile-body">Dominantní mluvčí uzavírá body dřív, než jsou vyřešeny. Schůze jsou krátké, ale problémy se vracejí.</div></div>
+        <div class="tile"><div class="tile-lbl">Brainstorm</div><div class="tile-body">Management tlačí na rychlá rozhodnutí. Nápad je „sežrán" dřív, než se rozvine.</div></div>
+        <div class="tile"><div class="tile-lbl">Introverti · Pomalí myslitelé</div><div class="tile-body">Lidé potřebující čas na formulaci jsou přerušováni. Nakonec mlčí a frustrace roste.</div></div>
+        <div class="tile"><div class="tile-lbl">Rozhodování</div><div class="tile-body">Ticho je interpretováno jako souhlas. Tým přijme rozhodnutí z únavy, ne z přesvědčení.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc" id="ac-myš">
+    <div class="acc-h" onclick="togAcc('ac-myš')">
+      <span class="acc-title">Myš jako facilitátor — než začnete</span>
+      <span class="acc-tog">+</span>
+    </div>
+    <div class="acc-b">
+      <div class="navod-box">
+        <ul>
+          <li><strong>Ty jsi myš.</strong> Sedíš, posloucháš, zapisuješ. Nehodnotíš, kdo má pravdu — mapuješ, jak tým myslí.</li>
+          <li>Kocour není člověk. Je to <strong>porucha</strong> — způsob, jakým se tým chová v určitém momentu.</li>
+          <li>Zvířata jsou poruchy. Dívka na kartě je řeč. Zvíře je porucha. Text mezi nimi je mezera pro interpretaci.</li>
+          <li>Úhly nejsou osobnostní typy. <strong>Stejný člověk se v jiný den dívá jiným úhlem.</strong> Nejde o škatulkování.</li>
+          <li>Neexistuje správný nebo špatný úhel. Jde o to mít jich co nejvíc — rozšiřovat pohled.</li>
+          <li>Přiřazuješ ty — podle toho, co slyšíš. Úhel vybíráš <strong>intuitivně</strong>, podle jádra odpovědi.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh" onclick="goTo('pohadka')">Pohádka</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 3. POHÁDKA ═══════════════════════════ -->
+<section id="pohadka" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Text · Pohádka</div>
+  <h2>O Kocourovi</h2>
+  <p style="font-style:italic;color:var(--dim);margin-bottom:1.5rem">Jak kocour sežral dvě berušky a půl hodiny krkal tečky.</p>
+  <div class="tale"><div class="tale-pre" id="tale-cnt"></div></div>
+  <div class="sh" onclick="goTo('uhly')">12 úhlů</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 4. 12 ÚHLŮ ═══════════════════════════ -->
+<section id="uhly" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Diagnostický protokol · Karta Kocour</div>
+  <h2>12 specifických úhlů</h2>
+  <p style="max-width:600px;margin-bottom:1.5rem">Každý úhel odhaluje jinou vrstvu kocouří dysfunkce. Facilitátor přiřazuje úhel <em>podle toho, jak člen odpovídá</em> — ne co říká, ale z jakého místa to říká.</p>
+  <div id="uhly-cnt"></div>
+
+  <hr class="divider">
+  <div class="lbl" style="margin-top:1.5rem">Diagnostická matice</div>
+  <p style="margin-bottom:1rem">Co odhaluje převažující úhel v týmu:</p>
+  <table class="dtable">
+    <thead><tr><th>Úhel</th><th>Diagnóza týmu</th><th>Doporučená akce</th></tr></thead>
+    <tbody id="matrix-body"></tbody>
+  </table>
+
+  <div class="sh" onclick="goTo('klic')">Klíč myši</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 5. KLÍČ ═══════════════════════════ -->
+<section id="klic" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Myší klíč · 12 obecných kognitivních úhlů</div>
+  <h2>Jak myš čte pohádky</h2>
+  <p style="max-width:600px;margin-bottom:.5rem">Myš nečte, kdo má pravdu. Myš přiřazuje <em>způsob pohledu</em>. Tyto 12 úhlů platí pro všechny karty — popisují, <strong>jak</strong> člověk odpovídá, ne co.</p>
+  <p style="max-width:600px;margin-bottom:1.5rem">V zápisníku přiřazuješ 12 Kocour-specifických úhlů ze sekce výše. Tento klíč slouží jako orientace při čtení odpovědí — odhaluje styl myšlení mluvčího.</p>
+  <div id="klic-cnt"></div>
+
+  <hr class="divider">
+  <div class="lbl" style="margin-top:1.5rem">Co myš dělá s výsledky</div>
+  <div class="g3" style="margin-top:.75rem">
+    <div class="tile"><div class="tile-lbl">1 · Sepíše</div><div class="tile-body">Tři otázky. Každý člen. Anonymně nebo jmenovitě — myš rozhoduje sama.</div></div>
+    <div class="tile"><div class="tile-lbl">2 · Přiřadí</div><div class="tile-body">Ke každé odpovědi jeden úhel. Nejvýraznější — ne jediný správný.</div></div>
+    <div class="tile"><div class="tile-lbl">3 · Spočítá</div><div class="tile-body">Kolikrát se který úhel objevil. Najednou to není pohádka o zvířatech — je to o týmu.</div></div>
+    <div class="tile"><div class="tile-lbl">4 · Identifikuje vzory</div><div class="tile-body"><strong>Přetížené</strong> — tým vidí pořád stejně. <strong>Deficitní</strong> — slepá místa. <strong>Vyvážené</strong> — mosty.</div></div>
+    <div class="tile"><div class="tile-lbl">5 · Navrhne akci</div><div class="tile-body">Přetíženým: úkol myslet jinak. Deficitním: povinný výlet. Vyváženým: tlumočit.</div></div>
+    <div class="tile"><div class="tile-lbl">· Zásada</div><div class="tile-body">Myš nesoudí. Neříká, který úhel je lepší. Myš jen počítá — a pak vidí věci, které ostatní nevidí.</div></div>
+  </div>
+
+  <div class="sh" onclick="goTo('zapisnik')">Zápisník</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 6. ZÁPISNÍK ═══════════════════════════ -->
+<section id="zapisnik" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Nástroj · Diagnostický zápisník</div>
+  <h2>Zápisník pro tým</h2>
+  <p style="margin-bottom:1.5rem">Zapisuje <strong>myš</strong> — facilitátor. Čte odpovědi a přiřazuje Kocouří úhel <em>intuitivně</em>, podle jádra odpovědi. Zápisník se průběžně ukládá do prohlížeče.</p>
+
+  <div class="q-reminder">
+    <div class="lbl" style="margin-bottom:.5rem">Tři otázky pro tým · Karta Kocour</div>
+    <p><strong>Q1 · Smysl:</strong> Co je podle vás hlavní pointa nebo sdělení tohoto příběhu?</p>
+    <p><strong>Q2 · Zaujetí:</strong> Která konkrétní věta, obraz nebo moment vás nejvíc zaujal/a a proč?</p>
+    <p><strong>Q3 · Aplikace:</strong> Kdyby tento příběh byl návodem nebo radou, co by vám radil dělat (nebo nedělat) ve vašem pracovním životě?</p>
+  </div>
+
+  <div class="setup-row">
+    <label style="font-family:var(--mono);font-size:.62rem;color:var(--dim)">Počet členů:</label>
+    <input type="number" id="pocet" min="1" max="30" value="4">
+    <button class="btn p" onclick="vytvorKarty()">Vytvořit zápisník</button>
+  </div>
+
+  <div class="autosave-row" id="ar" style="display:none">
+    <span class="autosave-info">· Zápisník se průběžně ukládá do prohlížeče</span>
+    <button class="btn d" onclick="smazat()">Vymazat zápisník</button>
+  </div>
+
+  <div id="karty"></div>
+
+  <div id="btn-vyh" style="display:none;margin-top:1rem">
+    <button class="btn p" onclick="vyhodnotit()">Vyhodnotit → kognitivní mapa týmu</button>
+  </div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 7. MAPA ═══════════════════════════ -->
+<section id="mapa" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Výsledky · Kognitivní mapa</div>
+  <h2>Diagnostika týmu</h2>
+  <div id="mapa-cnt">
+    <div class="empty">Vyplňte zápisník a stiskněte Vyhodnotit.</div>
+  </div>
+  <div class="sh" onclick="goTo('generativni')">Generátor</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 8. GENERATIVNÍ ═══════════════════════════ -->
+<section id="generativni" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Generativní mód · Kocour sám se sebou</div>
+  <h2>Spojení úhlů</h2>
+  <p style="max-width:600px;margin-bottom:.5rem">Tahle karta umí generovat nové workshopy, aniž byste potřebovali jinou kartu. Stačí spojit dva různé úhly — výsledek je nové cvičení pro tým.</p>
+  <p style="max-width:600px;margin-bottom:2rem">Princip: lidé s <em>přetíženým</em> úhlem A dostanou za úkol pracovat způsobem <em>deficitního</em> úhlu B.</p>
+
+  <div class="lbl">Hotové kombinace</div>
+
+  <div class="combo-box">
+    <div class="combo-head">
+      <div class="combo-label">Kombinace 1 + 9 · Fyzický konec věty × Nedokončené jako dar</div>
+      <div class="combo-name">Tečka, nebo tři tečky?</div>
+    </div>
+    <div class="combo-body">
+      <div class="combo-goal">Cíl: Procvičit přechod od uzavírání k otevírání.</div>
+      <p><strong>Cvičení (20 minut):</strong></p>
+      <ol>
+        <li>Vezměte si aktuální problém, který „už měl být dávno rozhodnutý".</li>
+        <li><strong>5 min:</strong> Každý návrh musí skončit tečkou. Žádná „možná", žádné „co kdyby". Jen hotová rozhodnutí.</li>
+        <li><strong>5 min:</strong> Každý návrh musí skončit třemi tečkami. Žádné uzavření, jen otevření, otázky, možnosti.</li>
+        <li><strong>10 min:</strong> Reflexe — Kdy nám pomáhá tečka? Kdy tři tečky? Kde v naší práci potřebujeme víc jedněch nebo druhých?</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="combo-box">
+    <div class="combo-head">
+      <div class="combo-label">Kombinace 2 + 6 · Kvaziefektivita × Tyranie metrik</div>
+      <div class="combo-name">14 teček, které nevidíme</div>
+    </div>
+    <div class="combo-body">
+      <div class="combo-goal">Cíl: Odhalit, co čísla nedokážou zachytit.</div>
+      <p><strong>Cvičení (25 minut):</strong></p>
+      <ol>
+        <li>Každý napíše na lísteček <strong>jednu metriku</strong>, kterou tým pravidelně sleduje.</li>
+        <li>Lístky se zamíchají — každý si vylosuje cizí.</li>
+        <li>Úkol: <em>„Vymysli příběh, který tahle metrika NEříká. Co se děje v zákulisí? Kdo trpí? Jaké úspěchy zůstávají neviditelné?"</em></li>
+        <li>Sdílení. Výstup: seznam „14 teček" — věcí, které bychom měli sledovat, ale dosud jsme neměřili.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="combo-box">
+    <div class="combo-head">
+      <div class="combo-label">Kombinace 4 + 10 · Pozorovatelská myš × Komunikační trauma</div>
+      <div class="combo-name">Ticho, které křičí</div>
+    </div>
+    <div class="combo-body">
+      <div class="combo-goal">Cíl: Zviditelnit hlasy, které byly umlčeny.</div>
+      <p><strong>Cvičení (30 minut):</strong></p>
+      <ol>
+        <li>Jmenujte na 30 minut <strong>„Myš"</strong>. Její role: pozorovat, kdo mluví, kdo je přerušován, kdo se nedostane ke slovu.</li>
+        <li>Tým diskutuje: <em>„Co bychom měli přestat dělat?"</em></li>
+        <li>Myš nemluví, jen zapisuje. Na konci přečte data: kolikrát kdo promluvil, kdo byl přerušen.</li>
+        <li><strong>Nikdo nesmí hodnotit, vysvětlovat, obhajovat.</strong> Jen ticho a vstřebávání.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="combo-box">
+    <div class="combo-head">
+      <div class="combo-label">Kombinace 5 + 12 · Trvalá změna × Navrácené štěstí</div>
+      <div class="combo-name">Beruška na stole</div>
+    </div>
+    <div class="combo-body">
+      <div class="combo-goal">Cíl: Vytvořit jemný signál pro zpomalení.</div>
+      <p>Zavedeme <strong>Beruščí rituál</strong>. Každý člen týmu má na stole malou berušku (nebo jiný předmět). Kdykoli se cítím přerušen nebo potřebuji víc času na dořečení —</p>
+      <p><strong>Položím berušku doprostřed stolu.</strong></p>
+      <p>Nikdo to nesmí komentovat ani hodnotit. Všichni zpomalí, ztiší se, nechají mluvčího doříct. Žádné omluvy. Jen beruška.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="lbl">Vlastní kombinace</div>
+  <p style="margin-bottom:1rem">Vyber dva úhly a spoj jejich Q3 úkoly. Zbytek — název, čas, postup — je na tobě.</p>
+  <div class="vlastni-selects">
+    <div class="sel-group">
+      <label>Úhel A · přetížený / dominantní</label>
+      <select id="uhel-a"><option value="">— vyber úhel —</option></select>
+    </div>
+    <div class="sel-group">
+      <label>Úhel B · deficitní / chybějící</label>
+      <select id="uhel-b"><option value="">— vyber úhel —</option></select>
+    </div>
+  </div>
+  <button class="btn p" onclick="generuj()">Spojit úhly</button>
+
+  <div id="vysledek-gen" style="display:none;margin-top:1.5rem">
+    <div id="panel-a" class="uhel-panel"></div>
+    <div id="panel-b" class="uhel-panel"></div>
+    <div class="hint-box">Toto jsou Q3 úkoly z vybraných úhlů. Spoj je do jednoho cvičení — pojmenuj ho, odhadni čas, popiš postup.</div>
+  </div>
+
+  <div class="sh" onclick="goTo('workshop')">Workshop</div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ 9. WORKSHOP ═══════════════════════════ -->
+<section id="workshop" class="sec-sep">
+<div class="sec">
+  <div class="lbl">Facilitátorský průvodce · 90 minut</div>
+  <h2>Workshop: Půl hodiny ticha</h2>
+  <p style="max-width:600px;margin-bottom:1.5rem">Každý krok se otevře a spustí odpočet. Stisknutím <em>Hotovo</em> přejdete automaticky na další krok.</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);padding:1rem 1.3rem;margin-bottom:1.5rem;font-size:.88rem">
+    <div class="lbl" style="margin-bottom:.5rem">Připravte před workshopem</div>
+    <p style="margin:0;color:var(--dim)">Stopky / timer (nebo tento nástroj) · flipchart + fixy · papíry pro každého · volitelně: fyzická beruška jako talking stick</p>
+  </div>
+
+  <div class="pgbar"><div class="pgfill" id="ws-pg"></div></div>
+  <div class="pglbl" id="ws-pg-lbl">0 / 9 kroků</div>
+
+  <div style="margin-top:1.2rem" id="ws-cnt"></div>
+
+  <div class="finish-box" id="finish-box">
+    <h3>Workshop dokončen</h3>
+    <p>Tým měl 90 minut. Teď má manifest, Strážce a jinou zkušenost s poradou.<br>Uvidíte se za měsíc — co se změnilo?</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ═══════════════════════════ JAVASCRIPT ═══════════════════════════ -->
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const TALE_TEXT = `O KOCOUROVI
+Jak kocour sežral dvě berušky a půl hodiny krkal tečky
+_________________
+
+Sležral dvě — ne tři, ne jednu — dvě — přesně — 14 teček a trvalo to půl hodiny — 30 minut — přesně.
+
+Jak to přišlo tak to přestalo.
+Ráz na ráz.
+
+Chňap a hlt a chlamst — nebo něco takového a nakonec — mlask, mlask — dvakrát — přesně.
+
+Žily byly dvě berušky, každá sedm teček měla, když uviděl je jeden kocour byla to mela.
+Aspoň pro ně.
+
+Po 14ti tečkách
+v jednom mžiku
+zem se slehla.
+
+Rozhodně aspoň kocour se svými útrobami.
+
+Ale ta myš, vždycky zvědavá byla.
+Odmalička chodívala
+a kde mohla se vyptávala,
+kde se tečky na beruškách vzaly?
+K čemu je mají?
+Proč si radši nevytvoří pravé maskování?
+
+A ta přesná matika..
+Kdo vlastně z těch, co s nimi přijdou do styku, takhle přesně počítá?
+
+No a toho dne — náhle — se to stalo
+a myš svou odpověď měla.
+
+Kocour mlaskl
+a pak znovu
+a hned na to
+začalo to.
+
+Půl hodiny a bylo to zaznamenáno — přesně.
+Kocour krkal tečky a dokončoval věty!
+Někdy celé souvětí!!
+
+Jenomže tím zároveň skákal lidem do řeči,
+tím že za ně dokončoval, co nedokončili.
+
+Skočil všem do řeči koncem věty
+
+ale vždycky o něco málo
+
+někdy i o docela dost
+
+dřív, než měla věta původně skončit
+
+nebo — než původně věta skončit měla.
+
+A celou půlhodinu nemohl tenkrát nikdo nic
+ne — dokončit.
+Nešlo to.
+
+Každému dřív,
+než se k tomu dostal,
+všem kocour větu ukončil.
+Hned.
+
+Kocour se tomu smál,
+ale krkal dál.
+A krkal, dokud neskončil.
+Představte si to:
+Skončil větu a pak skončil krkat.
+
+A lidé zase začali moct své věty ukončovat sami.
+Hned.
+
+Jenže, jak se to tak občas stává,
+přestože nikdo nevěděl co,
+každý věděl,
+že něco nebylo stejné.
+
+A to, co jednou není stejné dnes,
+to není jednou stejné nikdy.
+
+Jen nedokončené věty bývají všechny stejné. Jednou, dnes i zítra.
+
+Berušky mají na sobě nedokončené konce vět. Věci, které jsou nespolknuté.
+
+Kocour to nevěděl — a dvě spolknul.
+Spolknuté konce ale vykrkal zpátky
+a lidé se naučili,
+že všechno se spolknout nedá.
+A že tečka je někdy silnější, než celá věta.
+
+Kocour se nažral a myš i věty zůstaly celé.
+Díky bohu za to.
+Štěstí dvou berušek se vrátilo zpátky.
+
+Ale všimly si toho jen kocour a malá myš.
+A ani jeden neříkali nic.
+
+KONEC`;
+
+// 12 Kocour-specifických úhlů (pro zápisník)
+const UHLY = [
+  { id:1,  em:"🔚", nz:"Fyzický konec věty",         tg:"tečka jako dominance",
+    q1:"Kocour se stal otrokem tečky. Věřil, že hodnota je v ukončení, ne v obsahu.",
+    q2:"V poradách, když někdo řekne ‚takže…' nebo ‚možná bychom…' a hned je přerušen řešením. Management tlačí na rychlý ‚action point', než byl problém prozkoumán.",
+    q3:"Zavést pravidlo ‚tří teček' (…). Když někdo něco naznačí, musí mít prostor to rozvést. První, kdo řekne ‚tečka', má za úkol pouze shrnout — NE dodat svůj závěr.",
+    mt:"Čím rychleji se snažíme větu uzavřít, tím víc jejích významů zůstává nedořečených.",
+    dg:"Tým uzavírá diskuse předčasně. Dominantní hlas diktuje tečky.",
+    ak:"Pravidlo tří teček: každý návrh musí mít prostor na rozvití před uzavřením." },
+  { id:2,  em:"⏱️", nz:"Kvaziefektivita",              tg:"rychlost místo hloubky",
+    q1:"Kocour si myslel, že urychluje práci. ‚Půl hodiny a hotovo!' Ale jen nahradil společný proces monologem.",
+    q2:"Projektový manažer tlačí na rychlé odkliknutí bodů. Schůze jsou krátké, ale problémy se vracejí jako nevykrknuté tečky.",
+    q3:"Měřit úspěch schůze nikoli délkou, ale <strong>počtem otevřených otázek na konci</strong>. Pokud jsou všechny body ‚uzavřeny', pravděpodobně jsme byli kocouři.",
+    mt:"Rychlé odškrtnutí bodů z agendy je jako uklízení nepořádku do skříně — naoko hotovo, ale problém se vrátí.",
+    dg:"Efektivita jako záminka. Problémy se řeší povrchně a vracejí se.",
+    ak:"Nová metrika úspěšnosti porady: počet otevřených otázek, ne délka." },
+  { id:3,  em:"🐞", nz:"Nespolyknutelný obsah",        tg:"potlačená témata",
+    q1:"Berušky nesou ‚nespolknuté konce vět' — nepříjemné, nezpracované aspekty problému. Kocour je spolkl, ale tělo je odmítlo — vykrkal je zpět.",
+    q2:"Když potlačujeme ‚elefanty v místnosti' — citlivá témata, emocionální frustrace. Řekneme ‚OK, pojďme dál', ale téma pak otráví atmosféru.",
+    q3:"Vytvořit ‚nástěnku nespolknutého'. Fyzické nebo virtuální místo, kde lze anonymně psát nedořešené věci. Pravidelně je zařazovat do agendy.",
+    mt:"Těžká témata, která se snažíme spolknout, nám nakonec vyjdou ven v té nejnevhodnější chvíli.",
+    dg:"Tým potlačuje nepříjemná témata. Vynoří se nekontrolovaně.",
+    ak:"Nástěnka nespolknutého: anonymní prostor pro věci, které se neřekly." },
+  { id:4,  em:"🐀", nz:"Pozorovatelská myš",           tg:"tichý svědek",
+    q1:"Myš je metaforou facilitátora nebo tichého člena. Nedokáže zabránit kocourovi, ale pozoruje a ukládá si odpověď. Vidí dysfunkci jasně, ale nemá moc ji zastavit.",
+    q2:"V týmu jsou introverti nebo lidé potřebující delší čas na formulaci. Jejich hlasy jsou umlčeny ‚kocouřím' stylem. Nakonec mlčí a frustrace roste.",
+    q3:"Jmenovat pro každou důležitou diskusi ‚myš'. Její jedinou rolí je pozorovat, kdo mluví, kdo je přerušován, a na konci sdělit pozorování <strong>bez hodnocení</strong>.",
+    mt:"Tiché hlasy v místnosti jsou jako myš, která si zapisuje — slyší víc, než kdo mluví, ale nikdo neslyší ji.",
+    dg:"Tiché hlasy jsou přehlíženy. Introverty a pomalé myslitele tým ztrácí.",
+    ak:"Role Myš: tichý pozorovatel, který na konci sdělí data bez hodnocení." },
+  { id:5,  em:"🕳️", nz:"Trvalá změna",                 tg:"jizva po přerušení",
+    q1:"I když kocour přestal, ‚něco nebylo stejné'. Jednorázové narušení komunikační kultury zanechává trvalou jizvu. Lidé se podvědomě bojí znovu otevřít ústa.",
+    q2:"Po toxické schůzi nebo dominantním šéfovi tým i po změně zůstává pasivní. Čeká na pokyny. Důvěra v bezpečný prostor je pryč.",
+    q3:"Úmyslně vytvářet ‚nedokončené věty'. Leader začne myšlenku a vyzve ostatní, aby ji dokončili. Obnovovat důvěru vzdáváním se kontroly nad tečkou.",
+    mt:"Důvěra je jako pavučina — jakmile se přetrhne, zůstane díra, i když se snažíme ji spravit.",
+    dg:"Tým nese komunikační jizvu. Pasivita po předchozí dysfunkci.",
+    ak:"Nedokončené věty leadera: záměrné vzdání se kontroly pro obnovení důvěry." },
+  { id:6,  em:"🔢", nz:"Tyranie metrik",                tg:"čísla bez příběhu",
+    q1:"Příběh je posedlý přesnými čísly: 2 berušky, 14 teček, 30 minut. Parodie na manažerské reportování, kde jde o čísla, ne o příběh za nimi.",
+    q2:"Na retrospektivě se řeší jen ‚splněno/nesplněno', ‚počet úkolů'. Ne ‚jak se cítíme', ‚co jsme se naučili'.",
+    q3:"Přidat ke každé kvantitativní metrice kvalitativní příběh. Ne ‚dokončili jsme 14 úkolů', ale ‚jakých 14 teček jsme vykrkli a co to pro nás znamenalo?'.",
+    mt:"Počítáme tečky, ale nevidíme berušky — čísla bez příběhu jsou jako mapa bez krajiny.",
+    dg:"Metriky vládnou. Ztrácíme příběh za čísly.",
+    ak:"Ke každé metrice příběh: co číslo nezachytí, lidsky pojmenovat." },
+  { id:7,  em:"🦾", nz:"Násilný konsenzus",             tg:"vynucený souhlas",
+    q1:"Kocour svým dokončováním vět vynucoval souhlas. Lidé přestali mluvit, protože jejich verze by byla stejná jako jeho. Vytvořil iluzi konsensu.",
+    q2:"Šéf v brainstormu: ‚Takže všichni souhlasíme, že?' Ticho je interpretováno jako souhlas, ale je to rezignace.",
+    q3:"Mechanismus ‚souhlasu ticha': ticho po rozhodnutí automaticky znamená <strong>NESOUHLAS</strong>. Nutí lidi aktivně říkat ‚souhlasím'.",
+    mt:"Ticho v diskuzi není souhlas, ale jen únava z boje o slovo.",
+    dg:"Konsenzus je vynucen, ne získán. Tým se podvoluje z únavy.",
+    ak:"Aktivní souhlas: ticho = nesouhlas. Nutit explicitní potvrzení." },
+  { id:8,  em:"🏁", nz:"Konkurence místo kolaborace",  tg:"závod o větu",
+    q1:"Kocour soutěžil: ‚kdo dokončí větu dřív'. Komunikace se stala závodem o dominanci, ne spoluprací o nalezení nejlepší myšlenky.",
+    q2:"V týmech odměňovaných za individuální výkon se přerušování stává soutěží: ‚Já vím lépe, poslouchej mě'.",
+    q3:"Zavést ‚kolo mluvčího' pro klíčové diskuse. Fyzický předmět (talking stick). Mluví jen ten, kdo ho drží. Ostatní aktivně naslouchají.",
+    mt:"Kdo dřív dokončí větu, ten vyhrává — ale prohrává celý tým.",
+    dg:"Komunikace jako závod. Přerušování jako projev dominance.",
+    ak:"Talking stick: mluví jen ten, kdo drží předmět." },
+  { id:9,  em:"🎁", nz:"Nedokončené jako dar",         tg:"potenciál v otevřenosti",
+    q1:"Příběh říká: ‚Nedokončené věty bývají všechny stejné.' Jakmile je věta dokončena, je fixována, mrtvá. Nedokončená je živá, plná potenciálu.",
+    q2:"Tým okamžitě hledá řešení (‚udělejme A') místo setrvání v definici problému (‚co když je to vlastně B?'). Fixujeme se na první ‚dokončenou' myšlenku.",
+    q3:"Cvičení ‚úmyslně nedokončovat': ‚Náš problém je jako…' — zakázat dokončení přirovnání. Jen generovat začátky. Prozkoumat, která nedokončená metafora je nejsilnější.",
+    mt:"Nedokončená věta je jako otevřené okno — může dovnitř vletět cokoliv nového.",
+    dg:"Tým se bojí otevřenosti. Uzavírá příliš rychle, ztrácí potenciál.",
+    ak:"Cvičení nedokončování: zakázat tečky v brainstormu." },
+  { id:10, em:"💔", nz:"Komunikační trauma",           tg:"jizva nedůvěry",
+    q1:"Kocour ‚skákal lidem do řeči' a ‚sežral berušky' — slova násilí. Komunikace se stala traumatizujícím zážitkem. Tým se psychicky ‚slehl'.",
+    q2:"Schůze jsou zdrojem stresu. Lidé se bojí promluvit, protože budou přerušeni nebo jejich nápad bude ‚sežrán' bez úcty.",
+    q3:"Provést ‚audit komunikační bezpečnosti'. Anonymní dotazník: Cítím se bezpečně vyjádřit nesouhlas? Jsem přerušován? Berou moje nápady vážně? Výsledky → pravidla.",
+    mt:"Spálená půda neroste — po toxické schůzi se lidé bojí promluvit i o počasí.",
+    dg:"Komunikační trauma. Lidé se bojí mluvit.",
+    ak:"Audit komunikační bezpečnosti: anonymní dotazník, výsledky → pravidla." },
+  { id:11, em:"⚫", nz:"Silná tečka",                  tg:"uzavření jako zbraň",
+    q1:"Tečka je někdy silnější než celá věta. Formální uzavření má větší moc než celá diskuse. Může být použita jako zbraň.",
+    q2:"V dlouhých diskusích se ztrácíme a pak někdo autoritativně řekne ‚Tak rozhodnuto!' Tým přijme tečku z únavy, ne z přesvědčení.",
+    q3:"Při uzavírání rozhodnutí neptat se ‚Je to jasné?', ale ‚Kdo cítí, že jeho obavy <strong>nebyly dostatečně vyslyšeny</strong> před touto tečkou?'.",
+    mt:"Tečka na konci diskuze je někdy rána, která utne všechny další myšlenky.",
+    dg:"Rozhodnutí jsou uzavírána silou, ne konsenzem.",
+    ak:"Nová uzavírací otázka: kdo cítí, že nebyl vyslyšen?" },
+  { id:12, em:"🍀", nz:"Navrácené štěstí",             tg:"křehká obnova důvěry",
+    q1:"Příběh končí nadějí: ‚Štěstí dvou berušek se vrátilo zpátky.' I po traumatu může dojít k nápravě. Ale vyžaduje to mlčenlivé porozumění — ne grandiózní omluvy, ale změnu chování.",
+    q2:"Tým zažil dysfunkci, pak se bez velkých slov změní dynamika. Lidé opatrně nabývají důvěru. Křehký proces.",
+    q3:"Nastavit ‚beruščí rituál'. Kdykoli někdo pocítí, že byl ‚sežrán', může tichým symbolem (beruška na stůl) signalizovat potřebu zpomalit a vyslechnout.",
+    mt:"Uzdravená důvěra je jako beruška, která se vrátí na místo, kde ji málem sežrali — křehká, ale o to cennější.",
+    dg:"Tým se uzdravuje. Křehká důvěra — nesmí se rozbít novým přerušením.",
+    ak:"Beruščí rituál: tichý symbol pro zpomalení a vyslechnutí." }
+];
+
+// 12 obecných kognitivních úhlů (klíč)
+const KLIC = [
+  { id:1,  nz:"Absurdní",       jad:"Hledá rozpor, paradox, místo, kde svět přestal dávat smysl.", st:"Důraz na nesmysl, zhroucení pravidel, absurditu systému." },
+  { id:2,  nz:"Jazykový",       jad:"Slyší slovo, větu, rytmus. Forma je obsah.", st:"Citace konkrétní formulace, analýza rytmu, hříčka, zvukomalba." },
+  { id:3,  nz:"Ironický",       jad:"Vidí propast mezi záměrem a výsledkem, mezi pózou a skutečností.", st:"Odhalení pokrytectví, trapnosti, sebeklamu. Lehký sarkasmus." },
+  { id:4,  nz:"Filozofický",    jad:"Hledá univerzální pravdu, podstatu bytí, smysl za smyslem.", st:"Obecná pravda, metafyzický tón, důraz na podstatu, ne na děj." },
+  { id:5,  nz:"Surrealistický", jad:"Spojuje nespojitelné. Myslí v obrazech, ne v argumentech.", st:"Bizarní spojení, snová logika, obraz bez vysvětlení." },
+  { id:6,  nz:"Naivní",         jad:"Ptá se jednoduše. Odpovídá přímo. Nepřidává.", st:"Přímočará morálka, jednoduchá emoce, čistý dojem bez racionalizace." },
+  { id:7,  nz:"Introspektivní", jad:"Projekce vlastního prožitku. Příběh je záminka k sebepoznání.", st:"Osobní zkušenost, emoce, vzpomínka. ‚Cítím…', ‚Dotklo se mě…'" },
+  { id:8,  nz:"Konkrétní",      jad:"Drží se faktů. Děj je děj. Není třeba hledat skryté významy.", st:"Převyprávění děje, konstatování faktů, odpor k interpretaci." },
+  { id:9,  nz:"Analogický",     jad:"Hledá vzorce. Přirovnává k něčemu, co už zná.", st:"Odkaz na jiný příběh, mýtus, archetyp, historickou paralelu." },
+  { id:10, nz:"Asociační",      jad:"Myšlení skrz osobní asociace, nečekané souvislosti.", st:"Řetěz asociací, odbočky, osobní příhody, skokové myšlení." },
+  { id:11, nz:"Metaforický",    jad:"Vše je symbolem něčeho většího. Nic není jen to, co je.", st:"Dekódování symbolů, hledání skrytého významu, převod obrazu do abstrakce." },
+  { id:12, nz:"Groteskní",      jad:"Vidí přehnané, karikující, temně komické. Smích, který škrábe.", st:"Důraz na přehnanost, trapnost, černý humor, karikaturu." }
+];
+
+// Workshop kroky
+const WS_PARTS = [
+  { part:"Část 1 — Diagnóza · 25 minut", before:true },
+  { cas:"0–5 min",   nz:"Přečtení pohádky",                  mn:5,
+    body:"Facilitátor čte celou pohádku <strong>nahlas</strong>. Účastníci pouze poslouchají — žádné poznámky, žádné telefony.",
+    rule:"Čtěte pomalu. Pauzy jsou záměrné. Nespěchejte k dalšímu kroku." },
+  { cas:"5–15 min",  nz:"Individuální reflexe",              mn:10,
+    body:"Každý <strong>samostatně písemně</strong> odpovídá na dvě otázky:<br>1. Jedna situace, kdy <strong>mi bylo skočeno do řeči</strong> nebo moje myšlenka nebyla dotažena do konce.<br>2. Jedna situace, kdy <strong>jsem sám/sama přerušil/a</strong> nebo dokončil/a větu za druhého.",
+    rule:"Zdůrazněte: píšou pro sebe, nebudou to číst nahlas celému týmu (jen ve skupinkách)." },
+  { cas:"15–25 min", nz:"Sdílení v malých skupinách",        mn:10,
+    body:"Skupinky po 3–4 lidech. Sdílejí situace. Facilitátor obchází a hlídá tón.",
+    rule:"Pouze popis: „Stalo se… Cítil/a jsem…" — žádné hodnocení, žádné rady, žádné „ale"." },
+  { part:"Část 2 — Experiment a nová pravidla · 45 minut", before:true },
+  { cas:"25–40 min", nz:"Experiment — fáze A: bez dokončování", mn:15,
+    body:"Facilitátor předloží <strong>jeden konkrétní aktuální problém</strong> týmu (připravte si ho předem).",
+    rule:"Pravidlo fáze A: nikdo nesmí dokončovat větu za druhého. Facilitátor přísně hlídá a přerušení pojmenovává: „To byla tečka za větou Martiny."" },
+  { cas:"40–55 min", nz:"Experiment — fáze B: zakázaná slova", mn:15,
+    body:"Pokračování diskuse, nové pravidlo: <strong>zakázaná slova:</strong> „ale", „ovšem", „nicméně", „však".<br><strong>Povolené náhrady:</strong> „a zároveň…", „doplňuji…", „vidím to i takto…", „a co kdyby…"",
+    rule:"Napište zakázaná slova na tabuli. Na konci pojmenujte, kolikrát bylo každé použito." },
+  { cas:"55–70 min", nz:"Reflexe experimentu",               mn:15,
+    body:"Celá skupina. Facilitátor klade otázky a odpovědi píše na tabuli:<br>1. Co bylo <strong>jinak</strong> než na běžné poradě?<br>2. Co bylo <strong>těžké</strong>? Co vás překvapilo?<br>3. Jaké myšlenky se <strong>objevily</strong>, které by jinak „sežral kocour"?",
+    rule:"Nespěchejte. I ticho je odpověď — vydržte v něm alespoň 10 sekund." },
+  { part:"Část 3 — Akční závazek · 20 minut", before:true },
+  { cas:"70–80 min", nz:"Protikocouří manifest",             mn:10,
+    body:"Společně formulujte <strong>3 konkrétní pravidla</strong> pro komunikaci v týmu.",
+    manifest:true },
+  { cas:"80–90 min", nz:"Závazek a rituál zakončení",        mn:10,
+    body:"<strong>Souhlas s manifestem:</strong> Každý řekne nahlas „souhlasím".<br><strong>Jmenování Strážce berušek:</strong> 2 lidé na příští měsíc pozorují komunikaci a hlásí na konci každé schůze.<br><br>Rituál: jdete dokola, každý dokončí větu — vlastními slovy, bez přerušení:",
+    ritual:"„Abych nebyl/nebyla kocourem, příště budu…"" }
+];
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function renderTale() {
+  document.getElementById('tale-cnt').textContent = TALE_TEXT;
+}
+
+function renderUhly() {
+  const c = document.getElementById('uhly-cnt');
+  c.innerHTML = UHLY.map(u=>`
+    <div class="acc" id="ua-${u.id}">
+      <div class="acc-h" onclick="togAcc('ua-${u.id}')">
+        <span class="acc-emoji">${u.em}</span>
+        <span class="acc-num">${String(u.id).padStart(2,'0')}</span>
+        <span class="acc-title">${u.nz}</span>
+        <span class="acc-tag">${u.tg}</span>
+        <span class="acc-tog">+</span>
+      </div>
+      <div class="acc-b">
+        <p style="font-style:italic;font-size:.88rem;color:var(--accent);margin-bottom:.75rem">${u.mt}</p>
+        <div class="tile" style="margin-bottom:.4rem"><div class="tile-lbl">Q1 · Smysl — co facilitátor slyší</div><div class="tile-body">${u.q1}</div></div>
+        <div class="tile" style="margin-bottom:.4rem"><div class="tile-lbl">Q2 · Zaujetí — kde se to v týmu děje</div><div class="tile-body">${u.q2}</div></div>
+        <div class="tile"><div class="tile-lbl">Q3 · Aplikace — doporučení pro tým</div><div class="tile-body"><strong>${u.q3}</strong></div></div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('matrix-body').innerHTML = UHLY.map(u=>`
+    <tr>
+      <td><strong>${u.em} ${u.nz}</strong></td>
+      <td>${u.dg}</td>
+      <td>${u.ak}</td>
+    </tr>`).join('');
+}
+
+function renderKlic() {
+  document.getElementById('klic-cnt').innerHTML = KLIC.map(u=>`
+    <div class="acc" id="ka-${u.id}">
+      <div class="acc-h" onclick="togAcc('ka-${u.id}')">
+        <span class="acc-num">${String(u.id).padStart(2,'0')}</span>
+        <span class="acc-title">${u.nz}</span>
+        <span class="acc-tog">+</span>
+      </div>
+      <div class="acc-b">
+        <p style="margin-bottom:.4rem"><strong>Jádro:</strong> ${u.jad}</p>
+        <p style="margin-bottom:.4rem"><strong>Stopa v odpovědi:</strong> ${u.st}</p>
+        <p style="margin:0;font-size:.82rem;font-style:italic;color:var(--accent)">Myš poznamená: „Zde někdo ${u.jad.toLowerCase().replace('hledá','hledal').replace('vidí','viděl').replace('slyší','slyšel').replace('ptá se','se ptá').replace('drží','drží').replace('spojuje','spojil').replace('myslí','myslel')}"</p>
+      </div>
+    </div>`).join('');
+}
+
+function renderGenSelects() {
+  const opts = UHLY.map(u=>`<option value="${u.id}">${u.em} ${u.nz}</option>`).join('');
+  const def = `<option value="">— vyber úhel —</option>`;
+  document.getElementById('uhel-a').innerHTML = def + opts;
+  document.getElementById('uhel-b').innerHTML = def + opts;
+}
+
+function renderWorkshop() {
+  let stepIdx = 0;
+  let html = '';
+  WS_PARTS.forEach(k=>{
+    if (k.part) {
+      html += `<div class="ws-part">${k.part}</div>`;
+      return;
+    }
+    const i = stepIdx++;
+    let bodyHtml = k.body;
+    if (k.manifest) {
+      bodyHtml += `
+      <div class="manifest">
+        <h4>Protikocouří manifest</h4>
+        <div class="manifest-line"><span>1.</span><input class="manifest-input" type="text" placeholder='např. „Každý nápad dostane 60 sekund ticha před reakcí"'></div>
+        <div class="manifest-line"><span>2.</span><input class="manifest-input" type="text" placeholder='např. „Používáme talking stick pro klíčové diskuse"'></div>
+        <div class="manifest-line"><span>3.</span><input class="manifest-input" type="text" placeholder='např. „Každá schůze má svou Myš — tichého pozorovatele"'></div>
+        <button class="btn g" style="margin-top:.75rem" onclick="window.print()">Vytisknout manifest</button>
+      </div>`;
+    }
+    if (k.ritual) {
+      bodyHtml += `<div class="rule-box" style="margin-top:.75rem;font-size:1rem">${k.ritual}</div>`;
+    }
+    html += `
+    <div class="wss ${i===0?'active':''}" id="wss-${i}">
+      <div class="wss-h" onclick="togWss(${i})">
+        <div class="wss-chk" id="wsc-${i}"></div>
+        <div class="wss-title">Krok ${i+1}: ${k.nz}</div>
+        <div class="wss-time">${k.cas}</div>
+      </div>
+      <div class="wss-body">
+        <p style="margin-bottom:.5rem">${bodyHtml}</p>
+        ${k.rule?`<div class="rule-box">${k.rule}</div>`:''}
+        <div class="timer-block">
+          <div class="tdsp" id="wt-${i}">${k.mn}:00</div>
+          <div class="flex-row">
+            <button class="btn p" onclick="startWt(${i},${k.mn});event.stopPropagation()">▶ Spustit</button>
+            <button class="btn g" onclick="resetWt(${i},${k.mn});event.stopPropagation()">↺ Reset</button>
+            <button class="btn" onclick="doneWss(${i},${stepIdx});event.stopPropagation()">✓ Hotovo</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('ws-cnt').innerHTML = html;
+  wsTotal = stepIdx;
+  wsDone = new Array(stepIdx).fill(false);
+  updWsPg();
+}
+
+// ============================================================
+// ACCORDION
+// ============================================================
+function togAcc(id) {
+  const el = document.getElementById(id);
+  const op = el.classList.toggle('open');
+  el.querySelector('.acc-tog').textContent = op ? '−' : '+';
+}
+
+// ============================================================
+// WORKSHOP TIMERS
+// ============================================================
+let wsTotal = 9;
+let wsDone = [];
+const wtRef = {};
+
+function togWss(i) {
+  const cur = document.querySelector('.wss.active');
+  if (cur && cur.id !== `wss-${i}`) cur.classList.remove('active');
+  document.getElementById(`wss-${i}`)?.classList.toggle('active');
+}
+
+function startWt(i, mn) {
+  if (wtRef[i]?.running) return;
+  const d = document.getElementById(`wt-${i}`);
+  let rem = wtRef[i] ? wtRef[i].rem : mn*60;
+  wtRef[i] = {running:true, rem};
+  wtRef[i].iv = setInterval(()=>{
+    rem--; wtRef[i].rem = rem;
+    if (rem<=0) { clearInterval(wtRef[i].iv); wtRef[i].running=false; d.textContent='⏰'; d.classList.add('fin'); d.classList.remove('run'); return; }
+    d.textContent = Math.floor(rem/60)+':'+String(rem%60).padStart(2,'0');
+    d.classList.add('run');
+  },1000);
+}
+
+function resetWt(i, mn) {
+  if (wtRef[i]) { clearInterval(wtRef[i].iv); wtRef[i]=null; }
+  const d = document.getElementById(`wt-${i}`);
+  if (d) { d.textContent=mn+':00'; d.classList.remove('run','fin'); }
+}
+
+function doneWss(i, nextTotal) {
+  wsDone[i]=true;
+  const s=document.getElementById(`wss-${i}`);
+  s.classList.remove('active'); s.classList.add('done');
+  document.getElementById(`wsc-${i}`).textContent='✓';
+  if (wtRef[i]) clearInterval(wtRef[i].iv);
+  updWsPg();
+  if (i+1 < wsTotal) {
+    document.getElementById(`wss-${i+1}`)?.classList.add('active');
+    document.getElementById(`wss-${i+1}`)?.scrollIntoView({behavior:'smooth',block:'nearest'});
+  } else {
+    document.getElementById('finish-box').style.display='block';
+  }
+}
+
+function updWsPg() {
+  const cnt = wsDone.filter(Boolean).length;
+  document.getElementById('ws-pg').style.width=(cnt/wsTotal*100)+'%';
+  document.getElementById('ws-pg-lbl').textContent=cnt+' / '+wsTotal+' kroků';
+}
+
+// ============================================================
+// ZÁPISNÍK
+// ============================================================
+const SAVE_KEY = 'chcesmys_kocour_zap_v1';
+
+const OPTS = `<option value="">— nevybráno —</option>`
+  + UHLY.map(u=>`<option value="${u.id}">${u.em} ${u.nz}</option>`).join('');
+
+function ulozit() {
+  const poc=parseInt(document.getElementById('pocet').value)||0;
+  if (!poc) return;
+  const d={poc,cl:[]};
+  for(let i=1;i<=poc;i++){
+    const j=document.getElementById(`jm-${i}`);
+    if(!j) continue;
+    d.cl.push({jm:j.value,o1:document.getElementById(`o-${i}-1`)?.value||'',o2:document.getElementById(`o-${i}-2`)?.value||'',o3:document.getElementById(`o-${i}-3`)?.value||'',u1:document.getElementById(`u-${i}-1`)?.value||'',u2:document.getElementById(`u-${i}-2`)?.value||'',u3:document.getElementById(`u-${i}-3`)?.value||''});
+  }
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(d));}catch(e){}
+}
+
+function nacist() {
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return;
+    const d=JSON.parse(raw);
+    if(!d?.poc) return;
+    document.getElementById('pocet').value=d.poc;
+    buildKarty(d.poc);
+    d.cl.forEach((c,idx)=>{
+      const i=idx+1;
+      const j=document.getElementById(`jm-${i}`);
+      if(!j) return;
+      j.value=c.jm||'';
+      ['1','2','3'].forEach(q=>{document.getElementById(`o-${i}-${q}`).value=c[`o${q}`]||'';document.getElementById(`u-${i}-${q}`).value=c[`u${q}`]||'';});
+      updStav(i);
+    });
+    document.getElementById('btn-vyh').style.display='block';
+    document.getElementById('ar').style.display='flex';
+  }catch(e){}
+}
+
+function smazat() {
+  if(!confirm('Opravdu vymazat zápisník?')) return;
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  document.getElementById('karty').innerHTML='';
+  document.getElementById('btn-vyh').style.display='none';
+  document.getElementById('ar').style.display='none';
+  document.getElementById('mapa-cnt').innerHTML='<div class="empty">Vyplňte zápisník a stiskněte Vyhodnotit.</div>';
+}
+
+function updStav(i) {
+  const jm=document.getElementById(`jm-${i}`)?.value?.trim();
+  const pr=[document.getElementById(`u-${i}-1`)?.value,document.getElementById(`u-${i}-2`)?.value,document.getElementById(`u-${i}-3`)?.value].filter(Boolean).length;
+  const nm=document.getElementById(`nm-${i}`);
+  const st=document.getElementById(`st-${i}`);
+  if(nm) nm.textContent=jm||`Člen ${i}`;
+  if(st){
+    if(pr===3){st.textContent='· hotovo';st.classList.add('ok');}
+    else if(pr>0){st.textContent=`· ${pr}/3`;st.classList.remove('ok');}
+    else{st.textContent='· nevyplněno';st.classList.remove('ok');}
+  }
+}
+
+function togMc(i){document.getElementById(`mc-${i}`)?.classList.toggle('open');}
+
+function buildKarty(poc) {
+  let h='';
+  for(let i=1;i<=poc;i++){
+    h+=`
+    <div class="mc ${i===1?'open':''}" id="mc-${i}">
+      <div class="mc-h" onclick="togMc(${i})">
+        <div class="mc-name" id="nm-${i}">Člen ${i}</div>
+        <div class="mc-st" id="st-${i}">· nevyplněno</div>
+      </div>
+      <div class="mc-body">
+        <div class="fr"><input type="text" id="jm-${i}" placeholder="jméno / iniciály (volitelné)" oninput="updStav(${i});ulozit()"></div>
+        <div class="fr">
+          <label class="fl">Q1 · Smysl — co řekl/a</label>
+          <textarea id="o-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit()"></textarea>
+          <select id="u-${i}-1" onchange="updStav(${i});ulozit()">${OPTS}</select>
+          <div class="fh">Myš přiřazuje intuitivně — podle jádra odpovědi. Viz sekce 12 úhlů.</div>
+        </div>
+        <div class="fr">
+          <label class="fl">Q2 · Zaujetí — co řekl/a</label>
+          <textarea id="o-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit()"></textarea>
+          <select id="u-${i}-2" onchange="updStav(${i});ulozit()">${OPTS}</select>
+          <div class="fh">Myš přiřazuje intuitivně — podle jádra odpovědi.</div>
+        </div>
+        <div class="fr">
+          <label class="fl">Q3 · Aplikace — co řekl/a</label>
+          <textarea id="o-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit()"></textarea>
+          <select id="u-${i}-3" onchange="updStav(${i});ulozit()">${OPTS}</select>
+          <div class="fh">Myš přiřazuje intuitivně — podle jádra odpovědi.</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('karty').innerHTML=h;
+}
+
+function vytvorKarty() {
+  const poc=parseInt(document.getElementById('pocet').value);
+  if(!poc||poc<1) return;
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  buildKarty(poc);
+  document.getElementById('btn-vyh').style.display='block';
+  document.getElementById('ar').style.display='flex';
+}
+
+// ============================================================
+// VYHODNOTIT
+// ============================================================
+function vyhodnotit() {
+  const poc=parseInt(document.getElementById('pocet').value)||0;
+  const cnt={},who={};
+  UHLY.forEach(u=>{cnt[u.id]=0;who[u.id]=[];});
+  let total=0;
+  const profily=[];
+  for(let i=1;i<=poc;i++){
+    const jm=document.getElementById(`jm-${i}`)?.value?.trim()||`Člen ${i}`;
+    const ul=[];
+    ['1','2','3'].forEach(q=>{const v=document.getElementById(`u-${i}-${q}`)?.value;if(v){cnt[v]++;who[v].push(jm);total++;ul.push(parseInt(v));}});
+    profily.push({jm,ul});
+  }
+  if(total===0){alert('Přiřaď aspoň jeden úhel.');return;}
+
+  const maxC=Math.max(...UHLY.map(u=>cnt[u.id]),1);
+  const thresh=Math.max(total*0.3,1);
+  const pret=UHLY.filter(u=>cnt[u.id]>=thresh&&cnt[u.id]>0);
+  const def=UHLY.filter(u=>cnt[u.id]===0);
+  const niz=UHLY.filter(u=>cnt[u.id]>0&&cnt[u.id]/total<0.10);
+
+  let h='';
+  h+=`<p style="font-family:var(--mono);font-size:.6rem;color:var(--dim);margin-bottom:1.5rem">Celkem přiřazeno: <strong>${total}</strong> úhlů od <strong>${poc}</strong> členů</p>`;
+
+  h+=`<div class="cog-grid">`;
+  [...UHLY].sort((a,b)=>cnt[b.id]-cnt[a.id]).forEach(u=>{
+    const c=cnt[u.id],pct=Math.round(c/maxC*100);
+    const dom=c>=thresh&&c>0,defCell=c===0;
+    h+=`<div class="cog-cell ${dom?'dom':''} ${defCell?'def':''}">
+      <div class="cog-nm">${u.em} ${u.nz}</div>
+      <div class="cog-bar"><div class="cog-fill" style="width:${pct}%"></div></div>
+      <div class="cog-cnt">${c>0?c+'×':'—'}</div>
+      ${who[u.id].length?`<div class="cog-who">${who[u.id].join(', ')}</div>`:''}
+    </div>`;
+  });
+  h+=`</div>`;
+
+  if(pret.length){
+    h+=`<div class="rbox w"><div class="rlbl a">▲ Přetížené úhly (nad 30 %) · doporučená intervence</div>`;
+    pret.forEach(u=>{h+=`<div class="rrow"><div class="rname">${u.em} ${u.nz}</div><div class="ract">${u.dg}<br><em>→ ${u.ak}</em></div></div>`;});
+    h+=`</div>`;
+  }
+
+  const vsD=[...niz,...def];
+  if(vsD.length){
+    h+=`<div class="rbox"><div class="rlbl">▽ Slepé úhly · perspektivy, které tým nepoužívá</div>`;
+    vsD.slice(0,8).forEach(u=>{h+=`<div class="rrow"><div class="rname">${u.em} ${u.nz}</div><div class="ract">Tým tento úhel přirozeně nepoužívá.<br><em>→ ${u.q3}</em></div></div>`;});
+    h+=`</div>`;
+  }
+
+  // Bridges
+  const vyv=UHLY.filter(u=>cnt[u.id]>0&&cnt[u.id]/total>=0.10&&cnt[u.id]/total<0.30);
+  if(vyv.length){
+    const vyvIds=vyv.map(u=>u.id);
+    const bridges=profily.filter(p=>p.ul.some(uid=>vyvIds.includes(uid)));
+    if(bridges.length){
+      h+=`<div class="rbox"><div class="rlbl">◇ Vyvážené úhly — mosty mezi perspektivami</div>`;
+      h+=`<div class="rrow"><div class="rname">Tlumočníci</div><div class="ract">${bridges.map(p=>p.jm).join(', ')} — mohou překládat mezi přetíženými a deficitními úhly.</div></div>`;
+      h+=`</div>`;
+    }
+  }
+
+  h+=`<div class="rbox" style="margin-top:.6rem"><div class="rlbl">Profily členů · odhaleno po sběru odpovědí</div>`;
+  profily.forEach(p=>{
+    const nz=p.ul.map(id=>UHLY.find(u=>u.id===id)?.nz||'—').join(' · ');
+    h+=`<div class="rrow"><div class="rname">${p.jm}</div><div class="ract">${nz||'— nepřiřazeno'}</div></div>`;
+  });
+  h+=`</div>`;
+
+  document.getElementById('mapa-cnt').innerHTML=h;
+  document.getElementById('mapa').scrollIntoView({behavior:'smooth'});
+}
+
+// ============================================================
+// GENERATIVNÍ
+// ============================================================
+function generuj() {
+  const idA=parseInt(document.getElementById('uhel-a').value);
+  const idB=parseInt(document.getElementById('uhel-b').value);
+  if(!idA||!idB){alert('Vyber oba úhly.');return;}
+  if(idA===idB){alert('Vyber dva různé úhly.');return;}
+  const a=UHLY.find(u=>u.id===idA);
+  const b=UHLY.find(u=>u.id===idB);
+  document.getElementById('panel-a').innerHTML=`<strong>${a.em} ${a.nz}</strong><div class="meta">${a.mt}</div><div class="q3t">${a.q3}</div>`;
+  document.getElementById('panel-b').innerHTML=`<strong>${b.em} ${b.nz}</strong><div class="meta">${b.mt}</div><div class="q3t">${b.q3}</div>`;
+  const el=document.getElementById('vysledek-gen');
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth'});
+}
+
+// ============================================================
+// SCROLL NAV
+// ============================================================
+const SECS=['intro','fenomen','pohadka','uhly','klic','zapisnik','mapa','generativni','workshop'];
+
+function goTo(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const id=e.target.id;
+    document.querySelectorAll('.sdot').forEach(d=>d.classList.toggle('active',d.dataset.id===id));
+    document.querySelectorAll('.tnl').forEach((l,i)=>l.classList.toggle('active',SECS[i]===id));
+  });
+},{threshold:.25});
+
+SECS.forEach(id=>{const el=document.getElementById(id);if(el) obs.observe(el);});
+
+// ============================================================
+// INIT
+// ============================================================
+renderTale();
+renderUhly();
+renderKlic();
+renderGenSelects();
+renderWorkshop();
+nacist();
+</script>
+</body>
+</html>
