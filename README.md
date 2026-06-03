@@ -125,6 +125,9 @@ kreativita, fyzika jazyka, metadenik
 - [ebook2](doma/nastroje/ebook2.html)
 - [ebook3](doma/nastroje/ebook3.hml)
 
+---
+- [workshop kocour](doma/nastroje/worshop_kocour.html)
+- [workshop_pav](doma/nastroje/workshop_pav.html)
 - [diagnostika tymu](doma/mimo/diagnostika_tymu.html)
 
   
