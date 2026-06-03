@@ -9,8 +9,15 @@
 ---
 
 - [pruvodce](doma/nastroje/pruvodce.html)
+
+  ---
+  
 - [carofyzika](doma/nastroje/carofyzika.html)
-- [carofyzika](doma/nastroje/carofyzika1.html)
+- [carofyzika1](doma/nastroje/carofyzika1.html)
+- [carofyzika2](doma/nastroje/carofyzika2.html)
+- [carofyzika3](doma/nastroje/carofyzika3.html)
+  
+---
 
 - [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
