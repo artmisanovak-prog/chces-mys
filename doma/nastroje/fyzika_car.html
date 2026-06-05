@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fyzika kresby · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0d0a;--s:#171410;--s2:#1e1a14;--s3:#252018;
+  --cream:#e8e0d0;--dim:rgba(232,224,208,.42);--dim2:rgba(232,224,208,.18);
+  --a:#d4a574;--a2:#a0704a;--ab:rgba(212,165,116,.08);--ab2:rgba(212,165,116,.18);
+  --border:rgba(212,165,116,.14);--border-hi:rgba(212,165,116,.3);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(15,13,10,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.nav-title{font-family:var(--serif);font-size:.95rem;font-weight:300;color:var(--a);letter-spacing:.06em}
+.nav-links{display:flex;gap:4px}
+.nav-link{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:4px 8px;border:1px solid transparent;transition:all .12s;cursor:pointer}
+.nav-link:hover,.nav-link.active{color:var(--cream);border-color:var(--border)}
+
+/* WRAP */
+.wrap{max-width:940px;margin:0 auto;padding:0 20px 80px}
+
+/* SECTION HEADERS */
+.sekce{padding:40px 0;border-bottom:1px solid var(--border)}
+.sekce-label{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--a);margin-bottom:10px}
+h1{font-family:var(--serif);font-size:clamp(2rem,6vw,3.8rem);font-weight:300;line-height:1.05;margin-bottom:8px}
+h1 em{font-style:italic;color:var(--a)}
+h2{font-family:var(--serif);font-size:clamp(1.2rem,3vw,1.8rem);font-weight:300;margin-bottom:10px}
+.sub{font-size:.76rem;color:var(--dim);max-width:560px;line-height:1.9}
+
+/* UPLOAD */
+.upload-zone{border:1px dashed var(--border-hi);padding:2rem;text-align:center;transition:border-color .2s,background .2s;cursor:pointer;margin:1rem 0}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--a);background:var(--ab)}
+.upload-zone p{font-size:.76rem;color:var(--dim);margin-bottom:.8rem}
+.upload-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{padding:7px 14px;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.btn:hover{color:var(--cream);border-color:var(--border-hi)}
+.btn-prim{background:var(--a);color:var(--bg);border-color:var(--a)}
+.btn-prim:hover{background:#e0b888}
+.btn-sm{padding:4px 9px;font-size:.58rem}
+.btn-x{padding:3px 7px;font-size:.6rem;border-color:rgba(200,80,80,.3);color:rgba(200,120,120,.7)}
+.btn-x:hover{border-color:rgba(200,80,80,.7);color:rgba(230,100,100,1);background:rgba(200,50,50,.08)}
+
+/* DRAWING CHECK MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--s);border:1px solid var(--border-hi);max-width:400px;width:100%;padding:24px}
+.modal h3{font-family:var(--serif);font-size:1.2rem;font-weight:300;margin-bottom:8px}
+.modal p{font-size:.78rem;color:var(--dim);margin-bottom:16px;line-height:1.8}
+.modal .btns{display:flex;gap:8px}
+
+/* GALLERY GRID */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:1rem}
+.thumb{position:relative;background:var(--s);border:1px solid var(--border);cursor:pointer;transition:border-color .15s;aspect-ratio:1;overflow:hidden}
+.thumb:hover{border-color:var(--a)}
+.thumb.active{border-color:var(--a);border-width:2px}
+.thumb img{width:100%;height:100%;object-fit:cover;filter:grayscale(30%)}
+.thumb-label{position:absolute;bottom:0;left:0;right:0;background:rgba(15,13,10,.85);padding:4px 6px;font-size:.6rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thumb-badge{position:absolute;top:4px;right:4px;width:10px;height:10px;border-radius:50%;border:1px solid var(--bg)}
+.thumb-add{background:var(--s);border:1px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;transition:border-color .15s;aspect-ratio:1}
+.thumb-add:hover{border-color:var(--a)}
+.thumb-add span{font-size:1.4rem;color:var(--dim)}
+.thumb-add p{font-size:.58rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+
+/* SINGLE IMAGE VIEW */
+.single-view{display:none;margin-top:1.5rem}
+.single-view.open{display:flex;gap:0;flex-wrap:wrap}
+.single-img-wrap{flex:1 1 360px;position:relative;background:var(--s);border:1px solid var(--border)}
+.single-img-wrap img{width:100%;max-height:60vh;object-fit:contain;display:block}
+.img-nav{position:absolute;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 8px;pointer-events:none}
+.img-nav-btn{pointer-events:all;background:rgba(15,13,10,.7);border:1px solid var(--border);color:var(--dim);padding:6px 10px;cursor:pointer;font-size:.8rem;transition:all .15s}
+.img-nav-btn:hover{border-color:var(--a);color:var(--a)}
+.img-name{padding:8px 12px;font-size:.66rem;color:var(--dim);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.img-name input{background:transparent;border:none;color:var(--cream);font-family:var(--mono);font-size:.66rem;flex:1;outline:none}
+
+/* PANEL */
+.panel-wrap{flex:0 0 280px;position:relative}
+.panel-toggle{position:absolute;left:-1px;top:50%;transform:translateY(-50%);background:var(--s2);border:1px solid var(--border);border-right:none;padding:12px 6px;cursor:pointer;writing-mode:vertical-rl;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);transition:color .15s;z-index:10}
+.panel-toggle:hover{color:var(--a)}
+.panel{background:var(--s);border:1px solid var(--border);border-left:none;padding:16px;overflow-y:auto;max-height:60vh;transition:width .25s,opacity .25s}
+.panel.hidden{width:0;opacity:0;overflow:hidden;padding:0;pointer-events:none}
+
+/* PARAMETERS */
+.param-block{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.param-block:last-child{border-bottom:none;margin-bottom:0}
+.param-name{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--a);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.param-vals{display:flex;gap:4px;align-items:center}
+.param-val-btn{padding:5px 10px;font-family:var(--mono);font-size:.66rem;background:var(--s2);border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .1s;min-width:36px;text-align:center}
+.param-val-btn:hover{border-color:var(--border-hi);color:var(--cream)}
+.param-val-btn.sel{border-color:var(--a);color:var(--a);background:var(--ab)}
+.param-val-label{font-size:.58rem;color:var(--dim2);margin-top:3px;display:flex;gap:4px}
+.param-val-label span{min-width:36px;text-align:center;font-size:.54rem}
+
+/* WHEEL */
+.wheel-wrap{margin-top:12px;text-align:center}
+.wheel-wrap canvas{max-width:200px;width:100%}
+.wheel-label{font-size:.6rem;color:var(--dim);margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
+
+/* ANGLE RESULT */
+.angle-result{margin-top:10px;padding:10px;background:var(--s2);border:1px solid var(--border)}
+.angle-result .top-angle{font-family:var(--serif);font-size:1rem;font-weight:300}
+.angle-result .top-angle em{font-style:italic}
+.angle-bars{margin-top:8px}
+.angle-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:.6rem}
+.angle-bar-row .aname{min-width:80px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.angle-bar-row .abar{flex:1;height:4px;background:var(--s3);position:relative}
+.angle-bar-row .abar-fill{height:100%;transition:width .3s}
+.angle-bar-row .aval{min-width:24px;text-align:right;color:var(--dim2)}
+
+/* GROUP COMPARISON */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:1rem}
+.group-card{background:var(--s);border:1px solid var(--border);padding:12px}
+.group-card-name{font-size:.68rem;color:var(--a);margin-bottom:8px;letter-spacing:.08em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-card canvas{width:100%;max-width:140px;display:block;margin:0 auto}
+.group-top{font-size:.64rem;color:var(--dim);margin-top:6px;text-align:center}
+
+/* SUMMARY TABLE */
+.sum-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.72rem}
+.sum-table th,.sum-table td{border:1px solid var(--border);padding:6px 8px;text-align:left}
+.sum-table th{background:var(--s);color:var(--a);font-weight:400;letter-spacing:.08em;font-size:.62rem;text-transform:uppercase}
+.sum-table td{color:var(--dim)}
+.sum-table .val-1{color:rgba(232,224,208,.3)}
+.sum-table .val-2{color:rgba(232,224,208,.65)}
+.sum-table .val-3{color:var(--cream);font-weight:500}
+.sum-table .removed{color:rgba(200,80,80,.5);font-size:.58rem}
+
+/* NOT-SET notice */
+.not-set{font-size:.72rem;color:var(--dim2);font-style:italic;text-align:center;padding:12px}
+
+/* SCROLL indicator */
+.scroll-hint{font-size:.6rem;color:var(--dim2);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-top:.5rem}
+
+@media(max-width:620px){
+  .panel-wrap{flex:0 0 100%;border-left:1px solid var(--border)}
+  .panel-toggle{display:none}
+  .panel.hidden{width:auto;opacity:1;overflow:auto;padding:16px;pointer-events:all}
+  .group-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">Fyzika kresby · Chceš myš?</span>
+  <div class="nav-links">
+    <span class="nav-link" onclick="scrollTo('sec-upload')">Galerie</span>
+    <span class="nav-link" onclick="scrollTo('sec-single')">Kresba</span>
+    <span class="nav-link" onclick="scrollTo('sec-group')">Skupina</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- UPLOAD / GALLERY -->
+  <section class="sekce" id="sec-upload">
+    <p class="sekce-label">Fyzika kresby</p>
+    <h1>Struktura <em>čáry</em></h1>
+    <p class="sub">Nahraj kresby — jednotlivce nebo celou skupinu. Nastav parametry čáry. Porovnej fyziku.</p>
+
+    <div class="upload-zone" id="uploadZone">
+      <p>Přetáhni kresby sem nebo klikni pro výběr</p>
+      <div class="upload-btns">
+        <button class="btn btn-prim" onclick="document.getElementById('fileIn').click()">Vybrat soubory</button>
+        <button class="btn" onclick="let f=document.getElementById('fileIn');f.setAttribute('capture','environment');f.click()">Vyfotit</button>
+      </div>
+      <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
+    </div>
+    <p class="scroll-hint" id="galleryHint" style="display:none">↓ kliknutím na náhled otevřeš kresbu</p>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- SINGLE IMAGE VIEW -->
+  <section class="sekce" id="sec-single" style="display:none">
+    <p class="sekce-label">Parametry čáry</p>
+    <h2 id="singleTitle">Kresba</h2>
+    <div class="single-view open" id="singleView">
+      <div class="single-img-wrap" id="singleImgWrap">
+        <img id="singleImg" src="" alt="">
+        <div class="img-nav">
+          <button class="img-nav-btn" onclick="navImage(-1)">← předchozí</button>
+          <button class="img-nav-btn" onclick="navImage(1)">následující →</button>
+        </div>
+        <div class="img-name">
+          <input id="imgNameInput" type="text" placeholder="Jméno / popis…" oninput="updateCurrentName(this.value)">
+          <span id="imgCounter" style="font-size:.6rem;color:var(--dim2)"></span>
+        </div>
+      </div>
+      <div class="panel-wrap" id="panelWrap">
+        <div class="panel-toggle" id="panelToggle" onclick="togglePanel()">parametry ›</div>
+        <div class="panel" id="panel">
+          <p style="font-size:.6rem;color:var(--a);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Parametry čáry</p>
+          <div id="paramList"></div>
+          <div class="wheel-wrap">
+            <canvas id="wheelCanvas" width="200" height="200"></canvas>
+            <p class="wheel-label">profil kresby</p>
+          </div>
+          <div class="angle-result" id="angleResult">
+            <p class="not-set">Nastav alespoň jeden parametr</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUP COMPARISON -->
+  <section class="sekce" id="sec-group" style="display:none">
+    <p class="sekce-label">Skupina</p>
+    <h2>Porovnání <em>profilů</em></h2>
+    <p class="sub" style="margin-bottom:1rem">Kresby s nastavenými parametry. Kliknutím na kartu přejdeš na detail.</p>
+    <div class="group-grid" id="groupGrid"></div>
+    <div id="groupSummary"></div>
+  </section>
+
+</div>
+
+<!-- MODAL: drawing check -->
+<div class="modal-bg" id="drawModal">
+  <div class="modal">
+    <h3>Je to kresba?</h3>
+    <p id="drawModalMsg">Detekován barevný nebo fotografický obrázek. Chceš pokračovat? Nástroj funguje pro kresby — ale nic ti nebrání analyzovat i fotografii.</p>
+    <div class="btns">
+      <button class="btn btn-prim" onclick="confirmDraw(true)">Ano, pokračovat</button>
+      <button class="btn" onclick="confirmDraw(false)">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+
+const ANGLES = [
+  { n:'Analytický',    s:0,   c:'#e8d8c0' },
+  { n:'Kulturní',      s:30,  c:'#a8d5a2' },
+  { n:'Filozofický',   s:60,  c:'#b3d4ff' },
+  { n:'Naivní',        s:90,  c:'#40e0d0' },
+  { n:'Jazykový',      s:120, c:'#c8a2c8' },
+  { n:'Metaforický',   s:150, c:'#6abf8a' },
+  { n:'Asociační',     s:180, c:'#d4b896' },
+  { n:'Introspektivní',s:210, c:'#ffd070' },
+  { n:'Ironický',      s:240, c:'#ffa040' },
+  { n:'Groteskní',     s:270, c:'#e84060' },
+  { n:'Absurdní',      s:300, c:'#d060b0' },
+  { n:'Surrealistický',s:330, c:'#c08050' },
+];
+
+// 7 parameters, each 1-3
+// Profile: [Tlak, Rytmus, Hustota, Kontinuita, Symetrie, Směr, Měřítko]
+const PARAMS = [
+  { id:'tlak',   n:'Tlak',        lo:'lehký',     hi:'těžký'     },
+  { id:'rytmus', n:'Rytmus',      lo:'pravidelný', hi:'nepravidelný'},
+  { id:'hustota',n:'Hustota',     lo:'řídká',      hi:'hustá'     },
+  { id:'kont',   n:'Kontinuita',  lo:'plynulá',    hi:'přerušovaná'},
+  { id:'sym',    n:'Symetrie',    lo:'souměrná',   hi:'asymetrická'},
+  { id:'smer',   n:'Směr',        lo:'soustředěný',hi:'rozptýlený'},
+  { id:'meritko',n:'Měřítko',     lo:'drobné',     hi:'velké'     },
+];
+
+// Angle profiles (1=low, 2=mid, 3=high) indexed as PARAMS order
+const PROFILES = [
+  [2,1,1,1,1,1,1], // Analytický
+  [2,2,2,1,2,2,2], // Kulturní
+  [1,1,1,1,2,1,1], // Filozofický
+  [2,2,2,1,2,2,3], // Naivní
+  [2,1,3,1,2,2,1], // Jazykový
+  [2,2,3,2,2,2,2], // Metaforický
+  [3,3,3,2,3,3,3], // Asociační
+  [1,2,1,2,2,1,1], // Introspektivní
+  [2,2,2,2,2,2,2], // Ironický
+  [3,3,3,2,3,3,3], // Groteskní
+  [2,3,2,3,3,3,2], // Absurdní
+  [2,3,2,2,3,3,3], // Surrealistický
+];
+
+// ─── STATE ──────────────────────────────────────────────────────
+let images = []; // {id, name, dataUrl, isDrawing, params:{id->val|null}}
+let currentIdx = 0;
+let pendingFile = null;
+let pendingDataUrl = null;
+let panelOpen = true;
+
+// ─── UPLOAD ─────────────────────────────────────────────────────
+const fileIn = document.getElementById('fileIn');
+const uploadZone = document.getElementById('uploadZone');
+
+uploadZone.addEventListener('dragover', e=>{e.preventDefault();uploadZone.classList.add('drag')});
+uploadZone.addEventListener('dragleave', ()=>uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e=>{
+  e.preventDefault(); uploadZone.classList.remove('drag');
+  handleFiles([...e.dataTransfer.files]);
+});
+fileIn.addEventListener('change', e=>{
+  handleFiles([...e.target.files]);
+  fileIn.value='';
+});
+
+function handleFiles(files){
+  files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    const reader = new FileReader();
+    reader.onload = ev => checkDraw(f.name, ev.target.result);
+    reader.readAsDataURL(f);
+  });
+}
+
+function checkDraw(name, dataUrl){
+  // Quick saturation check
+  const img = new Image();
+  img.onload = ()=>{
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    const W=80, sc=W/img.width;
+    c.width=W; c.height=img.height*sc;
+    ctx.drawImage(img,0,0,c.width,c.height);
+    const d = ctx.getImageData(0,0,c.width,c.height).data;
+    let satSum=0;
+    for(let i=0;i<d.length;i+=4){
+      const mx=Math.max(d[i],d[i+1],d[i+2]);
+      const mn=Math.min(d[i],d[i+1],d[i+2]);
+      satSum += mx===0?0:(mx-mn)/mx;
+    }
+    const avgSat = satSum/(d.length/4);
+    if(avgSat > 0.18){
+      // Looks like photo/color — ask
+      pendingFile = {name, dataUrl};
+      pendingDataUrl = dataUrl;
+      document.getElementById('drawModalMsg').textContent =
+        'Detekován barevný nebo fotografický obrázek. Pokračovat?';
+      document.getElementById('drawModal').classList.add('open');
+    } else {
+      addImage(name, dataUrl, true);
+    }
+  };
+  img.src = dataUrl;
+}
+
+function confirmDraw(yes){
+  document.getElementById('drawModal').classList.remove('open');
+  if(yes && pendingFile) addImage(pendingFile.name, pendingFile.dataUrl, false);
+  pendingFile = null;
+}
+
+function addImage(name, dataUrl, isDrawing){
+  const params = {};
+  PARAMS.forEach(p=>params[p.id]=null);
+  const id = Date.now() + Math.random();
+  images.push({id, name:name.replace(/\.[^.]+$/,''), dataUrl, isDrawing, params});
+  renderGallery();
+  // Open if first
+  if(images.length===1) openImage(0);
+}
+
+// ─── GALLERY ────────────────────────────────────────────────────
+function renderGallery(){
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML='';
+  document.getElementById('galleryHint').style.display = images.length>0?'block':'none';
+
+  images.forEach((img,i)=>{
+    const t = document.createElement('div');
+    t.className='thumb'+(i===currentIdx?' active':'');
+    t.onclick=()=>openImage(i);
+    // Badge color = top angle or dim
+    const topA = getTopAngle(img.params);
+    const badgeColor = topA ? ANGLES[topA.idx].c : 'rgba(212,165,116,.3)';
+    t.innerHTML=`
+      <img src="${img.dataUrl}" alt="${img.name}">
+      <div class="thumb-label">${img.name||'kresba '+(i+1)}</div>
+      <div class="thumb-badge" style="background:${badgeColor}"></div>
+    `;
+    grid.appendChild(t);
+  });
+
+  // Add button
+  const add = document.createElement('div');
+  add.className='thumb-add';
+  add.onclick=()=>fileIn.click();
+  add.innerHTML='<span>+</span><p>přidat</p>';
+  grid.appendChild(add);
+
+  updateGroupSection();
+}
+
+// ─── SINGLE VIEW ─────────────────────────────────────────────────
+function openImage(idx){
+  if(idx<0||idx>=images.length) return;
+  currentIdx = idx;
+  const img = images[idx];
+
+  document.getElementById('sec-single').style.display='block';
+  document.getElementById('singleImg').src = img.dataUrl;
+  document.getElementById('singleTitle').textContent = img.name||'Kresba '+(idx+1);
+  document.getElementById('imgNameInput').value = img.name||'';
+  document.getElementById('imgCounter').textContent = (idx+1)+' / '+images.length;
+
+  renderParams(img.params);
+  drawWheel(img.params, 'wheelCanvas');
+  renderAngleResult(img.params, 'angleResult');
+  renderGallery();
+
+  scrollTo('sec-single');
+}
+
+function navImage(dir){
+  const ni = currentIdx+dir;
+  if(ni>=0&&ni<images.length) openImage(ni);
+}
+
+function updateCurrentName(val){
+  if(images[currentIdx]) images[currentIdx].name=val;
+  renderGallery();
+}
+
+// ─── PANEL ───────────────────────────────────────────────────────
+function togglePanel(){
+  panelOpen = !panelOpen;
+  document.getElementById('panel').classList.toggle('hidden',!panelOpen);
+  document.getElementById('panelToggle').textContent = panelOpen ? 'parametry ›' : '‹ parametry';
+}
+
+// ─── PARAMS ──────────────────────────────────────────────────────
+function renderParams(params){
+  const list = document.getElementById('paramList');
+  list.innerHTML='';
+  PARAMS.forEach(p=>{
+    const val = params[p.id]; // null | 1 | 2 | 3
+    const block = document.createElement('div');
+    block.className='param-block';
+    block.id='pb-'+p.id;
+    block.innerHTML=`
+      <div class="param-name">
+        <span>${p.n}</span>
+        <button class="btn btn-x btn-sm" onclick="removeParam('${p.id}')" title="Odebrat">×</button>
+      </div>
+      <div class="param-vals" id="pv-${p.id}">
+        <button class="param-val-btn${val===1?' sel':''}" onclick="setParam('${p.id}',1)">1</button>
+        <button class="param-val-btn${val===2?' sel':''}" onclick="setParam('${p.id}',2)">2</button>
+        <button class="param-val-btn${val===3?' sel':''}" onclick="setParam('${p.id}',3)">3</button>
+      </div>
+      <div class="param-val-label">
+        <span>${p.lo}</span><span></span><span>${p.hi}</span>
+      </div>
+    `;
+    list.appendChild(block);
+  });
+}
+
+function setParam(id, val){
+  if(!images[currentIdx]) return;
+  images[currentIdx].params[id] = val;
+  // Update buttons
+  const pv = document.getElementById('pv-'+id);
+  if(pv) pv.querySelectorAll('.param-val-btn').forEach((b,i)=>{
+    b.classList.toggle('sel', i+1===val);
+  });
+  // Highlight if was null → restore block
+  const pb = document.getElementById('pb-'+id);
+  if(pb) pb.style.opacity='1';
+
+  drawWheel(images[currentIdx].params, 'wheelCanvas');
+  renderAngleResult(images[currentIdx].params, 'angleResult');
+  renderGallery();
+}
+
+function removeParam(id){
+  if(!images[currentIdx]) return;
+  images[currentIdx].params[id] = null;
+  // Reset buttons
+  const pv = document.getElementById('pv-'+id);
+  if(pv) pv.querySelectorAll('.param-val-btn').forEach(b=>b.classList.remove('sel'));
+  const pb = document.getElementById('pb-'+id);
+  if(pb) pb.style.opacity='.4';
+
+  drawWheel(images[currentIdx].params, 'wheelCanvas');
+  renderAngleResult(images[currentIdx].params, 'angleResult');
+  renderGallery();
+}
+
+// ─── ANGLE CALCULATION ───────────────────────────────────────────
+function calcAngles(params){
+  // For each set param, score each angle by proximity
+  const scores = ANGLES.map((_,i)=>({idx:i, score:0, count:0}));
+  let anySet = false;
+  PARAMS.forEach((p,pi)=>{
+    const v = params[p.id];
+    if(v===null) return;
+    anySet = true;
+    ANGLES.forEach((_,ai)=>{
+      const target = PROFILES[ai][pi];
+      // Score: 3 = exact, 2 = off by 1, 1 = off by 2
+      const diff = Math.abs(v - target);
+      scores[ai].score += 3 - diff;
+      scores[ai].count++;
+    });
+  });
+  if(!anySet) return null;
+  const max = Math.max(...scores.map(s=>s.score));
+  return scores.map(s=>({...s, pct: max>0 ? Math.round((s.score/max)*100) : 0}));
+}
+
+function getTopAngle(params){
+  const scores = calcAngles(params);
+  if(!scores) return null;
+  return scores.reduce((best,s)=>s.pct>best.pct?s:best, scores[0]);
+}
+
+// ─── WHEEL DRAW ──────────────────────────────────────────────────
+function drawWheel(params, canvasId){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height, CX=W/2, CY=H/2;
+  const RMAX=CX-8, RMIN=24;
+  ctx.clearRect(0,0,W,H);
+
+  const scores = calcAngles(params);
+  const sa = (Math.PI*2)/12;
+
+  ANGLES.forEach((a,i)=>{
+    const startA = -Math.PI/2 + i*sa + 0.05;
+    const endA = startA + sa - 0.1;
+    const pct = scores ? scores[i].pct/100 : 0;
+    const r = RMIN + (RMAX-RMIN)*pct;
+
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,r,startA,endA); ctx.closePath();
+    ctx.fillStyle = a.c + (pct>0 ? 'cc' : '18');
+    ctx.fill();
+    ctx.strokeStyle = a.c + (pct>0 ? '88' : '22');
+    ctx.lineWidth=1; ctx.stroke();
+
+    // Label on outer
+    const midA = startA + (sa-0.1)/2;
+    const lr = RMAX + 10;
+    ctx.save(); ctx.translate(CX+Math.cos(midA)*lr, CY+Math.sin(midA)*lr);
+    ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle = pct>0.5 ? '#fff' : a.c+'88';
+    ctx.font='300 6px "DM Mono",monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(a.n.split('í')[0].substring(0,5), 0, 0);
+    ctx.restore();
+  });
+
+  // Center
+  ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#0f0d0a'; ctx.fill();
+  ctx.strokeStyle='rgba(212,165,116,.2)'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function renderAngleResult(params, elId){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const scores = calcAngles(params);
+  if(!scores){ el.innerHTML='<p class="not-set">Nastav alespoň jeden parametr</p>'; return; }
+  const sorted = [...scores].sort((a,b)=>b.pct-a.pct);
+  const top = sorted[0];
+  let html=`<div class="top-angle" style="color:${ANGLES[top.idx].c}">${ANGLES[top.idx].n} <em>${top.pct}%</em></div>`;
+  html+='<div class="angle-bars">';
+  sorted.slice(0,6).forEach(s=>{
+    if(s.pct===0) return;
+    html+=`<div class="angle-bar-row">
+      <span class="aname">${ANGLES[s.idx].n}</span>
+      <div class="abar"><div class="abar-fill" style="width:${s.pct}%;background:${ANGLES[s.idx].c}88"></div></div>
+      <span class="aval">${s.pct}</span>
+    </div>`;
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ─── GROUP SECTION ───────────────────────────────────────────────
+function updateGroupSection(){
+  const profiled = images.filter(img=>Object.values(img.params).some(v=>v!==null));
+  const sec = document.getElementById('sec-group');
+  if(profiled.length<2){ sec.style.display='none'; return; }
+  sec.style.display='block';
+
+  // Group cards
+  const grid = document.getElementById('groupGrid');
+  grid.innerHTML='';
+  profiled.forEach((img,gi)=>{
+    const realIdx = images.indexOf(img);
+    const card=document.createElement('div');
+    card.className='group-card';
+    card.style.cursor='pointer';
+    card.onclick=()=>openImage(realIdx);
+    const cid='gc-'+gi;
+    const top=getTopAngle(img.params);
+    const topLabel=top?ANGLES[top.idx].n:'—';
+    const topColor=top?ANGLES[top.idx].c:'var(--dim)';
+    card.innerHTML=`
+      <div class="group-card-name">${img.name||'Kresba '+(realIdx+1)}</div>
+      <canvas id="${cid}" width="140" height="140"></canvas>
+      <div class="group-top" style="color:${topColor}">${topLabel}</div>
+    `;
+    grid.appendChild(card);
+    requestAnimationFrame(()=>drawWheel(img.params, cid));
+  });
+
+  // Summary table
+  const sumDiv=document.getElementById('groupSummary');
+  let html=`<p style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--a);margin:1.5rem 0 .6rem">Přehled parametrů</p>`;
+  html+=`<table class="sum-table"><tr><th>Jméno</th>`;
+  PARAMS.forEach(p=>html+=`<th>${p.n}</th>`);
+  html+=`<th>Dominantní úhel</th></tr>`;
+  profiled.forEach((img,i)=>{
+    const realIdx=images.indexOf(img);
+    const top=getTopAngle(img.params);
+    html+=`<tr><td style="color:var(--cream)">${img.name||'Kresba '+(realIdx+1)}</td>`;
+    PARAMS.forEach(p=>{
+      const v=img.params[p.id];
+      if(v===null) html+=`<td class="removed">—</td>`;
+      else html+=`<td class="val-${v}">${v}</td>`;
+    });
+    html+=`<td style="color:${top?ANGLES[top.idx].c:'var(--dim)'}">${top?ANGLES[top.idx].n:'—'}</td></tr>`;
+  });
+  html+=`</table>`;
+
+  // Group average
+  const avgParams={};
+  PARAMS.forEach(p=>{
+    const vals=profiled.map(img=>img.params[p.id]).filter(v=>v!==null);
+    avgParams[p.id]=vals.length>0?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
+  });
+  const groupTop=getTopAngle(avgParams);
+  if(groupTop){
+    html+=`<div style="margin-top:1rem;padding:12px;background:var(--s);border:1px solid var(--border)">
+      <p style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Skupinový profil (průměr)</p>
+      <p style="font-family:var(--serif);font-size:1.1rem;color:${ANGLES[groupTop.idx].c}">${ANGLES[groupTop.idx].n}</p>
+    </div>`;
+  }
+  sumDiv.innerHTML=html;
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────
+function scrollTo(id){
+  const el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+window.confirmDraw=confirmDraw;
+window.setParam=setParam;
+window.removeParam=removeParam;
+window.navImage=navImage;
+window.togglePanel=togglePanel;
+</script>
+</body>
+</html>
