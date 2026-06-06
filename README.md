@@ -12,6 +12,7 @@
 
   ---
 
+- [fyzika_kresby_v2](doma/nastroje/fyzika_kresby_v2.html)
 - [fyzika_kresby](doma/nastroje/fyzika_kresby.html)
 - [fyzika_car](doma/nastroje/fyzika_car.html)
 - [carofyzika](doma/nastroje/carofyzika.html)
