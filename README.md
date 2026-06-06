@@ -11,6 +11,8 @@
 - [pruvodce](doma/nastroje/pruvodce.html)
 
   ---
+
+- [fyzika_kresby](doma/nastroje/fyzika_kresby.html)
 - [fyzika_car](doma/nastroje/fyzika_car.html)
 - [carofyzika](doma/nastroje/carofyzika.html)
 - [carofyzika1](doma/nastroje/carofyzika1.html)
