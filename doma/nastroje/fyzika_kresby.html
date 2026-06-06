@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fyzika kresby · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060d0d;--s:#0d1a1a;--s2:#122020;--s3:#182828;
+  --text:#daeae6;--dim:rgba(218,234,230,.38);--dim2:rgba(218,234,230,.15);
+  --a:#3ecdc4;--a2:#1a9990;--ab:rgba(62,205,196,.08);
+  --border:rgba(62,205,196,.14);--border-hi:rgba(62,205,196,.32);
+  --sal:#ff7b6b;--sal2:#cc4a3a;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(6,13,13,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.nav-brand{font-family:var(--serif);font-size:.95rem;font-weight:300;color:var(--a);letter-spacing:.06em}
+.nav-links{display:flex;gap:3px}
+.nav-lnk{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:4px 8px;border:1px solid transparent;cursor:pointer;transition:all .12s}
+.nav-lnk:hover{color:var(--text);border-color:var(--border)}
+
+/* WRAP */
+.wrap{max-width:960px;margin:0 auto;padding:0 18px 80px}
+
+/* SECTIONS */
+.sekce{padding:36px 0;border-bottom:1px solid var(--border)}
+.sekce-lbl{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--a);margin-bottom:8px}
+h1{font-family:var(--serif);font-size:clamp(1.9rem,5.5vw,3.4rem);font-weight:300;line-height:1.06;margin-bottom:6px}
+h1 em{font-style:italic;color:var(--a)}
+h2{font-family:var(--serif);font-size:clamp(1.1rem,3vw,1.7rem);font-weight:300;margin-bottom:10px}
+.sub{font-size:.74rem;color:var(--dim);max-width:500px;line-height:1.9}
+
+/* UPLOAD */
+.upload-zone{border:1px dashed var(--border-hi);padding:1.8rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin:1rem 0}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--a);background:var(--ab)}
+.upload-zone p{font-size:.74rem;color:var(--dim);margin-bottom:.8rem}
+.upload-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn{padding:6px 13px;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.btn:hover{color:var(--text);border-color:var(--border-hi)}
+.btn-a{background:var(--a);color:var(--bg);border-color:var(--a)}
+.btn-a:hover{background:#50dbd2}
+.btn-sm{padding:3px 8px;font-size:.58rem}
+
+/* GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:.8rem}
+.thumb{position:relative;background:var(--s);border:1px solid var(--border);cursor:pointer;aspect-ratio:1;overflow:hidden;transition:border-color .15s}
+.thumb:hover{border-color:var(--a)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(6,13,13,.85);padding:3px 5px;font-size:.56rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;border:1px solid rgba(6,13,13,.6)}
+.thumb-add{border:1px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;aspect-ratio:1;transition:border-color .15s}
+.thumb-add:hover{border-color:var(--a)}
+.thumb-add .plus{font-size:1.3rem;color:var(--dim)}
+.thumb-add .lbl{font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* VIEWER MODAL */
+.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:16px}
+.viewer.open{display:flex}
+.viewer-inner{width:100%;max-width:920px;position:relative}
+.viewer-close{position:absolute;top:0;right:0;background:rgba(6,13,13,.8);border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;cursor:pointer;z-index:10;transition:all .15s}
+.viewer-close:hover{color:var(--text);border-color:var(--border-hi)}
+.viewer-img-box{background:var(--s);border:1px solid var(--border);position:relative;margin-bottom:8px}
+.viewer-img-box img{width:100%;max-height:52vh;object-fit:contain;display:block}
+.viewer-imgbar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-top:1px solid var(--border);font-size:.66rem;color:var(--dim)}
+.viewer-imgbar input{background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:.66rem;flex:1;outline:none;margin:0 8px}
+.viewer-nav{display:flex;gap:4px}
+.viewer-nav-btn{background:transparent;border:1px solid var(--border);color:var(--dim);font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;padding:4px 10px;cursor:pointer;transition:all .12s}
+.viewer-nav-btn:hover{color:var(--a);border-color:var(--a)}
+.viewer-nav-btn:disabled{opacity:.3;cursor:default}
+
+/* SLIDERS ROW */
+.sliders-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:8px}
+@media(max-width:640px){.sliders-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:380px){.sliders-grid{grid-template-columns:repeat(2,1fr)}}
+
+.slider-card{background:var(--s);border:1px solid var(--border);padding:7px 6px;display:flex;flex-direction:column;gap:4px;transition:border-color .15s}
+.slider-card.set{border-color:rgba(62,205,196,.28);background:var(--s2)}
+.slider-card.removed{opacity:.35}
+.slider-card-top{display:flex;align-items:center;justify-content:space-between;gap:2px}
+.slider-card-name{font-size:.56rem;letter-spacing:.06em;color:var(--dim);flex:1;line-height:1.3;overflow:hidden}
+.slider-card.set .slider-card-name{color:var(--a)}
+.slider-status{font-size:.58rem;color:var(--dim2)}
+.slider-card.set .slider-status{color:var(--a)}
+.slider-x{background:transparent;border:none;color:rgba(200,80,80,.5);font-size:.7rem;cursor:pointer;padding:0 1px;line-height:1;transition:color .1s}
+.slider-x:hover{color:rgba(230,100,100,.9)}
+.slider-range{width:100%;-webkit-appearance:none;height:3px;background:var(--s3);border-radius:2px;outline:none;cursor:pointer}
+.slider-range::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--a2);cursor:pointer;transition:background .1s}
+.slider-card.set .slider-range::-webkit-slider-thumb{background:var(--a)}
+.slider-range::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--a2);border:none;cursor:pointer}
+.slider-card.set .slider-range::-moz-range-thumb{background:var(--a)}
+.slider-range::-webkit-slider-runnable-track{background:linear-gradient(to right, var(--a) calc((var(--val,2) - 1) / 2 * 100%), var(--s3) calc((var(--val,2) - 1) / 2 * 100%))}
+.slider-val{font-size:.58rem;color:var(--dim2);text-align:center}
+.slider-card.set .slider-val{color:var(--a)}
+
+/* WHEEL + RESULT */
+.viewer-bottom{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-top:6px}
+@media(max-width:500px){.viewer-bottom{grid-template-columns:1fr}}
+.wheel-box{text-align:center}
+.wheel-box canvas{width:160px;height:160px}
+.wheel-lbl{font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.angle-result{flex:1}
+.top-angle-name{font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:6px}
+.angle-bars{display:flex;flex-direction:column;gap:3px}
+.abar-row{display:flex;align-items:center;gap:5px;font-size:.6rem}
+.abar-name{min-width:90px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.58rem}
+.abar-track{flex:1;height:3px;background:var(--s3)}
+.abar-fill{height:100%;transition:width .3s}
+.abar-num{min-width:20px;text-align:right;color:var(--dim2);font-size:.56rem}
+.no-data{font-size:.72rem;color:var(--dim2);font-style:italic;padding:8px 0}
+
+/* GROUP */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:1rem}
+.group-card{background:var(--s);border:1px solid var(--border);padding:10px;cursor:pointer;transition:border-color .15s}
+.group-card:hover{border-color:var(--a)}
+.gc-name{font-size:.62rem;color:var(--a);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gc-canvas{width:100%;max-width:120px;display:block;margin:0 auto}
+.gc-top{font-size:.6rem;color:var(--dim);text-align:center;margin-top:4px}
+
+/* TABLE */
+.sum-tbl{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.66rem;overflow-x:auto;display:block}
+.sum-tbl th,.sum-tbl td{border:1px solid var(--border);padding:5px 7px;text-align:left;white-space:nowrap}
+.sum-tbl th{background:var(--s);color:var(--a);font-weight:400;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase}
+.sum-tbl td{color:var(--dim)}
+.v1{color:rgba(218,234,230,.3)}
+.v2{color:rgba(218,234,230,.6)}
+.v3{color:var(--text)}
+.vx{color:rgba(180,80,80,.4);font-size:.54rem}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--s);border:1px solid var(--border-hi);max-width:380px;width:100%;padding:22px}
+.modal h3{font-family:var(--serif);font-size:1.15rem;font-weight:300;margin-bottom:6px}
+.modal p{font-size:.74rem;color:var(--dim);line-height:1.85;margin-bottom:14px}
+.modal-btns{display:flex;gap:8px}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Fyzika kresby · Chceš myš?</span>
+  <div class="nav-links">
+    <span class="nav-lnk" onclick="document.getElementById('sec-upload').scrollIntoView({behavior:'smooth'})">Galerie</span>
+    <span class="nav-lnk" onclick="document.getElementById('sec-group').scrollIntoView({behavior:'smooth'})">Skupina</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- UPLOAD -->
+  <section class="sekce" id="sec-upload">
+    <p class="sekce-lbl">Fyzika kresby</p>
+    <h1>Struktura <em>čáry</em></h1>
+    <p class="sub">Nahraj kresby nebo fotografie. Nastav parametry u každé kresby. Porovnej skupinu.</p>
+
+    <div class="upload-zone" id="uploadZone">
+      <p>Přetáhni sem soubory nebo klikni pro výběr</p>
+      <div class="upload-btns">
+        <button class="btn btn-a" onclick="document.getElementById('fileIn').click()">Vybrat soubory</button>
+        <button class="btn" onclick="let f=document.getElementById('fileIn');f.setAttribute('capture','environment');f.click()">Vyfotit</button>
+      </div>
+      <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- GROUP -->
+  <section class="sekce" id="sec-group" style="display:none">
+    <p class="sekce-lbl">Skupina</p>
+    <h2>Porovnání <em>profilů</em></h2>
+    <p class="sub" style="margin-bottom:1rem">Kresby s nastavenými parametry.</p>
+    <div class="group-grid" id="groupGrid"></div>
+    <div id="groupSummary"></div>
+  </section>
+
+</div>
+
+<!-- VIEWER -->
+<div class="viewer" id="viewer">
+  <div class="viewer-inner">
+    <button class="viewer-close" onclick="closeViewer()">✕ zavřít</button>
+
+    <div class="viewer-img-box">
+      <img id="viewerImg" src="" alt="">
+      <div class="viewer-imgbar">
+        <span id="viewerCounter" style="font-size:.6rem;color:var(--dim2)"></span>
+        <input id="viewerName" type="text" placeholder="Jméno / popis…" oninput="updateName(this.value)">
+        <div class="viewer-nav">
+          <button class="viewer-nav-btn" id="btnPrev" onclick="navImg(-1)">← předch.</button>
+          <button class="viewer-nav-btn" id="btnNext" onclick="navImg(1)">dals. →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDERS -->
+    <div class="sliders-grid" id="slidersGrid"></div>
+
+    <!-- WHEEL + RESULT -->
+    <div class="viewer-bottom">
+      <div class="wheel-box">
+        <canvas id="wheelC" width="160" height="160"></canvas>
+        <div class="wheel-lbl">profil kresby</div>
+      </div>
+      <div class="angle-result" id="angleResult">
+        <p class="no-data">Nastav alespoň jeden parametr</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: drawing check -->
+<div class="modal-bg" id="drawModal">
+  <div class="modal">
+    <h3>Fotografie?</h3>
+    <p>Detekován barevný nebo fotografický obrázek. Fyzika kresby pracuje se strukturou čáry — fotografii lze analyzovat také, ale výsledky budou jiné. Pokračovat?</p>
+    <div class="modal-btns">
+      <button class="btn btn-a" onclick="confirmModal(true)">Pokračovat</button>
+      <button class="btn" onclick="confirmModal(false)">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+
+const ANGLES = [
+  {n:'Analytický',    s:0,   c:'#e8d8b8'},
+  {n:'Kulturní',      s:30,  c:'#a8d598'},
+  {n:'Filozofický',   s:60,  c:'#90c8f8'},
+  {n:'Naivní',        s:90,  c:'#38d8c8'},
+  {n:'Jazykový',      s:120, c:'#c098c8'},
+  {n:'Metaforický',   s:150, c:'#60b880'},
+  {n:'Asociační',     s:180, c:'#d8b888'},
+  {n:'Introspektivní',s:210, c:'#f8d050'},
+  {n:'Ironický',      s:240, c:'#f89838'},
+  {n:'Groteskní',     s:270, c:'#e83858'},
+  {n:'Absurdní',      s:300, c:'#d058a8'},
+  {n:'Surrealistický',s:330, c:'#c07848'},
+];
+
+// 12 structural parameters, each mapped to one angle (by index)
+const PARAMS = [
+  {n:'Rovné dlouhé čáry',       ai:0},   // Analytický
+  {n:'Stínování, reálnost',     ai:1},   // Kulturní
+  {n:'Perspektiva, 3D',         ai:2},   // Filozofický
+  {n:'Jedním tahem',            ai:3},   // Naivní
+  {n:'Pravidelnost',            ai:4},   // Jazykový
+  {n:'Písmo a text',            ai:5},   // Metaforický
+  {n:'Šrafování',               ai:6},   // Asociační
+  {n:'Detaily',                 ai:7},   // Introspektivní
+  {n:'Sklon doprava',           ai:8},   // Ironický
+  {n:'Obtahování, přetahování', ai:9},   // Groteskní
+  {n:'Vybarvování',             ai:10},  // Absurdní
+  {n:'Nedokončené, prolínání',  ai:11},  // Surrealistický
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let images = [];       // {id, name, dataUrl, vals: [null|1..3 x12]}
+let currentIdx = 0;
+let pendingAdd = null;
+
+// ── UPLOAD ────────────────────────────────────────────────────
+const uploadZone = document.getElementById('uploadZone');
+const fileIn = document.getElementById('fileIn');
+
+uploadZone.addEventListener('dragover', e=>{e.preventDefault(); uploadZone.classList.add('drag')});
+uploadZone.addEventListener('dragleave', ()=>uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e=>{e.preventDefault(); uploadZone.classList.remove('drag'); handleFiles([...e.dataTransfer.files])});
+fileIn.addEventListener('change', e=>{handleFiles([...e.target.files]); fileIn.value=''});
+
+function handleFiles(files){
+  files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    const reader = new FileReader();
+    reader.onload = ev => checkDrawing(f.name, ev.target.result);
+    reader.readAsDataURL(f);
+  });
+}
+
+function checkDrawing(name, dataUrl){
+  const img = new Image();
+  img.onload = ()=>{
+    const c=document.createElement('canvas'), ctx=c.getContext('2d');
+    const W=80; c.width=W; c.height=Math.round(img.height*(W/img.width));
+    ctx.drawImage(img,0,0,c.width,c.height);
+    const d=ctx.getImageData(0,0,c.width,c.height).data;
+    let sat=0;
+    for(let i=0;i<d.length;i+=4){const mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]);sat+=mx?((mx-mn)/mx):0}
+    sat/=(d.length/4);
+    if(sat>0.2){
+      pendingAdd={name,dataUrl};
+      document.getElementById('drawModal').classList.add('open');
+    } else {
+      addImage(name,dataUrl);
+    }
+  };
+  img.src=dataUrl;
+}
+
+function confirmModal(yes){
+  document.getElementById('drawModal').classList.remove('open');
+  if(yes&&pendingAdd) addImage(pendingAdd.name, pendingAdd.dataUrl);
+  pendingAdd=null;
+}
+
+function addImage(name, dataUrl){
+  images.push({id:Date.now()+Math.random(), name:name.replace(/\.[^.]+$/,''), dataUrl, vals:new Array(12).fill(null)});
+  renderGallery();
+}
+
+// ── GALLERY ───────────────────────────────────────────────────
+function renderGallery(){
+  const grid=document.getElementById('galleryGrid');
+  grid.innerHTML='';
+  images.forEach((img,i)=>{
+    const anySet=img.vals.some(v=>v!==null);
+    const topA=getTopAngle(img.vals);
+    const dotColor=topA!==null ? ANGLES[topA].c : 'rgba(62,205,196,.2)';
+    const t=document.createElement('div');
+    t.className='thumb';
+    t.onclick=()=>openViewer(i);
+    t.innerHTML=`<img src="${img.dataUrl}" alt="${img.name}">
+      <div class="thumb-name">${img.name||'kresba '+(i+1)}</div>
+      <div class="thumb-dot" style="background:${dotColor}"></div>`;
+    grid.appendChild(t);
+  });
+  // Add button
+  const add=document.createElement('div');
+  add.className='thumb-add';
+  add.onclick=()=>fileIn.click();
+  add.innerHTML='<span class="plus">+</span><span class="lbl">přidat</span>';
+  grid.appendChild(add);
+  updateGroup();
+}
+
+// ── VIEWER ────────────────────────────────────────────────────
+function openViewer(idx){
+  currentIdx=idx;
+  document.getElementById('viewer').classList.add('open');
+  renderViewer();
+}
+
+function closeViewer(){
+  document.getElementById('viewer').classList.remove('open');
+  renderGallery();
+}
+
+function navImg(dir){
+  const ni=currentIdx+dir;
+  if(ni>=0&&ni<images.length){currentIdx=ni; renderViewer();}
+}
+
+function renderViewer(){
+  const img=images[currentIdx];
+  document.getElementById('viewerImg').src=img.dataUrl;
+  document.getElementById('viewerName').value=img.name||'';
+  document.getElementById('viewerCounter').textContent=(currentIdx+1)+' / '+images.length;
+  document.getElementById('btnPrev').disabled=currentIdx===0;
+  document.getElementById('btnNext').disabled=currentIdx===images.length-1;
+  renderSliders(img.vals);
+  drawWheel(img.vals,'wheelC');
+  renderResult(img.vals);
+}
+
+function updateName(v){
+  if(images[currentIdx]) images[currentIdx].name=v;
+}
+
+// ── SLIDERS ───────────────────────────────────────────────────
+function renderSliders(vals){
+  const grid=document.getElementById('slidersGrid');
+  grid.innerHTML='';
+  PARAMS.forEach((p,pi)=>{
+    const v=vals[pi]; // null or 1-3
+    const isSet=v!==null;
+    const card=document.createElement('div');
+    card.className='slider-card'+(isSet?' set':'');
+    card.id='sc-'+pi;
+    card.innerHTML=`
+      <div class="slider-card-top">
+        <span class="slider-card-name">${p.n}</span>
+        <span class="slider-status">${isSet?'✓':'·'}</span>
+        <button class="slider-x" title="Odebrat" onclick="removeParam(${pi})">×</button>
+      </div>
+      <input type="range" class="slider-range" id="sr-${pi}"
+        min="1" max="3" step="1" value="${isSet?v:2}"
+        style="--val:${isSet?v:2}"
+        oninput="setParam(${pi},+this.value);this.style.setProperty('--val',this.value)"
+        onclick="setParam(${pi},+this.value)">
+      <div class="slider-val" id="sv-${pi}">${isSet?v:'—'}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function setParam(pi, v){
+  if(!images[currentIdx]) return;
+  images[currentIdx].vals[pi]=v;
+  // Update card visual
+  const card=document.getElementById('sc-'+pi);
+  const valEl=document.getElementById('sv-'+pi);
+  const statEl=card?.querySelector('.slider-status');
+  if(card){card.classList.add('set'); card.classList.remove('removed')}
+  if(valEl) valEl.textContent=v;
+  if(statEl) statEl.textContent='✓';
+  drawWheel(images[currentIdx].vals,'wheelC');
+  renderResult(images[currentIdx].vals);
+}
+
+function removeParam(pi){
+  if(!images[currentIdx]) return;
+  images[currentIdx].vals[pi]=null;
+  const card=document.getElementById('sc-'+pi);
+  const valEl=document.getElementById('sv-'+pi);
+  const statEl=card?.querySelector('.slider-status');
+  if(card){card.classList.remove('set'); card.classList.add('removed')}
+  if(valEl) valEl.textContent='—';
+  if(statEl) statEl.textContent='·';
+  drawWheel(images[currentIdx].vals,'wheelC');
+  renderResult(images[currentIdx].vals);
+}
+
+// ── ANGLE CALC ────────────────────────────────────────────────
+// Each parameter maps directly to one angle. Score = slider value (1-3), 0 if null.
+function calcScores(vals){
+  const scores=new Array(12).fill(0);
+  vals.forEach((v,pi)=>{if(v!==null) scores[PARAMS[pi].ai]+=v});
+  return scores;
+}
+
+function getTopAngle(vals){
+  const sc=calcScores(vals);
+  const max=Math.max(...sc);
+  if(max===0) return null;
+  return sc.indexOf(max);
+}
+
+// ── WHEEL ─────────────────────────────────────────────────────
+function drawWheel(vals, canvasId){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height, CX=W/2, CY=H/2;
+  const RMAX=CX-14, RMIN=20;
+  ctx.clearRect(0,0,W,H);
+  const scores=calcScores(vals);
+  const maxS=Math.max(...scores,1);
+  const sa=(Math.PI*2)/12;
+  ANGLES.forEach((a,i)=>{
+    const startA=-Math.PI/2+i*sa+0.06;
+    const endA=startA+sa-0.12;
+    const pct=scores[i]/3; // 0..1 (max val is 3)
+    const r=RMIN+(RMAX-RMIN)*pct;
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,r,startA,endA); ctx.closePath();
+    ctx.fillStyle=a.c+(pct>0?'cc':'14');
+    ctx.fill();
+    ctx.strokeStyle=a.c+(pct>0?'77':'18');
+    ctx.lineWidth=1; ctx.stroke();
+    // label
+    const midA=startA+(sa-0.12)/2;
+    const lr=RMAX+11;
+    ctx.save();
+    ctx.translate(CX+Math.cos(midA)*lr, CY+Math.sin(midA)*lr);
+    ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle=pct>0.5?'#fff':a.c+'88';
+    ctx.font='300 5.5px "DM Mono",monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    const short=a.n.length>8?a.n.substring(0,7)+'…':a.n;
+    ctx.fillText(short,0,0);
+    ctx.restore();
+  });
+  ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#060d0d'; ctx.fill();
+  ctx.strokeStyle='rgba(62,205,196,.15)'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function renderResult(vals){
+  const el=document.getElementById('angleResult');
+  const scores=calcScores(vals);
+  const maxS=Math.max(...scores);
+  if(maxS===0){el.innerHTML='<p class="no-data">Nastav alespoň jeden parametr</p>'; return;}
+  const sorted=scores.map((s,i)=>({i,s})).sort((a,b)=>b.s-a.s);
+  const top=sorted[0];
+  let html=`<div class="top-angle-name" style="color:${ANGLES[top.i].c}">${ANGLES[top.i].n}</div>`;
+  html+='<div class="angle-bars">';
+  sorted.forEach(({i,s})=>{
+    if(s===0) return;
+    const pct=Math.round((s/maxS)*100);
+    html+=`<div class="abar-row">
+      <span class="abar-name">${ANGLES[i].n}</span>
+      <div class="abar-track"><div class="abar-fill" style="width:${pct}%;background:${ANGLES[i].c}88"></div></div>
+      <span class="abar-num">${s}</span>
+    </div>`;
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ── GROUP ─────────────────────────────────────────────────────
+function updateGroup(){
+  const profiled=images.filter(img=>img.vals.some(v=>v!==null));
+  const sec=document.getElementById('sec-group');
+  if(profiled.length<2){sec.style.display='none'; return;}
+  sec.style.display='block';
+
+  const grid=document.getElementById('groupGrid');
+  grid.innerHTML='';
+  profiled.forEach((img,gi)=>{
+    const realIdx=images.indexOf(img);
+    const topA=getTopAngle(img.vals);
+    const topColor=topA!==null?ANGLES[topA].c:'var(--dim)';
+    const topName=topA!==null?ANGLES[topA].n:'—';
+    const cid='gc'+gi;
+    const card=document.createElement('div');
+    card.className='group-card';
+    card.onclick=()=>openViewer(realIdx);
+    card.innerHTML=`
+      <div class="gc-name">${img.name||'Kresba '+(realIdx+1)}</div>
+      <canvas id="${cid}" class="gc-canvas" width="120" height="120"></canvas>
+      <div class="gc-top" style="color:${topColor}">${topName}</div>
+    `;
+    grid.appendChild(card);
+    requestAnimationFrame(()=>drawWheel(img.vals,cid));
+  });
+
+  // Summary table
+  let html=`<p style="font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--a);margin:1.2rem 0 .5rem">Přehled parametrů skupiny</p>`;
+  html+=`<table class="sum-tbl"><tr><th>Jméno</th>`;
+  PARAMS.forEach(p=>html+=`<th>${p.n.split(',')[0]}</th>`);
+  html+=`<th>Dominantní úhel</th></tr>`;
+  profiled.forEach(img=>{
+    const ri=images.indexOf(img);
+    const topA=getTopAngle(img.vals);
+    html+=`<tr><td style="color:var(--text)">${img.name||'Kresba '+(ri+1)}</td>`;
+    img.vals.forEach(v=>{
+      if(v===null) html+=`<td class="vx">—</td>`;
+      else html+=`<td class="v${v}">${v}</td>`;
+    });
+    html+=`<td style="color:${topA!==null?ANGLES[topA].c:'var(--dim)'}">${topA!==null?ANGLES[topA].n:'—'}</td></tr>`;
+  });
+  // Average row
+  const avgVals=PARAMS.map((_,pi)=>{
+    const vs=profiled.map(img=>img.vals[pi]).filter(v=>v!==null);
+    return vs.length>0?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length):null;
+  });
+  const avgTop=getTopAngle(avgVals);
+  html+=`<tr style="background:var(--s2)"><td style="color:var(--a)">Průměr skupiny</td>`;
+  avgVals.forEach(v=>{
+    if(v===null) html+=`<td class="vx">—</td>`;
+    else html+=`<td class="v${v}">${v}</td>`;
+  });
+  html+=`<td style="color:${avgTop!==null?ANGLES[avgTop].c:'var(--dim)'}">${avgTop!==null?ANGLES[avgTop].n:'—'}</td></tr>`;
+  html+=`</table>`;
+  document.getElementById('groupSummary').innerHTML=html;
+}
+
+// ── EXPOSE ────────────────────────────────────────────────────
+window.confirmModal=confirmModal;
+window.closeViewer=closeViewer;
+window.navImg=navImg;
+window.setParam=setParam;
+window.removeParam=removeParam;
+window.updateName=updateName;
+</script>
+</body>
+</html>
