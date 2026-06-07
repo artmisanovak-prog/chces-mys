@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fyzika kresby · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060d0d;--s:#0d1a1a;--s2:#122020;--s3:#182828;
+  --text:#daeae6;--dim:rgba(218,234,230,.38);--dim2:rgba(218,234,230,.14);
+  --a:#3ecdc4;--a2:#1a9990;--ab:rgba(62,205,196,.07);
+  --border:rgba(62,205,196,.13);--border-hi:rgba(62,205,196,.3);
+  --sal:#ff7b6b;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(6,13,13,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.nav-brand{font-family:var(--serif);font-size:.9rem;font-weight:300;color:var(--a);letter-spacing:.06em;flex-shrink:0}
+.nav-mid{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav-key{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);padding:3px 8px;border:1px solid var(--border);background:var(--s)}
+.nav-key span{color:var(--a)}
+.nav-links{display:flex;gap:3px}
+.nav-lnk{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:4px 8px;border:1px solid transparent;cursor:pointer;transition:all .12s}
+.nav-lnk:hover{color:var(--text);border-color:var(--border)}
+
+/* MODE SWITCHER */
+.mode-sw{display:flex;gap:1px;background:var(--border);border:1px solid var(--border)}
+.mode-btn{padding:5px 12px;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:var(--s);color:var(--dim);border:none;cursor:pointer;transition:all .12s}
+.mode-btn.active{background:var(--a);color:var(--bg)}
+
+/* WRAP */
+.wrap{max-width:940px;margin:0 auto;padding:0 16px 80px}
+.sekce{padding:32px 0;border-bottom:1px solid var(--border)}
+.sekce-lbl{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--a);margin-bottom:7px}
+h1{font-family:var(--serif);font-size:clamp(1.8rem,5vw,3.2rem);font-weight:300;line-height:1.06;margin-bottom:6px}
+h1 em{font-style:italic;color:var(--a)}
+h2{font-family:var(--serif);font-size:clamp(1.1rem,2.8vw,1.6rem);font-weight:300;margin-bottom:8px}
+.sub{font-size:.72rem;color:var(--dim);max-width:480px;line-height:1.9}
+
+/* BUTTONS */
+.btn{padding:6px 13px;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.btn:hover{color:var(--text);border-color:var(--border-hi)}
+.btn-a{background:var(--a);color:var(--bg);border-color:var(--a)}
+.btn-a:hover{background:#52ddd4}
+.btn-sal{background:var(--sal);color:#fff;border-color:var(--sal)}
+.btn-sal:hover{background:#ff9080}
+.btn-sm{padding:3px 8px;font-size:.56rem}
+
+/* UPLOAD */
+.upload-zone{border:1px dashed var(--border-hi);padding:1.6rem;text-align:center;cursor:pointer;transition:all .2s;margin:.8rem 0}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--a);background:var(--ab)}
+.upload-zone p{font-size:.72rem;color:var(--dim);margin-bottom:.7rem}
+.upload-btns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+
+/* GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:5px;margin-top:.7rem}
+.thumb{position:relative;background:var(--s);border:1px solid var(--border);cursor:pointer;aspect-ratio:1;overflow:hidden;transition:border-color .14s}
+.thumb:hover{border-color:var(--a)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(6,13,13,.85);padding:2px 5px;font-size:.54rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;border:1px solid rgba(6,13,13,.5)}
+.thumb-add{border:1px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;aspect-ratio:1;transition:border-color .14s}
+.thumb-add:hover{border-color:var(--a)}
+.thumb-add .plus{font-size:1.2rem;color:var(--dim)}
+.thumb-add .lbl{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* VIEWER OVERLAY */
+.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;overflow-y:auto;padding:10px}
+.viewer.open{display:block}
+.viewer-inner{max-width:900px;margin:0 auto;position:relative}
+.viewer-top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.viewer-nav-btns{display:flex;gap:4px}
+.viewer-nav-btn{padding:4px 10px;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;background:var(--s);border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.viewer-nav-btn:hover:not(:disabled){color:var(--a);border-color:var(--a)}
+.viewer-nav-btn:disabled{opacity:.25;cursor:default}
+.viewer-actions{display:flex;gap:4px;flex-wrap:wrap}
+.viewer-img-box{background:var(--s);border:1px solid var(--border);margin-bottom:6px}
+.viewer-img-box img{width:100%;max-height:46vh;object-fit:contain;display:block}
+.viewer-imgbar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-top:1px solid var(--border)}
+.viewer-imgbar input{background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:.64rem;flex:1;outline:none}
+.viewer-counter{font-size:.58rem;color:var(--dim2);flex-shrink:0}
+
+/* SLIDERS — KRESBA MODE */
+.sliders-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:6px}
+@media(max-width:600px){.sliders-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:360px){.sliders-grid{grid-template-columns:repeat(2,1fr)}}
+.sk-card{background:var(--s);border:1px solid var(--border);padding:6px 5px;display:flex;flex-direction:column;gap:3px;transition:border-color .14s}
+.sk-card.set{border-color:rgba(62,205,196,.25);background:var(--s2)}
+.sk-card.removed{opacity:.3}
+.sk-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:2px}
+.sk-card-name{font-size:.54rem;letter-spacing:.04em;color:var(--dim);flex:1;line-height:1.3}
+.sk-card.set .sk-card-name{color:var(--a)}
+.sk-status{font-size:.56rem;color:var(--dim2);flex-shrink:0}
+.sk-card.set .sk-status{color:var(--a)}
+.sk-x{background:transparent;border:none;color:rgba(200,80,80,.45);font-size:.65rem;cursor:pointer;padding:0 1px;line-height:1;transition:color .1s;flex-shrink:0}
+.sk-x:hover{color:rgba(230,100,100,.9)}
+.sk-range{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;background:var(--s3)}
+.sk-range::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:var(--a2);cursor:pointer}
+.sk-card.set .sk-range::-webkit-slider-thumb{background:var(--a)}
+.sk-range::-moz-range-thumb{width:9px;height:9px;border-radius:50%;background:var(--a2);border:none;cursor:pointer}
+.sk-val{font-size:.54rem;color:var(--dim2);text-align:center}
+.sk-card.set .sk-val{color:var(--a)}
+
+/* SLIDERS — PISMO MODE */
+.sliders-pismo{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.sp-row{background:var(--s);border:1px solid var(--border);padding:6px 8px;display:grid;grid-template-columns:80px 1fr 80px;align-items:center;gap:6px;transition:border-color .14s}
+.sp-row.set{border-color:rgba(62,205,196,.22);background:var(--s2)}
+.sp-row.removed{opacity:.3}
+.sp-label-l{font-size:.58rem;color:var(--dim);text-align:right;line-height:1.3}
+.sp-label-r{font-size:.58rem;color:var(--dim);text-align:left;line-height:1.3}
+.sp-row.set .sp-label-l,.sp-row.set .sp-label-r{color:var(--text)}
+.sp-mid{display:flex;flex-direction:column;gap:2px;align-items:center}
+.sp-name{font-size:.52rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);margin-bottom:1px}
+.sp-row.set .sp-name{color:var(--a)}
+.sp-controls{display:flex;align-items:center;gap:4px;width:100%}
+.sp-bipolar{flex:1;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--angle-l-c,var(--s3)) 0%,var(--s3) 50%,var(--angle-r-c,var(--s3)) 100%)}
+.sp-bipolar::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--text);cursor:pointer;border:1px solid var(--s3)}
+.sp-bipolar::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--text);border:1px solid var(--s3);cursor:pointer}
+.sp-val{font-size:.6rem;min-width:20px;text-align:center;color:var(--dim2)}
+.sp-row.set .sp-val{color:var(--a)}
+.sp-x{background:transparent;border:none;color:rgba(200,80,80,.4);font-size:.62rem;cursor:pointer;padding:0 2px;transition:color .1s;flex-shrink:0}
+.sp-x:hover{color:rgba(230,100,100,.9)}
+@media(max-width:500px){.sp-row{grid-template-columns:60px 1fr 60px}.sp-label-l,.sp-label-r{font-size:.5rem}}
+
+/* WHEEL + BAR + RESULT */
+.viz-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;margin-top:6px}
+@media(max-width:480px){.viz-row{grid-template-columns:1fr}}
+.wheel-box{text-align:center}
+.wheel-box canvas{width:150px;height:150px;display:block;margin:0 auto}
+.color-bar{height:10px;display:flex;border-radius:2px;overflow:hidden;margin:5px 0;border:1px solid var(--border)}
+.bar-seg{height:100%;transition:width .3s}
+.wheel-lbl{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.angle-res{flex:1}
+.top-name{font-family:var(--serif);font-size:1rem;font-weight:300;margin-bottom:4px}
+.abars{display:flex;flex-direction:column;gap:2px}
+.abar-row{display:flex;align-items:center;gap:4px;font-size:.58rem}
+.abar-name{min-width:88px;color:var(--dim);font-size:.56rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abar-track{flex:1;height:3px;background:var(--s3)}
+.abar-fill{height:100%;transition:width .3s}
+.abar-num{min-width:18px;text-align:right;color:var(--dim2);font-size:.54rem}
+.no-data-msg{font-size:.7rem;color:var(--dim2);font-style:italic;padding:6px 0}
+
+/* ADD CUSTOM PARAM */
+.add-param-row{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;margin-top:6px;padding:8px;background:var(--s);border:1px solid var(--border)}
+.add-param-row input,.add-param-row select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.66rem;padding:4px 7px;outline:none}
+.add-param-row input:focus,.add-param-row select:focus{border-color:var(--a)}
+.add-param-row label{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:2px}
+
+/* GROUP VIEW */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:.8rem}
+.gc{background:var(--s);border:1px solid var(--border);padding:9px;cursor:pointer;transition:border-color .14s}
+.gc:hover{border-color:var(--a)}
+.gc-name{font-size:.6rem;color:var(--a);margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gc canvas{display:block;margin:0 auto;max-width:110px;width:100%}
+.gc-bar{height:6px;display:flex;border-radius:1px;overflow:hidden;margin:4px 0}
+.gc-top{font-size:.58rem;color:var(--dim);text-align:center;margin-top:3px}
+
+/* TABLE */
+.sum-wrap{overflow-x:auto;margin-top:.8rem}
+.sum-tbl{border-collapse:collapse;font-size:.6rem;white-space:nowrap}
+.sum-tbl th,.sum-tbl td{border:1px solid var(--border);padding:4px 6px;text-align:left}
+.sum-tbl th{background:var(--s);color:var(--a);font-weight:400;font-size:.54rem;letter-spacing:.07em;text-transform:uppercase}
+.sum-tbl td{color:var(--dim)}
+.v1{color:rgba(218,234,230,.28)}.v2{color:rgba(218,234,230,.6)}.v3{color:var(--text)}.vx{color:rgba(180,70,70,.4);font-size:.52rem}
+
+/* PASTE GROUP URL BOX */
+.paste-box{display:flex;gap:6px;margin:.6rem 0;flex-wrap:wrap}
+.paste-box input{flex:1;min-width:200px;background:var(--s);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.64rem;padding:5px 8px;outline:none}
+.paste-box input:focus{border-color:var(--a)}
+
+/* MODALS */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:300;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--s);border:1px solid var(--border-hi);max-width:400px;width:100%;padding:20px}
+.modal h3{font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:5px}
+.modal p{font-size:.72rem;color:var(--dim);line-height:1.85;margin-bottom:12px}
+.modal-btns{display:flex;gap:6px;flex-wrap:wrap}
+.url-box{background:var(--bg);border:1px solid var(--border);padding:8px;font-family:var(--mono);font-size:.62rem;color:var(--dim);word-break:break-all;margin:8px 0;max-height:80px;overflow-y:auto;cursor:text;user-select:all}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Fyzika kresby · Chceš myš?</span>
+  <div class="nav-mid">
+    <div class="mode-sw">
+      <button class="mode-btn active" id="btnKresba" onclick="setMode('kresba')">Kresba</button>
+      <button class="mode-btn" id="btnPismo" onclick="setMode('pismo')">Písmo</button>
+    </div>
+    <div class="nav-key" id="navKey" style="display:none">klíč: <span id="navKeyVal"></span></div>
+  </div>
+  <div class="nav-links">
+    <span class="nav-lnk" onclick="scrollSec('sec-upload')">Galerie</span>
+    <span class="nav-lnk" onclick="scrollSec('sec-group')">Skupina</span>
+    <span class="nav-lnk" onclick="openModal('modalPasteGroup')">+ URL skupiny</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="sekce" id="sec-upload">
+    <p class="sekce-lbl" id="secLbl">Fyzika kresby</p>
+    <h1 id="h1Title">Struktura <em>čáry</em></h1>
+    <p class="sub" id="subText">Nahraj kresby nebo fotografie. Nastav parametry. Sdílej výsledek.</p>
+
+    <div class="upload-zone" id="uploadZone">
+      <p>Přetáhni sem soubory nebo klikni pro výběr</p>
+      <div class="upload-btns">
+        <button class="btn btn-a" onclick="fileIn.click()">Vybrat soubory</button>
+        <button class="btn" onclick="fileIn.setAttribute('capture','environment');fileIn.click()">Vyfotit</button>
+      </div>
+      <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <section class="sekce" id="sec-group" style="display:none">
+    <p class="sekce-lbl">Skupina</p>
+    <h2>Porovnání <em>profilů</em></h2>
+    <p class="sub" style="margin-bottom:.8rem">Kresby s nastavenými parametry, uložené pod skupinovým klíčem nebo sdílené přes URL.</p>
+    <div class="group-grid" id="groupGrid"></div>
+    <div class="sum-wrap" id="groupSummary"></div>
+  </section>
+
+</div>
+
+<!-- VIEWER -->
+<div class="viewer" id="viewer">
+  <div class="viewer-inner">
+
+    <div class="viewer-top-bar">
+      <div class="viewer-nav-btns">
+        <button class="viewer-nav-btn" id="btnPrev" onclick="navImg(-1)">← předch.</button>
+        <button class="viewer-nav-btn" id="btnNext" onclick="navImg(1)">dals. →</button>
+      </div>
+      <div class="viewer-actions">
+        <button class="btn btn-sm" onclick="openShareModal()">Sdílet URL</button>
+        <button class="btn btn-sm" onclick="closeViewer()">✕ zavřít</button>
+      </div>
+    </div>
+
+    <div class="viewer-img-box">
+      <img id="viewerImg" src="" alt="">
+      <div class="viewer-imgbar">
+        <span class="viewer-counter" id="viewerCounter"></span>
+        <input id="viewerName" type="text" placeholder="Jméno / popis…" oninput="updateName(this.value)">
+      </div>
+    </div>
+
+    <!-- Kresba sliders -->
+    <div id="slidersKresba">
+      <div class="sliders-grid" id="slidersGrid"></div>
+    </div>
+
+    <!-- Pismo sliders -->
+    <div id="slidersPismo" style="display:none">
+      <div class="sliders-pismo" id="pismoGrid"></div>
+    </div>
+
+    <!-- Add custom param -->
+    <details style="margin-bottom:6px">
+      <summary style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);cursor:pointer;padding:5px 0;list-style:none">+ přidat vlastní parametr</summary>
+      <div class="add-param-row" id="addParamRow">
+        <div>
+          <label>Název parametru</label>
+          <input type="text" id="newParamName" placeholder="název…">
+        </div>
+        <div id="addParamAngleKresba">
+          <label>Úhel</label>
+          <select id="newParamAngle"></select>
+        </div>
+        <div id="addParamAnglePismo" style="display:none">
+          <label>Levý úhel</label>
+          <select id="newParamAngleL"></select>
+        </div>
+        <div id="addParamAnglePismo2" style="display:none">
+          <label>Pravý úhel</label>
+          <select id="newParamAngleR"></select>
+        </div>
+        <div style="padding-bottom:1px">
+          <button class="btn btn-sm btn-a" onclick="addCustomParam()">Přidat</button>
+        </div>
+      </div>
+    </details>
+
+    <!-- Viz -->
+    <div class="viz-row">
+      <div class="wheel-box">
+        <canvas id="wheelC" width="150" height="150"></canvas>
+        <div class="color-bar" id="colorBar"></div>
+        <div class="wheel-lbl">profil kresby</div>
+      </div>
+      <div class="angle-res" id="angleRes">
+        <p class="no-data-msg">Nastav alespoň jeden parametr</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modalDraw">
+  <div class="modal">
+    <h3>Fotografie?</h3>
+    <p>Detekován barevný nebo fotografický obrázek. Pokračovat s analýzou?</p>
+    <div class="modal-btns">
+      <button class="btn btn-a" onclick="confirmDraw(true)">Pokračovat</button>
+      <button class="btn" onclick="confirmDraw(false)">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalShare">
+  <div class="modal">
+    <h3>Sdílet výsledek</h3>
+    <p>Tento odkaz obsahuje tvůj profil. Sdílej ho facilitátorce nebo si ho ulož.</p>
+    <div class="url-box" id="shareUrlBox"></div>
+    <div class="modal-btns">
+      <button class="btn btn-a" onclick="copyShareUrl()">Kopírovat URL</button>
+      <button class="btn" onclick="openPrehlidka()">Otevřít v Přehlídce</button>
+      <button class="btn" onclick="closeModal('modalShare')">Zavřít</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalPasteGroup">
+  <div class="modal">
+    <h3>Přidat URL do skupiny</h3>
+    <p>Vlož sdílené URL účastníka. Profil se přidá do skupinového přehledu na tomto zařízení.</p>
+    <div class="paste-box">
+      <input type="text" id="pasteUrlInput" placeholder="https://artmisanovak-prog…">
+      <button class="btn btn-a" onclick="addFromUrl()">Přidat</button>
+    </div>
+    <div id="pasteMsg" style="font-size:.66rem;color:var(--a);margin-top:4px"></div>
+    <div class="modal-btns" style="margin-top:8px">
+      <button class="btn" onclick="closeModal('modalPasteGroup')">Zavřít</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ANGLES ──────────────────────────────────────────────────────
+const ANGLES=[
+  {n:'Analytický',    s:0,   c:'#e8d8b8'},
+  {n:'Kulturní',      s:30,  c:'#a8d598'},
+  {n:'Filozofický',   s:60,  c:'#90c8f8'},
+  {n:'Naivní',        s:90,  c:'#38d8c8'},
+  {n:'Jazykový',      s:120, c:'#c098c8'},
+  {n:'Metaforický',   s:150, c:'#60b880'},
+  {n:'Asociační',     s:180, c:'#d8b888'},
+  {n:'Introspektivní',s:210, c:'#f8d050'},
+  {n:'Ironický',      s:240, c:'#f89838'},
+  {n:'Groteskní',     s:270, c:'#e83858'},
+  {n:'Absurdní',      s:300, c:'#d058a8'},
+  {n:'Surrealistický',s:330, c:'#c07848'},
+];
+
+// Kresba params: each maps to one angle (index)
+const PARAMS_K=[
+  {n:'Rovné dlouhé čáry',       ai:0},
+  {n:'Stínování, reálnost',     ai:1},
+  {n:'Perspektiva, 3D',         ai:2},
+  {n:'Jedním tahem',            ai:3},
+  {n:'Pravidelnost',            ai:4},
+  {n:'Písmo a text',            ai:5},
+  {n:'Šrafování',               ai:6},
+  {n:'Detaily',                 ai:7},
+  {n:'Sklon doprava',           ai:8},
+  {n:'Obtahování, přetahování', ai:9},
+  {n:'Vybarvování',             ai:10},
+  {n:'Nedokončené, prolínání',  ai:11},
+];
+
+// Pismo params: bipolar, left angle → right angle
+// Negative value → left angle, positive → right angle
+const PARAMS_P=[
+  {n:'Tvary',          lbl:'Ostré',      lbr:'Kulaté',       al:1, ar:7},
+  {n:'Velikosti',      lbl:'Pravidelné', lbr:'Nepravidelné', al:2, ar:8},
+  {n:'Mezery',         lbl:'Pravidelné', lbr:'Nepravidelné', al:4, ar:10},
+  {n:'Řádkování',      lbl:'Přímé',      lbr:'Deformované',  al:5, ar:11},
+  {n:'Typ písma',      lbl:'Tiskací',    lbr:'Psací',        al:5, ar:11},
+  {n:'Poměr',          lbl:'Písmo',      lbr:'Kresba',       al:6, ar:0},
+  {n:'Dekorace',       lbl:'Serif',      lbr:'Strohé',       al:9, ar:3},
+  {n:'Obsah',          lbl:'Význam',     lbr:'Estetika',     al:2, ar:8},
+  {n:'Písmo/kresba',   lbl:'Písmo',      lbr:'Kresba',       al:4, ar:10},
+  {n:'Prvky',          lbl:'Přehnané',   lbr:'Zjedn.',       al:9, ar:3},
+  {n:'Počet slov',     lbl:'Mnoho',      lbr:'Málo',         al:0, ar:6},
+  {n:'Kompozice',      lbl:'Vyvážená',   lbr:'Tíhnoucí',     al:1, ar:7},
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+let mode='kresba';
+let images=[];      // {id,name,dataUrl,valsK:[null|1..3 x12+custom],valsP:[null|-3..3 x12+custom]}
+let customParamsK=[];  // {n,ai}
+let customParamsP=[];  // {n,al,ar}
+let groupExternal=[];  // profiles added via paste URL
+let currentIdx=0;
+let pendingAdd=null;
+let klic=null; // group key from URL
+
+// ── INIT ─────────────────────────────────────────────────────────
+(function init(){
+  const params=new URLSearchParams(location.search);
+  const h=new URLSearchParams(location.hash.replace('#',''));
+
+  // Group key
+  klic=params.get('klic')||h.get('klic')||null;
+  if(klic){
+    document.getElementById('navKey').style.display='';
+    document.getElementById('navKeyVal').textContent=klic;
+    // Load group from localStorage
+    loadGroupFromStorage();
+  }
+
+  // Load shared profile from URL
+  const profileParam=params.get('r')||h.get('r')||null;
+  const nameParam=params.get('n')||h.get('n')||'';
+  const modeParam=params.get('m')||h.get('m')||'kresba';
+  if(profileParam){
+    setMode(modeParam);
+    const ext=decodeProfileFromStr(profileParam,modeParam);
+    if(ext){
+      groupExternal.push({id:'ext_'+Date.now(),name:decodeURIComponent(nameParam||'Sdílený profil'),mode:modeParam,...ext});
+      renderGroup();
+    }
+  }
+
+  populateAngleSelects();
+  setupUpload();
+  renderGallery();
+})();
+
+// ── MODE ─────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.getElementById('btnKresba').classList.toggle('active',m==='kresba');
+  document.getElementById('btnPismo').classList.toggle('active',m==='pismo');
+  document.getElementById('secLbl').textContent=m==='kresba'?'Fyzika kresby':'Fyzika písma';
+  document.getElementById('h1Title').innerHTML=m==='kresba'?'Struktura <em>čáry</em>':'Struktura <em>písma</em>';
+  document.getElementById('subText').textContent=m==='kresba'?'Nahraj kresby. Nastav parametry. Sdílej výsledek.':'Nahraj vzorky písma. Nastav parametry. Sdílej výsledek.';
+  document.getElementById('addParamAngleKresba').style.display=m==='kresba'?'':'none';
+  document.getElementById('addParamAnglePismo').style.display=m==='pismo'?'':'none';
+  document.getElementById('addParamAnglePismo2').style.display=m==='pismo'?'':'none';
+  if(images[currentIdx]) renderSliders(images[currentIdx]);
+}
+
+// ── ANGLE SELECTS ─────────────────────────────────────────────────
+function populateAngleSelects(){
+  ['newParamAngle','newParamAngleL','newParamAngleR'].forEach(id=>{
+    const sel=document.getElementById(id);
+    sel.innerHTML=ANGLES.map((a,i)=>`<option value="${i}">${a.s}° ${a.n}</option>`).join('');
+  });
+}
+
+// ── UPLOAD ───────────────────────────────────────────────────────
+function setupUpload(){
+  const zone=document.getElementById('uploadZone');
+  const fi=document.getElementById('fileIn');
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleFiles([...e.dataTransfer.files])});
+  fi.addEventListener('change',e=>{handleFiles([...e.target.files]);fi.value=''});
+}
+
+function handleFiles(files){
+  files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>checkDrawing(f.name,ev.target.result);
+    r.readAsDataURL(f);
+  });
+}
+
+function checkDrawing(name,dataUrl){
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas'),ctx=c.getContext('2d');
+    c.width=60;c.height=Math.round(img.height*(60/img.width));
+    ctx.drawImage(img,0,0,c.width,c.height);
+    const d=ctx.getImageData(0,0,c.width,c.height).data;
+    let sat=0;
+    for(let i=0;i<d.length;i+=4){const mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]);sat+=mx?(mx-mn)/mx:0}
+    sat/=(d.length/4);
+    if(sat>0.2){pendingAdd={name,dataUrl};openModal('modalDraw');}
+    else addImage(name,dataUrl);
+  };
+  img.src=dataUrl;
+}
+
+function confirmDraw(yes){
+  closeModal('modalDraw');
+  if(yes&&pendingAdd) addImage(pendingAdd.name,pendingAdd.dataUrl);
+  pendingAdd=null;
+}
+
+function addImage(name,dataUrl){
+  const totalK=PARAMS_K.length+customParamsK.length;
+  const totalP=PARAMS_P.length+customParamsP.length;
+  images.push({id:Date.now()+Math.random(),name:name.replace(/\.[^.]+$/,''),dataUrl,
+    valsK:new Array(totalK).fill(null),valsP:new Array(totalP).fill(null)});
+  renderGallery();
+  openViewer(images.length-1);
+}
+
+// ── GALLERY ──────────────────────────────────────────────────────
+function renderGallery(){
+  const g=document.getElementById('galleryGrid');
+  g.innerHTML='';
+  images.forEach((img,i)=>{
+    const vals=mode==='kresba'?img.valsK:img.valsP;
+    const topA=getTopAngle(vals);
+    const dotColor=topA!==null?ANGLES[topA].c:'rgba(62,205,196,.18)';
+    const t=document.createElement('div');
+    t.className='thumb';
+    t.onclick=()=>openViewer(i);
+    t.innerHTML=`<img src="${img.dataUrl}" alt="">
+      <div class="thumb-name">${img.name||'kresba '+(i+1)}</div>
+      <div class="thumb-dot" style="background:${dotColor}"></div>`;
+    g.appendChild(t);
+  });
+  const add=document.createElement('div');
+  add.className='thumb-add';
+  add.onclick=()=>document.getElementById('fileIn').click();
+  add.innerHTML='<span class="plus">+</span><span class="lbl">přidat</span>';
+  g.appendChild(add);
+  renderGroup();
+}
+
+// ── VIEWER ───────────────────────────────────────────────────────
+function openViewer(idx){
+  currentIdx=idx;
+  document.getElementById('viewer').classList.add('open');
+  renderViewer();
+}
+function closeViewer(){
+  document.getElementById('viewer').classList.remove('open');
+  renderGallery();
+}
+function navImg(dir){
+  const ni=currentIdx+dir;
+  if(ni>=0&&ni<images.length){currentIdx=ni;renderViewer();}
+}
+function renderViewer(){
+  const img=images[currentIdx];
+  document.getElementById('viewerImg').src=img.dataUrl;
+  document.getElementById('viewerName').value=img.name||'';
+  document.getElementById('viewerCounter').textContent=(currentIdx+1)+' / '+images.length;
+  document.getElementById('btnPrev').disabled=currentIdx===0;
+  document.getElementById('btnNext').disabled=currentIdx===images.length-1;
+  document.getElementById('slidersKresba').style.display=mode==='kresba'?'':'none';
+  document.getElementById('slidersPismo').style.display=mode==='pismo'?'':'none';
+  renderSliders(img);
+  const vals=mode==='kresba'?img.valsK:img.valsP;
+  drawWheel(vals,'wheelC');
+  renderColorBar(vals,'colorBar');
+  renderResult(vals,'angleRes');
+}
+function updateName(v){
+  if(images[currentIdx]) images[currentIdx].name=v;
+}
+
+// ── SLIDERS KRESBA ───────────────────────────────────────────────
+function renderSliders(img){
+  if(mode==='kresba') renderSlidersK(img);
+  else renderSlidersP(img);
+}
+
+function renderSlidersK(img){
+  const allParams=[...PARAMS_K,...customParamsK];
+  const grid=document.getElementById('slidersGrid');
+  grid.innerHTML='';
+  allParams.forEach((p,pi)=>{
+    const v=img.valsK[pi];
+    const isSet=v!==null;
+    const card=document.createElement('div');
+    card.className='sk-card'+(isSet?' set':'');
+    card.id='sk-'+pi;
+    card.innerHTML=`
+      <div class="sk-card-top">
+        <span class="sk-card-name">${p.n}</span>
+        <span class="sk-status">${isSet?'✓':'·'}</span>
+        <button class="sk-x" onclick="removeK(${pi})" title="Odebrat">×</button>
+      </div>
+      <input type="range" class="sk-range" min="1" max="3" step="1" value="${isSet?v:2}"
+        oninput="setK(${pi},+this.value)" onclick="setK(${pi},+this.value)">
+      <div class="sk-val" id="skv-${pi}">${isSet?v:'—'}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+function setK(pi,v){
+  const img=images[currentIdx]; if(!img) return;
+  img.valsK[pi]=v;
+  const c=document.getElementById('sk-'+pi);
+  if(c){c.classList.add('set');c.classList.remove('removed')}
+  const ve=document.getElementById('skv-'+pi);
+  if(ve) ve.textContent=v;
+  const st=c?.querySelector('.sk-status');
+  if(st) st.textContent='✓';
+  updateViz(img.valsK);
+}
+
+function removeK(pi){
+  const img=images[currentIdx]; if(!img) return;
+  img.valsK[pi]=null;
+  const c=document.getElementById('sk-'+pi);
+  if(c){c.classList.remove('set');c.classList.add('removed')}
+  const ve=document.getElementById('skv-'+pi);
+  if(ve) ve.textContent='—';
+  const st=c?.querySelector('.sk-status');
+  if(st) st.textContent='·';
+  updateViz(img.valsK);
+}
+
+// ── SLIDERS PISMO ────────────────────────────────────────────────
+function renderSlidersP(img){
+  const allParams=[...PARAMS_P,...customParamsP];
+  const grid=document.getElementById('pismoGrid');
+  grid.innerHTML='';
+  allParams.forEach((p,pi)=>{
+    const v=img.valsP[pi]; // null|-3..3
+    const isSet=v!==null;
+    const lc=ANGLES[p.al].c;
+    const rc=ANGLES[p.ar].c;
+    const row=document.createElement('div');
+    row.className='sp-row'+(isSet?' set':'');
+    row.id='sp-'+pi;
+    row.style.setProperty('--angle-l-c',lc);
+    row.style.setProperty('--angle-r-c',rc);
+    row.innerHTML=`
+      <span class="sp-label-l" title="${ANGLES[p.al].n}">${p.lbl}</span>
+      <div class="sp-mid">
+        <span class="sp-name">${p.n}</span>
+        <div class="sp-controls">
+          <input type="range" class="sp-bipolar" min="-3" max="3" step="1" value="${isSet?v:0}"
+            style="--angle-l-c:${lc};--angle-r-c:${rc}"
+            oninput="setP(${pi},+this.value)" onclick="setP(${pi},+this.value)">
+          <span class="sp-val" id="spv-${pi}">${isSet?(v>0?'+'+v:v):'—'}</span>
+          <button class="sp-x" onclick="removeP(${pi})" title="Odebrat">×</button>
+        </div>
+      </div>
+      <span class="sp-label-r" title="${ANGLES[p.ar].n}">${p.lbr}</span>`;
+    grid.appendChild(row);
+  });
+}
+
+function setP(pi,v){
+  const img=images[currentIdx]; if(!img) return;
+  img.valsP[pi]=v;
+  const row=document.getElementById('sp-'+pi);
+  if(row){row.classList.add('set');row.classList.remove('removed')}
+  const ve=document.getElementById('spv-'+pi);
+  if(ve) ve.textContent=v===0?'0':v>0?'+'+v:v;
+  updateViz(img.valsP);
+}
+
+function removeP(pi){
+  const img=images[currentIdx]; if(!img) return;
+  img.valsP[pi]=null;
+  const row=document.getElementById('sp-'+pi);
+  if(row){row.classList.remove('set');row.classList.add('removed')}
+  const ve=document.getElementById('spv-'+pi);
+  if(ve) ve.textContent='—';
+  updateViz(img.valsP);
+}
+
+function updateViz(vals){
+  drawWheel(vals,'wheelC');
+  renderColorBar(vals,'colorBar');
+  renderResult(vals,'angleRes');
+}
+
+// ── CUSTOM PARAMS ────────────────────────────────────────────────
+function addCustomParam(){
+  const n=document.getElementById('newParamName').value.trim();
+  if(!n) return;
+  if(mode==='kresba'){
+    const ai=+document.getElementById('newParamAngle').value;
+    customParamsK.push({n,ai});
+    images.forEach(img=>img.valsK.push(null));
+  } else {
+    const al=+document.getElementById('newParamAngleL').value;
+    const ar=+document.getElementById('newParamAngleR').value;
+    const lbl=document.getElementById('newParamName').value;
+    customParamsP.push({n,lbl:'←',lbr:'→',al,ar});
+    images.forEach(img=>img.valsP.push(null));
+  }
+  document.getElementById('newParamName').value='';
+  if(images[currentIdx]) renderSliders(images[currentIdx]);
+}
+
+// ── SCORE CALC ───────────────────────────────────────────────────
+function calcScores(vals){
+  const scores=new Array(12).fill(0);
+  if(mode==='kresba'){
+    const allP=[...PARAMS_K,...customParamsK];
+    vals.forEach((v,pi)=>{ if(v!==null&&allP[pi]) scores[allP[pi].ai]+=v; });
+  } else {
+    const allP=[...PARAMS_P,...customParamsP];
+    vals.forEach((v,pi)=>{
+      if(v===null||!allP[pi]) return;
+      if(v<0) scores[allP[pi].al]+=Math.abs(v);
+      else if(v>0) scores[allP[pi].ar]+=v;
+    });
+  }
+  return scores;
+}
+
+function calcScoresForMode(vals,m){
+  const scores=new Array(12).fill(0);
+  if(m==='kresba'){
+    const allP=[...PARAMS_K,...customParamsK];
+    vals.forEach((v,pi)=>{ if(v!==null&&allP[pi]) scores[allP[pi].ai]+=v; });
+  } else {
+    const allP=[...PARAMS_P,...customParamsP];
+    vals.forEach((v,pi)=>{
+      if(v===null||!allP[pi]) return;
+      if(v<0) scores[allP[pi].al]+=Math.abs(v);
+      else if(v>0) scores[allP[pi].ar]+=v;
+    });
+  }
+  return scores;
+}
+
+function getTopAngle(vals){
+  const s=calcScores(vals);
+  const mx=Math.max(...s);
+  if(mx===0) return null;
+  return s.indexOf(mx);
+}
+
+// ── WHEEL ────────────────────────────────────────────────────────
+function drawWheel(vals,cid){
+  const canvas=document.getElementById(cid); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,CX=W/2,CY=H/2;
+  const RMAX=CX-14,RMIN=18;
+  ctx.clearRect(0,0,W,H);
+  const scores=calcScores(vals);
+  const maxS=Math.max(...scores,1);
+  const sa=(Math.PI*2)/12;
+  ANGLES.forEach((a,i)=>{
+    const startA=-Math.PI/2+i*sa+0.06;
+    const endA=startA+sa-0.12;
+    const pct=scores[i]/maxS;
+    const r=RMIN+(RMAX-RMIN)*pct;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,r,startA,endA);ctx.closePath();
+    ctx.fillStyle=a.c+(pct>0?'cc':'14');ctx.fill();
+    ctx.strokeStyle=a.c+(pct>0?'66':'18');ctx.lineWidth=1;ctx.stroke();
+    const midA=startA+(sa-0.12)/2;
+    ctx.save();
+    ctx.translate(CX+Math.cos(midA)*(RMAX+10),CY+Math.sin(midA)*(RMAX+10));
+    ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle=pct>0.4?'#fff':a.c+'88';
+    ctx.font='300 5px "DM Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(a.n.substring(0,6),0,0);
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#060d0d';ctx.fill();
+  ctx.strokeStyle='rgba(62,205,196,.14)';ctx.lineWidth=1;ctx.stroke();
+}
+
+// ── COLOR BAR ────────────────────────────────────────────────────
+function renderColorBar(vals,elId){
+  const el=document.getElementById(elId); if(!el) return;
+  const scores=calcScores(vals);
+  const total=scores.reduce((a,b)=>a+b,0);
+  el.innerHTML='';
+  if(total===0) return;
+  scores.forEach((s,i)=>{
+    if(s===0) return;
+    const seg=document.createElement('div');
+    seg.className='bar-seg';
+    seg.style.width=Math.round((s/total)*100)+'%';
+    seg.style.background=ANGLES[i].c;
+    seg.title=ANGLES[i].n+': '+s;
+    el.appendChild(seg);
+  });
+}
+
+// ── RESULT TEXT ──────────────────────────────────────────────────
+function renderResult(vals,elId){
+  const el=document.getElementById(elId); if(!el) return;
+  const scores=calcScores(vals);
+  const mx=Math.max(...scores);
+  if(mx===0){el.innerHTML='<p class="no-data-msg">Nastav alespoň jeden parametr</p>';return;}
+  const sorted=scores.map((s,i)=>({i,s})).sort((a,b)=>b.s-a.s);
+  const top=sorted[0];
+  let h=`<div class="top-name" style="color:${ANGLES[top.i].c}">${ANGLES[top.i].n}</div><div class="abars">`;
+  sorted.forEach(({i,s})=>{
+    if(s===0) return;
+    const pct=Math.round((s/mx)*100);
+    h+=`<div class="abar-row">
+      <span class="abar-name">${ANGLES[i].n}</span>
+      <div class="abar-track"><div class="abar-fill" style="width:${pct}%;background:${ANGLES[i].c}88"></div></div>
+      <span class="abar-num">${s}</span>
+    </div>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+// ── GROUP ────────────────────────────────────────────────────────
+function renderGroup(){
+  const local=images.filter(img=>{
+    const v=mode==='kresba'?img.valsK:img.valsP;
+    return v.some(x=>x!==null);
+  });
+  const ext=groupExternal;
+  const all=[...local.map(img=>({
+    id:img.id,name:img.name,
+    scores:calcScores(mode==='kresba'?img.valsK:img.valsP),
+    vals:mode==='kresba'?img.valsK:img.valsP,
+    m:mode,local:true,idx:images.indexOf(img)
+  })),...ext.map(e=>({
+    id:e.id,name:e.name,
+    scores:calcScoresForMode(e.m==='kresba'?e.valsK:e.valsP,e.m),
+    vals:e.m==='kresba'?e.valsK:e.valsP,
+    m:e.m,local:false
+  }))];
+  const sec=document.getElementById('sec-group');
+  if(all.length<2){sec.style.display='none';return;}
+  sec.style.display='block';
+  const grid=document.getElementById('groupGrid');
+  grid.innerHTML='';
+  all.forEach((item,gi)=>{
+    const mx=Math.max(...item.scores);
+    const topI=mx>0?item.scores.indexOf(mx):null;
+    const topColor=topI!==null?ANGLES[topI].c:'var(--dim)';
+    const topName=topI!==null?ANGLES[topI].n:'—';
+    const cid='gc'+gi;
+    const bid='gb'+gi;
+    const card=document.createElement('div');
+    card.className='gc';
+    if(item.local) card.onclick=()=>openViewer(item.idx);
+    card.innerHTML=`
+      <div class="gc-name">${item.name||'Profil '+(gi+1)}</div>
+      <canvas id="${cid}" width="110" height="110"></canvas>
+      <div class="gc-bar" id="${bid}"></div>
+      <div class="gc-top" style="color:${topColor}">${topName}</div>`;
+    grid.appendChild(card);
+    requestAnimationFrame(()=>{
+      drawWheelFromScores(item.scores,cid);
+      renderBarFromScores(item.scores,bid);
+    });
+  });
+  renderGroupTable(all);
+}
+
+function drawWheelFromScores(scores,cid){
+  const canvas=document.getElementById(cid); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,CX=W/2,CY=H/2;
+  const RMAX=CX-10,RMIN=14;
+  ctx.clearRect(0,0,W,H);
+  const mx=Math.max(...scores,1);
+  const sa=(Math.PI*2)/12;
+  ANGLES.forEach((a,i)=>{
+    const pct=scores[i]/mx;
+    const r=RMIN+(RMAX-RMIN)*pct;
+    const startA=-Math.PI/2+i*sa+0.06;
+    const endA=startA+sa-0.12;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,r,startA,endA);ctx.closePath();
+    ctx.fillStyle=a.c+(pct>0?'bb':'0f');ctx.fill();
+    ctx.strokeStyle=a.c+(pct>0?'55':'0a');ctx.lineWidth=1;ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#060d0d';ctx.fill();
+}
+
+function renderBarFromScores(scores,elId){
+  const el=document.getElementById(elId); if(!el) return;
+  const total=scores.reduce((a,b)=>a+b,0);
+  el.innerHTML='';
+  if(total===0) return;
+  scores.forEach((s,i)=>{
+    if(s===0) return;
+    const seg=document.createElement('div');
+    seg.className='bar-seg';
+    seg.style.width=Math.round((s/total)*100)+'%';
+    seg.style.background=ANGLES[i].c;
+    el.appendChild(seg);
+  });
+}
+
+function renderGroupTable(all){
+  if(all.length<2) return;
+  let h='<p style="font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--a);margin:1rem 0 .4rem">Přehled skupiny</p>';
+  h+='<table class="sum-tbl"><tr><th>Jméno</th>';
+  ANGLES.forEach(a=>h+=`<th>${a.n.substring(0,4)}…</th>`);
+  h+='<th>Dominantní</th></tr>';
+  all.forEach(item=>{
+    const mx=Math.max(...item.scores);
+    const topI=mx>0?item.scores.indexOf(mx):null;
+    h+=`<tr><td style="color:var(--text)">${item.name||'—'}</td>`;
+    item.scores.forEach((s,i)=>{
+      const cls=s===0?'vx':s<=2?'v1':s<=4?'v2':'v3';
+      h+=`<td class="${cls}" style="${s>0?'color:'+ANGLES[i].c+'88':''}">${s||'—'}</td>`;
+    });
+    h+=`<td style="color:${topI!==null?ANGLES[topI].c:'var(--dim)'}">${topI!==null?ANGLES[topI].n:'—'}</td></tr>`;
+  });
+  // Average
+  const avg=new Array(12).fill(0);
+  all.forEach(item=>item.scores.forEach((s,i)=>avg[i]+=s));
+  const avgMx=Math.max(...avg);
+  const avgTopI=avgMx>0?avg.indexOf(avgMx):null;
+  h+=`<tr style="background:var(--s2);border-top:2px solid var(--border)"><td style="color:var(--a)">Průměr</td>`;
+  avg.forEach((s,i)=>{
+    const v=Math.round(s/all.length*10)/10;
+    h+=`<td style="color:${ANGLES[i].c}88">${v||'—'}</td>`;
+  });
+  h+=`<td style="color:${avgTopI!==null?ANGLES[avgTopI].c:'var(--dim)'}">${avgTopI!==null?ANGLES[avgTopI].n:'—'}</td></tr>`;
+  h+='</table>';
+  document.getElementById('groupSummary').innerHTML=h;
+}
+
+// ── URL SHARE ────────────────────────────────────────────────────
+function buildShareUrl(){
+  const img=images[currentIdx]; if(!img) return null;
+  const vals=mode==='kresba'?img.valsK:img.valsP;
+  const vStr=vals.map(v=>v===null?'x':v).join('_');
+  const u=new URL(location.href.split('?')[0].split('#')[0]);
+  if(klic) u.searchParams.set('klic',klic);
+  u.searchParams.set('m',mode);
+  u.searchParams.set('n',encodeURIComponent(img.name||''));
+  u.searchParams.set('r',vStr);
+  return u.toString();
+}
+
+function openShareModal(){
+  const url=buildShareUrl(); if(!url) return;
+  document.getElementById('shareUrlBox').textContent=url;
+  // Save to localStorage under group key
+  if(klic) saveToGroup();
+  openModal('modalShare');
+}
+
+function copyShareUrl(){
+  const url=document.getElementById('shareUrlBox').textContent;
+  navigator.clipboard?.writeText(url).then(()=>alert('URL zkopírováno'));
+}
+
+function openPrehlidka(){
+  const url=document.getElementById('shareUrlBox').textContent;
+  const base='https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/';
+  window.open(base+'?otisk='+encodeURIComponent(url),'_blank');
+}
+
+// ── GROUP STORAGE ────────────────────────────────────────────────
+function saveToGroup(){
+  if(!klic) return;
+  const img=images[currentIdx]; if(!img) return;
+  const key='fk_'+klic;
+  let data=[];
+  try{data=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  const entry={id:img.id,name:img.name,mode,
+    valsK:img.valsK,valsP:img.valsP,ts:Date.now()};
+  const idx=data.findIndex(d=>d.id===img.id);
+  if(idx>=0) data[idx]=entry; else data.push(entry);
+  localStorage.setItem(key,JSON.stringify(data));
+}
+
+function loadGroupFromStorage(){
+  if(!klic) return;
+  const key='fk_'+klic;
+  let data=[];
+  try{data=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  data.forEach(d=>{
+    if(!groupExternal.find(e=>e.id===d.id)){
+      groupExternal.push({id:d.id,name:d.name,m:d.mode,valsK:d.valsK||[],valsP:d.valsP||[]});
+    }
+  });
+}
+
+// ── PASTE URL ────────────────────────────────────────────────────
+function addFromUrl(){
+  const raw=document.getElementById('pasteUrlInput').value.trim();
+  const msg=document.getElementById('pasteMsg');
+  if(!raw){msg.textContent='Vlož URL';return;}
+  try{
+    const u=new URL(raw);
+    const p=u.searchParams;
+    const m=p.get('m')||'kresba';
+    const n=decodeURIComponent(p.get('n')||'Sdílený profil');
+    const r=p.get('r')||'';
+    const ext=decodeProfileFromStr(r,m);
+    if(!ext){msg.textContent='Nepodařilo se načíst profil';return;}
+    const id='ext_'+Date.now();
+    groupExternal.push({id,name:n,m,...ext});
+    renderGroup();
+    msg.textContent='✓ Profil přidán: '+n;
+    document.getElementById('pasteUrlInput').value='';
+  }catch(e){msg.textContent='Neplatná URL'}
+}
+
+function decodeProfileFromStr(str,m){
+  if(!str) return null;
+  const parts=str.split('_').map(v=>v==='x'?null:+v);
+  const totalK=PARAMS_K.length+customParamsK.length;
+  const totalP=PARAMS_P.length+customParamsP.length;
+  if(m==='kresba') return {valsK:parts.slice(0,totalK),valsP:new Array(totalP).fill(null)};
+  else return {valsK:new Array(totalK).fill(null),valsP:parts.slice(0,totalP)};
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function scrollSec(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+
+// Close modals on bg click
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m) m.classList.remove('open')});
+});
+
+// Expose to inline handlers
+window.setMode=setMode;window.confirmDraw=confirmDraw;window.closeViewer=closeViewer;
+window.navImg=navImg;window.updateName=updateName;window.setK=setK;window.removeK=removeK;
+window.setP=setP;window.removeP=removeP;window.addCustomParam=addCustomParam;
+window.openShareModal=openShareModal;window.copyShareUrl=copyShareUrl;
+window.openPrehlidka=openPrehlidka;window.addFromUrl=addFromUrl;
+window.openModal=openModal;window.closeModal=closeModal;window.scrollSec=scrollSec;
+</script>
+</body>
+</html>
