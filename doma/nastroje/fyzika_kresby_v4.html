@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fyzika kresby · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060d0d;--s:#0d1a1a;--s2:#122020;--s3:#182828;
+  --text:#daeae6;--dim:rgba(218,234,230,.38);--dim2:rgba(218,234,230,.14);
+  --a:#3ecdc4;--a2:#1a9990;--ab:rgba(62,205,196,.07);
+  --border:rgba(62,205,196,.13);--border-hi:rgba(62,205,196,.3);
+  --sal:#ff7b6b;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(6,13,13,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.nav-brand{font-family:var(--serif);font-size:.9rem;font-weight:300;color:var(--a);letter-spacing:.06em}
+.nav-mid{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav-group-badge{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);padding:3px 8px;border:1px solid var(--border);background:var(--s);cursor:pointer;transition:all .12s}
+.nav-group-badge:hover{border-color:var(--a);color:var(--a)}
+.nav-group-badge span{color:var(--a)}
+.nav-links{display:flex;gap:3px}
+.nav-lnk{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:4px 8px;border:1px solid transparent;cursor:pointer;transition:all .12s}
+.nav-lnk:hover{color:var(--text);border-color:var(--border)}
+.mode-sw{display:flex;gap:1px;background:var(--border);border:1px solid var(--border)}
+.mode-btn{padding:5px 12px;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;background:var(--s);color:var(--dim);border:none;cursor:pointer;transition:all .12s}
+.mode-btn.active{background:var(--a);color:var(--bg)}
+
+.wrap{max-width:940px;margin:0 auto;padding:0 16px 80px}
+.sekce{padding:32px 0;border-bottom:1px solid var(--border)}
+.sekce-lbl{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--a);margin-bottom:7px}
+h1{font-family:var(--serif);font-size:clamp(1.8rem,5vw,3.2rem);font-weight:300;line-height:1.06;margin-bottom:6px}
+h1 em{font-style:italic;color:var(--a)}
+h2{font-family:var(--serif);font-size:clamp(1.1rem,2.8vw,1.6rem);font-weight:300;margin-bottom:8px}
+.sub{font-size:.72rem;color:var(--dim);max-width:480px;line-height:1.9}
+
+.btn{padding:6px 13px;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.btn:hover{color:var(--text);border-color:var(--border-hi)}
+.btn-a{background:var(--a);color:var(--bg);border-color:var(--a)}
+.btn-a:hover{background:#52ddd4}
+.btn-sal{background:var(--sal);color:#fff;border-color:var(--sal)}
+.btn-sal:hover{background:#ff9080}
+.btn-sm{padding:3px 8px;font-size:.56rem}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:.6rem}
+
+.upload-zone{border:1px dashed var(--border-hi);padding:1.6rem;text-align:center;cursor:pointer;transition:all .2s;margin:.8rem 0}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--a);background:var(--ab)}
+.upload-zone p{font-size:.72rem;color:var(--dim);margin-bottom:.7rem}
+.upload-btns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:5px;margin-top:.7rem}
+.thumb{position:relative;background:var(--s);border:1px solid var(--border);cursor:pointer;aspect-ratio:1;overflow:hidden;transition:border-color .14s}
+.thumb:hover{border-color:var(--a)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(6,13,13,.85);padding:2px 5px;font-size:.54rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb-dot{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;border:1px solid rgba(6,13,13,.5)}
+.thumb-add{border:1px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;aspect-ratio:1;transition:border-color .14s}
+.thumb-add:hover{border-color:var(--a)}
+.thumb-add .plus{font-size:1.2rem;color:var(--dim)}
+.thumb-add .lbl{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* SKUPINY PANEL */
+.skupiny-panel{background:var(--s);border:1px solid var(--border);padding:14px;margin-bottom:1rem}
+.skupiny-panel h3{font-family:var(--serif);font-size:1rem;font-weight:300;color:var(--a);margin-bottom:10px}
+.skupina-list{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;max-height:200px;overflow-y:auto}
+.skupina-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--s2);border:1px solid var(--border);cursor:pointer;transition:all .12s}
+.skupina-item:hover{border-color:var(--a)}
+.skupina-item.active{border-color:var(--a);background:var(--ab)}
+.skupina-item-name{flex:1;font-size:.72rem;color:var(--text)}
+.skupina-item-count{font-size:.6rem;color:var(--dim2)}
+.skupina-item-del{background:transparent;border:none;color:rgba(200,80,80,.4);font-size:.65rem;cursor:pointer;padding:0 3px;transition:color .1s}
+.skupina-item-del:hover{color:rgba(230,100,100,.9)}
+.new-skupina-row{display:flex;gap:6px;align-items:center}
+.new-skupina-row input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.66rem;padding:5px 8px;outline:none}
+.new-skupina-row input:focus{border-color:var(--a)}
+
+/* VIEWER */
+.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;overflow-y:auto;padding:10px}
+.viewer.open{display:block}
+.viewer-inner{max-width:900px;margin:0 auto}
+.viewer-top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.viewer-nav-btns{display:flex;gap:4px}
+.vnb{padding:4px 10px;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;background:var(--s);border:1px solid var(--border);color:var(--dim);cursor:pointer;transition:all .12s}
+.vnb:hover:not(:disabled){color:var(--a);border-color:var(--a)}
+.vnb:disabled{opacity:.25;cursor:default}
+.viewer-img-box{background:var(--s);border:1px solid var(--border);margin-bottom:6px}
+.viewer-img-box img{width:100%;max-height:46vh;object-fit:contain;display:block}
+.viewer-imgbar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-top:1px solid var(--border)}
+.viewer-imgbar input{background:transparent;border:none;color:var(--text);font-family:var(--mono);font-size:.64rem;flex:1;outline:none}
+.viewer-counter{font-size:.58rem;color:var(--dim2);flex-shrink:0}
+
+/* SLIDERS KRESBA */
+.sliders-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:6px}
+@media(max-width:600px){.sliders-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:360px){.sliders-grid{grid-template-columns:repeat(2,1fr)}}
+.sk-card{background:var(--s);border:1px solid var(--border);padding:6px 5px;display:flex;flex-direction:column;gap:3px;transition:border-color .14s}
+.sk-card.set{border-color:rgba(62,205,196,.25);background:var(--s2)}
+.sk-card.removed{opacity:.3}
+.sk-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:2px}
+.sk-card-name{font-size:.54rem;letter-spacing:.04em;color:var(--dim);flex:1;line-height:1.3}
+.sk-card.set .sk-card-name{color:var(--a)}
+.sk-status{font-size:.56rem;color:var(--dim2);flex-shrink:0}
+.sk-card.set .sk-status{color:var(--a)}
+.sk-x{background:transparent;border:none;color:rgba(200,80,80,.45);font-size:.65rem;cursor:pointer;padding:0 1px;line-height:1;transition:color .1s;flex-shrink:0}
+.sk-x:hover{color:rgba(230,100,100,.9)}
+.sk-range{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer;background:var(--s3)}
+.sk-range::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:9px;border-radius:50%;background:var(--a2);cursor:pointer}
+.sk-card.set .sk-range::-webkit-slider-thumb{background:var(--a)}
+.sk-range::-moz-range-thumb{width:9px;height:9px;border-radius:50%;background:var(--a2);border:none;cursor:pointer}
+.sk-card.set .sk-range::-moz-range-thumb{background:var(--a)}
+.sk-val{font-size:.54rem;color:var(--dim2);text-align:center}
+.sk-card.set .sk-val{color:var(--a)}
+
+/* SLIDERS PISMO */
+.sliders-pismo{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.sp-row{background:var(--s);border:1px solid var(--border);padding:6px 8px;display:grid;grid-template-columns:80px 1fr 80px;align-items:center;gap:6px;transition:border-color .14s}
+.sp-row.set{border-color:rgba(62,205,196,.22);background:var(--s2)}
+.sp-row.removed{opacity:.3}
+.sp-label-l,.sp-label-r{font-size:.58rem;color:var(--dim);line-height:1.3}
+.sp-label-l{text-align:right}
+.sp-label-r{text-align:left}
+.sp-row.set .sp-label-l,.sp-row.set .sp-label-r{color:var(--text)}
+.sp-mid{display:flex;flex-direction:column;gap:2px;align-items:center}
+.sp-name{font-size:.52rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);margin-bottom:1px}
+.sp-row.set .sp-name{color:var(--a)}
+.sp-controls{display:flex;align-items:center;gap:4px;width:100%}
+.sp-bipolar{flex:1;-webkit-appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer}
+.sp-bipolar::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--text);cursor:pointer;border:1px solid var(--s3)}
+.sp-bipolar::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--text);border:1px solid var(--s3);cursor:pointer}
+.sp-val{font-size:.6rem;min-width:20px;text-align:center;color:var(--dim2)}
+.sp-row.set .sp-val{color:var(--a)}
+.sp-x{background:transparent;border:none;color:rgba(200,80,80,.4);font-size:.62rem;cursor:pointer;padding:0 2px;transition:color .1s}
+.sp-x:hover{color:rgba(230,100,100,.9)}
+@media(max-width:500px){.sp-row{grid-template-columns:60px 1fr 60px}}
+
+/* VIZ */
+.viz-row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;margin-top:6px}
+@media(max-width:480px){.viz-row{grid-template-columns:1fr}}
+.wheel-box{text-align:center}
+.wheel-box canvas{width:150px;height:150px;display:block;margin:0 auto}
+.color-bar{height:10px;display:flex;border-radius:2px;overflow:hidden;margin:5px 0;border:1px solid var(--border)}
+.bar-seg{height:100%;transition:width .3s}
+.wheel-lbl{font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.angle-res{flex:1}
+.top-name{font-family:var(--serif);font-size:1rem;font-weight:300;margin-bottom:4px}
+.abars{display:flex;flex-direction:column;gap:2px}
+.abar-row{display:flex;align-items:center;gap:4px}
+.abar-name{min-width:90px;color:var(--dim);font-size:.56rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abar-track{flex:1;height:3px;background:var(--s3)}
+.abar-fill{height:100%;transition:width .3s}
+.abar-num{min-width:18px;text-align:right;color:var(--dim2);font-size:.54rem}
+.no-data-msg{font-size:.7rem;color:var(--dim2);font-style:italic;padding:6px 0}
+
+/* GROUP */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:.8rem}
+.gc{background:var(--s);border:1px solid var(--border);padding:9px;cursor:pointer;transition:border-color .14s}
+.gc:hover{border-color:var(--a)}
+.gc-name{font-size:.6rem;color:var(--a);margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gc canvas{display:block;margin:0 auto;max-width:110px;width:100%}
+.gc-bar{height:6px;display:flex;border-radius:1px;overflow:hidden;margin:4px 0}
+.gc-top{font-size:.58rem;color:var(--dim);text-align:center;margin-top:3px}
+.sum-wrap{overflow-x:auto;margin-top:.8rem}
+.sum-tbl{border-collapse:collapse;font-size:.6rem;white-space:nowrap}
+.sum-tbl th,.sum-tbl td{border:1px solid var(--border);padding:4px 6px;text-align:left}
+.sum-tbl th{background:var(--s);color:var(--a);font-weight:400;font-size:.54rem;letter-spacing:.07em;text-transform:uppercase}
+.sum-tbl td{color:var(--dim)}
+.v1{color:rgba(218,234,230,.28)}.v2{color:rgba(218,234,230,.6)}.v3{color:var(--text)}.vx{color:rgba(180,70,70,.4);font-size:.52rem}
+
+/* MODALS */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:300;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--s);border:1px solid var(--border-hi);max-width:420px;width:100%;padding:20px}
+.modal h3{font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:5px}
+.modal p{font-size:.72rem;color:var(--dim);line-height:1.85;margin-bottom:12px}
+.modal-btns{display:flex;gap:6px;flex-wrap:wrap}
+.url-box{background:var(--bg);border:1px solid var(--border);padding:8px;font-family:var(--mono);font-size:.6rem;color:var(--dim);word-break:break-all;margin:8px 0;user-select:all;cursor:text;max-height:70px;overflow-y:auto}
+
+/* PRINT */
+@media print{
+  nav,.viewer,.modal-bg,.btn-row,.upload-zone,.skupiny-panel,
+  #sec-upload .gallery-grid .thumb-add,
+  #sec-group .btn-row{display:none!important}
+  body{background:#fff;color:#000;font-family:Georgia,serif}
+  .print-page{page-break-after:always;padding:1.5cm;display:flex;flex-direction:column;align-items:center;min-height:95vh;justify-content:space-between}
+  .print-img{max-width:100%;max-height:60vh;object-fit:contain;filter:grayscale(100%) contrast(1.1)}
+  .print-meta{text-align:center;font-family:Georgia,serif}
+  .print-uhel{font-size:1.4rem;font-weight:300;margin-bottom:.3rem}
+  .print-name{font-size:1rem;margin-bottom:.2rem}
+  .print-bar{height:14px;display:flex;border-radius:2px;overflow:hidden;margin:.5rem auto;width:80%;max-width:300px}
+  .print-bar-seg{height:100%}
+  .print-qr{margin-top:.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Fyzika kresby · Chceš myš?</span>
+  <div class="nav-mid">
+    <div class="mode-sw">
+      <button class="mode-btn active" id="btnKresba" onclick="setMode('kresba')">Kresba</button>
+      <button class="mode-btn" id="btnPismo" onclick="setMode('pismo')">Písmo</button>
+    </div>
+    <div class="nav-group-badge" id="navGroup" onclick="openModal('modalSkupiny')">
+      skupina: <span id="navGroupName">žádná</span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <span class="nav-lnk" onclick="scrollSec('sec-upload')">Galerie</span>
+    <span class="nav-lnk" onclick="scrollSec('sec-group')">Skupina</span>
+    <span class="nav-lnk" onclick="openModal('modalSkupiny')">Správa skupin</span>
+    <span class="nav-lnk" onclick="printGroup()">Tisk</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="sekce" id="sec-upload">
+    <p class="sekce-lbl" id="secLbl">Fyzika kresby</p>
+    <h1 id="h1Title">Struktura <em>čáry</em></h1>
+    <p class="sub" id="subText">Nahraj kresby skupiny. Nastav parametry u každé. Hodnoť společně.</p>
+
+    <div class="upload-zone" id="uploadZone">
+      <p>Přetáhni sem soubory nebo klikni pro výběr — lze nahrát více najednou</p>
+      <div class="upload-btns">
+        <button class="btn btn-a" onclick="document.getElementById('fileIn').click()">Vybrat soubory</button>
+        <button class="btn" onclick="let f=document.getElementById('fileIn');f.setAttribute('capture','environment');f.click()">Vyfotit</button>
+      </div>
+      <input type="file" id="fileIn" accept="image/*" multiple style="display:none">
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <section class="sekce" id="sec-group" style="display:none">
+    <p class="sekce-lbl">Skupina</p>
+    <h2>Porovnání <em>profilů</em></h2>
+    <div class="btn-row">
+      <button class="btn btn-sm" onclick="printGroup()">Tisk / export karet</button>
+      <button class="btn btn-sm" onclick="shareGroupToUrl()">Zkopírovat URL skupiny</button>
+    </div>
+    <div class="group-grid" id="groupGrid"></div>
+    <div class="sum-wrap" id="groupSummary"></div>
+  </section>
+
+</div>
+
+<!-- VIEWER -->
+<div class="viewer" id="viewer">
+  <div class="viewer-inner">
+    <div class="viewer-top-bar">
+      <div class="viewer-nav-btns">
+        <button class="vnb" id="btnPrev" onclick="navImg(-1)">← předch.</button>
+        <button class="vnb" id="btnNext" onclick="navImg(1)">dals. →</button>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="shareCurrentUrl()">Sdílet URL</button>
+        <button class="btn btn-sm" onclick="closeViewer()">✕ zavřít</button>
+      </div>
+    </div>
+
+    <div class="viewer-img-box">
+      <img id="viewerImg" src="" alt="">
+      <div class="viewer-imgbar">
+        <span class="viewer-counter" id="viewerCounter"></span>
+        <input id="viewerName" type="text" placeholder="Jméno autora / popis díla…" oninput="updateName(this.value)">
+      </div>
+    </div>
+
+    <div id="slidersKresba"><div class="sliders-grid" id="slidersGrid"></div></div>
+    <div id="slidersPismo" style="display:none"><div class="sliders-pismo" id="pismoGrid"></div></div>
+
+    <div class="viz-row">
+      <div class="wheel-box">
+        <canvas id="wheelC" width="150" height="150"></canvas>
+        <div class="color-bar" id="colorBar"></div>
+        <div class="wheel-lbl">profil</div>
+      </div>
+      <div class="angle-res" id="angleRes"><p class="no-data-msg">Nastav alespoň jeden parametr</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT PAGES (hidden, shown only on print) -->
+<div id="printPages" style="display:none"></div>
+
+<!-- MODAL: SKUPINY -->
+<div class="modal-bg" id="modalSkupiny">
+  <div class="modal" style="max-width:460px">
+    <h3>Správa skupin</h3>
+    <p>Každý workshop je samostatná skupina. Aktivní skupina se přidává k nahrátým kresbám.</p>
+    <div class="skupina-list" id="skupinaList"></div>
+    <div class="new-skupina-row">
+      <input type="text" id="newSkupinaName" placeholder="Název nové skupiny…" onkeydown="if(event.key==='Enter')createSkupina()">
+      <button class="btn btn-a btn-sm" onclick="createSkupina()">Vytvořit</button>
+    </div>
+    <div class="modal-btns" style="margin-top:12px">
+      <button class="btn" onclick="closeModal('modalSkupiny')">Zavřít</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DRAW CHECK -->
+<div class="modal-bg" id="modalDraw">
+  <div class="modal">
+    <h3>Fotografie?</h3>
+    <p>Detekován barevný nebo fotografický obrázek. Pokračovat s analýzou struktury?</p>
+    <div class="modal-btns">
+      <button class="btn btn-a" onclick="confirmDraw(true)">Pokračovat</button>
+      <button class="btn" onclick="confirmDraw(false)">Zrušit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SHARE URL -->
+<div class="modal-bg" id="modalShare">
+  <div class="modal">
+    <h3 id="shareTitle">Sdílet profil</h3>
+    <p id="shareDesc">Tento odkaz obsahuje profil kresby.</p>
+    <div class="url-box" id="shareUrlBox"></div>
+    <div class="modal-btns">
+      <button class="btn btn-a" onclick="copyFromBox('shareUrlBox')">Kopírovat</button>
+      <button class="btn" onclick="openPrehlidka()">Přehlídka fenoménů</button>
+      <button class="btn" onclick="closeModal('modalShare')">Zavřít</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// QR generator (inline, no external lib needed — uses Google Charts API as fallback)
+function qrUrl(text){
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=80x80&data='+encodeURIComponent(text);
+}
+
+// ── ANGLES ──────────────────────────────────────────────────────
+const ANGLES=[
+  {n:'Analytický',    s:0,   c:'#e8d8b8'},
+  {n:'Kulturní',      s:30,  c:'#a8d598'},
+  {n:'Filozofický',   s:60,  c:'#90c8f8'},
+  {n:'Naivní',        s:90,  c:'#38d8c8'},
+  {n:'Jazykový',      s:120, c:'#c098c8'},
+  {n:'Metaforický',   s:150, c:'#60b880'},
+  {n:'Asociační',     s:180, c:'#d8b888'},
+  {n:'Introspektivní',s:210, c:'#f8d050'},
+  {n:'Ironický',      s:240, c:'#f89838'},
+  {n:'Groteskní',     s:270, c:'#e83858'},
+  {n:'Absurdní',      s:300, c:'#d058a8'},
+  {n:'Surrealistický',s:330, c:'#c07848'},
+];
+
+const PARAMS_K=[
+  {n:'Rovné dlouhé čáry',       ai:0},
+  {n:'Stínování, reálnost',     ai:1},
+  {n:'Perspektiva, 3D',         ai:2},
+  {n:'Jedním tahem',            ai:3},
+  {n:'Pravidelnost',            ai:4},
+  {n:'Písmo a text',            ai:5},
+  {n:'Šrafování',               ai:6},
+  {n:'Detaily',                 ai:7},
+  {n:'Sklon doprava',           ai:8},
+  {n:'Obtahování, přetahování', ai:9},
+  {n:'Vybarvování',             ai:10},
+  {n:'Nedokončené, prolínání',  ai:11},
+];
+
+const PARAMS_P=[
+  {n:'Tvary',         lbl:'Ostré',      lbr:'Kulaté',       al:1, ar:7},
+  {n:'Velikosti',     lbl:'Pravidelné', lbr:'Nepravidelné', al:2, ar:8},
+  {n:'Mezery',        lbl:'Pravidelné', lbr:'Nepravidelné', al:4, ar:10},
+  {n:'Řádkování',     lbl:'Přímé',      lbr:'Deformované',  al:5, ar:11},
+  {n:'Typ písma',     lbl:'Tiskací',    lbr:'Psací',        al:5, ar:11},
+  {n:'Poměr',         lbl:'Písmo',      lbr:'Kresba',       al:6, ar:0},
+  {n:'Dekorace',      lbl:'Serif',      lbr:'Strohé',       al:9, ar:3},
+  {n:'Obsah',         lbl:'Význam',     lbr:'Estetika',     al:2, ar:8},
+  {n:'Písmo/kresba',  lbl:'Písmo',      lbr:'Kresba',       al:4, ar:10},
+  {n:'Prvky',         lbl:'Přehnané',   lbr:'Zjedn.',       al:9, ar:3},
+  {n:'Počet slov',    lbl:'Mnoho',      lbr:'Málo',         al:0, ar:6},
+  {n:'Kompozice',     lbl:'Vyvážená',   lbr:'Tíhnoucí',     al:1, ar:7},
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+let mode='kresba';
+let images=[];
+let currentIdx=0;
+let pendingAdd=null;
+let aktivniSkupina=null; // {id, name}
+const STORAGE_KEY='fyzika_kresby_skupiny';
+
+// ── SKUPINY ──────────────────────────────────────────────────────
+function loadSkupiny(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch(e){return{}}
+}
+function saveSkupiny(data){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){}
+}
+function createSkupina(){
+  const n=document.getElementById('newSkupinaName').value.trim();
+  if(!n) return;
+  const data=loadSkupiny();
+  const id='sk_'+Date.now();
+  data[id]={id,name:n,createdAt:Date.now(),entries:[]};
+  saveSkupiny(data);
+  aktivniSkupina={id,name:n};
+  document.getElementById('newSkupinaName').value='';
+  updateNavGroup();
+  renderSkupinaList();
+}
+function deleteSkupina(id){
+  if(!confirm('Smazat skupinu a všechna její data?')) return;
+  const data=loadSkupiny();
+  delete data[id];
+  saveSkupiny(data);
+  if(aktivniSkupina?.id===id) aktivniSkupina=null;
+  updateNavGroup();
+  renderSkupinaList();
+}
+function selectSkupina(id){
+  const data=loadSkupiny();
+  if(data[id]) aktivniSkupina={id,name:data[id].name};
+  updateNavGroup();
+  renderSkupinaList();
+}
+function updateNavGroup(){
+  document.getElementById('navGroupName').textContent=aktivniSkupina?aktivniSkupina.name:'žádná';
+}
+function renderSkupinaList(){
+  const data=loadSkupiny();
+  const list=document.getElementById('skupinaList');
+  const items=Object.values(data).sort((a,b)=>b.createdAt-a.createdAt);
+  if(!items.length){list.innerHTML='<p style="font-size:.66rem;color:var(--dim2);padding:4px">Zatím žádné skupiny.</p>';return;}
+  list.innerHTML=items.map(s=>`
+    <div class="skupina-item${aktivniSkupina?.id===s.id?' active':''}" onclick="selectSkupina('${s.id}')">
+      <span class="skupina-item-name">${s.name}</span>
+      <span class="skupina-item-count">${(s.entries||[]).length} kreseb</span>
+      <button class="skupina-item-del" onclick="event.stopPropagation();deleteSkupina('${s.id}')" title="Smazat">×</button>
+    </div>`).join('');
+}
+function saveImageToSkupina(img){
+  if(!aktivniSkupina) return;
+  const data=loadSkupiny();
+  const sk=data[aktivniSkupina.id];
+  if(!sk) return;
+  const entry={id:img.id,name:img.name,mode,
+    valsK:img.valsK,valsP:img.valsP,ts:Date.now()};
+  const idx=(sk.entries||[]).findIndex(e=>e.id===img.id);
+  if(!sk.entries) sk.entries=[];
+  if(idx>=0) sk.entries[idx]=entry; else sk.entries.push(entry);
+  saveSkupiny(data);
+}
+
+// ── UPLOAD ───────────────────────────────────────────────────────
+(function setupUpload(){
+  const zone=document.getElementById('uploadZone');
+  const fi=document.getElementById('fileIn');
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleFiles([...e.dataTransfer.files])});
+  fi.addEventListener('change',e=>{handleFiles([...e.target.files]);fi.value=''});
+})();
+
+function handleFiles(files){
+  files.filter(f=>f.type.startsWith('image/')).forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>checkDrawing(f.name,ev.target.result);
+    r.readAsDataURL(f);
+  });
+}
+function checkDrawing(name,dataUrl){
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas'),ctx=c.getContext('2d');
+    c.width=60;c.height=Math.round(img.height*(60/img.width));
+    ctx.drawImage(img,0,0,c.width,c.height);
+    const d=ctx.getImageData(0,0,c.width,c.height).data;
+    let sat=0;
+    for(let i=0;i<d.length;i+=4){const mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]);sat+=mx?(mx-mn)/mx:0}
+    if(sat/(d.length/4)>0.2){pendingAdd={name,dataUrl};openModal('modalDraw');}
+    else addImage(name,dataUrl);
+  };
+  img.src=dataUrl;
+}
+function confirmDraw(yes){
+  closeModal('modalDraw');
+  if(yes&&pendingAdd) addImage(pendingAdd.name,pendingAdd.dataUrl);
+  pendingAdd=null;
+}
+function addImage(name,dataUrl){
+  images.push({id:'img_'+Date.now()+'_'+Math.random().toString(36).slice(2),
+    name:name.replace(/\.[^.]+$/,''),dataUrl,
+    valsK:new Array(PARAMS_K.length).fill(null),
+    valsP:new Array(PARAMS_P.length).fill(null)});
+  renderGallery();
+  openViewer(images.length-1);
+}
+
+// ── GALLERY ──────────────────────────────────────────────────────
+function renderGallery(){
+  const g=document.getElementById('galleryGrid');
+  g.innerHTML='';
+  images.forEach((img,i)=>{
+    const vals=mode==='kresba'?img.valsK:img.valsP;
+    const top=getTopAngle(vals);
+    const dotColor=top!==null?ANGLES[top].c:'rgba(62,205,196,.18)';
+    const t=document.createElement('div');
+    t.className='thumb';
+    t.onclick=()=>openViewer(i);
+    t.innerHTML=`<img src="${img.dataUrl}" alt=""><div class="thumb-name">${img.name||'#'+(i+1)}</div><div class="thumb-dot" style="background:${dotColor}"></div>`;
+    g.appendChild(t);
+  });
+  const add=document.createElement('div');
+  add.className='thumb-add';
+  add.onclick=()=>document.getElementById('fileIn').click();
+  add.innerHTML='<span class="plus">+</span><span class="lbl">přidat</span>';
+  g.appendChild(add);
+  renderGroup();
+}
+
+// ── VIEWER ───────────────────────────────────────────────────────
+function openViewer(idx){currentIdx=idx;document.getElementById('viewer').classList.add('open');renderViewer();}
+function closeViewer(){document.getElementById('viewer').classList.remove('open');renderGallery();}
+function navImg(dir){const ni=currentIdx+dir;if(ni>=0&&ni<images.length){currentIdx=ni;renderViewer();}}
+function renderViewer(){
+  const img=images[currentIdx];
+  document.getElementById('viewerImg').src=img.dataUrl;
+  document.getElementById('viewerName').value=img.name||'';
+  document.getElementById('viewerCounter').textContent=(currentIdx+1)+'/'+images.length;
+  document.getElementById('btnPrev').disabled=currentIdx===0;
+  document.getElementById('btnNext').disabled=currentIdx===images.length-1;
+  document.getElementById('slidersKresba').style.display=mode==='kresba'?'':'none';
+  document.getElementById('slidersPismo').style.display=mode==='pismo'?'':'none';
+  if(mode==='kresba') renderSlidersK(img);
+  else renderSlidersP(img);
+  updateViz(mode==='kresba'?img.valsK:img.valsP);
+}
+function updateName(v){if(images[currentIdx]){images[currentIdx].name=v;saveImageToSkupina(images[currentIdx]);}}
+
+// ── SLIDERS K ────────────────────────────────────────────────────
+function renderSlidersK(img){
+  const g=document.getElementById('slidersGrid');
+  g.innerHTML='';
+  PARAMS_K.forEach((p,pi)=>{
+    const v=img.valsK[pi],isSet=v!==null;
+    const card=document.createElement('div');
+    card.className='sk-card'+(isSet?' set':'');
+    card.id='sk-'+pi;
+    card.innerHTML=`<div class="sk-card-top"><span class="sk-card-name">${p.n}</span><span class="sk-status">${isSet?'✓':'·'}</span><button class="sk-x" onclick="removeK(${pi})">×</button></div>
+      <input type="range" class="sk-range" min="1" max="3" step="1" value="${isSet?v:2}" oninput="setK(${pi},+this.value)" onclick="setK(${pi},+this.value)">
+      <div class="sk-val" id="skv-${pi}">${isSet?v:'—'}</div>`;
+    g.appendChild(card);
+  });
+}
+function setK(pi,v){
+  const img=images[currentIdx];if(!img)return;
+  img.valsK[pi]=v;
+  const c=document.getElementById('sk-'+pi);
+  if(c){c.classList.add('set');c.classList.remove('removed');}
+  const ve=document.getElementById('skv-'+pi);if(ve)ve.textContent=v;
+  const st=c?.querySelector('.sk-status');if(st)st.textContent='✓';
+  updateViz(img.valsK);
+  saveImageToSkupina(img);
+}
+function removeK(pi){
+  const img=images[currentIdx];if(!img)return;
+  img.valsK[pi]=null;
+  const c=document.getElementById('sk-'+pi);
+  if(c){c.classList.remove('set');c.classList.add('removed');}
+  const ve=document.getElementById('skv-'+pi);if(ve)ve.textContent='—';
+  const st=c?.querySelector('.sk-status');if(st)st.textContent='·';
+  updateViz(img.valsK);
+}
+
+// ── SLIDERS P ────────────────────────────────────────────────────
+function renderSlidersP(img){
+  const g=document.getElementById('pismoGrid');
+  g.innerHTML='';
+  PARAMS_P.forEach((p,pi)=>{
+    const v=img.valsP[pi],isSet=v!==null;
+    const lc=ANGLES[p.al].c,rc=ANGLES[p.ar].c;
+    const trackStyle=`background:linear-gradient(to right,${lc}88 0%,${lc}22 45%,var(--s3) 50%,${rc}22 55%,${rc}88 100%)`;
+    const row=document.createElement('div');
+    row.className='sp-row'+(isSet?' set':'');
+    row.id='sp-'+pi;
+    row.innerHTML=`<span class="sp-label-l" title="${ANGLES[p.al].n}">${p.lbl}</span>
+      <div class="sp-mid"><span class="sp-name">${p.n}</span>
+        <div class="sp-controls">
+          <input type="range" class="sp-bipolar" min="-3" max="3" step="1" value="${isSet?v:0}" style="${trackStyle}" oninput="setP(${pi},+this.value)" onclick="setP(${pi},+this.value)">
+          <span class="sp-val" id="spv-${pi}">${isSet?(v>0?'+'+v:v):'—'}</span>
+          <button class="sp-x" onclick="removeP(${pi})">×</button>
+        </div>
+      </div>
+      <span class="sp-label-r" title="${ANGLES[p.ar].n}">${p.lbr}</span>`;
+    g.appendChild(row);
+  });
+}
+function setP(pi,v){
+  const img=images[currentIdx];if(!img)return;
+  img.valsP[pi]=v;
+  const row=document.getElementById('sp-'+pi);
+  if(row){row.classList.add('set');row.classList.remove('removed');}
+  const ve=document.getElementById('spv-'+pi);if(ve)ve.textContent=v===0?'0':v>0?'+'+v:v;
+  updateViz(img.valsP);
+  saveImageToSkupina(img);
+}
+function removeP(pi){
+  const img=images[currentIdx];if(!img)return;
+  img.valsP[pi]=null;
+  const row=document.getElementById('sp-'+pi);
+  if(row){row.classList.remove('set');row.classList.add('removed');}
+  const ve=document.getElementById('spv-'+pi);if(ve)ve.textContent='—';
+  updateViz(img.valsP);
+}
+
+// ── MODE ─────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.getElementById('btnKresba').classList.toggle('active',m==='kresba');
+  document.getElementById('btnPismo').classList.toggle('active',m==='pismo');
+  document.getElementById('secLbl').textContent=m==='kresba'?'Fyzika kresby':'Fyzika písma';
+  document.getElementById('h1Title').innerHTML=m==='kresba'?'Struktura <em>čáry</em>':'Struktura <em>písma</em>';
+  document.getElementById('subText').textContent=m==='kresba'?'Nahraj kresby skupiny. Nastav parametry. Hodnoť společně.':'Nahraj vzorky písma. Nastav parametry. Porovnej skupinu.';
+  if(images[currentIdx]) renderViewer();
+}
+
+// ── CALC ─────────────────────────────────────────────────────────
+function calcScores(vals,m){
+  const scores=new Array(12).fill(0);
+  const prms=m==='kresba'?PARAMS_K:PARAMS_P;
+  vals.forEach((v,pi)=>{
+    if(v===null||!prms[pi]) return;
+    if(m==='kresba') scores[prms[pi].ai]+=v;
+    else{if(v<0)scores[prms[pi].al]+=Math.abs(v);else if(v>0)scores[prms[pi].ar]+=v;}
+  });
+  return scores;
+}
+function getTopAngle(vals){
+  const s=calcScores(vals,mode);
+  const mx=Math.max(...s);
+  return mx===0?null:s.indexOf(mx);
+}
+
+// ── VIZ ──────────────────────────────────────────────────────────
+function updateViz(vals){
+  drawWheel(vals,mode,'wheelC');
+  renderColorBar(calcScores(vals,mode),'colorBar');
+  renderResult(calcScores(vals,mode),'angleRes');
+}
+function drawWheel(vals,m,cid){
+  const canvas=document.getElementById(cid);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,CX=W/2,CY=H/2,RMAX=CX-14,RMIN=18;
+  ctx.clearRect(0,0,W,H);
+  const scores=calcScores(vals,m),mx=Math.max(...scores,1),sa=(Math.PI*2)/12;
+  ANGLES.forEach((a,i)=>{
+    const pct=scores[i]/mx,r=RMIN+(RMAX-RMIN)*pct;
+    const startA=-Math.PI/2+i*sa+0.06,endA=startA+sa-0.12;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,r,startA,endA);ctx.closePath();
+    ctx.fillStyle=a.c+(pct>0?'cc':'14');ctx.fill();
+    ctx.strokeStyle=a.c+(pct>0?'66':'18');ctx.lineWidth=1;ctx.stroke();
+    const midA=startA+(sa-0.12)/2;
+    ctx.save();
+    ctx.translate(CX+Math.cos(midA)*(RMAX+10),CY+Math.sin(midA)*(RMAX+10));
+    ctx.rotate(midA+Math.PI/2);
+    ctx.fillStyle=pct>0.4?'#fff':a.c+'88';
+    ctx.font='300 5px "DM Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(a.n.substring(0,6),0,0);
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#060d0d';ctx.fill();
+  ctx.strokeStyle='rgba(62,205,196,.14)';ctx.lineWidth=1;ctx.stroke();
+}
+function renderColorBar(scores,elId){
+  const el=document.getElementById(elId);if(!el)return;
+  const total=scores.reduce((a,b)=>a+b,0);
+  el.innerHTML='';
+  if(!total)return;
+  scores.forEach((s,i)=>{
+    if(!s)return;
+    const seg=document.createElement('div');
+    seg.className='bar-seg';
+    seg.style.width=Math.round((s/total)*100)+'%';
+    seg.style.background=ANGLES[i].c;
+    seg.title=ANGLES[i].n+': '+s;
+    el.appendChild(seg);
+  });
+}
+function renderResult(scores,elId){
+  const el=document.getElementById(elId);if(!el)return;
+  const mx=Math.max(...scores);
+  if(!mx){el.innerHTML='<p class="no-data-msg">Nastav alespoň jeden parametr</p>';return;}
+  const sorted=scores.map((s,i)=>({i,s})).sort((a,b)=>b.s-a.s);
+  const top=sorted[0];
+  let h=`<div class="top-name" style="color:${ANGLES[top.i].c}">${ANGLES[top.i].n}</div><div class="abars">`;
+  sorted.forEach(({i,s})=>{
+    if(!s)return;
+    const pct=Math.round((s/mx)*100);
+    h+=`<div class="abar-row"><span class="abar-name">${ANGLES[i].n}</span><div class="abar-track"><div class="abar-fill" style="width:${pct}%;background:${ANGLES[i].c}88"></div></div><span class="abar-num">${s}</span></div>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+// ── GROUP VIZ ────────────────────────────────────────────────────
+function renderGroup(){
+  const profiled=images.filter(img=>(mode==='kresba'?img.valsK:img.valsP).some(v=>v!==null));
+  const sec=document.getElementById('sec-group');
+  if(profiled.length<2){sec.style.display='none';return;}
+  sec.style.display='block';
+  const grid=document.getElementById('groupGrid');
+  grid.innerHTML='';
+  profiled.forEach((img,gi)=>{
+    const vals=mode==='kresba'?img.valsK:img.valsP;
+    const scores=calcScores(vals,mode);
+    const mx=Math.max(...scores);
+    const topI=mx>0?scores.indexOf(mx):null;
+    const cid='gc'+gi,bid='gb'+gi;
+    const card=document.createElement('div');
+    card.className='gc';
+    card.onclick=()=>openViewer(images.indexOf(img));
+    card.innerHTML=`<div class="gc-name">${img.name||'#'+(gi+1)}</div>
+      <canvas id="${cid}" width="110" height="110"></canvas>
+      <div class="gc-bar" id="${bid}"></div>
+      <div class="gc-top" style="color:${topI!==null?ANGLES[topI].c:'var(--dim)'}">${topI!==null?ANGLES[topI].n:'—'}</div>`;
+    grid.appendChild(card);
+    requestAnimationFrame(()=>{
+      drawWheelScores(scores,cid);
+      renderBarScores(scores,bid);
+    });
+  });
+  renderGroupTable(profiled);
+}
+function drawWheelScores(scores,cid){
+  const canvas=document.getElementById(cid);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,CX=W/2,CY=H/2,RMAX=CX-10,RMIN=14;
+  ctx.clearRect(0,0,W,H);
+  const mx=Math.max(...scores,1),sa=(Math.PI*2)/12;
+  ANGLES.forEach((a,i)=>{
+    const pct=scores[i]/mx,r=RMIN+(RMAX-RMIN)*pct;
+    const startA=-Math.PI/2+i*sa+0.06,endA=startA+sa-0.12;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,r,startA,endA);ctx.closePath();
+    ctx.fillStyle=a.c+(pct>0?'bb':'0f');ctx.fill();
+    ctx.strokeStyle=a.c+(pct>0?'55':'0a');ctx.lineWidth=1;ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle='#060d0d';ctx.fill();
+}
+function renderBarScores(scores,elId){
+  const el=document.getElementById(elId);if(!el)return;
+  const total=scores.reduce((a,b)=>a+b,0);el.innerHTML='';
+  if(!total)return;
+  scores.forEach((s,i)=>{
+    if(!s)return;
+    const seg=document.createElement('div');seg.className='bar-seg';
+    seg.style.width=Math.round((s/total)*100)+'%';seg.style.background=ANGLES[i].c;
+    el.appendChild(seg);
+  });
+}
+function renderGroupTable(profiled){
+  let h='<p style="font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--a);margin:1rem 0 .4rem">Přehled skupiny</p>';
+  h+='<table class="sum-tbl"><tr><th>Autor / dílo</th>';
+  ANGLES.forEach(a=>h+=`<th title="${a.n}">${a.s}°</th>`);
+  h+='<th>Dom. úhel</th></tr>';
+  profiled.forEach(img=>{
+    const vals=mode==='kresba'?img.valsK:img.valsP;
+    const scores=calcScores(vals,mode);
+    const mx=Math.max(...scores);
+    const topI=mx>0?scores.indexOf(mx):null;
+    h+=`<tr><td style="color:var(--text)">${img.name||'—'}</td>`;
+    scores.forEach((s,i)=>{
+      const cls=!s?'vx':s<=2?'v1':s<=4?'v2':'v3';
+      h+=`<td class="${cls}" style="${s?'color:'+ANGLES[i].c+'99':''}">${s||'—'}</td>`;
+    });
+    h+=`<td style="color:${topI!==null?ANGLES[topI].c:'var(--dim)'}">${topI!==null?ANGLES[topI].n:'—'}</td></tr>`;
+  });
+  const avg=new Array(12).fill(0);
+  profiled.forEach(img=>{const scores=calcScores(mode==='kresba'?img.valsK:img.valsP,mode);scores.forEach((s,i)=>avg[i]+=s);});
+  const avgMx=Math.max(...avg);
+  const avgTopI=avgMx>0?avg.indexOf(avgMx):null;
+  h+=`<tr style="background:var(--s2)"><td style="color:var(--a)">Průměr</td>`;
+  avg.forEach((s,i)=>{const v=Math.round(s/profiled.length*10)/10;h+=`<td style="color:${ANGLES[i].c}88">${v||'—'}</td>`;});
+  h+=`<td style="color:${avgTopI!==null?ANGLES[avgTopI].c:'var(--dim)'}">${avgTopI!==null?ANGLES[avgTopI].n:'—'}</td></tr>`;
+  h+='</table>';
+  document.getElementById('groupSummary').innerHTML=h;
+}
+
+// ── PRINT ────────────────────────────────────────────────────────
+function printGroup(){
+  const profiled=images.filter(img=>(mode==='kresba'?img.valsK:img.valsP).some(v=>v!==null));
+  if(!profiled.length){alert('Nejdřív nastav parametry alespoň u jedné kresby.');return;}
+  const pp=document.getElementById('printPages');
+  pp.innerHTML='';
+  pp.style.display='block';
+  profiled.forEach(img=>{
+    const vals=mode==='kresba'?img.valsK:img.valsP;
+    const scores=calcScores(vals,mode);
+    const mx=Math.max(...scores);
+    const topI=mx>0?scores.indexOf(mx):null;
+    const topName=topI!==null?ANGLES[topI].n:'—';
+    const topColor=topI!==null?ANGLES[topI].c:'#888';
+    const total=scores.reduce((a,b)=>a+b,0);
+    const barSegs=scores.map((s,i)=>s?`<div class="print-bar-seg" style="width:${Math.round((s/total)*100)}%;background:${ANGLES[i].c}"></div>`:'').join('');
+    const shareUrl=buildImgUrl(img);
+    const page=document.createElement('div');
+    page.className='print-page';
+    page.innerHTML=`
+      <div class="print-meta" style="width:100%">
+        <div class="print-uhel" style="color:${topColor}">${topName}</div>
+        <div class="print-name">${img.name||'—'}</div>
+      </div>
+      <img class="print-img" src="${img.dataUrl}" alt="${img.name}">
+      <div style="width:80%;max-width:300px;margin:0 auto">
+        <div class="print-bar">${barSegs}</div>
+        ${shareUrl?`<div class="print-qr"><img src="${qrUrl(shareUrl)}" width="80" height="80" alt="QR"><br><span style="font-size:.55rem;color:#666">${shareUrl.substring(0,60)}…</span></div>`:''}
+      </div>`;
+    pp.appendChild(page);
+  });
+  setTimeout(()=>{window.print();setTimeout(()=>{pp.style.display='none';pp.innerHTML=''},500);},100);
+}
+
+// ── URL SHARING ──────────────────────────────────────────────────
+function buildImgUrl(img){
+  const vals=mode==='kresba'?img.valsK:img.valsP;
+  const vStr=vals.map(v=>v===null?'x':v).join('_');
+  const base=location.href.split('?')[0].split('#')[0];
+  const u=new URL(base);
+  u.searchParams.set('m',mode);
+  u.searchParams.set('n',encodeURIComponent(img.name||''));
+  u.searchParams.set('r',vStr);
+  if(aktivniSkupina) u.searchParams.set('sk',aktivniSkupina.id);
+  return u.toString();
+}
+function shareCurrentUrl(){
+  const img=images[currentIdx];if(!img)return;
+  const url=buildImgUrl(img);
+  document.getElementById('shareTitle').textContent='Sdílet profil: '+img.name;
+  document.getElementById('shareDesc').textContent='Odkaz obsahuje profil této kresby. Lze přidat do Přehlídky fenoménů.';
+  document.getElementById('shareUrlBox').textContent=url;
+  saveImageToSkupina(img);
+  openModal('modalShare');
+}
+function shareGroupToUrl(){
+  const profiled=images.filter(img=>(mode==='kresba'?img.valsK:img.valsP).some(v=>v!==null));
+  if(!profiled.length){alert('Žádné profily k sdílení.');return;}
+  const urls=profiled.map(img=>buildImgUrl(img)).join('\n');
+  document.getElementById('shareTitle').textContent='URL skupiny ('+profiled.length+' profilů)';
+  document.getElementById('shareDesc').textContent='Jednotlivé URL profilů — každý zvlášť do Přehlídky fenoménů.';
+  document.getElementById('shareUrlBox').textContent=urls;
+  openModal('modalShare');
+}
+function copyFromBox(id){
+  const t=document.getElementById(id)?.textContent;
+  if(t) navigator.clipboard?.writeText(t).then(()=>alert('Zkopírováno!')).catch(()=>{});
+}
+function openPrehlidka(){
+  const url=document.getElementById('shareUrlBox').textContent.split('\n')[0];
+  window.open('https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/?otisk='+encodeURIComponent(url),'_blank');
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');if(id==='modalSkupiny')renderSkupinaList();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function scrollSec(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
+document.querySelectorAll('.modal-bg').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});});
+
+// ── EXPOSE ───────────────────────────────────────────────────────
+window.setMode=setMode;window.confirmDraw=confirmDraw;window.closeViewer=closeViewer;
+window.navImg=navImg;window.updateName=updateName;window.setK=setK;window.removeK=removeK;
+window.setP=setP;window.removeP=removeP;window.openModal=openModal;window.closeModal=closeModal;
+window.scrollSec=scrollSec;window.createSkupina=createSkupina;window.deleteSkupina=deleteSkupina;
+window.selectSkupina=selectSkupina;window.shareCurrentUrl=shareCurrentUrl;
+window.shareGroupToUrl=shareGroupToUrl;window.copyFromBox=copyFromBox;
+window.openPrehlidka=openPrehlidka;window.printGroup=printGroup;
+</script>
+</body>
+</html>
