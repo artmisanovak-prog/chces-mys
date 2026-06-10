@@ -12,6 +12,7 @@
 
   ---
 
+- [fyzika_kresby_v4.1](doma/nastroje/fyzika_kresby_v4_1.html)
 - [fyzika_kresby_v4](doma/nastroje/fyzika_kresby_v4.html)
 - [fyzika_kresby_v3](doma/nastroje/fyzika_kresby_v3.html)
 - [fyzika_kresby_v2](doma/nastroje/fyzika_kresby_v2.html)
