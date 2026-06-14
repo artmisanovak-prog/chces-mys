@@ -33,7 +33,8 @@
 
 --- 
 
-[workshop_pav](doma/nastroje/workshop_pav.html)
+- [workshop_pav](doma/nastroje/workshop_pav.html)
+- [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
 
 ---
 
