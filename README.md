@@ -200,6 +200,10 @@ kreativita, fyzika jazyka, metadenik
 
 ---
 
+[ryba_ukoly](doma/data/ukoly/ryba_ukoly.html)
+
+---
+
 - [kocour figury](doma/data/figury/kocour_figury.html)
 - [ryba figury](doma/data/figury/ryba_figury.html)
 - [zajic figury](doma/data/figury/zajic_figury.html)
