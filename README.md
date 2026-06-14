@@ -55,8 +55,9 @@
 
 - [carofyzika](doma/nastroje/carofyzika.html)
 - [carofyzika1](doma/nastroje/carofyzika1.html)
-  - [carofyzika1](doma/nastroje/carofyzika1.html)
-  - [carofyzika2](doma/nastroje/carofyzika2.html)
+- [carofyzika2](doma/nastroje/carofyzika2.html)
+- [carofyzika3](doma/nastroje/carofyzika3.html)
+- [carofyzika4](doma/nastroje/carofyzika4.html)
   
 - [multigenerator](doma/nastroje/multigenerator.html)
 
