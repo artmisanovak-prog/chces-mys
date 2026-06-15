@@ -145,6 +145,10 @@ kreativita, fyzika jazyka, metadenik
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [diagnostika tymu](doma/mimo/diagnostika_tymu.html)
 
+---
+
+- [kocour_uhly](doma/karty/uhly/uhly_kocour.html)
+- [kocour_uhly1](doma/karty/uhly/uhly_kocour1.html)
   
 ---
 
