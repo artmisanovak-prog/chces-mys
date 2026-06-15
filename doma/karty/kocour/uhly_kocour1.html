@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kocour — 12 úhlů pohledu | Chceš myš?</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+        :root {
+            --bg: #0a0404;
+            --bg-el: #140808;
+            --text: #f0e8e8;
+            --dim: #604040;
+            --mid: #906060;
+            --accent: #800000;
+            --accent-dim: #1a0a0a;
+            --border: #1e0808;
+            --highlight: rgba(128, 0, 0, 0.2);
+            --serif: 'Inter', serif;
+            --mono: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--mono);
+            background: var(--bg);
+            color: var(--text);
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .wrap {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-el);
+            backdrop-filter: blur(14px);
+            padding: 11px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-back {
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--dim);
+            transition: color .2s;
+        }
+        .nav-back:hover {
+            color: var(--text);
+        }
+        .nav-links {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            font-size: 10px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--dim);
+            padding: 4px 9px;
+            border: 1px solid transparent;
+            transition: all .12s;
+        }
+        .nav-link:hover {
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .nav-link.active {
+            color: var(--accent);
+            border-color: var(--accent-dim);
+        }
+
+        .hero {
+            padding: 0 0 44px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        .hero-img {
+            width: 100%;
+            max-height: 460px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            position: relative;
+            background: var(--bg-el);
+        }
+        .hero-img img {
+            width: 100%;
+            height: auto;
+            max-height: 460px;
+            object-fit: contain;
+            filter: grayscale(100%) contrast(1.1) brightness(0.9);
+            display: block;
+            margin: 0 auto;
+        }
+        .hero-label {
+            font-size: 10px;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-family: var(--serif);
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            font-weight: 400;
+            line-height: 1.0;
+            margin-bottom: 6px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .hero-veta {
+            font-family: var(--serif);
+            font-size: clamp(.88rem, 2vw, 1.1rem);
+            font-style: italic;
+            color: var(--dim);
+            border-left: 1px solid var(--accent);
+            padding-left: 16px;
+            max-width: 460px;
+            margin: 14px auto 20px;
+            line-height: 1.9;
+            text-align: left;
+        }
+        .fenomen-box {
+            border: 1px solid var(--accent-dim);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            background: var(--highlight);
+            text-align: left;
+        }
+        .fenomen-label {
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .fenomen-text {
+            font-size: 12px;
+            color: var(--mid);
+            line-height: 1.85;
+            font-family: var(--serif);
+        }
+        .audio-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            color: var(--mid);
+            font-size: .68rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            transition: all .15s;
+            margin-bottom: 16px;
+        }
+        .audio-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .var-bar {
+            display: flex;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .var-btn {
+            flex: 1;
+            padding: 11px 6px;
+            background: var(--bg-el);
+            border: none;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: .7rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--dim);
+            transition: all .12s;
+            text-align: center;
+        }
+        .var-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+        .var-btn.active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .var-popis {
+            padding: 9px 12px;
+            font-size: .74rem;
+            color: var(--dim);
+            border: 1px solid var(--border);
+            border-top: none;
+            background: var(--bg-el);
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+            text-align: center;
+        }
+
+        .sekce {
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .sekce-label {
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        h2 {
+            font-family: var(--serif);
+            font-size: clamp(1.3rem, 3.5vw, 2rem);
+            font-weight: 400;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .scroll-box {
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            background: var(--bg-el);
+            padding: 18px 22px;
+            font-family: var(--serif);
+            font-size: .9rem;
+            line-height: 2.05;
+            color: rgba(240, 232, 232, 0.82);
+            white-space: pre-wrap;
+        }
+        .scroll-box::-webkit-scrollbar {
+            width: 2px;
+        }
+        .scroll-box::-webkit-scrollbar-thumb {
+            background: var(--accent-dim);
+        }
+        .pd {
+            display: block;
+            padding: .12em 0;
+        }
+        .pd.br {
+            padding: .4em 0;
+        }
+
+        [data-fig] {
+            cursor: help;
+        }
+        .f-absurdni.hl {
+            border-bottom: 2px dashed var(--accent) !important;
+        }
+        .f-jazykovy.hl {
+            border-bottom: 1px dotted var(--accent) !important;
+        }
+        .f-ironicky.hl {
+            background: var(--highlight) !important;
+            padding: 0 2px;
+        }
+        .f-filozoficky.hl {
+            text-decoration: line-through !important;
+            text-decoration-color: var(--accent) !important;
+        }
+        .f-surrealisticky.hl {
+            text-decoration: underline wavy var(--accent) !important;
+        }
+        .f-naivni.hl {
+            border-left: 2px solid var(--accent);
+            padding-left: 4px;
+        }
+        .f-introspektivni.hl {
+            border-bottom: 1px solid var(--accent) !important;
+        }
+        .f-groteskni.hl {
+            font-style: italic;
+            background: var(--highlight);
+            padding: 0 2px;
+        }
+        .f-analyticky.hl {
+            border: 1px dotted var(--accent);
+            padding: 0 2px;
+        }
+        .f-metaforicky.hl {
+            border-bottom: 3px solid var(--accent) !important;
+        }
+
+        .legenda-row {
+            margin-top: 6px;
+            padding: 7px 12px;
+            background: var(--bg-el);
+            border: 1px solid var(--border);
+            font-size: .62rem;
+            color: var(--dim);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 14px;
+            line-height: 2;
+        }
+        .fig-tbl {
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+        .fig-tbl-hdr {
+            font-size: 9px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-el);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .fig-vse-btn {
+            font-family: var(--mono);
+            font-size: .58rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--dim);
+            cursor: pointer;
+            padding: 3px 8px;
+            transition: all .1s;
+        }
+        .fig-vse-btn:hover,
+        .fig-vse-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .fig-r {
+            display: grid;
+            grid-template-columns: 28px 1fr 28px;
+            gap: 6px;
+            padding: 7px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            transition: background .1s;
+            font-size: .72rem;
+        }
+        .fig-r:last-child {
+            border-bottom: none;
+        }
+        .fig-r:hover {
+            background: var(--bg);
+        }
+        .fig-r.hl {
+            background: var(--highlight);
+            color: var(--accent);
+        }
+        .fig-r-mark {
+            text-align: center;
+            font-size: .7rem;
+            width: 24px;
+        }
+        .fig-r-cnt {
+            font-size: .58rem;
+            color: var(--dim);
+            text-align: right;
+        }
+
+        .diag-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .78);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .diag-modal.open {
+            display: flex;
+        }
+        .diag-box {
+            background: var(--bg-el);
+            border: 1px solid var(--accent-dim);
+            max-width: 540px;
+            width: 100%;
+            padding: 22px;
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+        .diag-box::-webkit-scrollbar {
+            width: 2px;
+        }
+        .diag-box::-webkit-scrollbar-thumb {
+            background: var(--accent-dim);
+        }
+        .diag-close {
+            float: right;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--dim);
+            font-family: var(--mono);
+            font-size: .6rem;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all .12s;
+        }
+        .diag-close:hover {
+            color: var(--text);
+            border-color: var(--accent-dim);
+        }
+        .diag-question {
+            font-family: var(--serif);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .diag-ta {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 9px 12px;
+            font-family: var(--mono);
+            font-size: .8rem;
+            line-height: 1.7;
+            resize: vertical;
+            min-height: 54px;
+        }
+        .diag-ta:focus {
+            outline: 1px solid var(--accent);
+        }
+        .diag-ta::placeholder {
+            color: var(--dim);
+            font-style: italic;
+        }
+        .navrh-btn {
+            display: block;
+            width: 100%;
+            padding: 9px 14px;
+            margin-top: 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: .76rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all .12s;
+        }
+        .navrh-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .uhly-intro {
+            font-size: .76rem;
+            color: var(--dim);
+            margin-bottom: 16px;
+            line-height: 1.8;
+            text-align: center;
+            font-family: var(--serif);
+            font-style: italic;
+        }
+        .uhel {
+            border-bottom: 1px solid var(--border);
+        }
+        .uhel-h {
+            display: grid;
+            grid-template-columns: 44px 1fr auto auto;
+            padding: 14px 0;
+            cursor: pointer;
+            align-items: center;
+            gap: 6px;
+        }
+        .uhel-h:hover .uhel-nazev {
+            color: var(--accent);
+        }
+        .u-num {
+            font-family: var(--serif);
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--accent-dim);
+            line-height: 1;
+        }
+        .uhel.open .u-num {
+            color: var(--accent);
+        }
+        .uhel-nazev {
+            font-size: .84rem;
+            color: var(--text);
+        }
+        .uhel-poet {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: .76rem;
+            color: var(--accent);
+            display: block;
+            margin-top: 1px;
+        }
+        .u-deg {
+            font-size: .6rem;
+            color: var(--accent);
+            font-family: var(--mono);
+        }
+        .u-tog {
+            font-size: .64rem;
+            color: var(--dim);
+            transition: transform .2s;
+        }
+        .uhel.open .u-tog {
+            transform: rotate(180deg);
+        }
+        .uhel-body {
+            display: none;
+            padding: 0 0 20px 44px;
+        }
+        .uhel-body.open {
+            display: block;
+        }
+        .uhel-co {
+            font-size: .74rem;
+            color: var(--dim);
+            margin-bottom: 12px;
+            line-height: 1.8;
+            font-family: var(--serif);
+        }
+        .dl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            margin-bottom: 2px;
+        }
+        @media(max-width:460px) {
+            .dl-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .dl {
+            background: var(--bg-el);
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background .1s;
+        }
+        .dl:hover,
+        .dl.open {
+            background: var(--bg);
+        }
+        .dl-icon {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .dl-label {
+            font-size: .62rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+        .dl-text {
+            font-size: .68rem;
+            color: var(--dim);
+            line-height: 1.45;
+        }
+        .dl-detail {
+            display: none;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 14px 16px;
+            margin-bottom: 2px;
+        }
+        .dl-detail.open {
+            display: block;
+        }
+        .dl-lbl {
+            font-size: .6rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 5px;
+            margin-top: 10px;
+        }
+        .dl-lbl:first-child {
+            margin-top: 0;
+        }
+        .dl-txt {
+            font-size: .78rem;
+            color: rgba(240, 232, 232, .67);
+            line-height: 1.8;
+        }
+        .dl-txt em {
+            font-style: italic;
+            color: var(--text);
+        }
+        .fig-uhel-item {
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .fig-uhel-item:last-child {
+            border-bottom: none;
+        }
+        .fui-nazev {
+            font-size: .72rem;
+            color: var(--accent);
+            margin-bottom: 3px;
+        }
+        .fui-ukazka {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: .82rem;
+            color: rgba(240, 232, 232, .8);
+            margin-bottom: 3px;
+        }
+        .fui-proc {
+            font-size: .7rem;
+            color: var(--dim);
+            line-height: 1.7;
+            margin-bottom: 2px;
+        }
+        .fui-uhel {
+            font-size: .62rem;
+            color: var(--accent-dim);
+            font-style: italic;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-family: var(--mono);
+            font-size: .66rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all .12s;
+            display: inline-block;
+        }
+        .btn-p {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-p:hover {
+            background: #a00000;
+        }
+        .btn-g {
+            background: transparent;
+            color: var(--dim);
+            border: 1px solid var(--border);
+        }
+        .btn-g:hover {
+            color: var(--text);
+            border-color: var(--accent-dim);
+        }
+        .btn-row {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        footer {
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: .68rem;
+            color: var(--dim);
+        }
+        footer a {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="nav-back" href="../../../index.html">← Všechna zvířata</a>
+        <div class="nav-links">
+            <a class="nav-link active" href="index.html">Pohádka</a>
+            <a class="nav-link" href="#" onclick="alert('Brzy')">Figury ↗</a>
+            <a class="nav-link" href="#" onclick="alert('Brzy')">Zápisník ↗</a>
+            <a class="nav-link" href="#" onclick="alert('Brzy')">Analyzátor ↗</a>
+        </div>
+    </nav>
+    <div class="wrap">
+        <section class="hero">
+            <div class="hero-img">
+                <img src="../../ilustrace/kocour.jpg" alt="Kocour" onerror="this.parentElement.style.display='none'">
+            </div>
+            <p class="hero-label">Fyzika jazyka · Karta Kocour</p>
+            <h1>Kocour</h1>
+            <p class="hero-veta">„Kocour sežral dvě berušky a půl hodiny krkal tečky."</p>
+            <div class="fenomen-box">
+                <div class="fenomen-label">Fenomén Kocoura — trávení interpunkce</div>
+                <p class="fenomen-text">Kocour sežral dvě berušky, každá sedm teček měla. A pak začal krkat. Půl hodiny dokončoval věty – ne své, cizí. Každý konec byl dřív, než měl být. Berušky nosí na zádech nespolknuté konce. A tečka je někdy silnější než celá věta.</p>
+            </div>
+            <a class="audio-link" href="https://youtu.be/SxgvtgWYWog" target="_blank" rel="noopener">▶ Poslechnout pohádku ↗</a>
+            <div class="var-bar">
+                <button class="var-btn active" onclick="setVar('A',this)">🎲 Náhodně</button>
+                <button class="var-btn" onclick="setVar('B',this)">🧭 Podle nálady</button>
+                <button class="var-btn" onclick="setVar('C',this)">🔍 Diagnosticky</button>
+            </div>
+            <div class="var-popis" id="var-popis">Zavřete oči, ťukněte prstem — a jděte na úhel, který vybere prst.</div>
+        </section>
+
+        <section class="sekce" id="pohadka">
+            <p class="sekce-label">Pohádka · čtěte pomalu</p>
+            <h2>O kocourovi, <em>který krkal tečky.</em></h2>
+            <p style="font-size:.72rem;color:var(--dim);margin-bottom:12px;text-align:center">Přejeďte myší přes podtržené místo pro popis figury. Kliknutím na figuru v tabulce se označí v textu.</p>
+            <div class="scroll-box" id="poh-text"></div>
+            <div class="legenda-row" id="legenda"></div>
+            <div class="fig-tbl" id="fig-tbl"></div>
+        </section>
+
+        <section class="sekce" id="uhly">
+            <p class="sekce-label">12 úhlů pohledu</p>
+            <h2>Vyberte úhel pohledu</h2>
+            <p class="uhly-intro">Každý úhel vidí pohádku jinak — a přesto pravdivě.</p>
+            <div id="uhly-list"></div>
+        </section>
+
+        <footer>
+            <p>Karta Kocour · Fyzika jazyka · Chceš myš? · © 2026 Michaela Nováková</p>
+            <p>kontakt <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a></p>
+        </footer>
+    </div>
+
+    <div class="diag-modal" id="diag-modal">
+        <div class="diag-box">
+            <button class="diag-close" onclick="closeDiag()">✕ zavřít</button>
+            <div class="diag-question">Co vás v pohádce nejvíc zaujalo?</div>
+            <textarea class="diag-ta" id="diag-input" placeholder="Napište větu, moment nebo obraz..."></textarea>
+            <div style="display:flex;gap:6px;margin-top:12px">
+                <button class="btn btn-p" onclick="runDiag()">Zjistit úhel →</button>
+                <button class="btn btn-g" onclick="closeDiag()">Zrušit</button>
+            </div>
+            <div id="diag-res" style="display:none;margin-top:14px;border:1px solid var(--accent);padding:14px;background:var(--bg)">
+                <div style="font-size:.7rem;color:var(--accent);margin-bottom:4px">Navrhovaný úhel</div>
+                <div style="font-family:var(--serif);font-size:1.1rem;font-weight:300;margin-bottom:4px" id="d-nazev"></div>
+                <div style="font-size:.72rem;color:var(--dim);margin-bottom:10px" id="d-sub"></div>
+                <div id="d-btns"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rawPohadka = `O KOCOUROVI
+
+Jak kocour sežral dvě berušky a půl hodiny krkal tečky
+
+
+Sležral dvě - ne tři, ne jednu - dvě - přesně - 14 teček a trvalo to půl hodiny - 30 minut - přesně.
+
+Jak to přišlo tak to přestalo.
+
+Ráz na ráz.
+
+Chňap a hlt a chlamst - nebo něco takového a nakonec - mlask, mlask - dvakrát - přesně.
+
+Žily byly dvě berušky, každá sedm teček měla, když uviděl je jeden kocour byla to mela.
+
+Aspoň pro ně.
+
+Po 14ti tečkách
+v jednom mžiku
+zem se slehla.
+
+Rozhodně aspoň kocour se svými útrobami.
+
+Ale ta myš, vždycky zvědavá byla.
+Odmalička chodívala
+a kde mohla se vyptávala,
+kde se tečky na beruškách vzaly?
+K čemu je maji?
+Proč si radši nevytvoří pravý maskování?
+
+A ta přesná matika..
+Kdo vlastně z těch, co s nimi přijdou do styku, takhle přesně počítá?
+
+No a toho dne - náhle - se to stalo
+a myš svou odpověď měla.
+
+Kocour mlaskl a pak znovu
+a hned na to začalo to.
+
+Půl hodiny a bylo to zaznamenáno - přesně.
+
+Kocour krkal tečky a dokončoval věty!
+Někdy celé souvětí!!
+
+Jenomže tím zároveň skákal lidem do řeči,
+tím že za ně dokončoval, co nedokončili.
+
+Skočil všem do řeči koncem věty
+
+ale vždycky o něco málo
+
+někdy i o docela dost
+
+dřív, než měla věta původně skončit
+
+nebo - než původně věta skončit měla.
+
+A celou půlhodinu nemohl tenkrát nikdo nic
+
+ne - dokončit.
+
+Nešlo to.
+
+Každému dřív.
+
+než se k tomu dostal.
+
+všem kocour větu ukončil.
+
+Hned.
+
+Kocour se tomu smál,
+ale krkal dál.
+A krkal, dokud neskončil.
+
+Představte si to:
+Skončil větu a pak skončil krkat.
+
+A lidé zase začali moct své věty ukončovat sami.
+Hned.
+
+Jenže, jak se to tak občas stává,
+přestože nikdo nevěděl co,
+každý věděl,
+že něco nebylo stejné.
+
+A to, co jednou není stejné dnes,
+to není jednou stejné nikdy.
+
+Jen nedokončené věty bývají všechny stejné. Jednou, dnes i zítra.
+
+Berušky mají na sobě nedokončené konce vět. Věci, které jsou nespolknuté.
+
+Kocour to nevěděl - a dvě spolknul.
+
+Spolknuté konce ale vykrkal zpátky
+a lide se naučili,
+že všechno se spolknout nedá.
+A že tečka je někdy silnější, než celá věta.
+
+Kocour se nažral a myš i věty zůstali celé.
+
+Díky bohu za to.
+
+Štěstí dvou berušek se vrátilo zpátky.
+
+Ale všimly si toho jen kocour a malá myš.
+A ani jeden neříkali nic.
+
+KONEC`;
+
+        const figuryDef = [
+            { id: 'analyticky1', nazev: 'Analytický výčet', cls: 'f-analyticky', mark: '─', fraze: ['Sležral dvě - ne tři, ne jednu - dvě - přesně - 14 teček', 'půl hodiny - 30 minut - přesně.', 'přesná matika..', 'Půl hodiny a bylo to zaznamenáno - přesně.'] },
+            { id: 'jazykovy1', nazev: 'Jazyková hra', cls: 'f-jazykovy', mark: '─', fraze: ['Chňap a hlt a chlamst', 'mlask, mlask - dvakrát - přesně.', 'Kocour krkal tečky a dokončoval věty!'] },
+            { id: 'absurdni1', nazev: 'Absurdní obraz', cls: 'f-absurdni', mark: '─', fraze: ['Kocour krkal tečky a dokončoval věty!', 'Někdy celé souvětí!!', 'Spolknuté konce ale vykrkal zpátky'] },
+            { id: 'ironicky1', nazev: 'Ironie', cls: 'f-ironicky', mark: 'ir', fraze: ['Kocour se tomu smál,', 'ale krkal dál.', 'Skončil větu a pak skončil krkat.'] },
+            { id: 'surrealisticky1', nazev: 'Surrealistický moment', cls: 'f-surrealisticky', mark: '─', fraze: ['Představte si to:', 'Skončil větu a pak skončil krkat.', 'Berušky mají na sobě nedokončené konce vět.'] },
+            { id: 'filozoficky1', nazev: 'Filozofická deklarace', cls: 'f-filozoficky', mark: '─', fraze: ['A to, co jednou není stejné dnes,', 'to není jednou stejné nikdy.', 'Jen nedokončené věty bývají všechny stejné.', 'A že tečka je někdy silnější, než celá věta.'] },
+            { id: 'naivni1', nazev: 'Naivní konstatování', cls: 'f-naivni', mark: '─', fraze: ['Kocour se nažral a myš i věty zůstali celé.', 'Díky bohu za to.', 'A ani jeden neříkali nic.'] },
+            { id: 'introspektivni1', nazev: 'Introspektivní detail', cls: 'f-introspektivni', mark: '─', fraze: ['Ale všimly si toho jen kocour a malá myš.', 'A ani jeden neříkali nic.'] },
+            { id: 'groteskni1', nazev: 'Groteskní závěr', cls: 'f-groteskni', mark: '─', fraze: ['KONEC'] },
+            { id: 'metaforicky1', nazev: 'Metaforický obraz', cls: 'f-metaforicky', mark: '─', fraze: ['Berušky mají na sobě nedokončené konce vět.', 'tečka je někdy silnější, než celá věta.'] }
+        ];
+
+        const figMap = {};
+        figuryDef.forEach(f => { f.fraze.forEach(fr => { figMap[fr] = f.id; }); });
+        const activeFigs = new Set();
+        let vseOn = false;
+
+        function renderPohadka() {
+            const container = document.getElementById('poh-text');
+            const lines = rawPohadka.split('\n');
+            let html = '';
+            lines.forEach(line => {
+                if (line.trim() === '') { html += '<span class="pd br"></span>'; return; }
+                let processed = line;
+                for (const [fraze, figId] of Object.entries(figMap)) {
+                    if (processed.includes(fraze)) {
+                        const fDef = figuryDef.find(f => f.id === figId);
+                        processed = processed.replace(fraze, `<span class="${fDef.cls}" data-fig="${figId}" title="${fDef.nazev}">${fraze}</span>`);
+                    }
+                }
+                html += `<span class="pd">${processed}</span>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderFigTable() {
+            const tbl = document.getElementById('fig-tbl');
+            const counts = {};
+            document.querySelectorAll('#poh-text [data-fig]').forEach(el => { const id = el.getAttribute('data-fig'); counts[id] = (counts[id] || 0) + 1; });
+            let rows = '';
+            figuryDef.forEach(f => {
+                const cnt = counts[f.id] || 0;
+                rows +=
+                    `<div class="fig-r" onclick="togFig('${f.id}')" id="fr-${f.id}"><span class="fig-r-mark"><span class="${f.cls} hl" style="font-size:.5rem;">${f.mark}</span></span><span>${f.nazev}</span><span class="fig-r-cnt">${cnt}×</span></div>`;
+            });
+            tbl.innerHTML =
+                `<div class="fig-tbl-hdr"><span>Figury v pohádce · kliknutím označíte v textu</span><button class="fig-vse-btn" id="btn-vse" onclick="toggleVse()">Zobrazit vše</button></div>${rows}`;
+        }
+
+        function renderLegenda() {
+            document.getElementById('legenda').innerHTML = figuryDef.map(f =>
+                `<span><span class="${f.cls} hl">${f.mark}</span> = ${f.nazev}</span>`
+            ).join(' ');
+        }
+
+        function applyFig() {
+            document.querySelectorAll('#poh-text [data-fig]').forEach(el => {
+                el.classList.toggle('hl', activeFigs.has(el.getAttribute('data-fig')));
+            });
+        }
+
+        function togFig(id) {
+            const row = document.getElementById('fr-' + id);
+            if (activeFigs.has(id)) { activeFigs.delete(id);
+                row.classList.remove('hl'); } else { activeFigs.add(id);
+                row.classList.add('hl'); }
+            applyFig();
+        }
+
+        function toggleVse() {
+            vseOn = !vseOn;
+            const btn = document.getElementById('btn-vse');
+            btn.classList.toggle('active', vseOn);
+            btn.textContent = vseOn ? 'Skrýt vše' : 'Zobrazit vše';
+            document.querySelectorAll('#poh-text [data-fig]').forEach(el => el.classList.toggle('hl', vseOn));
+            document.querySelectorAll('.fig-r').forEach(r => r.classList.toggle('hl', vseOn));
+            if (!vseOn) activeFigs.clear();
+        }
+
+        renderPohadka();
+        renderFigTable();
+        renderLegenda();
+
+        const U = [
+            { i: 0, st: 0, n: 'Trávení interpunkce', gen: 'absurdní · dokončovač vět',
+                co: 'Kocour, který krká tečky a dokončuje věty dřív, než je někdo stačí říct. Absurdní úhel hledá nesmysl, který dává smysl. Berušky jako nositelky interpunkce. Každý konec je zároveň začátkem nového krkání.',
+                figury: [{ n: 'Absurdní obraz', f: 'absurdni1', u: '"Kocour krkal tečky a dokončoval věty! Někdy celé souvětí!!"', proc: 'Krkání jako syntaktická akce.', vyznam: 'Svět, kde trávení mění řeč.' }],
+                ukol: 'Napiš krátký text, kde nějaká tělesná funkce (kýchání, kašel, škytavka) začne ovlivňovat jazyk.',
+                jazyk: 'Absurdita, paradox.',
+                prot: 6, kresliciUkol: 'Nakresli kocoura, kterému z tlamy vycházejí místo chlupů tečky a věty.' },
+            { i: 1, st: 30, n: 'Jazyková materiálnost', gen: 'jazykový · slova jako hmota',
+                co: 'Jazykový úhel vidí slova jako fyzický materiál. Tečky jsou stravitelné, věty se lámou, konce se polykají. Kocour svým krkáním narušuje syntax – skáče do řeči, ukončuje věty předčasně.',
+                figury: [{ n: 'Jazyková hra', f: 'jazykovy1', u: '"Chňap a hlt a chlamst" / "mlask, mlask"', proc: 'Onomatopoie trávení.', vyznam: 'Jazyk jako materiál, který se žvýká.' }],
+                ukol: 'Vymysli pět slov, která znějí jako zvuk, který popisují, a použij je v krátkém příběhu.',
+                jazyk: 'Onomatopoie, aliterace.',
+                prot: 7, kresliciUkol: 'Nakresli tečku jako fyzický objekt – třeba jako bonbon, který se dá spolknout.' },
+            { i: 2, st: 60, n: 'Ironie predátora', gen: 'ironický · vítězství a prohra',
+                co: 'Kocour chtěl jen sníst berušky, ale nakonec na půl hodiny ovládl řeč celého okolí. Jeho vítězství je zároveň prohrou – lidé nemohou mluvit, on nemůže přestat krkat. Ironie osudu.',
+                figury: [{ n: 'Ironie', f: 'ironicky1', u: '"Kocour se tomu smál, ale krkal dál."', proc: 'Dva protichůdné děje současně.', vyznam: 'Smích jako maska bezmoci.' }],
+                ukol: 'Napiš o situaci, kdy jsi chtěl/a něco ovládnout, ale nakonec to ovládlo tebe.',
+                jazyk: 'Ironie, kontrast.',
+                prot: 8, kresliciUkol: 'Nakresli kocoura, který se směje, ale z tlamy mu padají slzy ve tvaru teček.' },
+            { i: 3, st: 90, n: 'Konec jako látka', gen: 'filozofický · podstata tečky',
+                co: 'Co je to tečka? Konec, nebo začátek? Berušky nosí na zádech nedokončené věty – ale kdo je jejich autorem? Kocour je spolkne a vyvrhne zpět, ale věty už nejsou stejné.',
+                figury: [{ n: 'Filozofická deklarace', f: 'filozoficky1', u: '"A to, co jednou není stejné dnes, to není jednou stejné nikdy."', proc: 'Obecná pravda o změně.', vyznam: 'Tečka jako nevratný bod.' }],
+                ukol: 'Napiš krátkou úvahu na téma: „Může být něco po konci vůbec stejné?“',
+                jazyk: 'Deklarace, paradox.',
+                prot: 9, kresliciUkol: 'Nakresli dvě stejné tečky – jednu před spolknutím, druhou po vyvržení. V čem se liší?' },
+            { i: 4, st: 120, n: 'Říhání souvětí', gen: 'surrealistický · obraz bez logiky',
+                co: 'Berušky s tečkami, kocour krkající interpunkci, myš jako tichý pozorovatel. Realita se mísí s jazykovou hrou – svět, kde se věty rodí v kočičím žaludku.',
+                figury: [{ n: 'Surrealistický moment', f: 'surrealisticky1', u: '"Představte si to: Skončil větu a pak skončil krkat."', proc: 'Kauzalita naruby.', vyznam: 'Snová logika jako realita.' }],
+                ukol: 'Popiš svůj vlastní sen, ve kterém se předměty chovají jako slova.',
+                jazyk: 'Snový obraz, synestezie.',
+                prot: 0, kresliciUkol: 'Nakresli kocoura, jehož tělo je průhledné a uvnitř plují nedokončené věty.' },
+            { i: 5, st: 150, n: 'Tricksterův hlad', gen: 'kulturní · archetyp narušitele',
+                co: 'Kocour jako trickster – postava, která narušuje řád, aby odhalila jeho podstatu. Berušky jako symbol nevinnosti a nositelky kódu. Myš jako múza, která mlčí a zaznamenává.',
+                figury: [],
+                ukol: 'Najdi v mýtech nebo pohádkách jinou postavu, která narušila řád tím, že něco snědla. Porovnej.',
+                jazyk: 'Intertextualita, kulturní odkaz.',
+                prot: 1, kresliciUkol: 'Nakresli kocoura jako mytickou bytost – třeba s hieroglyfy na zádech.' },
+            { i: 6, st: 180, n: 'Prostě měl hlad', gen: 'naivní · jednoduché vyprávění',
+                co: 'Kocour snědl berušky a pak krkal tečky. Lidé nemohli mluvit, protože jim skákal do řeči. Pak přestal a bylo to zas normální. Myš se jen dívala. Jednoduché.',
+                figury: [{ n: 'Naivní konstatování', f: 'naivni1', u: '"Kocour se nažral a myš i věty zůstali celé."', proc: 'Prostý fakt.', vyznam: 'Svět je v pořádku.' }],
+                ukol: 'Převyprávěj pohádku, jako bys ji říkal/a pětiletému dítěti.',
+                jazyk: 'Jednoduchá souvětí, přímá řeč.',
+                prot: 2, kresliciUkol: 'Nakresli kocoura a myš vedle sebe, oba spokojené, s prázdnou miskou.' },
+            { i: 7, st: 210, n: 'Tělo mluví dřív', gen: 'introspektivní · osobní projekce',
+                co: 'Vždycky mám pocit, že mi někdo skáče do řeči. Ten kocour jsem já – nebo spíš všichni ti, co mě nenechají domluvit. A berušky? Ty ubohé, co nosí na zádech to, co nikdo nechce poslouchat.',
+                figury: [{ n: 'Introspektivní detail', f: 'introspektivni1', u: '"Ale všimly si toho jen kocour a malá myš."', proc: 'Tichý pozorovatel.', vyznam: 'Jen dva svědkové celé události.' }],
+                ukol: 'Napiš vnitřní monolog myši, která celou událost pozorovala.',
+                jazyk: 'Vnitřní hlas, sebereflexe.',
+                prot: 3, kresliciUkol: 'Nakresli myš, která sedí na obřím peru a dívá se na kocoura.' },
+            { i: 8, st: 240, n: 'Mlaskání reality', gen: 'groteskní · temná komika',
+                co: 'Představ si: kocour sežere berušky, začne krkat tečky a najednou všichni kolem nemůžou dokončit větu. Je to fraška – tragikomedie o tom, že někdy je lepší držet pusu a nechat tečky být.',
+                figury: [{ n: 'Groteskní závěr', f: 'groteskni1', u: '"KONEC"', proc: 'Jedno slovo jako pěst.', vyznam: 'Konec, který je zároveň začátkem ticha.' }],
+                ukol: 'Napiš krátkou scénku, kde se něco banálního (škytavka, pád) stane tragédií.',
+                jazyk: 'Hyperbola, tautologie.',
+                prot: 4, kresliciUkol: 'Nakresli kocoura jako cirkusového ředitele, který uvádí show „Krkání teček“.' },
+            { i: 9, st: 270, n: 'Nemožnost spolknout smysl', gen: 'analytický · přesné počítání',
+                co: 'Sležral dvě – ne tři, ne jednu – dvě. 14 teček, 30 minut, přesně. Analytický úhel hledá čísla, výčty, struktury. Vidí systematický záznam poruchy. Vše se dá spočítat – i krkání.',
+                figury: [{ n: 'Analytický výčet', f: 'analyticky1', u: '"Sležral dvě - ne tři, ne jednu - dvě - přesně - 14 teček"', proc: 'Přesná čísla jako kotva.', vyznam: 'I absurdní událost má svá data.' }],
+                ukol: 'Vytvoř si vlastní přesný záznam nějaké absurdní události – s čísly, minutami, počty.',
+                jazyk: 'Výčet, číslovky, paralelismus.',
+                prot: 5, kresliciUkol: 'Nakresli tabulku, kde je seznam všech spolknutých a vykrkaných teček.' },
+            { i: 10, st: 300, n: 'Říhnutí jako zásah', gen: 'asociační · osobní vzpomínky',
+                co: 'Připomnělo mi to, jak jsme jako děti krkali po limonádě a smáli se, že mluvíme cizími jazyky. A taky kolegu v práci, který neustále skáče do řeči.',
+                figury: [],
+                ukol: 'Napiš, co ti tato pohádka připomněla z vlastního života.',
+                jazyk: 'Volné asociace, fragmenty.',
+                prot: 10, kresliciUkol: 'Nakresli rychlou skicu – první věc, která tě napadne po přečtení pohádky.' },
+            { i: 11, st: 330, n: 'Ukončení jako akt', gen: 'metaforický · symbolika tečky',
+                co: 'Kocour je čas, který polyká okamžiky (tečky) a vyvrhuje je jako vzpomínky. Berušky jsou události – každá nese svůj počet teček. Myš je paměť, která mlčí, ale všechno si ukládá.',
+                figury: [{ n: 'Metaforický obraz', f: 'metaforicky1', u: '"tečka je někdy silnější, než celá věta"', proc: 'Obrazné vyjádření.', vyznam: 'Symbolika konce jako síly.' }],
+                ukol: 'Vezmi si abstraktní pojem (konec, začátek, pauza) a popiš ho pomocí metafor.',
+                jazyk: 'Metafora, symbol.',
+                prot: 11, kresliciUkol: 'Nakresli tečku, ze které vyrůstá strom – konec, který se stává začátkem.' }
+        ];
+
+        const DIAG_K = U.map((u, i) => {
+            const keywords = u.n.toLowerCase().split(/\s+/).concat(u.gen.toLowerCase().split(/\s+/));
+            u.figury.forEach(f => keywords.push(f.f));
+            return { i, k: [...new Set(keywords)] };
+        });
+
+        function buildUhly() {
+            const list = document.getElementById('uhly-list');
+            U.forEach((u, i) => {
+                const pU = U[u.prot];
+                const figHTML = u.figury.map(f => `
+                    <div class="fig-uhel-item">
+                        <div class="fui-nazev">${f.n}</div>
+                        <div class="fui-ukazka">${f.u}</div>
+                        <div class="fui-proc">${f.proc}</div>
+                        <div class="fui-uhel">Co dělá s významem: ${f.vyznam}</div>
+                    </div>`).join('');
+                const div = document.createElement('div');
+                div.className = 'uhel';
+                div.id = 'u' + i;
+                div.innerHTML = `
+                    <div class="uhel-h" onclick="toggleUhel(${i})">
+                        <span class="u-num">${String(i+1).padStart(2,'0')}</span>
+                        <div><div class="uhel-nazev">${u.n}<span class="uhel-poet">${u.gen}</span></div></div>
+                        <span class="u-deg">${u.st}°</span><span class="u-tog">▾</span>
+                    </div>
+                    <div class="uhel-body" id="b${i}">
+                        <div class="uhel-co">${u.co}</div>
+                        <div class="dl-grid">
+                            <div class="dl" onclick="togDl(${i},0)"><div class="dl-icon">🤺</div><div class="dl-label">Figury v pohádce</div><div class="dl-text">Co vidí tento úhel</div></div>
+                            <div class="dl" onclick="togDl(${i},1)"><div class="dl-icon">🧤</div><div class="dl-label">Kreativní úkol</div><div class="dl-text">20 minut · psaní</div></div>
+                            <div class="dl" onclick="togDl(${i},2)"><div class="dl-icon">🌪️</div><div class="dl-label">Protilehlý úhel</div><div class="dl-text">${pU.n}</div></div>
+                            <div class="dl" onclick="togDl(${i},3)"><div class="dl-icon">🪬</div><div class="dl-label">Nástroje</div><div class="dl-text">Zápisník · analyzátor</div></div>
+                            <div class="dl" onclick="togDl(${i},4)"><div class="dl-icon">🎨</div><div class="dl-label">Kreslicí úkol</div><div class="dl-text">Vizuální interpretace</div></div>
+                            <div class="dl" onclick="togDl(${i},5)"><div class="dl-icon">🗝️</div><div class="dl-label">Jak to čte Myš</div><div class="dl-text">Klíče k tomuto úhlu</div></div>
+                        </div>
+                        <div class="dl-detail" id="d${i}_0"><div class="dl-lbl">Proč jsou tyto figury v pohádce a co dělají s významem</div>${figHTML||'<p style="color:var(--dim)">Tento úhel je ukotven v celkovém vyznění, ne v jednotlivé větě.</p>'}</div>
+                        <div class="dl-detail" id="d${i}_1"><div class="dl-lbl">Kreativní úkol · 20 minut</div><div class="dl-txt">${u.ukol}</div><div class="dl-lbl">Jazykové zaměření</div><div class="dl-txt"><strong>${u.jazyk}</strong></div></div>
+                        <div class="dl-detail" id="d${i}_2"><div class="dl-lbl">Protilehlý úhel — prostor pro rozvoj</div><div class="dl-txt"><em>${pU.st}° ${pU.n}</em> — ${pU.gen}</div><div class="dl-txt" style="margin-top:6px">${pU.co}</div><button class="btn btn-g" style="font-size:.62rem;margin-top:6px" onclick="openUhel(${u.prot})">Přejít na ${pU.n} →</button></div>
+                        <div class="dl-detail" id="d${i}_3"><div class="dl-lbl">Nástroje pro práci s textem</div><div class="btn-row"><a class="btn btn-g" href="#" target="_blank">📓 Otevřít kognitivní mapu</a><a class="btn btn-g" href="#" target="_blank">🔍 Otevřít analyzátor</a></div></div>
+                        <div class="dl-detail" id="d${i}_4"><div class="dl-lbl">Kreslicí úkol</div><div class="dl-txt">${u.kresliciUkol}</div></div>
+                        <div class="dl-detail" id="d${i}_5"><div class="dl-lbl">Jak pohádku čte Myš — klíče k tomuto úhlu</div><div class="dl-txt">Myš si všímá, co ostatní přehlížejí. Tento úhel zvýrazňuje její perspektivu – sleduje, jak kocour tráví jazyk a jak se tečky vracejí zpátky do vět.</div></div>
+                    </div>`;
+                list.appendChild(div);
+            });
+        }
+
+        function toggleUhel(i) { document.getElementById('u' + i).classList.toggle('open'); document.getElementById('b' + i).classList
+                .toggle('open'); }
+
+        function openUhel(i) { document.getElementById('u' + i).classList.add('open'); document.getElementById('b' + i).classList.add(
+                'open');
+            setTimeout(() => document.getElementById('u' + i).scrollIntoView({ behavior: 'smooth', block: 'start' }),
+            100); }
+
+        function togDl(i, j) {
+            const el = document.getElementById(`d${i}_${j}`);
+            const wasOpen = el.classList.contains('open');
+            document.querySelectorAll(`#b${i} .dl-detail`).forEach(d => d.classList.remove('open'));
+            document.querySelectorAll(`#b${i} .dl`).forEach(d => d.classList.remove('open'));
+            if (!wasOpen) { el.classList.add('open');
+                document.querySelectorAll(`#b${i} .dl`)[j].classList.add('open'); }
+        }
+
+        buildUhly();
+
+        function setVar(v, btn) {
+            document.querySelectorAll('.var-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const p = { A: 'Zavřete oči, ťukněte prstem — a jděte na úhel, který vybere prst.', B: 'Projděte záhlaví 12 úhlů níže a vyberte ten, který vás teď přitahuje.',
+                C: 'Odpovězte na otázku — systém nabídne váš úhel.' };
+            document.getElementById('var-popis').textContent = p[v];
+            if (v === 'C') { document.getElementById('diag-modal').classList.add('open'); return; }
+            if (v === 'B') { document.getElementById('uhly').scrollIntoView({ behavior: 'smooth' }); return; }
+            if (v === 'A') { const idx = Math.floor(Math.random() * U.length);
+                document.getElementById('uhly').scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => openUhel(idx), 500); }
+        }
+
+        function closeDiag() { document.getElementById('diag-modal').classList.remove('open'); }
+        document.getElementById('diag-modal').addEventListener('click', e => { if (e.target === e.currentTarget)
+            closeDiag(); });
+
+        function runDiag() {
+            const txt = document.getElementById('diag-input').value.trim();
+            if (!txt) return;
+            const sc = {};
+            U.forEach(u => sc[u.i] = 0);
+            DIAG_K.forEach(u => u.k.forEach(k => { const re = new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,
+                    '\\$&'), 'gi');
+                sc[u.i] += (txt.match(re) || []).length; }));
+            const sorted = Object.entries(sc).sort((a, b) => b[1] - a[1]);
+            const domI = parseInt(sorted[0][0]);
+            const domU = U[domI];
+            const protU = U[domU.prot];
+            document.getElementById('diag-res').style.display = 'block';
+            document.getElementById('d-nazev').innerHTML = `<span style="color:var(--accent)">${domU.st}° ${domU.n}</span>`;
+            document.getElementById('d-sub').textContent = domU.gen;
+            document.getElementById('d-btns').innerHTML = `
+                <button class="navrh-btn" onclick="closeDiag();openUhel(${domI})">→ Otevřít: ${domU.n}</button>
+                <button class="navrh-btn" onclick="closeDiag();openUhel(${domU.prot})">→ Protilehlý: ${protU.n}</button>`;
+        }
+    </script>
+</body>
+</html>
