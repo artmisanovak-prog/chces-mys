@@ -37,6 +37,7 @@
 
 --- 
 
+- [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
 
