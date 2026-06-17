@@ -38,6 +38,9 @@
 --- 
 
 - [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
+- [inspirativni_kocour](doma/data/tymy/kocour/inspirativni.html)
+- [generativni_kocour](doma/data/tymy/kocour/generativni.html)
+- [workshop_kocour](doma/data/tymy/kocour/workshop_90_minut.html)
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
 
