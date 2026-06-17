@@ -37,6 +37,7 @@
 
 --- 
 
+- [diagnosticky_kocour](doma/data/tymy/kocour/diagnosticky_kocour.html)
 - [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
 - [inspirativni_kocour](doma/data/tymy/kocour/inspirativni.html)
 - [generativni_kocour](doma/data/tymy/kocour/generativni.html)
