@@ -1,0 +1,434 @@
+[
+  {
+    "id": 1,
+    "angle": "Estetika noci",
+    "stupne": "0°",
+    "barva": "#5a7fa8",
+    "phrase": "V noci bylo všechno správně. Stíny měly tvar. Zvuky měly smysl.",
+    "category": "produkty, obaly",
+    "idea": "Navrhněte produkt, který funguje jen ve tmě – například svítící obal, termoska s fosforeskujícím povrchem, nebo deník s UV potiskem, který je čitelný jen pod 'nočním' světlem. Produkt, který oslavuje noc jako rovnocenný prostor."
+  },
+  {
+    "id": 2,
+    "angle": "Estetika noci",
+    "stupne": "0°",
+    "barva": "#5a7fa8",
+    "phrase": "Lidé byli krásní, protože nebyli vidět.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které je navrženo tak, aby vyniklo v negativním prostoru – černá silueta na světlém pozadí, která se ztrácí, když je příliš mnoho světla. Identita, která ctí tajemství a neúplnost."
+  },
+  {
+    "id": 3,
+    "angle": "Estetika noci",
+    "stupne": "0°",
+    "barva": "#5a7fa8",
+    "phrase": "Letěl nad městem, kde se světla třpytila jako sliby.",
+    "category": "copywriting, obsah",
+    "idea": "Pište texty, které jsou jako noční let – volné, asociativní, bez jasné linky, ale s atmosférou. Firemní blog, který jednou za měsíc publikuje 'noční zamyšlení' bez SEO optimalizace."
+  },
+  {
+    "id": 4,
+    "angle": "Estetika noci",
+    "stupne": "0°",
+    "barva": "#5a7fa8",
+    "phrase": "V noci krása, co ráno už se nehodí.",
+    "category": "design, vizuální identita",
+    "idea": "Vytvořte vizuální styl, který má dvě verze – 'denní' (čistou, formální) a 'noční' (divokou, barevnou, experimentální). Obě jsou součástí stejné identity, ale používají se v různých kontextech."
+  },
+  {
+    "id": 5,
+    "angle": "Rozpor mezi režimy",
+    "stupne": "240°",
+    "barva": "#c8722a",
+    "phrase": "Slova, co zněla jako poezie, se změnila v trapné poznámky.",
+    "category": "produkty, obaly",
+    "idea": "Navrhněte zápisník, který má dvě poloviny. Levá: 'Noční' – s linkami, co se ztrácejí do prázdna. Pravá: 'Denní' – s pevnou strukturou. Uprostřed je 'překladový' proužek. Nástroj pro převod poezie do akce."
+  },
+  {
+    "id": 6,
+    "angle": "Rozpor mezi režimy",
+    "stupne": "240°",
+    "barva": "#c8722a",
+    "phrase": "A pak přišlo ráno. A všechno se nehodilo.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které má 'ranní' a 'noční' variantu. Denní verze je pevná, noční se rozpadá do fragmentů. Značka tím říká: víme, že máme víc tváří."
+  },
+  {
+    "id": 7,
+    "angle": "Rozpor mezi režimy",
+    "stupne": "240°",
+    "barva": "#c8722a",
+    "phrase": "Doteky, co vibrovaly, se změnily v rozpaky.",
+    "category": "copywriting, obsah",
+    "idea": "Pište o trapnosti. Seriál článků 'Naše ranní kocovina' – o tom, co firma řekla nebo udělala a druhý den toho litovala. Autenticita přes přiznání studu."
+  },
+  {
+    "id": 8,
+    "angle": "Rozpor mezi režimy",
+    "stupne": "240°",
+    "barva": "#c8722a",
+    "phrase": "A netopýr se schoval. Do stropu. Do tmy. Do snu.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'strop' – vizuální prvek na webu nebo v prezentacích, kam se schovají 'nehotové' nápady. Návštěvník na něj může kliknout a objevit skrytou vrstvu."
+  },
+  {
+    "id": 9,
+    "angle": "Jiný jazyk",
+    "stupne": "150°",
+    "barva": "#5a8a5a",
+    "phrase": "Noc není lež. Je to jiný jazyk. Jiný smysl.",
+    "category": "produkty, obaly",
+    "idea": "Vytvořte produkt s dvojím návodem: 'Denní návod' (technický, faktický) a 'Noční návod' (poetický, metaforický). Například čaj, kde denní návod je 'louhuj 3 minuty' a noční 'nech vzpomínky rozpustit'."
+  },
+  {
+    "id": 10,
+    "angle": "Jiný jazyk",
+    "stupne": "150°",
+    "barva": "#5a8a5a",
+    "phrase": "Jiný druh pravdy, která se nehodí do denního světla.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které obsahuje skrytý element – při běžném pohledu je to jednoduchá ikona, ale při naklonění nebo pod UV světlem se objeví druhá vrstva. Pravda, která potřebuje jiné světlo."
+  },
+  {
+    "id": 11,
+    "angle": "Jiný jazyk",
+    "stupne": "150°",
+    "barva": "#5a8a5a",
+    "phrase": "Jeho pohádky jsou jako kocovina. Bolí. Ale připomínají, že jsme žili.",
+    "category": "copywriting, obsah",
+    "idea": "Pište 'kocovinové' newslettery – po každé velké akci rozešlete upřímnou reflexi: co se povedlo, co bolelo, co jsme se dozvěděli o sobě. Žádný spin."
+  },
+  {
+    "id": 12,
+    "angle": "Jiný jazyk",
+    "stupne": "150°",
+    "barva": "#5a8a5a",
+    "phrase": "Básníci. Barmani. Ztracenci. Zamilovaní. Všichni, kdo v noci žili.",
+    "category": "design, vizuální identita",
+    "idea": "Vytvořte sérii vizitek nebo profilů pro členy týmu, kde každý má svou 'noční roli' – Básník, Barman, Ztracenec, Zamilovaný. Vedle formálního titulu. Oslava celého člověka."
+  },
+  {
+    "id": 13,
+    "angle": "Skrývání a úkryt",
+    "stupne": "210°",
+    "barva": "#c8a832",
+    "phrase": "A netopýr se schoval. Do stropu.",
+    "category": "produkty, obaly",
+    "idea": "Produkt, který je sám o sobě úkrytem – šperkovnice s falešným dnem, diář s tajnou kapsou, obal na telefon s přihrádkou na 'tajné' poznámky. Oslava toho, co se neukazuje."
+  },
+  {
+    "id": 14,
+    "angle": "Skrývání a úkryt",
+    "stupne": "210°",
+    "barva": "#c8a832",
+    "phrase": "Do tmy. Do snu.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které se zdá být neúplné – část je 'schovaná' v negativním prostoru. Značka, která říká: 'Ne všechno ukazujeme. Něco si necháváme pro sebe.'"
+  },
+  {
+    "id": 15,
+    "angle": "Skrývání a úkryt",
+    "stupne": "210°",
+    "barva": "#c8a832",
+    "phrase": "Jeho podstata není vítána ve světle dne.",
+    "category": "copywriting, obsah",
+    "idea": "Vytvořte anonymní sloupek ve firemním newsletteru – 'Ze stropu' – kam může kdokoli poslat myšlenku, která by 'na světle' neobstála. Jednou měsíčně se otiskne."
+  },
+  {
+    "id": 16,
+    "angle": "Skrývání a úkryt",
+    "stupne": "210°",
+    "barva": "#c8a832",
+    "phrase": "Do stropu. Do tmy. Do snu.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'stropní' zónu na webu nebo v aplikaci – tlačítko, které otevře skrytou vrstvu s nedokončenými věcmi, experimenty, 'co by kdyby'."
+  },
+  {
+    "id": 17,
+    "angle": "Společenství noci",
+    "stupne": "60°",
+    "barva": "#9b72b5",
+    "phrase": "A nebyl v tom sám. Všichni, kdo v noci žili, to znali.",
+    "category": "produkty, obaly",
+    "idea": "Vytvořte 'noční sadu' pro tým – balíček s čajem, svíčkou, zápisníkem a kartičkou 'Jsi netopýr? Nejsi sám.' Nástroj pro uznání noční stránky."
+  },
+  {
+    "id": 18,
+    "angle": "Společenství noci",
+    "stupne": "60°",
+    "barva": "#9b72b5",
+    "phrase": "Básníci. Barmani. Ztracenci. Zamilovaní.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které je složeno z více malých ikonek – každá reprezentuje jednu 'noční roli' v týmu. Dohromady tvoří jeden obraz. Komunita různých."
+  },
+  {
+    "id": 19,
+    "angle": "Společenství noci",
+    "stupne": "60°",
+    "barva": "#9b72b5",
+    "phrase": "Je to o všech outsiderech, jejichž vnitřní hodiny jsou v rozporu s korporátním rytmem.",
+    "category": "copywriting, obsah",
+    "idea": "Pište manifest pro 'noční typy' ve firmě. Oslavte chronotypy, diverzitu rytmů, právo na jiné tempo. Série rozhovorů s lidmi, kteří pracují jinak."
+  },
+  {
+    "id": 20,
+    "angle": "Společenství noci",
+    "stupne": "60°",
+    "barva": "#9b72b5",
+    "phrase": "Uspořádat 'noční summit' pro ty, kteří se cítí jako básníci nebo ztracenci.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte vizuální identitu pro 'Noční summit' – interní akci, kde se schází kreativní duše firmy. Logo, plakáty, pozvánky – vše ve stylu soumraku."
+  },
+  {
+    "id": 21,
+    "angle": "Pravda v nepravdě",
+    "stupne": "300°",
+    "barva": "#6080a0",
+    "phrase": "Všechno bylo trochu nepravdivé – ale o dost pravdivější.",
+    "category": "produkty, obaly",
+    "idea": "Produkt, který je záměrně 'nepřesný' – ručně vyráběný, s nerovnými okraji, s otiskem. Každý kus je originál. Oslava nedokonalosti jako pravdivosti."
+  },
+  {
+    "id": 22,
+    "angle": "Pravda v nepravdě",
+    "stupne": "300°",
+    "barva": "#6080a0",
+    "phrase": "Noční vize může být nerealistická, ale odhaluje naše skutečné touhy.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které je 'nerealistické' – kombinuje neslučitelné prvky, používá nemožnou perspektivu. Značka, která věří, že vize je důležitější než realita."
+  },
+  {
+    "id": 23,
+    "angle": "Pravda v nepravdě",
+    "stupne": "300°",
+    "barva": "#6080a0",
+    "phrase": "Hodnotit nápady ne jen podle 'je to reálné?', ale 'odhaluje to něco hluboce pravdivého?'",
+    "category": "copywriting, obsah",
+    "idea": "Pište případové studie, které začínají citátem, básní nebo snem – a pak ukazují, jak tahle 'nepravda' vedla ke konkrétní inovaci. Oslava intuice."
+  },
+  {
+    "id": 24,
+    "angle": "Pravda v nepravdě",
+    "stupne": "300°",
+    "barva": "#6080a0",
+    "phrase": "Vytváří realitu, která je 'pravdivější' než data.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte vizuální styl založený na kontrastu: na jedné straně data, grafy, čísla. Na druhé straně ilustrace, sny, vize. Obě strany jsou pravda."
+  },
+  {
+    "id": 25,
+    "angle": "Atmosféra jako cíl",
+    "stupne": "270°",
+    "barva": "#a83060",
+    "phrase": "Ne za potravou. Za atmosférou.",
+    "category": "produkty, obaly",
+    "idea": "Navrhněte produkt, který nemá praktický účel – jen estetický. Soška, svíčka, objekt. Produkt, který existuje jen pro atmosféru. A je na to hrdý."
+  },
+  {
+    "id": 26,
+    "angle": "Atmosféra jako cíl",
+    "stupne": "270°",
+    "barva": "#a83060",
+    "phrase": "Za tím, co se děje jenom ve chvílích, kdy svět zapomene na pravidla.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které vypadá jako zachycený okamžik – rozmazané, v pohybu, jako by bylo ukradené z momentky. Značka, která ctí proces, ne pózu."
+  },
+  {
+    "id": 27,
+    "angle": "Atmosféra jako cíl",
+    "stupne": "270°",
+    "barva": "#a83060",
+    "phrase": "Jeho práce (let) je zároveň jeho naplněním.",
+    "category": "copywriting, obsah",
+    "idea": "Pište o flow. Rozhovory s lidmi, kteří milují svou práci – ne pro výsledek, ale pro ten pocit 'letu'. Oslava řemesla a procesu."
+  },
+  {
+    "id": 28,
+    "angle": "Atmosféra jako cíl",
+    "stupne": "270°",
+    "barva": "#a83060",
+    "phrase": "Zavádět do práce prvky 'letu za atmosférou'.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'Atmosférickou nástěnku' – fyzický nebo digitální prostor, kam se věší jen věci pro radost. Obrázky, citáty, barvy. Bez účelu. Jen pro atmosféru."
+  },
+  {
+    "id": 29,
+    "angle": "Popírání sebe",
+    "stupne": "30°",
+    "barva": "#6a9e72",
+    "phrase": "Tohle jsem neřekl. Tohle jsem necítil. Tohle jsem nebyl.",
+    "category": "produkty, obaly",
+    "idea": "Vytvořte diář, který má na každé stránce dvě sekce: 'Co jsem řekl' a 'Co jsem myslel'. Nástroj pro integraci denního a nočního já."
+  },
+  {
+    "id": 30,
+    "angle": "Popírání sebe",
+    "stupne": "30°",
+    "barva": "#6a9e72",
+    "phrase": "Popíráme část sebe, abychom vyhověli systému.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které má dvě části – jedna je 'oficiální', druhá je 'skrytá' v negativním prostoru. Značka, která přiznává, že není celá."
+  },
+  {
+    "id": 31,
+    "angle": "Popírání sebe",
+    "stupne": "30°",
+    "barva": "#6a9e72",
+    "phrase": "Vést si 'noční deník'. Zapisovat si nápady a pocity z 'noci'.",
+    "category": "copywriting, obsah",
+    "idea": "Spusťte firemní 'noční deník' – sdílený dokument, kam lidé můžou anonymně psát, co si 'v noci' myslí o firmě. Jednou za čtvrt roku se čte nahlas."
+  },
+  {
+    "id": 32,
+    "angle": "Popírání sebe",
+    "stupne": "30°",
+    "barva": "#6a9e72",
+    "phrase": "Ráno se k tomu vracet s otázkou: 'Co mi to říká?'",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'ranní kartičku' – malou kartu s otázkami, kterou si člověk vezme ráno k první kávě: 'Co jsem včera popřel? Co mi to říká? Co z toho dnes použiju?'"
+  },
+  {
+    "id": 33,
+    "angle": "Kocovina jako důkaz",
+    "stupne": "330°",
+    "barva": "#8060b0",
+    "phrase": "Bolí. Ale připomínají, že jsme žili.",
+    "category": "produkty, obaly",
+    "idea": "Produkt, který oslavuje 'kocovinu' – například čaj 'Ranní smíření' s popiskem 'Pro chvíle, kdy včera stálo za to'. Obal, který je pomačkaný, ale krásný."
+  },
+  {
+    "id": 34,
+    "angle": "Kocovina jako důkaz",
+    "stupne": "330°",
+    "barva": "#8060b0",
+    "phrase": "Ranní trapnost po skvělém nápadu je důkaz, že nápad byl živý.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které je 'pomačkané' – jako by ho někdo zmuchlal a zase narovnal. Značka, která říká: 'Ano, bylo to intenzivní. A stojíme si za tím.'"
+  },
+  {
+    "id": 35,
+    "angle": "Kocovina jako důkaz",
+    "stupne": "330°",
+    "barva": "#8060b0",
+    "phrase": "Oslavovat 'kocovinu'. Když je po brainstormingu pocit vyčerpání, připomenout si: 'Dobře, tak jsme žili.'",
+    "category": "copywriting, obsah",
+    "idea": "Pište 'kocovinové reporty' – po každém projektu sepište nejen výsledky, ale i to, co bolelo, co bylo trapné, co jste málem zahodili. Oslava cesty."
+  },
+  {
+    "id": 36,
+    "angle": "Kocovina jako důkaz",
+    "stupne": "330°",
+    "barva": "#8060b0",
+    "phrase": "Co z toho můžeme zachránit?",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'Zachraňovací rituál' – vizuální šablonu pro týmovou reflexi: 'Co z minulého projektu/schůze/nápadu bylo trapné, ale cenné? Jak to zachráníme?'"
+  },
+  {
+    "id": 37,
+    "angle": "Světelné znečištění",
+    "stupne": "180°",
+    "barva": "#a85a5a",
+    "phrase": "Světla se třpytila jako sliby.",
+    "category": "produkty, obaly",
+    "idea": "Navrhněte produkt, který 'neslibuje' – minimalistický, bez marketingových textů. Na obalu je jen to, co produkt skutečně dělá. Anti-slib."
+  },
+  {
+    "id": 38,
+    "angle": "Světelné znečištění",
+    "stupne": "180°",
+    "barva": "#a85a5a",
+    "phrase": "Firemní kultura plná nesplněných slibů, která svítí, ale nehřeje.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které je 'studené' – používá modré, bílé, sterilní barvy. Ale při bližším pohledu je v něm skrytý teplý prvek. Značka, která přiznává svou chladnost a chce ji překonat."
+  },
+  {
+    "id": 39,
+    "angle": "Světelné znečištění",
+    "stupne": "180°",
+    "barva": "#a85a5a",
+    "phrase": "Hledat 'skutečnou tmu' – momenty naprosté upřímnosti bez formálních slibů.",
+    "category": "copywriting, obsah",
+    "idea": "Vytvořte sérii 'Temných rozhovorů' – podcast nebo video, kde se vypnou všechny formality a mluví se o tom, co ve firmě nefunguje. Bez obalu."
+  },
+  {
+    "id": 40,
+    "angle": "Světelné znečištění",
+    "stupne": "180°",
+    "barva": "#a85a5a",
+    "phrase": "Chránit momenty tmy před 'osvětlením' agendou.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'Temné okno' v kalendáři – časový blok, který je neprůstřelný. Žádné schůzky, žádné reporty. Jen tma pro přemýšlení."
+  },
+  {
+    "id": 41,
+    "angle": "Časový rozvrh bytí",
+    "stupne": "120°",
+    "barva": "#8e7248",
+    "phrase": "V noci bylo všechno správně.",
+    "category": "produkty, obaly",
+    "idea": "Navrhněte produkt, který respektuje rytmy – budík, který nebudí, ale 'doprovází' do nového dne. Aplikace, která navrhuje úkoly podle chronotypu."
+  },
+  {
+    "id": 42,
+    "angle": "Časový rozvrh bytí",
+    "stupne": "120°",
+    "barva": "#8e7248",
+    "phrase": "Různé fáze projektu vyžadují různé druhy myšlení.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které má 'fáze' – v jedné verzi je pevné a strukturované, v druhé volné a organické. Přepíná se podle kontextu."
+  },
+  {
+    "id": 43,
+    "angle": "Časový rozvrh bytí",
+    "stupne": "120°",
+    "barva": "#8e7248",
+    "phrase": "Respektovat chronotypy – povolit práci v čase, kdy je komu nejsnáze.",
+    "category": "copywriting, obsah",
+    "idea": "Napište manifest 'Právo na rytmus' – dokument, který říká: 'Někteří z nás jsou netopýři. A to je v pořádku.' Zásady flexibilní práce postavené na respektu k chronotypům."
+  },
+  {
+    "id": 44,
+    "angle": "Časový rozvrh bytí",
+    "stupne": "120°",
+    "barva": "#8e7248",
+    "phrase": "Míchat 'noční' a 'denní' režimy je škodlivé.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'Hodinový plán' – vizuální rozdělení dne na zóny: 'Noční' (kreativní), 'Denní' (exekutivní), 'Soumrak' (reflexe). Plakát do každé kanceláře."
+  },
+  {
+    "id": 45,
+    "angle": "Neviditelnost",
+    "stupne": "90°",
+    "barva": "#5fa8a0",
+    "phrase": "Lidé byli krásní, protože nebyli vidět.",
+    "category": "produkty, obaly",
+    "idea": "Vytvořte produkt, který chrání soukromí – kryt na webkameru, který je designový. Obal na telefon, který blokuje signál. Produkt, který říká: 'Nechci být vidět, a to je moje právo.'"
+  },
+  {
+    "id": 46,
+    "angle": "Neviditelnost",
+    "stupne": "90°",
+    "barva": "#5fa8a0",
+    "phrase": "Pod dohledem (managementu, metrik) se krása a autenticita vytrácejí.",
+    "category": "loga, vizuální identita",
+    "idea": "Logo, které se 'schovává' – při běžném pohledu je nenápadné, ale když se na něj podíváte déle, odhalí detaily. Značka, která netlačí na oči."
+  },
+  {
+    "id": 47,
+    "angle": "Neviditelnost",
+    "stupne": "90°",
+    "barva": "#5fa8a0",
+    "phrase": "Kreativita a upřímnost vyžadují soukromí a pocit, že 'tě nikdo nesoudí'.",
+    "category": "copywriting, obsah",
+    "idea": "Pište o 'právu na neviditelnost' – esej o tom, proč firmy potřebují méně kontroly a více důvěry. Proč metrikami zabíjíme to nejcennější."
+  },
+  {
+    "id": 48,
+    "angle": "Neviditelnost",
+    "stupne": "90°",
+    "barva": "#5fa8a0",
+    "phrase": "Zavádět do práce více 'neviditelných' zón.",
+    "category": "design, vizuální identita",
+    "idea": "Navrhněte 'Neviditelné okno' – časový blok v kalendáři označený speciální barvou, který znamená: 'Teď mě nikdo nesleduje. Pracuju, ale neviditelně.'"
+  }
+]
