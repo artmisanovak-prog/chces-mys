@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🦇 Netopýr – diagnostický mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0810;
+            --bg-el: #120e1a;
+            --text: #e8e0f0;
+            --dim: #5a4a6a;
+            --mid: #8a7a9a;
+            --accent: #512970;
+            --accent-dim: #3a2060;
+            --border: #1a1028;
+            --highlight: rgba(144, 80, 192, 0.2);
+            --serif: 'Spectral', serif;
+            --mono: 'Space Grotesk', sans-serif;
+            --radius: 3px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            font-weight: 300;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #7a3aaa; }
+        .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* navigace */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10, 8, 16, 0.94); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+        }
+        .nav-brand { font-family: var(--serif); font-size: 0.9rem; font-weight: 400; color: var(--text); }
+        .nav-brand em { font-style: italic; color: var(--accent); }
+        .nav-links { display: flex; gap: 0.8rem; flex-wrap: wrap; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .nav-links a { color: var(--dim); padding: 0.25rem 0.5rem; border: 1px solid transparent; transition: 0.15s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); border-color: var(--accent); }
+
+        /* hero */
+        .hero { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .hero-img { width: 100%; max-height: 360px; object-fit: contain; filter: grayscale(100%) contrast(1.2); opacity: 0.8; margin-bottom: 1.5rem; border-radius: var(--radius); }
+        .hero-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+        h1 { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 400; line-height: 1.0; margin-bottom: 0.3rem; color: var(--text); }
+        h1 em { font-style: italic; color: var(--accent); }
+        .hero-quote {
+            font-family: var(--serif); font-size: 1rem; font-style: italic; color: var(--mid);
+            margin: 0.8rem 0 1.2rem; border-left: 2px solid var(--accent);
+            padding-left: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;
+            text-align: left; line-height: 1.7;
+        }
+        .fenomen-desc { font-size: 0.85rem; color: var(--dim); max-width: 560px; margin: 0 auto; line-height: 1.8; }
+
+        /* akordeony */
+        details {
+            border: 1px solid var(--border); background: var(--bg-el);
+            margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        details[open] { border-color: var(--accent); }
+        summary {
+            cursor: pointer; padding: 0.9rem 1.2rem;
+            font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--mid);
+            list-style: none; user-select: none;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+            transition: color 0.2s;
+        }
+        summary:hover { color: var(--text); }
+        summary::after { content: "▼"; font-size: 0.6rem; transition: transform 0.3s; flex-shrink: 0; }
+        details[open] summary::after { transform: rotate(180deg); }
+        details[open] summary { color: var(--accent); }
+        .details-inner {
+            padding: 0 1.2rem 1.5rem; font-family: var(--serif);
+            font-size: 0.92rem; line-height: 1.9; color: #b0a0c0;
+        }
+        .details-inner p { margin-bottom: 0.8rem; }
+        .details-inner strong { color: var(--accent); font-weight: 500; }
+        .details-inner em { color: var(--mid); }
+
+        /* pohádka */
+        .pohadka-summary { background: var(--accent); color: #fff !important; font-weight: 500; }
+        .pohadka-summary:hover { color: #fff !important; }
+
+        /* klíč k úhlům */
+        .uhel-item {
+            border-bottom: 1px solid var(--border); padding: 0.8rem 0;
+            display: flex; gap: 0.8rem; align-items: flex-start;
+        }
+        .uhel-item:last-child { border-bottom: none; }
+        .uhel-color { width: 6px; min-height: 100%; border-radius: 1px; flex-shrink: 0; align-self: stretch; }
+        .uhel-content { flex: 1; }
+        .uhel-content strong { display: block; color: var(--text); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .uhel-stupne { font-size: 0.7rem; color: var(--dim); margin-bottom: 0.3rem; }
+        .uhel-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.6; margin-bottom: 0.4rem; }
+        .uhel-klice { font-size: 0.72rem; color: var(--dim); font-style: italic; }
+
+        /* otázky */
+        .questions-box {
+            background: var(--bg-el); border: 1px solid var(--border);
+            padding: 1.2rem; margin: 1.5rem 0; border-radius: var(--radius);
+        }
+        .questions-box h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--accent); margin-bottom: 0.8rem; }
+        .question-item { margin-bottom: 0.8rem; }
+        .question-item strong { display: block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 0.2rem; }
+        .question-item p { font-size: 0.9rem; color: var(--dim); font-family: var(--serif); }
+
+        /* setup */
+        .setup-row {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            margin: 1rem 0; padding: 0.8rem 1rem;
+            background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius);
+        }
+        .setup-row label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+        .setup-row input[type=number] {
+            width: 60px; padding: 0.5rem; border: 1px solid var(--border);
+            background: var(--bg); color: var(--text); font-family: var(--mono);
+            font-size: 1rem; text-align: center; border-radius: var(--radius);
+        }
+        .btn {
+            padding: 0.55rem 1.4rem; background: var(--accent); color: #fff;
+            border: 1px solid var(--accent); font-family: var(--mono);
+            font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; border-radius: var(--radius); transition: 0.15s;
+        }
+        .btn:hover { background: #6a3a8a; border-color: #6a3a8a; }
+        .btn-ghost { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); background: transparent; }
+        .btn-danger { background: transparent; color: #6a4a6a; border: 1px solid #2a1028; }
+        .btn-danger:hover { border-color: #8a5a8a; color: #c080c0; background: transparent; }
+
+        /* karty členů */
+        .clen-card { border: 1px solid var(--border); background: var(--bg-el); margin-bottom: 0.5rem; border-radius: var(--radius); overflow: hidden; }
+        .clen-summary {
+            cursor: pointer; padding: 0.8rem 1.2rem; font-size: 0.85rem;
+            list-style: none; display: flex; align-items: center; gap: 0.8rem;
+            user-select: none; transition: background 0.15s;
+        }
+        .clen-summary:hover { background: rgba(81, 41, 112, 0.1); }
+        .clen-summary::before { content: "▸"; font-family: var(--mono); font-size: 0.7rem; color: var(--dim); transition: transform 0.2s; }
+        .clen-card[open] .clen-summary::before { transform: rotate(90deg); }
+        .clen-jmeno { flex: 1; font-weight: 500; color: var(--text); }
+        .clen-stav { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+        .clen-stav.hotovo { color: var(--accent); font-weight: 500; }
+        .clen-body { padding: 0 1.2rem 1rem; border-top: 1px solid var(--border); }
+        .clen-body .field { margin-bottom: 0.8rem; }
+        .clen-body label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.3rem; }
+        .clen-body textarea {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--serif); font-size: 0.85rem;
+            line-height: 1.6; resize: vertical; min-height: 50px; border-radius: var(--radius);
+        }
+        .clen-body textarea:focus { outline: none; border-color: var(--accent); }
+        .clen-body select {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--mono); font-size: 0.75rem;
+            border-radius: var(--radius); margin-top: 0.3rem;
+        }
+        .clen-body .select-hint { font-size: 0.65rem; color: var(--dim); font-style: italic; margin-top: 0.2rem; }
+
+        /* autosave */
+        .autosave-row {
+            display: none; align-items: center; gap: 1rem; flex-wrap: wrap;
+            padding: 0.6rem 1rem; background: rgba(81, 41, 112, 0.08);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            margin: 1rem 0; font-size: 0.72rem; color: var(--dim);
+        }
+
+        /* výsledky */
+        .results { display: none; margin-top: 2rem; border-top: 2px solid var(--accent); padding-top: 1.5rem; }
+        .mapa-tabulka { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 1rem 0; }
+        .mapa-tabulka th, .mapa-tabulka td { border: 1px solid var(--border); padding: 0.5rem 0.8rem; text-align: left; }
+        .mapa-tabulka th { background: var(--accent); color: #fff; font-family: var(--mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.65rem; }
+        .mapa-tabulka td { background: var(--bg-el); }
+        .pretizeny td { background: rgba(81, 41, 112, 0.25); font-weight: 500; }
+        .deficitni td { color: var(--dim); }
+        .vysledky-section { margin-bottom: 1.5rem; }
+        .vysledky-section h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+        .vysledky-section .uhel-out { margin-bottom: 0.6rem; padding-left: 0.8rem; border-left: 2px solid var(--accent); font-size: 0.85rem; color: var(--mid); line-height: 1.6; }
+
+        /* bar proužek */
+        .bar-section { margin: 1.5rem 0; }
+        .bar-wrap { display: flex; height: 14px; border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem; }
+        .bar-seg { height: 100%; transition: width 0.4s ease; }
+        .bar-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.65rem; color: var(--dim); }
+        .bar-leg-item { display: flex; align-items: center; gap: 0.3rem; }
+        .bar-leg-dot { width: 8px; height: 8px; border-radius: 1px; }
+
+        /* management týmů */
+        .team-mgmt { margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .team-list { margin: 1rem 0; font-size: 0.78rem; color: var(--dim); }
+        .team-list span { margin-right: 0.8rem; cursor: pointer; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); transition: 0.15s; }
+        .team-list span:hover { border-color: var(--accent); color: var(--text); }
+
+        @media print {
+            nav, .btn, .setup-row, .autosave-row, .team-mgmt, .team-list, .bar-section, .select-hint { display: none !important; }
+            details[open] summary { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="nav-brand"><em>Netopýr</em> · diagnostický mód</span>
+        <div class="nav-links">
+            <a href="generativni_mod.html">Generátor</a>
+            <a href="workshop_90_minut.html">Workshop</a>
+            <a href="inspirativni_mod.html">Inspirace</a>
+            <a href="../">Zpět na kartu</a>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <section class="hero">
+            <img src="netopyr.jpg" alt="Netopýr" class="hero-img" onerror="this.style.display='none'">
+            <p class="hero-label">Týmové dysfunkce · Karta Netopýr</p>
+            <h1>Netopýr</h1>
+            <p class="hero-quote">„krása, která ráno se už nehodí"</p>
+            <p class="fenomen-desc">Fenomén Netopýra — potlačování noční pravdy v denním světle. Tým funguje ve dvou oddělených režimech: nočním (kreativita, autenticita, intuice) a denním (racionalita, pravidla, reporty). Netopýr odhaluje, co se ztrácí překladem mezi těmito světy.</p>
+        </section>
+
+        <!-- POHÁDKA -->
+        <details>
+            <summary class="pohadka-summary">📖 Pohádka o Netopýrovi</summary>
+            <div class="details-inner" id="pohadka-text"></div>
+        </details>
+
+        <!-- KLÍČ K ÚHLŮM -->
+        <details>
+            <summary>🔑 Klíč k úhlům – Netopýr</summary>
+            <div class="details-inner" id="klic-uhlu"></div>
+        </details>
+
+        <!-- JAK MYŠ ČTE NETOPÝRA -->
+        <details>
+            <summary>🦇 Jak myš čte Netopýra</summary>
+            <div class="details-inner" id="jak-mys-cte"></div>
+        </details>
+
+        <!-- DIAGNOSTICKÁ MATICE -->
+        <details>
+            <summary>📊 Diagnostická matice</summary>
+            <div class="details-inner" id="diagnosticka-matice"></div>
+        </details>
+
+        <!-- OTÁZKY -->
+        <div class="questions-box">
+            <h3>🦇 Tři otázky pro tým (Netopýr)</h3>
+            <div class="question-item">
+                <strong>Q1 – Mapa dne a noci:</strong>
+                <p>Kdy a kde v našem týmu žijeme "noc"? A co se s těmito "nočními" poznatky, nápady nebo pocity stane, když přijde "ráno" a formální procesy?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q2 – Jazyk, který se nehodí:</strong>
+                <p>Jaký jazyk používáme v našem týmu v "noci" a jaký v "dni"? Co se ztrácí překladem z jednoho jazyka do druhého?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q3 – Kocovina pravdy:</strong>
+                <p>Které naše "noční" zážitky nebo nápady nám teď připadají jako trapná "kocovina", ale ve skutečnosti jsou důkazem, že jsme opravdu žili, mysleli a tvořili?</p>
+            </div>
+        </div>
+
+        <!-- SETUP -->
+        <div class="setup-row">
+            <label>Počet členů týmu:</label>
+            <input type="number" id="pocet-clenu" min="1" max="30" value="4">
+            <button class="btn" onclick="vytvorKarty()">Vytvořit zápisník</button>
+        </div>
+
+        <!-- AUTOSAVE -->
+        <div class="autosave-row" id="autosave-row">
+            <span>💾 Zápisník se průběžně ukládá — přežije i zavření prohlížeče.</span>
+            <button class="btn btn-danger" onclick="smazatZapisnik()">🗑 Vymazat zápisník</button>
+        </div>
+
+        <!-- MANAGEMENT TÝMŮ -->
+        <div class="team-mgmt">
+            <button class="btn btn-ghost" onclick="ulozitTym()">💾 Uložit tým</button>
+            <button class="btn btn-ghost" onclick="nacistTym()">📂 Načíst tým</button>
+            <button class="btn btn-ghost" onclick="exportURL()">🔗 Exportovat URL</button>
+            <button class="btn btn-ghost" onclick="importURL()">📋 Importovat z URL</button>
+        </div>
+        <div class="team-list" id="team-list"></div>
+
+        <div id="karty-clenu"></div>
+        <div id="tlacitko-vyhodnotit" style="display:none; margin:1.5rem 0;">
+            <button class="btn" onclick="vyhodnotit()">🦇 Vyhodnotit – ukázat kognitivní mapu týmu</button>
+        </div>
+
+        <div class="results" id="vysledky"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════
+        // DATA – POHÁDKA
+        // ═══════════════════════════════════════
+        const POHADKA = `O NETOPÝROVI
+a krása která ráno se [už] nehodí 
+
+Netopýr žil v noci. 
+Ne jen fyzicky. 
+Esteticky. 
+Filozoficky. 
+
+V noci bylo všechno správně. 
+Stíny měly tvar. 
+Zvuky měly smysl. 
+Lidé byli krásní, protože nebyli vidět.
+
+Každý večer se probudil, natáhl křídla, protáhl zobák a vyletěl. 
+Ne za potravou. 
+Za atmosférou. 
+Za tím, co se děje jenom ve chvílích, kdy svět zapomene na pravidla. 
+
+Letěl nad městem, kde se světla třpytila jako sliby. 
+A všechno bylo možné. 
+Všechno bylo krásné. 
+Všechno bylo trochu nepravdivé – ale o dost pravdivější.
+
+A pak přišlo ráno. 
+A všechno se nehodilo. 
+
+Tváře, co v noci zářily, byly najednou unavené. 
+Slova, co zněla jako poezie, se změnila v trapné poznámky. 
+Doteky, co vibrovaly, se změnily v rozpaky. 
+A netopýr se schoval. 
+Do stropu. 
+Do tmy. 
+Do snu.
+
+„V noci krása, co ráno už se nehodí," šeptal si. 
+A nebyl v tom sám. 
+Všichni, kdo v noci žili, to znali. 
+Básníci. 
+Barmani. 
+Ztracenci. 
+Zamilovaní. 
+A ti, co si ráno říkají: 
+„Tohle jsem neřekl. 
+Tohle jsem necítil. 
+Tohle jsem nebyl."
+
+Ale netopýr věděl, že byl. 
+Že noc není lež. 
+Je to jiný jazyk. 
+Jiný smysl. 
+Jiný druh pravdy, která se nehodí do denního světla.
+
+A tak se začalo říkat, že netopýr je tvor, který nosí krásu, co se nehodí. 
+A že jeho pohádky jsou jako kocovina. 
+Bolí. 
+Ale připomínají, že jsme žili.`;
+
+        // ═══════════════════════════════════════
+        // 12 SPECIFICKÝCH ÚHLŮ – NETOPÝR
+        // ═══════════════════════════════════════
+        const NETOPYR_UHLY = [
+            { id: 1, nazev: "Estetika noci", stupne: "0°", barva: "#5a7fa8",
+              jadro: "Zaměřuje se na specifickou krásu, poetiku a atmosféru, která vzkvétá jen ve tmě, mimo dohled a kontrolu.",
+              stopa: "Důraz na krásu, poetiku, atmosféru. Popis noční krajiny jako bezpečného prostoru.",
+              poznamka: "Zde někdo věří, že krása nepotřebuje světlo. Že existuje estetika, která vzkvétá jen tehdy, když se nikdo nedívá.",
+              q3: "Vytvářet 'chráněné noční hodiny' pro tým – čas bez agendy, bez reportů, kde je cílem jen 'létat za atmosférou' a nechat pracovat intuici." },
+            { id: 2, nazev: "Rozpor mezi režimy", stupne: "240°", barva: "#c8722a",
+              jadro: "Vidí bolestný rozpor mezi tím, co bylo prožito/vyřčeno v noci, a tím, jak to vypadá za denního světla. Zaměřuje se na stud a popírání.",
+              stopa: "Důraz na trapnost, stud, popírání. Kontrast mezi nocí a dnem.",
+              poznamka: "Zde někdo ví, jaké to je, když poezie noci se ráno stane trapnou poznámkou. A bolí ho to.",
+              q3: "Nezapírat 'noční já'. Když noční nápad vypadá za denního světla hloupě, ptát se: 'Jakou potřebu nebo pocit ten nápad vyjadřoval?'" },
+            { id: 3, nazev: "Jiný jazyk", stupne: "150°", barva: "#5a8a5a",
+              jadro: "Chápe noc ne jako lež, ale jako odlišný komunikační systém s vlastní pravdou. Problém je v překladu.",
+              stopa: "Důraz na metaforu, symbol, překlad mezi jazyky. Hledání jádra významu.",
+              poznamka: "Zde někdo čte noční výroky jako šifry. Neptá se 'je to pravda?', ale 'jaký druh pravdy to je?'",
+              q3: "Zavést roli 'překladatele noční řeči'. Někdo, kdo bere 'bláznivé' noční nápady a hledá jejich jádro, které lze formulovat do 'denního' jazyka akcí." },
+            { id: 4, nazev: "Skrývání a úkryt", stupne: "210°", barva: "#c8a832",
+              jadro: "Zaměřuje se na akt ústupu, skrývání té části sebe, která není vítána. Vidí v tom strategii přežití, ale i rezignaci.",
+              stopa: "Důraz na ústup, schovávání, depresi, vyhoření. Metafora stropu, tmy, snu.",
+              poznamka: "Zde někdo ví, jaké to je schovávat se do stropu. A ví, že to není lenost – je to nutnost.",
+              q3: "Vytvořit v týmu 'strop' – bezpečný, nediskriminační prostor (fyzický nebo časový), kam se může 'netopýří' část každého uchýlit, aniž by byla souzena." },
+            { id: 5, nazev: "Společenství noci", stupne: "60°", barva: "#9b72b5",
+              jadro: "Vidí v netopýrovi reprezentanta celé kasty těch, jejichž pravda je denním světlem popírána. Je to o identitě a sounáležitosti.",
+              stopa: "Důraz na komunitu, outsidery, identitu. Seznam 'Básníci. Barmani. Ztracenci. Zamilovaní.'",
+              poznamka: "Zde někdo hledá spřízněné duše. Ví, že v tom není sám – ale potřebuje to potvrdit.",
+              q3: "Uspořádat 'noční summit' – setkání pro ty v týmu, kteří se cítí jako 'básníci' nebo 'ztracenci', aby mohli mluvit svým jazykem a cítili se méně sami." },
+            { id: 6, nazev: "Pravda v nepravdě", stupne: "300°", barva: "#6080a0",
+              jadro: "Filozofuje o paradoxní povaze noční pravdy. Není to faktická pravda, ale existenciální, emocionální pravda vyššího řádu.",
+              stopa: "Paradox, 'nepravdivé vs. pravdivější'. Hledání hlubší pravdy za fakty.",
+              poznamka: "Zde někdo ví, že realističnost není totéž co pravdivost. A že někdy je výmysl pravdivější než data.",
+              q3: "Hodnotit nápady ne jen podle 'je to reálné?' (denní otázka), ale také podle 'odhaluje to něco hluboce pravdivého o nás?' (noční otázka)." },
+            { id: 7, nazev: "Atmosféra jako cíl", stupne: "270°", barva: "#a83060",
+              jadro: "Zaměřuje se na čistotu netopýrova letu. Nelétá pro užitek (potravu), ale pro zážitek (atmosféru). To je čistá podstata tvořivosti a hry.",
+              stopa: "Důraz na proces, ne výsledek. Létání pro radost, ne pro kořist.",
+              poznamka: "Zde někdo chápe, že nejlepší nápady vznikají, když se nesnažíme. Když letíme za atmosférou.",
+              q3: "Zavádět do práce cíleně prvky 'letu za atmosférou' – čas na volné bádání, experimentování bez jasného ROI, hraní si s nástroji." },
+            { id: 8, nazev: "Popírání sebe", stupne: "30°", barva: "#6a9e72",
+              jadro: "Zaměřuje se na traumatický následek: popření vlastní zkušenosti. Ranní já popře to noční, aby se vešlo do škatulky.",
+              stopa: "'Tohle jsem nebyl', 'tohle jsem neřekl'. Popírání, sebezapření, ztráta integrity.",
+              poznamka: "Zde někdo ví, jaké to je zapřít sám sebe. A ví, že to je cesta k vyhoření.",
+              q3: "Vést si 'noční deník'. Zapisovat si nápady a pocity z 'noci', a ráno se k nim vracet s otázkou: 'Co mi to říká?'" },
+            { id: 9, nazev: "Kocovina jako důkaz", stupne: "330°", barva: "#8060b0",
+              jadro: "Chápe bolestnou připomínku (kocovinu) nikoli jako trest, ale jako důkaz předchozího prožitku.",
+              stopa: "'Bolí. Ale připomínají, že jsme žili.' Přijetí bolesti jako důkazu autenticity.",
+              poznamka: "Zde někdo ví, že kocovina není selhání. Je to důkaz, že včera stálo za to.",
+              q3: "Oslavovat 'kocovinu'. Když je po brainstormu pocit vyčerpání a trapnosti, připomenout si: 'Dobře, tak jsme žili. Co z toho můžeme zachránit?'" },
+            { id: 10, nazev: "Světelné znečištění", stupne: "180°", barva: "#a85a5a",
+              jadro: "Vidí noční světla města ne jako romantický prvek, ale jako falešné sliby, iluze, které zakrývají pravou tmu.",
+              stopa: "'Světla se třpytila jako sliby'. Nedůvěra k umělému světlu, hledání skutečné tmy.",
+              poznamka: "Zde někdo prohlédl iluzi. Ví, že i firemní 'noční' akce mohou být jen další vrstvou klamu.",
+              q3: "Hledat v týmu 'skutečnou tmu' – momenty, kdy jsou vypnuty všechny 'sliby' a formality a mluví se naprosto upřímně." },
+            { id: 11, nazev: "Časový rozvrh bytí", stupne: "120°", barva: "#8e7248",
+              jadro: "Zaměřuje se na temporální aspekt: různé fáze vyžadují různé druhy myšlení. Ignorování vede k neefektivitě.",
+              stopa: "'V noci bylo všechno správně' – důraz na rytmy, chronotypy, fáze práce.",
+              poznamka: "Zde někdo respektuje, že kreativita má své hodiny. A že nutit netopýra do ranní schůze je násilí.",
+              q3: "Respektovat chronotypy a rytmy. Povolit práci v čase, kdy je komu nejsnáze 'v noci' (pro kreativitu) nebo 've dne' (pro administraci)." },
+            { id: 12, nazev: "Neviditelnost", stupne: "90°", barva: "#5fa8a0",
+              jadro: "Zaměřuje se na osvobozující účinek anonymity a neviditelnosti. Teprve když nejsi pozorován, můžeš být autentický.",
+              stopa: "'Lidé byli krásní, protože nebyli vidět.' Důraz na soukromí, bezpečí před hodnocením.",
+              poznamka: "Zde někdo ví, že pod neustálým dohledem se krása a autenticita vytrácejí.",
+              q3: "Zavádět do práce více 'neviditelných' zón. Čas, kdy se nikdo nereportuje, projekty, které se nekontrolují denně." }
+        ];
+
+        // ═══════════════════════════════════════
+        // DIAGNOSTICKÁ MATICE
+        // ═══════════════════════════════════════
+        const DIAG_MATICE = [
+            { uhel: "1. Estetika noci", diagnoza: "Tým má bohatý 'noční' svět, ale ten je systematicky ignorován. Krása a poetika jsou považovány za neprofesionální.",
+              intervence: "Zavést 'chráněné noční hodiny' – čas bez agendy, kde je cílem nechat pracovat intuici." },
+            { uhel: "2. Rozpor mezi režimy", diagnoza: "Tým zažívá ostrou disociaci mezi tím, co cítí a co říká. 'Noční' já je popíráno 'denním'. Převládá stud.",
+              intervence: "'Ranní zpětný překlad': Na začátku porady věnovat 5 minut tomu, co se 'stalo v noci'." },
+            { uhel: "3. Jiný jazyk", diagnoza: "Tým má bohatý metaforický jazyk, který je při oficiální komunikaci ignorován nebo zesměšňován.",
+              intervence: "'Slovník dvou řečí': Levá strana noční slovo/metafora, pravá denní překlad/akce." },
+            { uhel: "4. Skrývání a úkryt", diagnoza: "Členové se se svou kreativní, zranitelnou stránkou schovávají. Tým pracuje jen s 'povrchními' já.",
+              intervence: "'Schránka netopýra': Fyzická/online schránka pro anonymní 'noční' nápady." },
+            { uhel: "5. Společenství noci", diagnoza: "Kreativní a citliví členové týmu se cítí izolovaní. Chybí jim pocit sounáležitosti.",
+              intervence: "'Noční summit': Setkání pro ty, kteří se cítí jako 'básníci' nebo 'ztracenci'." },
+            { uhel: "6. Pravda v nepravdě", diagnoza: "Tým hodnotí nápady jen podle realizovatelnosti, ignoruje jejich hlubší pravdivost.",
+              intervence: "Hodnotit nápady i podle 'odhaluje to něco hluboce pravdivého o nás?'" },
+            { uhel: "7. Atmosféra jako cíl", diagnoza: "Tým je příliš zaměřený na výsledky. Chybí čas na volné bádání a hru.",
+              intervence: "Zavést 'let za atmosférou' – čas na experimentování bez jasného ROI." },
+            { uhel: "8. Popírání sebe", diagnoza: "Členové popírají své noční nápady, když přijde ráno. Ztrácejí tím integritu.",
+              intervence: "'Noční deník': Zapisovat si nápady a vracet se k nim s otázkou 'Co mi to říká?'" },
+            { uhel: "9. Kocovina jako důkaz", diagnoza: "Tým po intenzivních sezeních potlačuje pocit 'kocoviny' místo aby ji reflektoval.",
+              intervence: "'Rituál kocoviny': Ptát se 'Co nás bolí nebo je trapné? A co to říká o tom, že jsme to prožívali?'" },
+            { uhel: "10. Světelné znečištění", diagnoza: "Firemní kultura je plná falešných slibů. Chybí skutečná upřímnost.",
+              intervence: "Hledat 'skutečnou tmu' – momenty naprosté upřímnosti bez formálních slibů." },
+            { uhel: "11. Časový rozvrh bytí", diagnoza: "Tým nerespektuje rozdílné rytmy práce. Kreativita je nucena do schůzek.",
+              intervence: "Respektovat chronotypy – povolit práci v čase, kdy je komu nejsnáze." },
+            { uhel: "12. Neviditelnost", diagnoza: "Tým je pod neustálým drobnohledem. Lidé se bojí být 'divní' nebo dělat chyby.",
+              intervence: "'Hodina tmy': 60 minut týdně, kdy je zakázáno reportovat, hodnotit nebo dělat 'pro výsledek'." }
+        ];
+
+        // ═══════════════════════════════════════
+        // JAK MYŠ ČTE NETOPÝRA
+        // ═══════════════════════════════════════
+        const JAK_MYS_CTE = `
+        <p><em>Myš dostala pohádku o Netopýrovi – o kráse, která ráno se už nehodí. Přečetla ji. Zavřela oči. A začala přemýšlet.</em></p>
+        <p>Tahle pohádka je jiná. Kocour byl o moci. Netopýr je o tom, co se děje po moci – když světla zhasnou a pravidla usnou. Je to pohádka o tom, co nosíme v sobě a co ráno popíráme.</p>
+        <h3>OTÁZKA 1 (Mapa dne a noci)</h3>
+        <p><strong>Odpověď A:</strong> "Naše noc je po schůzích, u kafe, když se lidi uvolní. Tam se řeknou věci, které by na poradě nikdy nezazněly. Ale ráno – na dalším meetingu – jako by se to nikdy nestalo."<br>→ <strong style="color:#c8722a">MYŠ PŘIŘADILA: Úhel 2 – Rozpor mezi režimy (240°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Naše 'noc' je neformální Slack kanál, kam píšeme nápady, co by 'na venek' neprošly. Je to náš strop."<br>→ <strong style="color:#c8a832">MYŠ PŘIŘADILA: Úhel 4 – Skrývání a úkryt (210°)</strong></p>
+        <p><strong>Odpověď C:</strong> "My ani žádnou noc nemáme. Všechno je pod dohledem, všechno se reportuje. Kreativita se dusí."<br>→ <strong style="color:#5fa8a0">MYŠ PŘIŘADILA: Úhel 12 – Neviditelnost (90°)</strong></p>
+        <h3>OTÁZKA 2 (Jazyk, který se nehodí)</h3>
+        <p><strong>Odpověď A:</strong> "V noci mluvíme v metaforách – 'ten projekt je jako loď bez kapitána'. Ve dne to přeložíme na 'chybí leadership'. A tím se ztratí všechna ta bezmoc, co v té metafoře byla."<br>→ <strong style="color:#5a8a5a">MYŠ PŘIŘADILA: Úhel 3 – Jiný jazyk (150°)</strong></p>
+        <p><strong>Odpověď B:</strong> "V noci jsme upřímní. Ve dne jsme diplomatičtí. Z noci zbyde jen ticho."<br>→ <strong style="color:#6a9e72">MYŠ PŘIŘADILA: Úhel 8 – Popírání sebe (30°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Náš tým v noci kreslí. Diagramy, náčrtky, asociační mapy. Ve dne z toho musíme udělat Excel."<br>→ <strong style="color:#5a7fa8">MYŠ PŘIŘADILA: Úhel 1 – Estetika noci (0°)</strong></p>
+        <h3>OTÁZKA 3 (Kocovina pravdy)</h3>
+        <p><strong>Odpověď A:</strong> "Loni jsme na teambuildingu v noci vymysleli úplně nový produkt. Ráno nám to přišlo šílené. Teď to dělá konkurence."<br>→ <strong style="color:#8060b0">MYŠ PŘIŘADILA: Úhel 9 – Kocovina jako důkaz (330°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Po každém velkém brainstormingu mám pocit vyčerpání a studu. Ale zpětně vždycky najdu něco cenného."<br>→ <strong style="color:#a83060">MYŠ PŘIŘADILA: Úhel 7 – Atmosféra jako cíl (270°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Jednou jsme do rána debatovali o smyslu naší práce. Druhý den to všichni ignorovali."<br>→ <strong style="color:#9b72b5">MYŠ PŘIŘADILA: Úhel 5 – Společenství noci (60°)</strong></p>
+        <h3>CO Z TOHO MYŠ VYČETLA?</h3>
+        <p><strong>PŘETÍŽENÉ ÚHLY:</strong> Rozpor mezi režimy (2) – 11×, Popírání sebe (8) – 10×<br>Tým je rozpolcený. Ví, co cítí, ale nedovolí si to přiznat za denního světla.</p>
+        <p><strong>DEFICIENTNÍ ÚHLY:</strong> Atmosféra jako cíl (7) – 1×, Pravda v nepravdě (6) – 0×, Světelné znečištění (10) – 1×<br>Tým neumí létat pro radost. Všechno musí mít účel.</p>
+        <p><strong>CO MYŠ NAVRHLA:</strong> Zavést "ranní rituál" – 5 minut, kdy se řekne: "Co z noci si dnes přinášíme?" Uspořádat "noční let" – 90 minut bez agendy. A jmenovat překladatele mezi jazyky.</p>`;
+
+        // ═══════════════════════════════════════
+        // NAPLNĚNÍ HTML
+        // ═══════════════════════════════════════
+        document.getElementById('pohadka-text').innerHTML = `<p style="white-space:pre-line">${POHADKA}</p>`;
+        document.getElementById('jak-mys-cte').innerHTML = JAK_MYS_CTE;
+
+        document.getElementById('klic-uhlu').innerHTML = NETOPYR_UHLY.map(u => `
+        <div class="uhel-item">
+          <div class="uhel-color" style="background:${u.barva}"></div>
+          <div class="uhel-content">
+            <strong>${u.id}. ${u.nazev} <span style="color:${u.barva}">●</span> ${u.stupne}</strong>
+            <div class="uhel-desc"><strong>Jádro:</strong> ${u.jadro}<br><strong>Netopýr poznamená:</strong> „${u.poznamka}"<br><strong>Stopa v odpovědi:</strong> ${u.stopa}</div>
+            <div class="uhel-desc"><strong>Q3 – Návrh intervence:</strong> ${u.q3}</div>
+          </div>
+        </div>`).join('');
+
+        document.getElementById('diagnosticka-matice').innerHTML = `
+        <table class="mapa-tabulka">
+          <tr><th>Úhel</th><th>Týmová diagnóza</th><th>Akční intervence</th></tr>
+          ${DIAG_MATICE.map(d => `<tr><td>${d.uhel}</td><td>${d.diagnoza}</td><td>${d.intervence}</td></tr>`).join('')}
+        </table>`;
+
+        // ═══════════════════════════════════════
+        // LOGIKA ZÁPISNÍKU
+        // ═══════════════════════════════════════
+        const SAVE_KEY = 'netopyr_diagnostika_session';
+        let aktualniSession = null;
+
+        function ulozit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value) || 0;
+            if (pocet < 1) return;
+            const data = { pocet, clenove: [] };
+            for (let i = 1; i <= pocet; i++) {
+                const jEl = document.getElementById(`jmeno-${i}`);
+                if (!jEl) continue;
+                data.clenove.push({
+                    jmeno: jEl.value,
+                    o1: document.getElementById(`odpoved-${i}-1`)?.value || '',
+                    o2: document.getElementById(`odpoved-${i}-2`)?.value || '',
+                    o3: document.getElementById(`odpoved-${i}-3`)?.value || '',
+                    u1: document.getElementById(`uhel-${i}-1`)?.value || '',
+                    u2: document.getElementById(`uhel-${i}-2`)?.value || '',
+                    u3: document.getElementById(`uhel-${i}-3`)?.value || ''
+                });
+            }
+            aktualniSession = data;
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function nacistUlozene() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (!data?.pocet) return;
+                aktualniSession = data;
+                document.getElementById('pocet-clenu').value = data.pocet;
+                vytvorKartyHTML(data.pocet);
+                data.clenove.forEach((c, idx) => {
+                    const i = idx + 1;
+                    const jEl = document.getElementById(`jmeno-${i}`);
+                    if (!jEl) return;
+                    jEl.value = c.jmeno || '';
+                    document.getElementById(`odpoved-${i}-1`).value = c.o1 || '';
+                    document.getElementById(`odpoved-${i}-2`).value = c.o2 || '';
+                    document.getElementById(`odpoved-${i}-3`).value = c.o3 || '';
+                    document.getElementById(`uhel-${i}-1`).value = c.u1 || '';
+                    document.getElementById(`uhel-${i}-2`).value = c.u2 || '';
+                    document.getElementById(`uhel-${i}-3`).value = c.u3 || '';
+                    aktualizujStav(i);
+                });
+                document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+                document.getElementById('autosave-row').style.display = 'flex';
+                document.getElementById('vysledky').style.display = 'none';
+            } catch (e) {}
+        }
+
+        function smazatZapisnik() {
+            if (!confirm('Opravdu vymazat celý zápisník?')) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            document.getElementById('karty-clenu').innerHTML = '';
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'none';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'none';
+            aktualniSession = null;
+        }
+
+        function aktualizujStav(i) {
+            const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim();
+            const u1 = document.getElementById(`uhel-${i}-1`)?.value;
+            const u2 = document.getElementById(`uhel-${i}-2`)?.value;
+            const u3 = document.getElementById(`uhel-${i}-3`)?.value;
+            const prirazeno = [u1, u2, u3].filter(Boolean).length;
+            const nadpisEl = document.getElementById(`nadpis-${i}`);
+            const stavEl = document.getElementById(`stav-${i}`);
+            if (nadpisEl) nadpisEl.textContent = jmeno || `Člen ${i}`;
+            if (stavEl) {
+                stavEl.textContent = prirazeno === 3 ? '✓ hotovo' : prirazeno > 0 ? `${prirazeno}/3 přiřazeno` : 'nevyplněno';
+                stavEl.className = 'clen-stav' + (prirazeno === 3 ? ' hotovo' : '');
+            }
+        }
+
+        function vytvorKartyHTML(pocet) {
+            const options = NETOPYR_UHLY.map(u => `<option value="${u.id}">${u.id}. ${u.nazev} (${u.stupne})</option>`).join('');
+            const sel = `<option value="">— nevybráno —</option>${options}`;
+            let html = '';
+            for (let i = 1; i <= pocet; i++) {
+                html += `
+                <details class="clen-card" id="karta-${i}" open>
+                  <summary class="clen-summary">
+                    <span class="clen-jmeno" id="nadpis-${i}">Člen ${i}</span>
+                    <span class="clen-stav" id="stav-${i}">nevyplněno</span>
+                  </summary>
+                  <div class="clen-body">
+                    <div class="field">
+                      <label>Jméno / iniciály</label>
+                      <input type="text" id="jmeno-${i}" placeholder="jméno (volitelné)" style="width:100%;padding:0.4rem;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.8rem;border-radius:var(--radius)" oninput="aktualizujStav(${i});ulozit();">
+                    </div>
+                    <div class="field">
+                      <label>Q1 – Mapa dne a noci:</label>
+                      <textarea id="odpoved-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-1" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q2 – Jazyk, který se nehodí:</label>
+                      <textarea id="odpoved-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-2" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q3 – Kocovina pravdy:</label>
+                      <textarea id="odpoved-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-3" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                  </div>
+                </details>`;
+            }
+            document.getElementById('karty-clenu').innerHTML = html;
+        }
+
+        function vytvorKarty() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            if (!pocet || pocet < 1) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            aktualniSession = null;
+            vytvorKartyHTML(pocet);
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'flex';
+        }
+
+        function vyhodnotit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            const pocty = {};
+            NETOPYR_UHLY.forEach(u => pocty[u.id] = { count: 0, nazev: u.nazev, barva: u.barva, stupne: u.stupne, q3: u.q3 });
+            let celkem = 0;
+            for (let i = 1; i <= pocet; i++) {
+                for (let q = 1; q <= 3; q++) {
+                    const val = document.getElementById(`uhel-${i}-${q}`)?.value;
+                    if (val) { pocty[val].count++; celkem++; }
+                }
+            }
+            if (celkem === 0) { alert('Přiřaď aspoň jeden úhel před vyhodnocením.'); return; }
+
+            const pretizene = [], deficitni = [], vyvazene = [], nepouzite = [];
+            NETOPYR_UHLY.forEach(u => {
+                const p = pocty[u.id];
+                p.procento = celkem > 0 ? p.count / celkem : 0;
+                if (p.count === 0) nepouzite.push(p);
+                else if (p.procento >= 0.30) pretizene.push(p);
+                else if (p.procento <= 0.10) deficitni.push(p);
+                else vyvazene.push(p);
+            });
+
+            const barHTML = NETOPYR_UHLY.map(u => {
+                const p = pocty[u.id];
+                const w = Math.round(p.procento * 100);
+                return w > 0 ? `<div class="bar-seg" style="width:${w}%;background:${u.barva}" title="${u.nazev} ${w}%"></div>` : '';
+            }).join('');
+
+            let html = `
+            <div class="bar-section">
+              <div class="bar-wrap">${barHTML}</div>
+              <div class="bar-legend">
+                ${NETOPYR_UHLY.filter(u => pocty[u.id].count > 0).map(u => `<div class="bar-leg-item"><span class="bar-leg-dot" style="background:${u.barva}"></span>${u.nazev} (${pocty[u.id].count}×)</div>`).join('')}
+              </div>
+            </div>
+            <h2 style="font-family:var(--serif);font-size:1.4rem;color:var(--accent);margin-bottom:0.5rem;">🦇 Kognitivní mapa týmu</h2>
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:1rem;">Celkem přiřazeno: <strong>${celkem}</strong> úhlů od <strong>${pocet}</strong> členů</p>
+            <table class="mapa-tabulka">
+              <tr><th>Úhel</th><th>Počet</th><th>%</th><th>Typ</th></tr>
+              ${NETOPYR_UHLY.map(u => {
+                const p = pocty[u.id];
+                const proc = Math.round(p.procento * 100);
+                let typ = '◇ vyvážený', trida = '';
+                if (p.count === 0) { typ = '—'; trida = 'deficitni'; }
+                else if (p.procento >= 0.30) { typ = '▲ přetížený'; trida = 'pretizeny'; }
+                else if (p.procento <= 0.10) { typ = '▽ deficitní'; trida = 'deficitni'; }
+                return `<tr class="${trida}"><td><span style="color:${u.barva}">●</span> ${u.nazev} <span style="font-size:0.7rem;color:var(--dim)">${u.stupne}</span></td><td>${p.count}×</td><td>${proc}%</td><td>${typ}</td></tr>`;
+              }).join('')}
+            </table>`;
+
+            if (pretizene.length > 0) {
+                html += `<div class="vysledky-section"><h3>▲ Přetížené úhly (nad 30 %)</h3>`;
+                pretizene.forEach(p => {
+                    const protivahy = deficitni.concat(nepouzite).slice(0, 2);
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}× (${Math.round(p.procento*100)}%)`;
+                    if (protivahy.length > 0) {
+                        html += `<br><em>Trénink deficitu:</em><br>`;
+                        protivahy.forEach(def => { html += `→ <strong>${def.nazev}:</strong> ${def.q3}<br>`; });
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+
+            const vsechnyDeficitni = deficitni.concat(nepouzite);
+            if (vsechnyDeficitni.length > 0) {
+                html += `<div class="vysledky-section"><h3>▽ Deficitní úhly (pod 10 % nebo vůbec)</h3>`;
+                vsechnyDeficitni.forEach(p => {
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}×<br><em>Návrh úkolu:</em> ${p.q3}</div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `<button class="btn btn-ghost" style="margin-top:1rem;" onclick="window.print()">🖨 Vytisknout výsledky</button>`;
+            html += `<p style="margin-top:1rem;font-size:0.8rem;">🔮 Chceš vygenerovat workshop na míru? <a href="generativni_mod.html">Generativní mód</a> | <a href="workshop_90_minut.html">Hotový workshop</a></p>`;
+
+            const el = document.getElementById('vysledky');
+            el.innerHTML = html;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Správa týmů
+        function ulozitTym() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const nazev = prompt('Název týmu:') || `Tým ${new Date().toLocaleDateString('cs-CZ')}`;
+            const tymy = JSON.parse(localStorage.getItem('netopyr_tymy') || '{}');
+            tymy[nazev] = aktualniSession;
+            localStorage.setItem('netopyr_tymy', JSON.stringify(tymy));
+            zobrazTymy();
+        }
+        function nacistTym() {
+            const tymy = JSON.parse(localStorage.getItem('netopyr_tymy') || '{}');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { alert('Žádné uložené týmy.'); return; }
+            const nazev = prompt('Název týmu k načtení:\n' + keys.join('\n'));
+            if (!nazev || !tymy[nazev]) return;
+            aktualniSession = tymy[nazev];
+            localStorage.setItem(SAVE_KEY, JSON.stringify(aktualniSession));
+            nacistUlozene();
+        }
+        function exportURL() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const encoded = btoa(encodeURIComponent(JSON.stringify(aktualniSession)));
+            const url = window.location.origin + window.location.pathname + '?session=' + encoded;
+            navigator.clipboard.writeText(url).then(() => alert('URL zkopírováno!'));
+        }
+        function importURL() {
+            const text = prompt('Vlož URL se session:');
+            if (!text) return;
+            try {
+                const url = new URL(text);
+                const encoded = url.searchParams.get('session');
+                if (!encoded) throw new Error();
+                const data = JSON.parse(decodeURIComponent(atob(encoded)));
+                aktualniSession = data;
+                localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                nacistUlozene();
+            } catch (e) { alert('Neplatná URL.'); }
+        }
+        function zobrazTymy() {
+            const tymy = JSON.parse(localStorage.getItem('netopyr_tymy') || '{}');
+            const el = document.getElementById('team-list');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { el.innerHTML = ''; return; }
+            el.innerHTML = keys.map(k => `<span onclick="nacistTym('${k}')">${k}</span>`).join('');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { nacistUlozene(); zobrazTymy(); });
+    </script>
+</body>
+</html>
