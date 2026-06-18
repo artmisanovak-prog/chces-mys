@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐈‍⬛ Kocour – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0404;
+            --bg-el: #140808;
+            --text: #f0e8e8;
+            --dim: #604040;
+            --mid: #906060;
+            --accent: #800000;
+            --accent-dim: #1a0a0a;
+            --border: #1e0808;
+            --highlight: rgba(5, 5, 5, 0.3);
+            --serif: 'Spectral', serif;
+            --mono: 'Space Grotesk', sans-serif;
+            --radius: 3px;
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            font-weight: 300;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: #c00000;
+        }
+        .wrap {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        /* navigace */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 4, 4, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .nav-brand {
+            font-family: var(--serif);
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text);
+        }
+        .nav-brand em {
+            font-style: italic;
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            color: var(--dim);
+            padding: 0.25rem 0.5rem;
+            border: 1px solid transparent;
+            transition: 0.15s;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        /* hlavicka */
+        .hero {
+            padding: 2.5rem 0 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .hero-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-family: var(--serif);
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 400;
+            line-height: 1.0;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+        h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+        .hero-desc {
+            font-size: 0.85rem;
+            color: var(--dim);
+            max-width: 500px;
+            margin: 0.8rem auto 0;
+            line-height: 1.7;
+        }
+
+        /* filtry */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: 0.4rem 1rem;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: transparent;
+            color: var(--dim);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* box s napadem */
+        .idea-box {
+            background: var(--bg-el);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+            position: relative;
+        }
+        .idea-box.highlight {
+            border-color: var(--accent);
+        }
+        .idea-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .idea-color {
+            width: 4px;
+            height: 40px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+        .idea-meta {
+            flex: 1;
+        }
+        .idea-category {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.2rem;
+        }
+        .idea-angle {
+            font-family: var(--serif);
+            font-size: 0.85rem;
+            color: var(--mid);
+            font-style: italic;
+        }
+        .idea-phrase {
+            font-family: var(--serif);
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--accent);
+            font-style: italic;
+        }
+        .idea-text {
+            font-family: var(--serif);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #b09090;
+        }
+
+        /* tlacitka */
+        .btn-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        .btn {
+            padding: 0.55rem 1.4rem;
+            background: var(--accent);
+            color: #fff;
+            border: 1px solid var(--accent);
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: 0.15s;
+        }
+        .btn:hover {
+            background: #a00000;
+            border-color: #a00000;
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--dim);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            background: transparent;
+        }
+
+        /* info o uhlu */
+        .angle-info {
+            margin-top: 1rem;
+            font-size: 0.72rem;
+            color: var(--dim);
+            border-top: 1px solid var(--border);
+            padding-top: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .angle-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        /* ulozene napady */
+        .saved-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+        .saved-section h3 {
+            font-family: var(--serif);
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+        }
+        .saved-item {
+            background: var(--bg-el);
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            color: var(--mid);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .saved-item .remove-btn {
+            background: transparent;
+            border: none;
+            color: #804040;
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 0.2rem;
+            transition: 0.15s;
+            flex-shrink: 0;
+        }
+        .saved-item .remove-btn:hover {
+            color: #c04040;
+        }
+
+        @media print {
+            nav,
+            .btn-row,
+            .filters,
+            .saved-section {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="nav-brand"><em>Kocour</em> · inspirativní mód</span>
+        <div class="nav-links">
+            <a href="diagnosticky_mod.html">Diagnostika</a>
+            <a href="generativni_mod.html">Generátor</a>
+            <a href="workshop_90_minut.html">Workshop</a>
+            <a href="../">Zpět na kartu</a>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <!-- HERO -->
+        <section class="hero">
+            <p class="hero-label">Kreativní engine · Karta Kocour</p>
+            <h1>Inspirativní <em>mód</em></h1>
+            <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Kocourovi. Vyber kategorii a losuj.</p>
+        </section>
+
+        <!-- FILTRY -->
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-category="vše">Vše</button>
+            <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+            <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+            <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+            <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+        </div>
+
+        <!-- IDEA BOX -->
+        <div class="idea-box highlight" id="ideaBox">
+            <div id="ideaContent">
+                <p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p>
+            </div>
+        </div>
+
+        <!-- TLACITKA -->
+        <div class="btn-row">
+            <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+            <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+            <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+            <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+        </div>
+
+        <!-- ULOZENE -->
+        <div class="saved-section" id="savedSection" style="display:none;">
+            <h3>💾 Uložené nápady</h3>
+            <div id="savedList"></div>
+            <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════
+        // DATA – 48 NAPADU
+        // ═══════════════════════════════════════
+        const NAPADY = [
+            { id: 1, angle: "Fyzický konec věty", stupne: "0°", barva: "#5a7fa8", phrase: "Čím rychleji se snaží větu uzavřít, tím více jejích významů zůstává nedořečených.",
+                category: "produkty, obaly",
+                idea: "Navrhněte produkt, který má 'otevřený konec' – například lahev, jejíž tvar evokuje nedokončenou větu (zúžené hrdlo, které nekončí rovně, ale jakoby pokračuje do pomyslných teček). Obal, který na první pohled neprozradí vše, ale má odklápěcí části, průhledy nebo 'prázdná místa', která si zákazník musí domyslet. Učíme tak, že hodnota není v uzavřenosti, ale v otevřenosti interpretaci." },
+            { id: 2, angle: "Fyzický konec věty", stupne: "0°", barva: "#5a7fa8", phrase: "Kocour se stal otrokem tečky. Věřil, že hodnota je v ukončení, není v obsahu.",
+                category: "loga, vizuální identita",
+                idea: "Vytvořte logo, které je záměrně 'neukončené' – například kruh s mezerou, linie, která nekončí, nebo písmo, u nějž chybí poslední tah. To firmu vizuálně posouvá do role toho, kdo klade otázky a otevírá prostor pro dialog, nikoliv toho, kdo vše uzavírá hotovými pravdami. Identita založená na procesu, ne na výsledku." },
+            { id: 3, angle: "Fyzický konec věty", stupne: "0°", barva: "#5a7fa8", phrase: "V našich meetinzích, když někdo řekne 'takže…' nebo 'možná bychom…' a hned je přerušen řešením.",
+                category: "copywriting, obsah",
+                idea: "Pište texty, které nepřeskakují k závěru, ale naopak zvou k prozkoumání. Místo 'Takže řešením je X' použijte 'Možná bychom mohli… a co když to otevře ještě něco dalšího?' Tvořte obsah jako sérii otevřených dveří, ne jako uzavřenou knihu. Blogové články, které končí otázkou, ne odpovědí. Newslettery, které vnímáte jako první větu rozhovoru, ne poslední." },
+            { id: 4, angle: "Fyzický konec věty", stupne: "0°", barva: "#5a7fa8", phrase: "Zavést pravidlo 'tří teček' (…). První, kdo řekne 'tečka', má za úkol pouze shrnout, NE dodat svůj závěr.",
+                category: "design, vizuální identita",
+                idea: "Designový manuál firmy může obsahovat 'pravidlo tří teček' – vizuální prvek (…), který se používá v přechodech, mezi sekcemi webu nebo jako oddělovač v prezentacích. Symbolizuje, že zde je prostor pro dotvoření, pro zastavení, pro myšlenku druhého. Tento prvek se stává vizuálním ekvivalentem aktivního naslouchání." },
+            { id: 5, angle: "Kvaziefektivita", stupne: "240°", barva: "#c8722a", phrase: "Rychlé odškrtnutí bodů z agendy je jako uklízení nepořádku do skříně – jako hotovo, ale problém se vrátí.",
+                category: "obaly, produkty",
+                idea: "Navrhněte obal, který na první pohled vypadá 'uklizeně' (čisté linie, minimalismus), ale při otevření odhalí vnitřní strukturu, která připomíná, že skutečné řešení vyžaduje prozkoumání hloubky. Například krabice na nářadí, která má na víku vytištěný 'checklist', ale po otevření ukáže, že nástroje jsou propojeny do složité sítě, protože jednoduchá řešení neexistují." },
+            { id: 6, angle: "Kvaziefektivita", stupne: "240°", barva: "#c8722a", phrase: "Kocour si myslel, že práci urychluje. 'Půl hodiny a hotovo!' Ale ve skutečnosti jen nahradil společný proces monologem.",
+                category: "loga, vizuální identita",
+                idea: "Logo, které se tváří jako hotové, jednoduché a rychlé, ale při bližším zkoumání odhaluje vrstvy a detaily, které vyžadují čas. Například ikona 'fajfky' (✓), která je složena z mnoha malých teček nebo čar – symbolizuje, že rychlé odškrtnutí je jen iluze a skutečná hodnota je v procesu, který za ním stojí." },
+            { id: 7, angle: "Kvaziefektivita", stupne: "240°", barva: "#c8722a", phrase: "Schůze jsou krátké, ale problémy se vracejí jako nevykrknuté tečky.",
+                category: "copywriting, obsah",
+                idea: "Vytvářejte obsah, který nebude 'odklikávat' témata, ale bude je obkreslovat. Místo struktury 'Problém – Řešení' použijte strukturu 'Problém – Vrstvení – Návrat – Souvislost'. Pište tak, aby čtenář necítil tlak na rychlý závěr, ale aby se ponořil do hloubky a našel tam vlastní odpovědi. Vzdorujte trendu 'bullet points' a vracejte se k esejistice." },
+            { id: 8, angle: "Kvaziefektivita", stupne: "240°", barva: "#c8722a", phrase: "Měřit úspěch není délkou, ale počtem otevřených otázek na konci.",
+                category: "design, vizuální identita",
+                idea: "Navrhněte vizuální identitu, která má vestavěný 'ukazatel otevřenosti' – například dynamické pozadí webu, které generuje nové otázky a témata, místo aby jen prezentovalo hotové odpovědi. Ročenka nebo výroční zpráva, která nekončí tečkou, ale otazníkem a prázdnými stránkami pro poznámky čtenářů." },
+            { id: 9, angle: "Nespolyknutelný obsah", stupne: "150°", barva: "#5a8a5a", phrase: "Těžká témata, která se snažíme spolknout, nám nakonec vyjdou ven v té nejnevhodnější chvíli.",
+                category: "produkty, obaly",
+                idea: "Vytvořte produkt, který 'nespolykává' těžká témata, ale dává jim prostor. Například diář s oddílem 'Vykrknuté tečky' – místo, kam si lidé mohou zapsat věci, které 'spolkli' během dne, aby je pak mohli v klidu zpracovat. Obal na potraviny, který má průhledné 'bubliny' – jako by obsah chtěl ven – a tím komunikuje, že značka nezakrývá nepříjemné pravdy." },
+            { id: 10, angle: "Nespolyknutelný obsah", stupne: "150°", barva: "#5a8a5a", phrase: "Berušky nesou 'nespolknuté konce vět'. To jsou nepříjemné, nezpracované, složité aspekty problému.",
+                category: "loga, vizuální identita",
+                idea: "Navrhněte logo, které je složeno z malých prvků ('berušek'), které jsou vizuálně 'nepohodlné' – trčí ven, jsou jinak barevné, narušují harmonii. Tyto prvky nejsou chybou, ale esencí identity. Symbolizují, že firma nezametá složité věci pod koberec, ale dává jim prostor a uznává je jako součást své pravdy." },
+            { id: 11, angle: "Nespolyknutelný obsah", stupne: "150°", barva: "#5a8a5a", phrase: "Když potlačujeme 'elefanty v místnosti', citlivá témata, emocionální frustrace nebo fundamentální nesouhlas.",
+                category: "copywriting, obsah",
+                idea: "Pište o 'elefantech v místnosti' ve svém oboru. Místo vyhýbání se kontroverzním tématům je otevřeně pojmenujte. Vytvořte sérii článků 'Nespolyknutelné pravdy našeho odvětví'. Tím si značka buduje důvěru a ukazuje, že se nebojí jít do hloubky a řešit to, co ostatní přehlížejí." },
+            { id: 12, angle: "Nespolyknutelný obsah", stupne: "150°", barva: "#5a8a5a", phrase: "Vytvořit 'nástěnku nespolknutého'. Fyzické/virtuální místo, kde lze anonymně psát 'nespolknuté konce' z diskusí.",
+                category: "design, vizuální identita",
+                idea: "Navrhněte fyzický nebo digitální prostor pro firmu, který je určen pro 'nespolknuté'. Například nástěnka na chodbě s hlavním vizuálním prvkem berušky, kam mohou zaměstnanci lepit lístečky s tím, co bylo 'spolknuto' a potřebuje to ven." },
+            { id: 13, angle: "Pozorovatelská myš", stupne: "210°", barva: "#c8a832", phrase: "Tiché hlasy v místnosti jsou jako myš, která si zapisuje – slyší víc, než kdo mluví, ale nikdo ji neslyší.",
+                category: "produkty, obaly", idea: "Navrhněte produkt, který je 'tichým pozorovatelem' – například jednoduchý, nenápadný zápisník s tvrdými deskami, který je ale uvnitř plný promyšlených detailů, strukturovaných stránek a otázek. Jeho obal je tichý, ale jeho obsah je hluboký." },
+            { id: 14, angle: "Pozorovatelská myš", stupne: "210°", barva: "#c8a832", phrase: "Myš je metaforou facilitátora nebo tichého člena. Vidí dysfunkci jasně, ale nemá moc ji zastavit.",
+                category: "loga, vizuální identita", idea: "Logo, které je na první pohled nenápadné, malé, v koutku, ale při bližším zkoumání je nejsložitější a nejdetailnější. Může to být malá myška schovaná v negativním prostoru velkého, dominantního loga. Učí nás, že skutečná síla a vhled není v tom, kdo mluví nejhlasitěji, ale v tom, kdo pozorně naslouchá." },
+            { id: 15, angle: "Pozorovatelská myš", stupne: "210°", barva: "#c8a832", phrase: "Když v týmu jsou introverti nebo lidé, kteří potřebují delší čas na formulaci myšlenky. Jejich hlasy jsou umlčeny 'kocouřím' stylem komunikace.",
+                category: "copywriting, obsah", idea: "Tvořte obsah, který je psán pro 'myši' – tedy pro ty, kteří potřebují čas a ticho na zpracování. Nabízejte delší formáty, esejistické texty, podcasty bez rychlého střihu. Pište tak, aby se čtenář necítil přerušován a umlčován, ale aby měl prostor si vaše myšlenky 'osedlat' a dotvořit je vlastním tempem." },
+            { id: 16, angle: "Pozorovatelská myš", stupne: "210°", barva: "#c8a832", phrase: "Jmenovat pro každou další diskusi 'myš'. Její jedinou rolí je pozorovat.",
+                category: "design, vizuální identita", idea: "Vytvořte roli 'myši' jako součást vizuální identity porad. Navrhněte speciální visačku na krk, malý stojánek na stůl nebo odznak s obrázkem myši, který si ten, kdo má roli pozorovatele, vezme." },
+            { id: 17, angle: "Trvalá změna", stupne: "60°", barva: "#9b72b5", phrase: "Důvěra je jako pavučina – jakmile se přetrhne, zůstane díra, i když se snažíme ji upravit.",
+                category: "produkty, obaly", idea: "Navrhněte produkt, který má 'pavučinovou' strukturu – jemnou, křehkou, ale pevnou. Například porcelánový hrnek s jemnou sítí prasklin (glazura), který není poškozený, ale designově zvýrazňuje 'jizvy' jako součást krásy." },
+            { id: 18, angle: "Trvalá změna", stupne: "60°", barva: "#9b72b5", phrase: "I když kocour přestal, 'něco nebylo stejné'. Jednorázové narušení komunikační kultury zachovává trvalou jizvu.",
+                category: "loga, vizuální identita", idea: "Logo, které má viditelnou 'jizvu' – přerušenou linii, která je ale zacelená jinou barvou nebo materiálem. Není to chyba, ale paměť značky. Symbolizuje, že si firma pamatuje svá pochybení a poučila se z nich." },
+            { id: 19, angle: "Trvalá změna", stupne: "60°", barva: "#9b72b5", phrase: "Po toxické schůzi tým i po změně chování zůstává pasivní, neiniciuje, čeká na pokyny.",
+                category: "copywriting, obsah", idea: "Pište způsobem, který aktivně zve k účasti, místo aby jen předával informace. Místo 'Udělejte X' použijte 'Co kdybychom společně zkusili X?'. Vytvářejte obsah, který je 'nedokončený' a žádá o zpětnou vazbu, komentáře, dotvoření." },
+            { id: 20, angle: "Trvalá změna", stupne: "60°", barva: "#9b72b5", phrase: "Úmyslně vytvářet 'nedokončené věty'. Vedoucí musí začít myšlenku a vyzvat ostatní, aby ji dokončili.",
+                category: "design, vizuální identita", idea: "Navrhněte vizuální styl, který je postaven na 'nedokončených větách'. Například plakáty, kde text končí uprostřed věty a pokračuje vizuálně – barvou, tvary, prázdným místem. Webová stránka, kde se obsah 'dopisuje' podle interakce uživatele." },
+            { id: 21, angle: "Tyranie metrik", stupne: "300°", barva: "#6080a0", phrase: "Počítáme tečky, ale nevidíme berušky – čísla bez příběhu jsou jako mapa bez krajiny.",
+                category: "produkty, obaly", idea: "Vytvořte produkt, který spojuje metriku s příběhem. Například diář, který vedle kolonek pro čísla (splněné úkoly, hodiny) má i velký prostor pro vyprávění – 'Jaký příběh se skrývá za těmito čísly?'." },
+            { id: 22, angle: "Tyranie metrik", stupne: "300°", barva: "#6080a0", phrase: "Příběh je posedlý přesnými čísly: 2 berušky, 14 teček, 30 minut. To je parodie na manažerské reportování.",
+                category: "loga, vizuální identita", idea: "Logo, které je samo o sobě 'grafem' nebo 'reportem', ale tento graf je zcela absurdní – osy nedávají smysl, data jsou nahodilá, ale vizuálně krásná. Tím ironicky komentuje posedlost metrikami a ukazuje, že firma jde do hloubky." },
+            { id: 23, angle: "Tyranie metrik", stupne: "300°", barva: "#6080a0", phrase: "Na retrospektivě se řeší pouze 'splněno/nesplněno', 'počet úkolů', ale ne 'jak se cítíme', 'co jsme se naučili'.",
+                category: "copywriting, obsah", idea: "Pište case study, které nejsou jen o výsledcích, ale o cestě. Místo 'Zvýšili jsme prodeje o 20 %' napište 'Cesta k 20% nárůstu: 3 selhání, 2 náhodné objevy a jedna změna myšlení'. Věnujte stejný prostor číslům jako emocím, pocitům a příběhům." },
+            { id: 24, angle: "Tyranie metrik", stupne: "300°", barva: "#6080a0", phrase: "Přidat ke každé kvantitativní metrice kvalitativní příběh. Ne 'dokončili jsme 14 úkolů', ale 'jakých 14 teček jsme vykrkli'.",
+                category: "design, vizuální identita", idea: "Navrhněte výroční zprávu nebo report, který je rozdělený na dvě poloviny. Levá strana: striktní, minimalistická, plná grafů a čísel. Pravá strana: volná, organická, plná textu, ilustrací, příběhů, 'vykrknutých teček'." },
+            { id: 25, angle: "Násilný konsenzus", stupne: "270°", barva: "#a83060", phrase: "Ticho v diskuzi není souhlas, ale jen únava z boje o slovo.",
+                category: "produkty, obaly", idea: "Produkt, který 'násilný konsenzus' znemožňuje. Například stůl do zasedačky, který nemá hlavní místo – všechny židle jsou stejné a žádná není v čele. Nebo sada kelímků, které mají na sobě napsáno 'Souhlasím', 'Nesouhlasím', 'Potřebuji čas'." },
+            { id: 26, angle: "Násilný konsenzus", stupne: "270°", barva: "#a83060", phrase: "Kocour svým dokončováním vět vynucoval souhlas. Lidé přestali mluvit, protože jejich dokončení by bylo stejné jako jeho.",
+                category: "loga, vizuální identita", idea: "Logo, které má dvě verze – jednu 'dokončenou' a jednu 'otevřenou'. Dokončená verze je dominantní, jasná, uzavřená. Otevřená verze je stejný tvar, ale s mezerami, s možností dotvoření." },
+            { id: 27, angle: "Násilný konsenzus", stupne: "270°", barva: "#a83060", phrase: "Když šéf řekne 'Takže všichni souhlasíme s X, že?' a ticho je interpretováno jako souhlas, ale ve skutečnosti je to rezignace.",
+                category: "copywriting, obsah", idea: "Pište texty, které aktivně vyvracejí 'násilný konsenzus'. Místo 'Jak všichni víme...' pište 'Někteří z vás možná...'. Místo 'Je jasné, že...' pište 'Není vůbec jasné, zda...'. Učte čtenáře, že ticho neznamená souhlas." },
+            { id: 28, angle: "Násilný konsenzus", stupne: "270°", barva: "#a83060", phrase: "Používat mechanismus 'souhlasu ticha'. Pokud je ticho, automaticky to znamená NESOUHLAS.",
+                category: "design, vizuální identita", idea: "Navrhněte interní designový prvek, který 'souhlas ticha' znemožňuje. Například tlačítko na dálkovém ovladači prezentace, které má dvě funkce: 'Další snímek' a 'Je ticho souhlas?'. Pokud je ticho, rozsvítí se na plátně varovné světlo." },
+            { id: 29, angle: "Konkurence místo kolaborace", stupne: "30°", barva: "#6a9e72", phrase: "Kdo dřív dokončí větu, ten vyhrává – ale prohrává celý tým.",
+                category: "produkty, obaly", idea: "Navrhněte hru nebo produkt, který kolaboraci vynucuje. Například stavebnice, jejíž díly do sebe zapadají jen tehdy, když na nich pracují dva lidé současně. Nebo obal na produkt, který lze otevřít pouze ve dvou." },
+            { id: 30, angle: "Konkurence místo kolaborace", stupne: "30°", barva: "#6a9e72", phrase: "Kocour soutěžil: 'kdo dokončí větu dřív'. Komunikace se stala závodem o dominanci.",
+                category: "loga, vizuální identita", idea: "Logo, které je tvořeno více překrývajícími se prvky, které spolu nesoutěží, ale doplňují se. Každý prvek má svůj tvar a barvu, ale dohromady tvoří jeden harmonický celek. Žádný z nich není dominantní, všechny jsou potřeba." },
+            { id: 31, angle: "Konkurence místo kolaborace", stupne: "30°", barva: "#6a9e72", phrase: "Přerušování je projevem soutěže: 'Já vím lépe, poslouchej mě'.",
+                category: "copywriting, obsah", idea: "Pište způsobem, který nesoutěží s ostatními hlasy, ale zve je ke spolupráci. Místo 'My jsme nejlepší v X' pište 'Jak bychom mohli společně s vámi posunout X dál?'. Copywriting jako most, ne jako pěst." },
+            { id: 32, angle: "Konkurence místo kolaborace", stupne: "30°", barva: "#6a9e72", phrase: "Zavést 'kolo mluvčího'. Používat fyzický předmět (talking stick). Mluví pouze ten, kdo ho drží.",
+                category: "design, vizuální identita", idea: "Navrhněte firemní 'mluvící předmět' (talking stick), který je designově zpracován jako klíčový prvek identity. Může to být krásně opracovaný kus dřeva s logem, 3D tištěný objekt, speciální míček." },
+            { id: 33, angle: "Nedokončené jako dar", stupne: "330°", barva: "#8060b0", phrase: "Nedokončená věta je jako otevřené okno – může dovnitř vletět cokoliv nového.",
+                category: "produkty, obaly", idea: "Produkt, který je 'otevřeným oknem' – například krabička, která nemá víko, ale jen rám a uvnitř je prázdno, nebo jen náznak. Je na uživateli, co si do ní dá a jak ji dotvoří." },
+            { id: 34, angle: "Nedokončené jako dar", stupne: "330°", barva: "#8060b0", phrase: "Jakmile je věta dokončena, je fixována, mrtvá. Nedokončená je plná potenciálu.",
+                category: "loga, vizuální identita", idea: "Logo, které je založeno na variabilitě a potenciálu. Například základní tvar (kruh, čtverec), který se nikdy nepoužívá samostatně, ale vždy je součástí něčeho – je obklopený čarami, tečkami, které naznačují, že se může stát čímkoliv." },
+            { id: 35, angle: "Nedokončené jako dar", stupne: "330°", barva: "#8060b0", phrase: "Když tým okamžitě hledá řešení ('udělejme A') místo toho, aby déle trval v definici problému.",
+                category: "copywriting, obsah", idea: "Tvořte obsah, který záměrně oddaluje řešení. Věnujte 80 % článku zkoumání problému, jeho nuancím, různým úhlům pohledu. Řešení přijde až na konci jako jedna z možností, ne jako dogma." },
+            { id: 36, angle: "Nedokončené jako dar", stupne: "330°", barva: "#8060b0", phrase: "Cvičení 'úmyslně nedokončovat'. V brainstormingu zadat: 'Náš problém je jako…' a zakázat dokončení přirovnání.",
+                category: "design, vizuální identita", idea: "Navrhněte vizuální cvičení pro tým, které je založeno na 'nedokončenosti'. Rozdejte čisté listy papíru s nakreslenou jednou čarou nebo tvarem a úkolem: 'Dokresli to, ale nedokonči to – nech to otevřené'." },
+            { id: 37, angle: "Komunikační trauma", stupne: "180°", barva: "#a85a5a", phrase: "Spálená půda neroste – po toxické schůzi se lidé bojí promluvit i o počasí.",
+                category: "produkty, obaly", idea: "Produkt, který symbolizuje 'znovu-zrození' po traumatu. Například sada semen v obalu, který vypadá jako spálená země (tmavý, drsný papír), ale uvnitř jsou semena a instrukce, jak znovu začít růst." },
+            { id: 38, angle: "Komunikační trauma", stupne: "180°", barva: "#a85a5a", phrase: "Kocour 'skákal lidem do řeči' a 'sežral berušky' – to jsou slova násilí. Komunikace se stala traumatizujícím zážitkem.",
+                category: "loga, vizuální identita", idea: "Logo, které je zpočátku 'spálené' – například tmavé, s dírami, s prvky, které připomínají trauma. Ale postupem času, jak firma prochází uzdravením, se logo může 'rozsvěcovat' – přidávat se barvy, světlé prvky." },
+            { id: 39, angle: "Komunikační trauma", stupne: "180°", barva: "#a85a5a", phrase: "Když jsou schůze zdrojem stresu, kde se lidé bojí promluvit, protože budou přerušeni, ztrapnění nebo jejich nápad bude 'sežrán'.",
+                category: "copywriting, obsah", idea: "Vytvořte interní komunikační kodex, který bude vizuálně a textově zpracován jako 'bezpečné místo'. Místo striktních pravidel použijte metaforu 'berušky' a 'kocoura' a napište ho jako pohádku pro dospělé." },
+            { id: 40, angle: "Komunikační trauma", stupne: "180°", barva: "#a85a5a", phrase: "Provést 'audit komunikační bezpečnosti'. Anonymní dotazník: Cítím se bezpečně vyjádřit nesouhlas? Jsem často přerušován?",
+                category: "design, vizuální identita", idea: "Navrhněte vizuální identitu pro tento audit. Může to být sada karet s otázkami, které jsou graficky zpracovány tak, aby navozovaly pocit bezpečí – jemné barvy, kulaté tvary, místo pro anonymní odpověď." },
+            { id: 41, angle: "Silná tečka", stupne: "120°", barva: "#8e7248", phrase: "Tečka na konci diskuze je někdy rána, která utne všechny další myšlenky.",
+                category: "produkty, obaly", idea: "Produkt, který nemá 'tečku' – tedy nemá jasný konec, uzávěr, finální podobu. Například lahev, která nemá dno (opticky), nebo kniha, která nemá poslední stránku – místo ní je zrcátko." },
+            { id: 42, angle: "Silná tečka", stupne: "120°", barva: "#8e7248", phrase: "Tečka je někdy silnější, než celá věta. Formální uzavření má větší moc než celá dlouhá diskuse.",
+                category: "loga, vizuální identita", idea: "Logo, které je samo o sobě 'silnou tečkou' – jeden výrazný bod, kruh, puntík, který dominuje celému vizuálnímu stylu. Tato tečka ale není konečná – je obklopena prostorem, který vybízí k otázkám." },
+            { id: 43, angle: "Silná tečka", stupne: "120°", barva: "#8e7248", phrase: "Když se v dlouhých diskusích ztrácíme a pak někdo autoritativně řekne 'Tak rozhodnuto!' a udělá tečku.",
+                category: "copywriting, obsah", idea: "Pište tak, abyste čtenáře 'neuspali únavou' a pak mu nevnucili závěr. Místo dlouhých, vyčerpávajících textů pište krátké, jadrné, ale otevřené. Nabídněte mu na konci ne 'hotovo', ale 'a co vy?'." },
+            { id: 44, angle: "Silná tečka", stupne: "120°", barva: "#8e7248", phrase: "Při uzavírání rozhodnutí neptat se 'Je to jasné?', ale 'Kdo cítí, že jeho hlasy nebo obavy nebyly dostatečně slyšet?'.",
+                category: "design, vizuální identita", idea: "Navrhněte vizuální pomůcku pro uzavírání rozhodnutí. Například 'hlásič ticha' – fyzický objekt (např. svítící kostka), který se položí na stůl ve chvíli, kdy se chystá 'tečka'." },
+            { id: 45, angle: "Navrácené štěstí", stupne: "90°", barva: "#5fa8a0", phrase: "Uzdravená důvěra je jako beruška, která se vrátí na místo, kde ji málem sežrali – křehká, ale o to cennější.",
+                category: "produkty, obaly", idea: "Produkt, který oslavuje 'křehkost' a 'návrat'. Například porcelánová beruška, která je slepená z několika kousků (Kintsugi styl – zlaté praskliny), symbolizující, že to, co bylo rozbito a uzdraveno, je cennější." },
+            { id: 46, angle: "Navrácené štěstí", stupne: "90°", barva: "#5fa8a0", phrase: "Příběh končí nadějí: 'Štěstí dvou berušek se vrátilo zpátky.' I po traumatu může dojít k nápravě.",
+                category: "loga, vizuální identita", idea: "Logo, které má dvě berušky, které jsou k sobě otočené, ale nejsou spojené – je mezi nimi malý prostor. Symbolizují 'mlčenlivé porozumění' – respekt a blízkost, která nepotřebuje slova." },
+            { id: 47, angle: "Navrácené štěstí", stupne: "90°", barva: "#5fa8a0", phrase: "Když tým zažije dysfunkční období, ale pak se bez velkých slov změní dynamika. Lidé opatrně znovu nabývají důvěru.",
+                category: "copywriting, obsah", idea: "Pište o tomto 'křehkém procesu' ve firemní komunikaci. Sdílejte příběhy o tom, jak se tým uzdravil, ale nelíčte to jako hrdinský čin, ale jako tichou, každodenní práci. Používejte metaforu berušky, která se vrací." },
+            { id: 48, angle: "Navrácené štěstí", stupne: "90°", barva: "#5fa8a0", phrase: "Nastavit 'beruščí rituál'. Kdykoli někdo pocítí, že byl 'sežrán', může tichým symbolem signalizovat potřebu zpomalit.",
+                category: "design, vizuální identita", idea: "Navrhněte fyzické 'berušky' (malé dřevěné, keramické nebo papírové figurky), které budou k dispozici na každém stole v zasedací místnosti. Když se někdo cítí 'sežrán', jednoduše položí berušku doprostřed stolu." }
+        ];
+
+        // ═══════════════════════════════════════
+        // STAV
+        // ═══════════════════════════════════════
+        let aktualniKategorie = 'vše';
+        let aktualniNapad = null;
+
+        // ═══════════════════════════════════════
+        // FILTRY
+        // ═══════════════════════════════════════
+        document.getElementById('filters').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                aktualniKategorie = e.target.dataset.category;
+                // Po změně filtru rovnou losuj
+                losovat();
+            }
+        });
+
+        // ═══════════════════════════════════════
+        // LOSOVÁNÍ
+        // ═══════════════════════════════════════
+        function getNapadyPodleKategorie() {
+            if (aktualniKategorie === 'vše') return [...NAPADY];
+            // Některé kategorie jsou složené (např. "produkty, obaly" a "obaly, produkty")
+            return NAPADY.filter(n => {
+                const k = n.category.toLowerCase();
+                const hledane = aktualniKategorie.toLowerCase();
+                return k.includes(hledane) || hledane.includes(k);
+            });
+        }
+
+        function losovat() {
+            const pool = getNapadyPodleKategorie();
+            if (pool.length === 0) {
+                aktualniNapad = null;
+                document.getElementById('ideaContent').innerHTML =
+                    '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+                return;
+            }
+            const index = Math.floor(Math.random() * pool.length);
+            aktualniNapad = pool[index];
+            zobrazNapad(aktualniNapad);
+            // Aktualizace URL
+            if (history.pushState) {
+                const params = new URLSearchParams();
+                params.set('cat', aktualniKategorie);
+                params.set('id', aktualniNapad.id);
+                window.history.pushState({}, '', '?' + params.toString());
+            }
+        }
+
+        function zobrazNapad(n) {
+            const html = `
+            <div class="idea-header">
+              <div class="idea-color" style="background:${n.barva}"></div>
+              <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+              </div>
+            </div>
+            <div class="idea-phrase">"${n.phrase}"</div>
+            <div class="idea-text">${n.idea}</div>
+            <div class="angle-info">
+              <span class="angle-dot" style="background:${n.barva}"></span>
+              ${n.angle} · ${n.stupne} — kocouří úhel č. ${n.id % 12 === 0 ? 12 : n.id % 12}
+            </div>
+          `;
+            document.getElementById('ideaContent').innerHTML = html;
+            document.getElementById('ideaBox').classList.add('highlight');
+        }
+
+        // ═══════════════════════════════════════
+        // AKCE
+        // ═══════════════════════════════════════
+        function kopirovat() {
+            if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+            const text =
+                `${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Kocour · ${aktualniNapad.angle} (${aktualniNapad.stupne})`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Nápad zkopírován do schránky!');
+            });
+        }
+
+        function ulozitNapad() {
+            if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+            const saved = JSON.parse(localStorage.getItem('kocour_inspirace') || '[]');
+            // Kontrola duplicit
+            if (saved.some(s => s.id === aktualniNapad.id)) {
+                alert('Tento nápad už máš uložený.');
+                return;
+            }
+            saved.unshift(aktualniNapad);
+            localStorage.setItem('kocour_inspirace', JSON.stringify(saved));
+            zobrazUlozene();
+        }
+
+        function smazatUlozeny(id) {
+            let saved = JSON.parse(localStorage.getItem('kocour_inspirace') || '[]');
+            saved = saved.filter(s => s.id !== id);
+            localStorage.setItem('kocour_inspirace', JSON.stringify(saved));
+            zobrazUlozene();
+        }
+
+        function smazatVse() {
+            if (confirm('Smazat všechny uložené nápady?')) {
+                localStorage.removeItem('kocour_inspirace');
+                zobrazUlozene();
+            }
+        }
+
+        function zobrazUlozene() {
+            const saved = JSON.parse(localStorage.getItem('kocour_inspirace') || '[]');
+            const listEl = document.getElementById('savedList');
+            const sectionEl = document.getElementById('savedSection');
+
+            if (saved.length === 0) {
+                sectionEl.style.display = 'none';
+                return;
+            }
+            sectionEl.style.display = 'block';
+            listEl.innerHTML = saved.map(s => `
+            <div class="saved-item">
+              <div>
+                <span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0, 60)}${s.phrase.length>60?'…':''}</strong>
+                <br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span>
+              </div>
+              <button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button>
+            </div>
+          `).join('');
+        }
+
+        function sdiletURL() {
+            if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+            const params = new URLSearchParams();
+            params.set('cat', aktualniKategorie);
+            params.set('id', aktualniNapad.id);
+            const url = window.location.origin + window.location.pathname + '?' + params.toString();
+            navigator.clipboard.writeText(url).then(() => alert('URL zkopírováno do schránky!'));
+        }
+
+        // ═══════════════════════════════════════
+        // NAČTENÍ Z URL
+        // ═══════════════════════════════════════
+        function nacistZURL() {
+            const params = new URLSearchParams(window.location.search);
+            const cat = params.get('cat');
+            const id = parseInt(params.get('id'));
+            if (cat) {
+                aktualniKategorie = cat;
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.category === cat);
+                });
+            }
+            if (id) {
+                const napad = NAPADY.find(n => n.id === id);
+                if (napad) {
+                    aktualniNapad = napad;
+                    zobrazNapad(napad);
+                    return;
+                }
+            }
+            // Pokud není ID, automaticky losuj
+            losovat();
+        }
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            zobrazUlozene();
+            if (window.location.search) {
+                nacistZURL();
+            } else {
+                losovat();
+            }
+        });
+    </script>
+</body>
+</html>
