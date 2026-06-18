@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🦇 Netopýr – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0810; --bg-el: #120e1a; --text: #e8e0f0; --dim: #5a4a6a; --mid: #8a7a9a;
+            --accent: #512970; --accent-dim: #3a2060; --border: #1a1028; --highlight: rgba(144,80,192,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#7a3aaa}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(10,8,16,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#b0a0c0}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#fff;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#6a3a8a;border-color:#6a3a8a}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#6a4a6a;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#c080c0}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Netopýr</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <p class="hero-label">Kreativní engine · Karta Netopýr</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Netopýrovi. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Estetika noci",stupne:"0°",barva:"#5a7fa8",phrase:"V noci bylo všechno správně. Stíny měly tvar. Zvuky měly smysl.",category:"produkty, obaly",idea:"Navrhněte produkt, který funguje jen ve tmě – například svítící obal, termoska s fosforeskujícím povrchem, nebo deník s UV potiskem, který je čitelný jen pod 'nočním' světlem. Produkt, který oslavuje noc jako rovnocenný prostor."},
+    {id:2,angle:"Estetika noci",stupne:"0°",barva:"#5a7fa8",phrase:"Lidé byli krásní, protože nebyli vidět.",category:"loga, vizuální identita",idea:"Logo, které je navrženo tak, aby vyniklo v negativním prostoru – černá silueta na světlém pozadí, která se ztrácí, když je příliš mnoho světla. Identita, která ctí tajemství a neúplnost."},
+    {id:3,angle:"Estetika noci",stupne:"0°",barva:"#5a7fa8",phrase:"Letěl nad městem, kde se světla třpytila jako sliby.",category:"copywriting, obsah",idea:"Pište texty, které jsou jako noční let – volné, asociativní, bez jasné linky, ale s atmosférou. Firemní blog, který jednou za měsíc publikuje 'noční zamyšlení' bez SEO optimalizace."},
+    {id:4,angle:"Estetika noci",stupne:"0°",barva:"#5a7fa8",phrase:"V noci krása, co ráno už se nehodí.",category:"design, vizuální identita",idea:"Vytvořte vizuální styl, který má dvě verze – 'denní' (čistou, formální) a 'noční' (divokou, barevnou, experimentální). Obě jsou součástí stejné identity, ale používají se v různých kontextech."},
+    {id:5,angle:"Rozpor mezi režimy",stupne:"240°",barva:"#c8722a",phrase:"Slova, co zněla jako poezie, se změnila v trapné poznámky.",category:"produkty, obaly",idea:"Navrhněte zápisník, který má dvě poloviny. Levá: 'Noční' – s linkami, co se ztrácejí do prázdna. Pravá: 'Denní' – s pevnou strukturou. Uprostřed je 'překladový' proužek. Nástroj pro převod poezie do akce."},
+    {id:6,angle:"Rozpor mezi režimy",stupne:"240°",barva:"#c8722a",phrase:"A pak přišlo ráno. A všechno se nehodilo.",category:"loga, vizuální identita",idea:"Logo, které má 'ranní' a 'noční' variantu. Denní verze je pevná, noční se rozpadá do fragmentů. Značka tím říká: víme, že máme víc tváří."},
+    {id:7,angle:"Rozpor mezi režimy",stupne:"240°",barva:"#c8722a",phrase:"Doteky, co vibrovaly, se změnily v rozpaky.",category:"copywriting, obsah",idea:"Pište o trapnosti. Seriál článků 'Naše ranní kocovina' – o tom, co firma řekla nebo udělala a druhý den toho litovala. Autenticita přes přiznání studu."},
+    {id:8,angle:"Rozpor mezi režimy",stupne:"240°",barva:"#c8722a",phrase:"A netopýr se schoval. Do stropu. Do tmy. Do snu.",category:"design, vizuální identita",idea:"Navrhněte 'strop' – vizuální prvek na webu nebo v prezentacích, kam se schovají 'nehotové' nápady. Návštěvník na něj může kliknout a objevit skrytou vrstvu."},
+    {id:9,angle:"Jiný jazyk",stupne:"150°",barva:"#5a8a5a",phrase:"Noc není lež. Je to jiný jazyk. Jiný smysl.",category:"produkty, obaly",idea:"Vytvořte produkt s dvojím návodem: 'Denní návod' (technický, faktický) a 'Noční návod' (poetický, metaforický). Například čaj, kde denní návod je 'louhuj 3 minuty' a noční 'nech vzpomínky rozpustit'."},
+    {id:10,angle:"Jiný jazyk",stupne:"150°",barva:"#5a8a5a",phrase:"Jiný druh pravdy, která se nehodí do denního světla.",category:"loga, vizuální identita",idea:"Logo, které obsahuje skrytý element – při běžném pohledu je to jednoduchá ikona, ale při naklonění nebo pod UV světlem se objeví druhá vrstva. Pravda, která potřebuje jiné světlo."},
+    {id:11,angle:"Jiný jazyk",stupne:"150°",barva:"#5a8a5a",phrase:"Jeho pohádky jsou jako kocovina. Bolí. Ale připomínají, že jsme žili.",category:"copywriting, obsah",idea:"Pište 'kocovinové' newslettery – po každé velké akci rozešlete upřímnou reflexi: co se povedlo, co bolelo, co jsme se dozvěděli o sobě. Žádný spin."},
+    {id:12,angle:"Jiný jazyk",stupne:"150°",barva:"#5a8a5a",phrase:"Básníci. Barmani. Ztracenci. Zamilovaní. Všichni, kdo v noci žili.",category:"design, vizuální identita",idea:"Vytvořte sérii vizitek nebo profilů pro členy týmu, kde každý má svou 'noční roli' – Básník, Barman, Ztracenec, Zamilovaný. Vedle formálního titulu. Oslava celého člověka."},
+    {id:13,angle:"Skrývání a úkryt",stupne:"210°",barva:"#c8a832",phrase:"A netopýr se schoval. Do stropu.",category:"produkty, obaly",idea:"Produkt, který je sám o sobě úkrytem – šperkovnice s falešným dnem, diář s tajnou kapsou, obal na telefon s přihrádkou na 'tajné' poznámky. Oslava toho, co se neukazuje."},
+    {id:14,angle:"Skrývání a úkryt",stupne:"210°",barva:"#c8a832",phrase:"Do tmy. Do snu.",category:"loga, vizuální identita",idea:"Logo, které se zdá být neúplné – část je 'schovaná' v negativním prostoru. Značka, která říká: 'Ne všechno ukazujeme. Něco si necháváme pro sebe.'"},
+    {id:15,angle:"Skrývání a úkryt",stupne:"210°",barva:"#c8a832",phrase:"Jeho podstata není vítána ve světle dne.",category:"copywriting, obsah",idea:"Vytvořte anonymní sloupek ve firemním newsletteru – 'Ze stropu' – kam může kdokoli poslat myšlenku, která by 'na světle' neobstála. Jednou měsíčně se otiskne."},
+    {id:16,angle:"Skrývání a úkryt",stupne:"210°",barva:"#c8a832",phrase:"Do stropu. Do tmy. Do snu.",category:"design, vizuální identita",idea:"Navrhněte 'stropní' zónu na webu nebo v aplikaci – tlačítko, které otevře skrytou vrstvu s nedokončenými věcmi, experimenty, 'co by kdyby'."},
+    {id:17,angle:"Společenství noci",stupne:"60°",barva:"#9b72b5",phrase:"A nebyl v tom sám. Všichni, kdo v noci žili, to znali.",category:"produkty, obaly",idea:"Vytvořte 'noční sadu' pro tým – balíček s čajem, svíčkou, zápisníkem a kartičkou 'Jsi netopýr? Nejsi sám.' Nástroj pro uznání noční stránky."},
+    {id:18,angle:"Společenství noci",stupne:"60°",barva:"#9b72b5",phrase:"Básníci. Barmani. Ztracenci. Zamilovaní.",category:"loga, vizuální identita",idea:"Logo, které je složeno z více malých ikonek – každá reprezentuje jednu 'noční roli' v týmu. Dohromady tvoří jeden obraz. Komunita různých."},
+    {id:19,angle:"Společenství noci",stupne:"60°",barva:"#9b72b5",phrase:"Je to o všech outsiderech, jejichž vnitřní hodiny jsou v rozporu s korporátním rytmem.",category:"copywriting, obsah",idea:"Pište manifest pro 'noční typy' ve firmě. Oslavte chronotypy, diverzitu rytmů, právo na jiné tempo. Série rozhovorů s lidmi, kteří pracují jinak."},
+    {id:20,angle:"Společenství noci",stupne:"60°",barva:"#9b72b5",phrase:"Uspořádat 'noční summit' pro ty, kteří se cítí jako básníci nebo ztracenci.",category:"design, vizuální identita",idea:"Navrhněte vizuální identitu pro 'Noční summit' – interní akci, kde se schází kreativní duše firmy. Logo, plakáty, pozvánky – vše ve stylu soumraku."},
+    {id:21,angle:"Pravda v nepravdě",stupne:"300°",barva:"#6080a0",phrase:"Všechno bylo trochu nepravdivé – ale o dost pravdivější.",category:"produkty, obaly",idea:"Produkt, který je záměrně 'nepřesný' – ručně vyráběný, s nerovnými okraji, s otiskem. Každý kus je originál. Oslava nedokonalosti jako pravdivosti."},
+    {id:22,angle:"Pravda v nepravdě",stupne:"300°",barva:"#6080a0",phrase:"Noční vize může být nerealistická, ale odhaluje naše skutečné touhy.",category:"loga, vizuální identita",idea:"Logo, které je 'nerealistické' – kombinuje neslučitelné prvky, používá nemožnou perspektivu. Značka, která věří, že vize je důležitější než realita."},
+    {id:23,angle:"Pravda v nepravdě",stupne:"300°",barva:"#6080a0",phrase:"Hodnotit nápady ne jen podle 'je to reálné?', ale 'odhaluje to něco hluboce pravdivého?'",category:"copywriting, obsah",idea:"Pište případové studie, které začínají citátem, básní nebo snem – a pak ukazují, jak tahle 'nepravda' vedla ke konkrétní inovaci. Oslava intuice."},
+    {id:24,angle:"Pravda v nepravdě",stupne:"300°",barva:"#6080a0",phrase:"Vytváří realitu, která je 'pravdivější' než data.",category:"design, vizuální identita",idea:"Navrhněte vizuální styl založený na kontrastu: na jedné straně data, grafy, čísla. Na druhé straně ilustrace, sny, vize. Obě strany jsou pravda."},
+    {id:25,angle:"Atmosféra jako cíl",stupne:"270°",barva:"#a83060",phrase:"Ne za potravou. Za atmosférou.",category:"produkty, obaly",idea:"Navrhněte produkt, který nemá praktický účel – jen estetický. Soška, svíčka, objekt. Produkt, který existuje jen pro atmosféru. A je na to hrdý."},
+    {id:26,angle:"Atmosféra jako cíl",stupne:"270°",barva:"#a83060",phrase:"Za tím, co se děje jenom ve chvílích, kdy svět zapomene na pravidla.",category:"loga, vizuální identita",idea:"Logo, které vypadá jako zachycený okamžik – rozmazané, v pohybu, jako by bylo ukradené z momentky. Značka, která ctí proces, ne pózu."},
+    {id:27,angle:"Atmosféra jako cíl",stupne:"270°",barva:"#a83060",phrase:"Jeho práce (let) je zároveň jeho naplněním.",category:"copywriting, obsah",idea:"Pište o flow. Rozhovory s lidmi, kteří milují svou práci – ne pro výsledek, ale pro ten pocit 'letu'. Oslava řemesla a procesu."},
+    {id:28,angle:"Atmosféra jako cíl",stupne:"270°",barva:"#a83060",phrase:"Zavádět do práce prvky 'letu za atmosférou'.",category:"design, vizuální identita",idea:"Navrhněte 'Atmosférickou nástěnku' – fyzický nebo digitální prostor, kam se věší jen věci pro radost. Obrázky, citáty, barvy. Bez účelu. Jen pro atmosféru."},
+    {id:29,angle:"Popírání sebe",stupne:"30°",barva:"#6a9e72",phrase:"Tohle jsem neřekl. Tohle jsem necítil. Tohle jsem nebyl.",category:"produkty, obaly",idea:"Vytvořte diář, který má na každé stránce dvě sekce: 'Co jsem řekl' a 'Co jsem myslel'. Nástroj pro integraci denního a nočního já."},
+    {id:30,angle:"Popírání sebe",stupne:"30°",barva:"#6a9e72",phrase:"Popíráme část sebe, abychom vyhověli systému.",category:"loga, vizuální identita",idea:"Logo, které má dvě části – jedna je 'oficiální', druhá je 'skrytá' v negativním prostoru. Značka, která přiznává, že není celá."},
+    {id:31,angle:"Popírání sebe",stupne:"30°",barva:"#6a9e72",phrase:"Vést si 'noční deník'. Zapisovat si nápady a pocity z 'noci'.",category:"copywriting, obsah",idea:"Spusťte firemní 'noční deník' – sdílený dokument, kam lidé můžou anonymně psát, co si 'v noci' myslí o firmě. Jednou za čtvrt roku se čte nahlas."},
+    {id:32,angle:"Popírání sebe",stupne:"30°",barva:"#6a9e72",phrase:"Ráno se k tomu vracet s otázkou: 'Co mi to říká?'",category:"design, vizuální identita",idea:"Navrhněte 'ranní kartičku' – malou kartu s otázkami, kterou si člověk vezme ráno k první kávě: 'Co jsem včera popřel? Co mi to říká? Co z toho dnes použiju?'"},
+    {id:33,angle:"Kocovina jako důkaz",stupne:"330°",barva:"#8060b0",phrase:"Bolí. Ale připomínají, že jsme žili.",category:"produkty, obaly",idea:"Produkt, který oslavuje 'kocovinu' – například čaj 'Ranní smíření' s popiskem 'Pro chvíle, kdy včera stálo za to'. Obal, který je pomačkaný, ale krásný."},
+    {id:34,angle:"Kocovina jako důkaz",stupne:"330°",barva:"#8060b0",phrase:"Ranní trapnost po skvělém nápadu je důkaz, že nápad byl živý.",category:"loga, vizuální identita",idea:"Logo, které je 'pomačkané' – jako by ho někdo zmuchlal a zase narovnal. Značka, která říká: 'Ano, bylo to intenzivní. A stojíme si za tím.'"},
+    {id:35,angle:"Kocovina jako důkaz",stupne:"330°",barva:"#8060b0",phrase:"Oslavovat 'kocovinu'. Když je po brainstormingu pocit vyčerpání, připomenout si: 'Dobře, tak jsme žili.'",category:"copywriting, obsah",idea:"Pište 'kocovinové reporty' – po každém projektu sepište nejen výsledky, ale i to, co bolelo, co bylo trapné, co jste málem zahodili. Oslava cesty."},
+    {id:36,angle:"Kocovina jako důkaz",stupne:"330°",barva:"#8060b0",phrase:"Co z toho můžeme zachránit?",category:"design, vizuální identita",idea:"Navrhněte 'Zachraňovací rituál' – vizuální šablonu pro týmovou reflexi: 'Co z minulého projektu/schůze/nápadu bylo trapné, ale cenné? Jak to zachráníme?'"},
+    {id:37,angle:"Sv
+ětelné znečištění",stupne:"180°",barva:"#a85a5a",phrase:"Světla se třpytila jako sliby.",category:"produkty, obaly",idea:"Navrhněte produkt, který 'neslibuje' – minimalistický, bez marketingových textů. Na obalu je jen to, co produkt skutečně dělá. Anti-slib."},
+    {id:38,angle:"Světelné znečištění",stupne:"180°",barva:"#a85a5a",phrase:"Firemní kultura plná nesplněných slibů, která svítí, ale nehřeje.",category:"loga, vizuální identita",idea:"Logo, které je 'studené' – používá modré, bílé, sterilní barvy. Ale při bližším pohledu je v něm skrytý teplý prvek. Značka, která přiznává svou chladnost a chce ji překonat."},
+    {id:39,angle:"Světelné znečištění",stupne:"180°",barva:"#a85a5a",phrase:"Hledat 'skutečnou tmu' – momenty naprosté upřímnosti bez formálních slibů.",category:"copywriting, obsah",idea:"Vytvořte sérii 'Temných rozhovorů' – podcast nebo video, kde se vypnou všechny formality a mluví se o tom, co ve firmě nefunguje. Bez obalu."},
+    {id:40,angle:"Světelné znečištění",stupne:"180°",barva:"#a85a5a",phrase:"Chránit momenty tmy před 'osvětlením' agendou.",category:"design, vizuální identita",idea:"Navrhněte 'Temné okno' v kalendáři – časový blok, který je neprůstřelný. Žádné schůzky, žádné reporty. Jen tma pro přemýšlení."},
+    {id:41,angle:"Časový rozvrh bytí",stupne:"120°",barva:"#8e7248",phrase:"V noci bylo všechno správně.",category:"produkty, obaly",idea:"Navrhněte produkt, který respektuje rytmy – budík, který nebudí, ale 'doprovází' do nového dne. Aplikace, která navrhuje úkoly podle chronotypu."},
+    {id:42,angle:"Časový rozvrh bytí",stupne:"120°",barva:"#8e7248",phrase:"Různé fáze projektu vyžadují různé druhy myšlení.",category:"loga, vizuální identita",idea:"Logo, které má 'fáze' – v jedné verzi je pevné a strukturované, v druhé volné a organické. Přepíná se podle kontextu."},
+    {id:43,angle:"Časový rozvrh bytí",stupne:"120°",barva:"#8e7248",phrase:"Respektovat chronotypy – povolit práci v čase, kdy je komu nejsnáze.",category:"copywriting, obsah",idea:"Napište manifest 'Právo na rytmus' – dokument, který říká: 'Někteří z nás jsou netopýři. A to je v pořádku.' Zásady flexibilní práce postavené na respektu k chronotypům."},
+    {id:44,angle:"Časový rozvrh bytí",stupne:"120°",barva:"#8e7248",phrase:"Míchat 'noční' a 'denní' režimy je škodlivé.",category:"design, vizuální identita",idea:"Navrhněte 'Hodinový plán' – vizuální rozdělení dne na zóny: 'Noční' (kreativní), 'Denní' (exekutivní), 'Soumrak' (reflexe). Plakát do každé kanceláře."},
+    {id:45,angle:"Neviditelnost",stupne:"90°",barva:"#5fa8a0",phrase:"Lidé byli krásní, protože nebyli vidět.",category:"produkty, obaly",idea:"Vytvořte produkt, který chrání soukromí – kryt na webkameru, který je designový. Obal na telefon, který blokuje signál. Produkt, který říká: 'Nechci být vidět, a to je moje právo.'"},
+    {id:46,angle:"Neviditelnost",stupne:"90°",barva:"#5fa8a0",phrase:"Pod dohledem (managementu, metrik) se krása a autenticita vytrácejí.",category:"loga, vizuální identita",idea:"Logo, které se 'schovává' – při běžném pohledu je nenápadné, ale když se na něj podíváte déle, odhalí detaily. Značka, která netlačí na oči."},
+    {id:47,angle:"Neviditelnost",stupne:"90°",barva:"#5fa8a0",phrase:"Kreativita a upřímnost vyžadují soukromí a pocit, že 'tě nikdo nesoudí'.",category:"copywriting, obsah",idea:"Pište o 'právu na neviditelnost' – esej o tom, proč firmy potřebují méně kontroly a více důvěry. Proč metrikami zabíjíme to nejcennější."},
+    {id:48,angle:"Neviditelnost",stupne:"90°",barva:"#5fa8a0",phrase:"Zavádět do práce více 'neviditelných' zón.",category:"design, vizuální identita",idea:"Navrhněte 'Neviditelné okno' – časový blok v kalendáři označený speciální barvou, který znamená: 'Teď mě nikdo nesleduje. Pracuju, ale neviditelně.'"}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Netopýr · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('netopyr_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('netopyr_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('netopyr_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('netopyr_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('netopyr_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('netopyr_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
