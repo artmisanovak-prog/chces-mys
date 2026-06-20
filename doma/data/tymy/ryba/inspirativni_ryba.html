@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐟 Ryba – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050a12; --bg-el: #0a141e; --text: #e6f0fa; --dim: #3a5a70; --mid: #6a8a9a;
+            --accent: #6ab0e0; --accent-dim: #1a4050; --border: #0f1a24; --highlight: rgba(106,176,224,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#8cc8f0}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(5,10,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#050a12;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#b0c8d8}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#050a12;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#8cc8f0;border-color:#8cc8f0}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#4a6a7a;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#8cc8f0}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Ryba</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <p class="hero-label">Kreativní engine · Karta Ryba</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Rybě. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Vibrační komunikace",stupne:"150°",barva:"#5a8a5a",phrase:"Ryby neřvou. Ryby vibrujou.",category:"produkty, obaly",idea:"Navrhněte produkt, který komunikuje vibračně – reproduktor, který nepřenáší hudbu, ale 'vibrace místnosti'. Nebo obal, který mění barvu podle teploty doteku. Produkt, který nemluví, ale rezonuje."},
+    {id:2,angle:"Vibrační komunikace",stupne:"150°",barva:"#5a8a5a",phrase:"Skutečný vliv je vždy vibrační, ne deklarační.",category:"loga, vizuální identita",idea:"Logo, které je 'nečitelné' na první pohled – vyžaduje přiblížení, naklonění, soustředění. Jako vibrace pod hladinou. Značka, která se nevnucuje, ale čeká, až ji objevíš."},
+    {id:3,angle:"Vibrační komunikace",stupne:"150°",barva:"#5a8a5a",phrase:"Pod vodou se zvuk jinak šíří. Hlubší. Širší. Pomalejší.",category:"copywriting, obsah",idea:"Pište texty, které jsou 'pod vodou' – delší, pomalejší, bez spěchu. Newsletter, který vychází jednou za měsíc a má 3000 slov. Blog, kde každý článek je hluboký ponor, ne rychlý přehled."},
+    {id:4,angle:"Vibrační komunikace",stupne:"150°",barva:"#5a8a5a",phrase:"Rybí hudba byla slyšet – ne uchem, ale okem, tělem.",category:"design, vizuální identita",idea:"Navrhněte vizuální identitu, která je 'hmatová' – používá textury, ražbu, materiály, které vybízejí k dotyku. Web, který reaguje na pohyb myši jemnými vibracemi."},
+    {id:5,angle:"Systémový dopad",stupne:"60°",barva:"#9b72b5",phrase:"Rybí rap ovlivňuje různé vodní vlastnosti.",category:"produkty, obaly",idea:"Vytvořte produkt, který je 'ekosystémový' – neřeší jeden problém, ale ovlivňuje celé prostředí. Například čistička vzduchu, která zároveň generuje data o kvalitě ovzduší pro komunitu."},
+    {id:6,angle:"Systémový dopad",stupne:"60°",barva:"#9b72b5",phrase:"Kvalitní meeting mění kulturu, ne jen informuje.",category:"loga, vizuální identita",idea:"Logo, které není statické – má varianty, které se vyvíjejí podle kontextu. Značka, která ukazuje, že komunikace je proces, ne jednorázový akt."},
+    {id:7,angle:"Systémový dopad",stupne:"60°",barva:"#9b72b5",phrase:"Měřit úspěch komunikace podle změny prostředí.",category:"copywriting, obsah",idea:"Pište případové studie, které neměří jen ROI, ale i 'změnu prostředí' – co se v organizaci změnilo po zavedení vašeho produktu. Měkké metriky jako tvrdý důkaz."},
+    {id:8,angle:"Systémový dopad",stupne:"60°",barva:"#9b72b5",phrase:"Skutečná komunikace je o změně systému.",category:"design, vizuální identita",idea:"Navrhněte 'systémové logo' – logo, které je zároveň diagramem, mapou, návodem. Například logo konzultační firmy, které ukazuje proces změny."},
+    {id:9,angle:"Přesnost před hlasitostí",stupne:"0°",barva:"#5a7fa8",phrase:"Flow je king a king je ryba.",category:"produkty, obaly",idea:"Produkt, který je 'flow-first' – navržený tak, aby podporoval stav flow. Aplikace s minimem notifikací. Diář bez linek, který nechává myšlenky plynout."},
+    {id:10,angle:"Přesnost před hlasitostí",stupne:"0°",barva:"#5a7fa8",phrase:"Každý verš má váhu. Její punchline je fontána.",category:"loga, vizuální identita",idea:"Logo, které je 'přesné jako punchline' – jeden tvar, jedno slovo, jeden bod. Nic navíc. Minimalismus, který nese maximální význam."},
+    {id:11,angle:"Přesnost před hlasitostí",stupne:"0°",barva:"#5a7fa8",phrase:"Ryba rapuje kvůli přesnosti, ne kvůli slávě.",category:"copywriting, obsah",idea:"Pište mikrocopy s maximální přesností. Každé slovo na webu nebo v aplikaci musí nést váhu. Zbavte se výplňových slov. 'Klikněte zde' → 'Objevit'. Méně je více."},
+    {id:12,angle:"Přesnost před hlasitostí",stupne:"0°",barva:"#5a7fa8",phrase:"Zavést pravidlo 'váhy slova'.",category:"design, vizuální identita",idea:"Navrhněte vizuální systém, kde každý prvek má 'váhu' – nic není dekorace. Každá čára, každá barva, každý pixel musí mít důvod. Design jako poezie, ne jako výplň."},
+    {id:13,angle:"Různorodé žánry",stupne:"330°",barva:"#8060b0",phrase:"Každý druh ryb má svůj styl hudební.",category:"produkty, obaly",idea:"Produktová řada, kde každá varianta má svůj 'žánr' – jinou barvu, jiný materiál, jiný příběh. Jako kosatky, žraloci, medúzy. Každý si najde tu svou."},
+    {id:14,angle:"Různorodé žánry",stupne:"330°",barva:"#8060b0",phrase:"Medúzy jí dělaj vokály nebo se daj na triangly.",category:"loga, vizuální identita",idea:"Logo, které má více 'hlasů' – varianty pro různé příležitosti. Ne jedno logo, ale rodina log. Každé oddělení, každý produkt, každá kampaň může mít svůj 'žánr'."},
+    {id:15,angle:"Různorodé žánry",stupne:"330°",barva:"#8060b0",phrase:"Mapovat 'hudební mapu týmu'.",category:"copywriting, obsah",idea:"Vytvořte sérii rozhovorů s lidmi z firmy – každý mluví svým 'žánrem'. Někdo jako gospelista, někdo jako rapper, někdo jako operní pěvec. Oslava diverzity hlasů."},
+    {id:16,angle:"Různorodé žánry",stupne:"330°",barva:"#8060b0",phrase:"Ptačí svět homogenizuje: všichni jen píp a píp.",category:"design, vizuální identita",idea:"Navrhněte vizuální identitu, která aktivně bojuje proti uniformitě. Každý zaměstnanec si může vybrat svou barevnou paletu, svůj font, svůj 'hlas' v rámci brandu."},
+    {id:17,angle:"Ptačí křikot",stupne:"240°",barva:"#c8722a",phrase:"Ptačí zpěv? Křikot je to. Řev, ryk, krákot, jekot.",category:"produkty, obaly",idea:"Produkt, který je 'anti-křikot' – sluchátka s aktivním potlačením hluku, která jsou designovaná jako módní doplněk. Nebo aplikace, která měří 'hlučnost' vašeho pracovního prostředí."},
+    {id:18,angle:"Ptačí křikot",stupne:"240°",barva:"#c8722a",phrase:"Píp rýmuje s píp, jinak bez ideje.",category:"loga, vizuální identita",idea:"Logo, které je záměrně 'prázdné' – jako komentář k uniformitě trhu. Prázdný kruh. Nebo slovo 'píp'. Provokativní identita, která říká: 'My nejsme další píp.'"},
+    {id:19,angle:"Ptačí křikot",stupne:"240°",barva:"#c8722a",phrase:"Provést 'audit ptačího křiku'.",category:"copywriting, obsah",idea:"Napište manifest 'Smrt ptačímu křiku' – seznam frází, které vaše firma přestává používat. Zveřejněte to. Ukažte, že si uvědomujete, jak prázdný může být korporátní jazyk."},
+    {id:20,angle:"Ptačí křikot",stupne:"240°",barva:"#c8722a",phrase:"Cokoli řeknou hned se cenzuruje.",category:"design, vizuální identita",idea:"Navrhněte vizuální kampaň, která paroduje cenzuru – přeškrtnuté texty, začerněné loga, 'schválené razítko' na všem. Ironický komentář k firemní kultuře."},
+    {id:21,angle:"Mlčení jako dovednost",stupne:"120°",barva:"#8e7248",phrase:"Vyhrály ryby – ne proto, že zpívaj, ale proto, že ví, kdy mlčet.",category:"produkty, obaly",idea:"Produkt, který oslavuje ticho – diář s prázdnými stránkami a jedním nápisem 'Mlč'. Nebo aplikace, která vás každou hodinu na 60 sekund vypne. Trénink strategického ticha."},
+    {id:22,angle:"Mlčení jako dovednost",stupne:"120°",barva:"#8e7248",phrase:"Ticho je součástí práce.",category:"loga, vizuální identita",idea:"Logo, jehož součástí je prázdný prostor – negativní prostor, který 'mluví' stejně hlasitě jako pozitivní tvary. Značka, která umí mlčet."},
+    {id:23,angle:"Mlčení jako dovednost",stupne:"120°",barva:"#8e7248",phrase:"Zavést 'rybí pauzy' – 1-2 minuty ticha před rozhodnutím.",category:"copywriting, obsah",idea:"Pište články, které obsahují 'rybí pauzy' – prázdné řádky, odrážky, mezery. Text, který vás nutí zastavit se a přemýšlet. Ne všechno musí být zaplněno slovy."},
+    {id:24,angle:"Mlčení jako dovednost",stupne:"120°",barva:"#8e7248",phrase:"Kultivace 'produktivního ticha'.",category:"design, vizuální identita",idea:"Navrhněte 'tiché zóny' v kanceláři – místnosti bez telefonů, bez obrazovek, jen s pohodlným sezením a tlumeným světlem. Design pro přemýšlení, ne pro výkon."},
+    {id:25,angle:"Komunikace s prostředím",stupne:"270°",barva:"#a83060",phrase:"Ryba rapovala pro vodu. A voda odpověděla.",category:"produkty, obaly",idea:"Produkt, který je 'dialogem s prostředím' – květináč, který reaguje na rostlinu. Světlo, které se přizpůsobuje náladě v místnosti. Produkt, který naslouchá."},
+    {id:26,angle:"Komunikace s prostředím",stupne:"270°",barva:"#a83060",phrase:"Nejvyšší forma komunikace je s vlastním ekosystémem.",category:"loga, vizuální identita",idea:"Logo, které je 'ekosystémové' – funguje jen ve vztahu k okolí. Je neúplné bez kontextu. Značka, která říká: 'Jsme jen část většího celku.'"},
+    {id:27,angle:"Komunikace s prostředím",stupne:"270°",barva:"#a83060",phrase:"Mluvíme-li pro tým/systém, je to transformace.",category:"copywriting, obsah",idea:"Pište interní komunikaci, která je adresovaná 'systému', ne jednotlivcům. 'Tohle je zpráva pro naši kulturu.' Transparentní, zranitelná, systémová komunikace."},
+    {id:28,angle:"Komunikace s prostředím",stupne:"270°",barva:"#a83060",phrase:"Mluvím teď ke týmu, nebo pro náš společný systém?",category:"design, vizuální identita",idea:"Navrhněte 'systémový kompas' – vizuální nástroj pro prezentace, který ukazuje, jestli komunikace míří 'k jednotlivci', 'k týmu', nebo 'k systému'. Každý směr má jinou barvu."},
+    {id:29,angle:"Ticho, které nese obsah",stupne:"30°",barva:"#6a9e72",phrase:"Možná je čas, aby se ticho konečně dostalo nad hladinu.",category:"produkty, obaly",idea:"Produkt, který 'nese ticho' – sluchátka, která nepřehrávají hudbu, ale vytvářejí ticho. Nebo čaj 'Nad hladinou' – určený pro chvíle záměrného ticha."},
+    {id:30,angle:"Ticho, které nese obsah",stupne:"30°",barva:"#6a9e72",phrase:"Rybí hudba byla slyšet ne uchem, ale okem, tělem.",category:"loga, vizuální identita",idea:"Logo, které je 'tiché' – žádný text, jen abstraktní tvar, který evokuje vlnění, vibraci, proud. Značka, která komunikuje bez slov."},
+    {id:31,angle:"Ticho, které nese obsah",stupne:"30°",barva:"#6a9e72",phrase:"Vytvořit mechanismy pro 'zviditelnění ticha'.",category:"copywriting, obsah",idea:"Pište 'tiché reporty' – místo dlouhých textů jen vizuální esence. Infografiky, které řeknou víc než tisíc slov. Oslava stručnosti."},
+    {id:32,angle:"Ticho, které nese obsah",stupne:"30°",barva:"#6a9e72",phrase:"Pravidelné psané reflexe místo ústních reportů.",category:"design, vizuální identita",idea:"Navrhněte 'tiché šablony' – formuláře pro zpětnou vazbu, které jsou minimalistické, s velkým prázdným prostorem. Místo otázek jen ticho, do kterého člověk vepíše svou odpověď."},
+    {id:33,angle:"Beaty, které tvoří prostředí",stupne:"180°",barva:"#a85a5a",phrase:"Beat jí dělá sea i jezera.",category:"produkty, obaly",idea:"Produkt, který je 'rytmický' – hodinky, které tikají v rytmu vašeho srdce. Nebo reproduktor, který generuje 'beat' podle aktivity v místnosti."},
+    {id:34,angle:"Beaty, které tvoří prostředí",stupne:"180°",barva:"#a85a5a",phrase:"Komunikace není oddělena od kontextu; je s ním v symbióze.",category:"loga, vizuální identita",idea:"Logo, které je 'v pohybu' – animované logo, které se mění podle kontextu. Na webu jiné než na vizitce. Značka, která dýchá."},
+    {id:35,angle:"Beaty, které tvoří prostředí",stupne:"180°",barva:"#a85a5a",phrase:"Integrovat komunikaci do 'proudů práce'.",category:"copywriting, obsah",idea:"Pište 'proudové' newslettery – krátké, rytmické, vycházející v přirozeném rytmu práce. Ne 'měsíční newsletter', ale 'když je co říct, a má to váhu'."},
+    {id:36,angle:"Beaty, které tvoří prostředí",stupne:"180°",barva:"#a85a5a",phrase:"Nechat 'beat' práce tvarovat komunikaci.",category:"design, vizuální identita",idea:"Navrhněte vizuální systém, který respektuje rytmy – jiné barvy pro ranní a večerní komunikaci, jiné pro začátek a konec projektu. Design, který ctí čas."},
+    {id:37,angle:"Vnímání místo poslouchání",stupne:"300°",barva:"#6080a0",phrase:"Přestat poslouchat a začít vnímat.",category:"produkty, obaly",idea:"Produkt pro 'vnímání' – aromalampa, která je zároveň reproduktorem. Nebo brýle pro virtuální realitu, které simulují 'podvodní' prostředí pro hluboké soustředění."},
+    {id:38,angle:"Vnímání místo poslouchání",stupne:"300°",barva:"#6080a0",phrase:"Rybí hudbu nelze slyšet uchem, ale okem, tělem.",category:"loga, vizuální identita",idea:"Logo, které je 'multisenzorické' – funguje vizuálně, ale má i hmatovou variantu (reliéfní tisk). Značka, kterou lze nejen vidět, ale i cítit."},
+    {id:39,angle:"Vnímání místo poslouchání",stupne:"300°",barva:"#6080a0",phrase:"Co jsi pocítil? Co jsi zaznamenal v místnosti?",category:"copywriting, obsah",idea:"Pište 'vjemové reporty' – po každé akci nebo meetingu shrňte nejen 'co bylo řečeno', ale 'co bylo cítit'. Trénujte tým ve vnímání neverbálního."},
+    {id:40,angle:"Vnímání místo poslouchání",stupne:"300°",barva:"#6080a0",phrase:"Rozvíjet slovníkovou zásobu pro vjemy.",category:"design, vizuální identita",idea:"Vytvořte 'slovník vibrací' – vizuální kartičky s názvy emocí a stavů, které si tým může brát na porady. 'Dnes cítím...' a ukážete kartu. Místo dlouhého vysvětlování."},
+    {id:41,angle:"Autentické vyjádření",stupne:"210°",barva:"#c8a832",phrase:"Úhoř nemá hudební ambice.",category:"produkty, obaly",idea:"Produkt, který je 'autentický až na dřeň' – ručně vyrobený, s viditelnými nedokonalostmi. Každý kus je originál. Obal, který nelže o tom, co je uvnitř."},
+    {id:42,angle:"Autentické vyjádření",stupne:"210°",barva:"#c8a832",phrase:"Ryba rapuje, protože je to její způsob bytí.",category:"loga, vizuální identita",idea:"Logo, které je 'neuhlazené' – ručně psané písmo, nepravidelné tvary, asymetrie. Značka, která říká: 'Tohle jsme my. Nic víc, nic míň.'"},
+    {id:43,angle:"Autentické vyjádření",stupne:"210°",barva:"#c8a832",phrase:"Každý vyjadřuje svou vlastní podstatu.",category:"copywriting, obsah",idea:"Pište 'manifest autenticity' – dokument, kde každý člen týmu popíše svůj 'komunikační žánr'. 'Jsem storyteller.' 'Jsem datový minimalist.' Veřejně, jako závazek."},
+    {id:44,angle:"Autentické vyjádření",stupne:"210°",barva:"#c8a832",phrase:"Pomoci každému identifikovat jeho 'komunikační žánr'.",category:"design, vizuální identita",idea:"Navrhněte 'žánrové karty' – vizuální karty s popisem různých komunikačních stylů. Každý si může vybrat tu svou. Nástroj pro sebepoznání a týmovou diverzitu."},
+    {id:45,angle:"Neviditelné vítězství",stupne:"90°",barva:"#5fa8a0",phrase:"První místo v hitparádě vyhrály ryby – ale neviditelně.",category:"produkty, obaly",idea:"Produkt, který oslavuje 'neviditelné vítězství' – soška, která je z průhledného materiálu. Vidíš ji, jen když se podíváš z určitého úhlu. Oslava skrytých úspěchů."},
+    {id:46,angle:"Neviditelné vítězství",stupne:"90°",barva:"#5fa8a0",phrase:"Skutečný vliv a úspěch často zůstávají skryty.",category:"loga, vizuální identita",idea:"Logo, které je 'skryté' – používá negativní prostor, nebo je viditelné jen z určitého úhlu. Značka, která není na očích, ale o to víc rezonuje."},
+    {id:47,angle:"Neviditelné vítězství",stupne:"90°",barva:"#5fa8a0",phrase:"Zavedení 'hitparády pod hladinou'.",category:"copywriting, obsah",idea:"Vytvořte interní rubriku 'Pod hladinou' – měsíční ohlédnutí za neviditelnými úspěchy. 'Tenhle měsíc nikdo neviděl, jak Tereza zachránila projekt. Ale my ano.'"},
+    {id:48,angle:"Neviditelné vítězství",stupne:"90°",barva:"#5fa8a0",phrase:"Pravidelně oceňovat 'neviditelné úspěchy'.",category:"design, vizuální identita",idea:"Navrhněte 'Nástěnku pod hladinou' – fyzický nebo digitální prostor, kam se věší 'neviditelné úspěchy'. Každý měsíc se vybere jeden a oslaví. Design, který ctí skryté."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Ryba · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('ryba_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('ryba_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('ryba_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('ryba_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('ryba_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('ryba_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
