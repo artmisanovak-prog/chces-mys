@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐟 Workshop: Rap pro vodu – 90 minut · Ryba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050a12; --bg-el: #0a141e; --text: #e6f0fa; --dim: #3a5a70; --mid: #6a8a9a;
+            --accent: #6ab0e0; --accent-dim: #1a4050; --border: #0f1a24;
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+        a{color:var(--accent);text-decoration:none;transition:color .15s}
+        a:hover{color:#8cc8f0}
+        .wrap{max-width:780px;margin:0 auto;padding:0 1.5rem 4rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(5,10,18,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:2rem}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:400;line-height:1.0;margin-bottom:4px}
+        .subtitle{font-size:0.85rem;color:var(--dim)}
+        .progress-bar{height:4px;background:var(--border);margin-bottom:0.3rem;border-radius:2px}
+        .progress-fill{height:100%;background:var(--accent);transition:width 0.4s ease;width:0%;border-radius:2px}
+        .progress-label{font-size:0.7rem;color:var(--dim);text-align:right;margin-bottom:2rem}
+        .section-header{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:0.4rem;margin:2.5rem 0 1rem}
+        .materials{background:var(--bg-el);border:1px solid var(--border);padding:1rem 1.2rem;margin-bottom:2rem;border-radius:var(--radius);font-size:0.85rem}
+        .materials h3{font-size:0.9rem;margin-bottom:0.5rem;color:var(--accent);font-weight:500}
+        .step{border:1px solid var(--border);margin-bottom:0.8rem;border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s}
+        .step.active{border-color:var(--accent)}
+        .step.done{border-color:#1a2830;background:rgba(106,176,224,0.04)}
+        .step-header{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;cursor:pointer;user-select:none}
+        .step-check{width:22px;height:22px;border:1.5px solid var(--dim);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:0.2s}
+        .step.done .step-check{background:var(--accent);color:#050a12;border-color:var(--accent)}
+        .step-title{flex:1;font-size:0.9rem;font-weight:500;color:var(--text)}
+        .step.done .step-title{color:var(--dim);text-decoration:line-through}
+        .step-time{font-size:0.72rem;color:var(--dim);white-space:nowrap}
+        .step-body{padding:0 1rem 1rem;font-size:0.85rem;display:none;color:#b0c8d8;line-height:1.8}
+        .step.active .step-body{display:block}
+        .rule-box{border-left:3px solid var(--accent);padding:0.6rem 0.9rem;margin:0.8rem 0;font-size:0.85rem;background:rgba(106,176,224,0.06);border-radius:var(--radius)}
+        .timer-block{margin-top:0.8rem;border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+        .timer-display{font-size:2rem;font-family:var(--mono);letter-spacing:0.05em;min-width:80px;color:var(--text)}
+        .timer-display.finished{color:#8cc8f0}
+        .timer-btns{display:flex;gap:0.4rem;flex-wrap:wrap}
+        .btn{padding:0.45rem 1rem;border:1px solid var(--accent);background:var(--accent);color:#050a12;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#8cc8f0}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{background:transparent;color:var(--text);border-color:var(--accent)}
+        .btn-done{background:var(--accent);color:#050a12}
+        .manifest-box{border:1px solid var(--accent);padding:1rem;margin-top:0.8rem;border-radius:var(--radius);background:var(--bg-el)}
+        .manifest-box h4{font-size:0.9rem;margin-bottom:0.6rem;color:var(--accent);font-weight:500}
+        .manifest-line{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;font-size:0.85rem}
+        .manifest-line span{min-width:1.2rem;color:var(--dim)}
+        .manifest-input{flex:1;border:none;border-bottom:1px solid var(--border);font-family:var(--serif);font-size:0.85rem;padding:0.2rem 0;background:transparent;color:var(--text);outline:none}
+        .manifest-input:focus{border-bottom-color:var(--accent)}
+        .print-btn{margin-top:0.8rem;font-size:0.75rem;color:var(--dim);cursor:pointer;background:none;border:none;font-family:var(--mono);text-decoration:underline}
+        .finish-box{margin-top:2.5rem;border:2px solid var(--accent);padding:1.5rem;text-align:center;border-radius:var(--radius);display:none}
+        .finish-box h2{font-size:1.1rem;margin-bottom:0.5rem;color:var(--accent)}
+        .finish-box p{font-size:0.85rem;color:var(--dim)}
+        details{border:1px solid var(--border);background:var(--bg-el);margin-bottom:1rem;border-radius:var(--radius);overflow:hidden}
+        details[open]{border-color:var(--accent)}
+        summary{cursor:pointer;padding:0.8rem 1rem;font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);list-style:none;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:0.6rem;transition:color 0.2s}
+        summary:hover{color:var(--text)}
+        summary::after{content:"▼";font-size:0.55rem;transition:transform 0.3s;flex-shrink:0}
+        details[open] summary::after{transform:rotate(180deg)}
+        details[open] summary{color:var(--accent)}
+        .details-inner{padding:0 1rem 1.2rem;font-family:var(--serif);font-size:0.88rem;line-height:1.9;color:#b0c8d8}
+        @media print{.btn,.timer-btns,.timer-block,.print-btn,.nav-links{display:none!important}.step-body{display:block!important}.step{border:1px solid #333}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Ryba</em> · workshop 90 minut</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html" class="active">Workshop</a>
+        <a href="inspirativni_mod.html">Inspirace</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+<div class="wrap">
+    <section class="hero">
+        <p class="hero-label">Týmové dysfunkce · Karta Ryba</p>
+        <h1>🐟 Workshop: „Rap pro vodu"</h1>
+        <p class="subtitle">90 minut · Facilitátorský průvodce</p>
+    </section>
+
+    <details>
+        <summary>📦 Nástroje a šablony</summary>
+        <div class="details-inner">
+            <p><strong>Z Úhlu 5 (Ptačí křikot):</strong> „Detox ptačího křiku" – Zrušit jeden pravidelný meeting měsíčně. Místo něj zavést async update.</p>
+            <p><strong>Z Úhlu 6 (Mlčení jako dovednost):</strong> „Rybí minuta" – Po každé klíčové otázce 60 sekund absolutního ticha na myšlenky.</p>
+            <p><strong>Z Úhlu 12 (Neviditelné vítězství):</strong> „Hitparáda pod hladinou" – Pravidelně oceňovat neviditelné úspěchy, které změnily kvalitu prostředí.</p>
+            <p><strong>Z Úhlu 3 (Přesnost před hlasitostí):</strong> „Váha slova" – Každý má na meetingu limitovaný počet promluv.</p>
+        </div>
+    </details>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="progress-label" id="progressLabel">0 / 9 kroků</p>
+
+    <div class="materials"><h3>📋 Připravte před workshopem</h3><ul style="margin-left:1.2rem;"><li>Flipchart nebo velký papír + fixy</li><li>Papíry a tužky pro každého</li><li>Lepicí lístečky dvou barev</li><li>Volitelně: zvoneček nebo jiný tichý signál pro "rybí pauzy"</li></ul></div>
+
+    <div class="section-header">Část 1 — Diagnóza · 30 minut</div>
+
+    <div class="step active" id="step-1">
+        <div class="step-header" onclick="toggleStep(1)"><div class="step-check" id="check-1"></div><div class="step-title">Krok 1: Úvod a přečtení pohádky</div><div class="step-time">7 min</div></div>
+        <div class="step-body">
+            <p>Facilitátor uvede: <em>"Představte si, že náš tým je vodní svět. Jaká část naší komunikace je 'rybí rap' – přesný, vibrační, měnící naše prostředí? A jaká část je 'ptačí křikot' – hlasitý, repetitivní, ale prázdný šum?"</em></p>
+            <p>Poté přečte celou pohádku nahlas. Pomalu, s pauzami. Jako by rapoval pod vodou.</p>
+            <div class="timer-block"><div class="timer-display" id="timer-1">7:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(1,7)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(1,7)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(1)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-2">
+        <div class="step-header" onclick="toggleStep(2)"><div class="step-check" id="check-2"></div><div class="step-title">Krok 2: Individuální psaní</div><div class="step-time">8 min</div></div>
+        <div class="step-body">
+            <p>Každý samostatně písemně odpoví na tři diagnostické otázky:</p>
+            <ol style="margin-left:1.3rem;">
+                <li>Proč dáváme přednost "ptačímu křikotu" před "rybím rapem"?</li>
+                <li>Kde u nás pozorujete "ptačí zpěv" a kde "rybí rap"?</li>
+                <li>Co by se muselo stát, abychom začali "vnímat, ne jen poslouchat"?</li>
+            </ol>
+            <div class="timer-block"><div class="timer-display" id="timer-2">8:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(2,8)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(2,8)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(2)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-3">
+        <div class="step-header" onclick="toggleStep(3)"><div class="step-check" id="check-3"></div><div class="step-title">Krok 3: Sdílení ve skupinách</div><div class="step-time">15 min</div></div>
+        <div class="step-body">
+            <p>Rozdělte se na skupinky po 3–4 lidech. Sdílejte:</p>
+            <p><strong>"Co je v našem týmu největší 'ptačí křikot'? A kde se skrývá náš nejcennější 'rybí rap', který možná nikdo pořádně 'neslyší'?"</strong></p>
+            <div class="rule-box">💡 Pravidlo: Pouze popis. Žádné hodnocení. Žádné "ale". Žádné rady.</div>
+            <div class="timer-block"><div class="timer-display" id="timer-3">15:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(3,15)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(3,15)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(3)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="section-header">Část 2 — Hluboká práce · 40 minut</div>
+
+    <div class="step" id="step-4">
+        <div class="step-header" onclick="toggleStep(4)"><div class="step-check" id="check-4"></div><div class="step-title">Krok 4: Mapa komunikace – Ptáci vs. Ryby</div><div class="step-time">20 min</div></div>
+        <div class="step-body">
+            <p>Vytvořte na velký papír dvě kolonky: <strong>PTÁCI (Křikot)</strong> a <strong>RYBY (Rap)</strong>.</p>
+            <p><strong>Krok A (10 min):</strong> Vypište pod "Ptáky" konkrétní příklady komunikace ve vašem týmu, které jsou hlasité, povinné, ale málo přínosné.</p>
+            <p><strong>Krok B (10 min):</strong> Vypište pod "Ryby" příklady komunikace, které jsou tiché, neformální, ale velmi účinné.</p>
+            <div class="rule-box">💡 Pište na lepicí lístečky – ať se dají přesouvat. Ptačí křikot na jednu barvu, rybí rap na druhou.</div>
+            <div class="timer-block"><div class="timer-display" id="timer-4">20:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(4,20)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(4,20)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(4)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-5">
+        <div class="step-header" onclick="toggleStep(5)"><div class="step-check" id="check-5"></div><div class="step-title">Krok 5: Vibrační audit – individuálně</div><div class="step-time">5 min</div></div>
+        <div class="step-body">
+            <p>Individuálně: Zamyslete se nad posledním významným týmovým meetingem. <strong>Ne nad tím, co se říkalo, ale nad tím, co se dělo pod povrchem.</strong></p>
+            <p>Jaké byly "vibrace"? Napětí? Energie? Nedorozumění? Zapište si to.</p>
+            <div class="timer-block"><div class="timer-display" id="timer-5">5:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(5,5)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(5,5)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(5)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-6">
+        <div class="step-header" onclick="toggleStep(6)"><div class="step-check" id="check-6"></div><div class="step-title">Krok 6: Vibrační audit – sdílení</div><div class="step-time">15 min</div></div>
+        <div class="step-body">
+            <p>Ve skupině sdílejte vibrační postřehy. Snažte se je popsat <strong>bez hodnocení</strong> ("bylo cítit napětí" místo "Petr byl naštvaný").</p>
+            <p>Společně se pokuste přeložit tyto "vibrace" do možných systémových potřeb: <em>"Napětí možná signalizuje, že nerozumíme prioritám."</em></p>
+            <div class="timer-block"><div class="timer-display" id="timer-6">15:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(6,15)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(6,15)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(6)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="section-header">Část 3 — Akční plán · 20 minut</div>
+
+    <div class="step" id="step-7">
+        <div class="step-header" onclick="toggleStep(7)"><div class="step-check" id="check-7"></div><div class="step-title">Krok 7: Skupinové definování</div><div class="step-time">10 min</div></div>
+        <div class="step-body">
+            <p>Na základě cvičení se domluvte:</p>
+            <p><strong>Který JEDEN "ptačí křikot" se zavážeme transformovat nebo eliminovat?</strong></p>
+            <p><strong>Který JEDEN "rybí rap" budeme cíleně kultivovat a chránit?</strong></p>
+            <div class="timer-block"><div class="timer-display" id="timer-7">10:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(7,10)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(7,10)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(7)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-8">
+        <div class="step-header" onclick="toggleStep(8)"><div class="step-check" id="check-8"></div><div class="step-title">Krok 8: Tvorba manifestu – Naše voda</div><div class="step-time">5 min</div></div>
+        <div class="step-body">
+            <p>Společně formulujte manifest:</p>
+            <div class="manifest-box">
+                <h4>🐟 Manifest – Naše voda</h4>
+                <div class="manifest-line"><span>1.</span><input class="manifest-input" type="text" placeholder="Eliminujeme tento ptačí křikot..."></div>
+                <div class="manifest-line"><span>2.</span><input class="manifest-input" type="text" placeholder="Budeme chránit tento rybí rap..."></div>
+                <div class="manifest-line"><span>3.</span><input class="manifest-input" type="text" placeholder="Aby ticho dostalo slovo, zavedeme..."></div>
+                <button class="print-btn" onclick="window.print()">🖨 Vytisknout manifest</button>
+            </div>
+            <div class="timer-block"><div class="timer-display" id="timer-8">5:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(8,5)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(8,5)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(8)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="step" id="step-9">
+        <div class="step-header" onclick="toggleStep(9)"><div class="step-check" id="check-9"></div><div class="step-title">Krok 9: Rituál zakončení</div><div class="step-time">5 min</div></div>
+        <div class="step-body">
+            <p>Jděte dokola. Každý nahlas dokončí větu – vlastními slovy, bez přerušení:</p>
+            <div class="rule-box" style="font-size:1rem;font-style:italic;">„Abych rapoval/a pro vodu, příště budu…"</div>
+            <p>Facilitátor jde jako <strong>poslední</strong>. Nikdo nekomentuje odpovědi ostatních.</p>
+            <div class="rule-box">💡 Pokud někdo neví, přeskočte a vraťte se k němu na konci. Ticho je v pořádku.</div>
+            <div class="timer-block"><div class="timer-display" id="timer-9">5:00</div><div class="timer-btns"><button class="btn" onclick="startTimer(9,5)">▶ Spustit</button><button class="btn btn-ghost" onclick="resetTimer(9,5)">↺ Reset</button></div><button class="btn btn-done" onclick="markDone(9)">✓ Hotovo</button></div>
+        </div>
+    </div>
+
+    <div class="finish-box" id="finishBox">
+        <h2>🐟 Workshop dokončen</h2>
+        <p>Tým má teď manifest, mapu své komunikace a hlavně – ví, co je ptačí křikot a co rybí rap.<br>Uvidíte se za měsíc. Co se změnilo ve vaší vodě?</p>
+    </div>
+</div>
+
+<script>
+const TOTAL = 9;
+const done = new Array(TOTAL + 1).fill(false);
+const timers = {};
+function updateProgress() {
+    const count = done.filter(Boolean).length;
+    document.getElementById('progressFill').style.width = (count/TOTAL*100)+'%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + TOTAL + ' kroků';
+    if (count === TOTAL) document.getElementById('finishBox').style.display = 'block';
+}
+function toggleStep(n) {
+    for (let i = 1; i <= TOTAL; i++) document.getElementById('step-' + i).classList.remove('active');
+    document.getElementById('step-' + n).classList.add('active');
+}
+function markDone(n) {
+    done[n] = true;
+    const step = document.getElementById('step-' + n);
+    step.classList.remove('active'); step.classList.add('done');
+    document.getElementById('check-' + n).textContent = '✓';
+    if (timers[n]) { clearInterval(timers[n].interval); timers[n].running = false; }
+    updateProgress();
+    if (n < TOTAL) {
+        const next = document.getElementById('step-' + (n + 1));
+        next.classList.add('active');
+        next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+function startTimer(n, minutes) {
+    if (timers[n]?.running) return;
+    const display = document.getElementById('timer-' + n);
+    let remaining = timers[n]?.remaining ?? minutes * 60;
+    timers[n] = { running: true, remaining };
+    timers[n].interval = setInterval(() => {
+        remaining--;
+        timers[n].remaining = remaining;
+        if (remaining <= 0) {
+            clearInterval(timers[n].interval);
+            timers[n].running = false;
+            display.textContent = '⏰ čas!';
+            display.classList.add('finished');
+            return;
+        }
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        display.textContent = m + ':' + String(s).padStart(2, '0');
+    }, 1000);
+}
+function resetTimer(n, minutes) {
+    if (timers[n]) { clearInterval(timers[n].interval); timers[n] = null; }
+    const display = document.getElementById('timer-' + n);
+    display.textContent = minutes + ':00';
+    display.classList.remove('finished');
+}
+updateProgress();
+</script>
+</body>
+</html>
