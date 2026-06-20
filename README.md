@@ -45,6 +45,19 @@
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
 
+## netopyr
+- [diagnosticky](doma/data/tymy/netopyr/diagnosticky_netopyr.html)
+- [inspirativni](doma/data/tymy/netopyr/inspirativni_netopyr.html)
+- [generativni](doma/data/tymy/netopyr/generativni_netopyr.html)
+- [workshop90min](doma/data/tymy/netopyr/workshop_90_min_netopyr.html)
+
+## ryba
+- [diagnosticky](doma/data/tymy/ryba/diagnosticky_ryba.html)
+- [inspirativni](doma/data/tymy/netopyr/inspirativni_netopyr.html)
+- [generativni](doma/data/tymy/netopyr/generativni_netopyr.html)
+- [workshop90min](doma/data/tymy/netopyr/workshop_90_min_netopyr.html)
+
+
 ---
 
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
