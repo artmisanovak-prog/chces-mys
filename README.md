@@ -37,6 +37,7 @@
 
 --- 
 
+## kocour
 - [diagnosticky_kocour](doma/data/tymy/kocour/diagnosticky_kocour.html)
 - [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
 - [inspirativni_kocour](doma/data/tymy/kocour/inspirativni_kocour.html)
@@ -53,9 +54,9 @@
 
 ## ryba
 - [diagnosticky](doma/data/tymy/ryba/diagnosticky_ryba.html)
-- [inspirativni](doma/data/tymy/netopyr/inspirativni_netopyr.html)
-- [generativni](doma/data/tymy/netopyr/generativni_netopyr.html)
-- [workshop90min](doma/data/tymy/netopyr/workshop_90_min_netopyr.html)
+- [inspirativni](doma/data/tymy/ryba/inspirativni_ryba.html)
+- [generativni](doma/data/tymy/ryba/generativni_ryba.html)
+- [workshop90min](doma/data/tymy/ryba/workshop_90_min_ryba.html)
 
 
 ---
