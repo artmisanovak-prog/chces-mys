@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐟 Ryba – diagnostický mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050a12;
+            --bg-el: #0a141e;
+            --text: #e6f0fa;
+            --dim: #3a5a70;
+            --mid: #6a8a9a;
+            --accent: #6ab0e0;
+            --accent-dim: #1a4050;
+            --border: #0f1a24;
+            --highlight: rgba(106, 176, 224, 0.2);
+            --serif: 'Spectral', serif;
+            --mono: 'Space Grotesk', sans-serif;
+            --radius: 3px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            font-weight: 300;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #8cc8f0; }
+        .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* navigace */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 10, 18, 0.94); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+        }
+        .nav-brand { font-family: var(--serif); font-size: 0.9rem; font-weight: 400; color: var(--text); }
+        .nav-brand em { font-style: italic; color: var(--accent); }
+        .nav-links { display: flex; gap: 0.8rem; flex-wrap: wrap; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .nav-links a { color: var(--dim); padding: 0.25rem 0.5rem; border: 1px solid transparent; transition: 0.15s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); border-color: var(--accent); }
+
+        /* hero */
+        .hero { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .hero-img { width: 100%; max-height: 360px; object-fit: contain; filter: grayscale(100%) contrast(1.2); opacity: 0.8; margin-bottom: 1.5rem; border-radius: var(--radius); }
+        .hero-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+        h1 { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 400; line-height: 1.0; margin-bottom: 0.3rem; color: var(--text); }
+        h1 em { font-style: italic; color: var(--accent); }
+        .hero-quote {
+            font-family: var(--serif); font-size: 1rem; font-style: italic; color: var(--mid);
+            margin: 0.8rem 0 1.2rem; border-left: 2px solid var(--accent);
+            padding-left: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;
+            text-align: left; line-height: 1.7;
+        }
+        .fenomen-desc { font-size: 0.85rem; color: var(--dim); max-width: 560px; margin: 0 auto; line-height: 1.8; }
+
+        /* akordeony */
+        details {
+            border: 1px solid var(--border); background: var(--bg-el);
+            margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        details[open] { border-color: var(--accent); }
+        summary {
+            cursor: pointer; padding: 0.9rem 1.2rem;
+            font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--mid);
+            list-style: none; user-select: none;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+            transition: color 0.2s;
+        }
+        summary:hover { color: var(--text); }
+        summary::after { content: "▼"; font-size: 0.6rem; transition: transform 0.3s; flex-shrink: 0; }
+        details[open] summary::after { transform: rotate(180deg); }
+        details[open] summary { color: var(--accent); }
+        .details-inner {
+            padding: 0 1.2rem 1.5rem; font-family: var(--serif);
+            font-size: 0.92rem; line-height: 1.9; color: #b0c8d8;
+        }
+        .details-inner p { margin-bottom: 0.8rem; }
+        .details-inner strong { color: var(--accent); font-weight: 500; }
+        .details-inner em { color: var(--mid); }
+
+        /* pohádka */
+        .pohadka-summary { background: var(--accent); color: #050a12 !important; font-weight: 500; }
+        .pohadka-summary:hover { color: #050a12 !important; }
+
+        /* klíč k úhlům */
+        .uhel-item {
+            border-bottom: 1px solid var(--border); padding: 0.8rem 0;
+            display: flex; gap: 0.8rem; align-items: flex-start;
+        }
+        .uhel-item:last-child { border-bottom: none; }
+        .uhel-color { width: 6px; min-height: 100%; border-radius: 1px; flex-shrink: 0; align-self: stretch; }
+        .uhel-content { flex: 1; }
+        .uhel-content strong { display: block; color: var(--text); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .uhel-stupne { font-size: 0.7rem; color: var(--dim); margin-bottom: 0.3rem; }
+        .uhel-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.6; margin-bottom: 0.4rem; }
+        .uhel-klice { font-size: 0.72rem; color: var(--dim); font-style: italic; }
+
+        /* otázky */
+        .questions-box {
+            background: var(--bg-el); border: 1px solid var(--border);
+            padding: 1.2rem; margin: 1.5rem 0; border-radius: var(--radius);
+        }
+        .questions-box h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--accent); margin-bottom: 0.8rem; }
+        .question-item { margin-bottom: 0.8rem; }
+        .question-item strong { display: block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 0.2rem; }
+        .question-item p { font-size: 0.9rem; color: var(--dim); font-family: var(--serif); }
+
+        /* setup */
+        .setup-row {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            margin: 1rem 0; padding: 0.8rem 1rem;
+            background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius);
+        }
+        .setup-row label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+        .setup-row input[type=number] {
+            width: 60px; padding: 0.5rem; border: 1px solid var(--border);
+            background: var(--bg); color: var(--text); font-family: var(--mono);
+            font-size: 1rem; text-align: center; border-radius: var(--radius);
+        }
+        .btn {
+            padding: 0.55rem 1.4rem; background: var(--accent); color: #050a12;
+            border: 1px solid var(--accent); font-family: var(--mono);
+            font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; border-radius: var(--radius); transition: 0.15s;
+        }
+        .btn:hover { background: #8cc8f0; border-color: #8cc8f0; }
+        .btn-ghost { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); background: transparent; }
+        .btn-danger { background: transparent; color: #4a6a7a; border: 1px solid #1a2830; }
+        .btn-danger:hover { border-color: #6a9aaa; color: #c0d8e8; background: transparent; }
+
+        /* karty členů */
+        .clen-card { border: 1px solid var(--border); background: var(--bg-el); margin-bottom: 0.5rem; border-radius: var(--radius); overflow: hidden; }
+        .clen-summary {
+            cursor: pointer; padding: 0.8rem 1.2rem; font-size: 0.85rem;
+            list-style: none; display: flex; align-items: center; gap: 0.8rem;
+            user-select: none; transition: background 0.15s;
+        }
+        .clen-summary:hover { background: rgba(106, 176, 224, 0.08); }
+        .clen-summary::before { content: "▸"; font-family: var(--mono); font-size: 0.7rem; color: var(--dim); transition: transform 0.2s; }
+        .clen-card[open] .clen-summary::before { transform: rotate(90deg); }
+        .clen-jmeno { flex: 1; font-weight: 500; color: var(--text); }
+        .clen-stav { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+        .clen-stav.hotovo { color: var(--accent); font-weight: 500; }
+        .clen-body { padding: 0 1.2rem 1rem; border-top: 1px solid var(--border); }
+        .clen-body .field { margin-bottom: 0.8rem; }
+        .clen-body label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.3rem; }
+        .clen-body textarea {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--serif); font-size: 0.85rem;
+            line-height: 1.6; resize: vertical; min-height: 50px; border-radius: var(--radius);
+        }
+        .clen-body textarea:focus { outline: none; border-color: var(--accent); }
+        .clen-body select {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--mono); font-size: 0.75rem;
+            border-radius: var(--radius); margin-top: 0.3rem;
+        }
+
+        /* autosave */
+        .autosave-row {
+            display: none; align-items: center; gap: 1rem; flex-wrap: wrap;
+            padding: 0.6rem 1rem; background: rgba(106, 176, 224, 0.06);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            margin: 1rem 0; font-size: 0.72rem; color: var(--dim);
+        }
+
+        /* výsledky */
+        .results { display: none; margin-top: 2rem; border-top: 2px solid var(--accent); padding-top: 1.5rem; }
+        .mapa-tabulka { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 1rem 0; }
+        .mapa-tabulka th, .mapa-tabulka td { border: 1px solid var(--border); padding: 0.5rem 0.8rem; text-align: left; }
+        .mapa-tabulka th { background: var(--accent); color: #050a12; font-family: var(--mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.65rem; }
+        .mapa-tabulka td { background: var(--bg-el); }
+        .pretizeny td { background: rgba(106, 176, 224, 0.15); font-weight: 500; }
+        .deficitni td { color: var(--dim); }
+        .vysledky-section { margin-bottom: 1.5rem; }
+        .vysledky-section h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+        .vysledky-section .uhel-out { margin-bottom: 0.6rem; padding-left: 0.8rem; border-left: 2px solid var(--accent); font-size: 0.85rem; color: var(--mid); line-height: 1.6; }
+
+        /* bar proužek */
+        .bar-section { margin: 1.5rem 0; }
+        .bar-wrap { display: flex; height: 14px; border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem; }
+        .bar-seg { height: 100%; transition: width 0.4s ease; }
+        .bar-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.65rem; color: var(--dim); }
+        .bar-leg-item { display: flex; align-items: center; gap: 0.3rem; }
+        .bar-leg-dot { width: 8px; height: 8px; border-radius: 1px; }
+
+        /* management týmů */
+        .team-mgmt { margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .team-list { margin: 1rem 0; font-size: 0.78rem; color: var(--dim); }
+        .team-list span { margin-right: 0.8rem; cursor: pointer; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); transition: 0.15s; }
+        .team-list span:hover { border-color: var(--accent); color: var(--text); }
+
+        @media print {
+            nav, .btn, .setup-row, .autosave-row, .team-mgmt, .team-list, .bar-section { display: none !important; }
+            details[open] summary { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="nav-brand"><em>Ryba</em> · diagnostický mód</span>
+        <div class="nav-links">
+            <a href="generativni_mod.html">Generátor</a>
+            <a href="workshop_90_minut.html">Workshop</a>
+            <a href="inspirativni_mod.html">Inspirace</a>
+            <a href="../">Zpět na kartu</a>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <section class="hero">
+            <img src="ryba.jpg" alt="Ryba" class="hero-img" onerror="this.style.display='none'">
+            <p class="hero-label">Týmové dysfunkce · Karta Ryba</p>
+            <h1>Ryba</h1>
+            <p class="hero-quote">„neřve, vibruje. rapuje pro vodu – a voda odpovídá."</p>
+            <p class="fenomen-desc">Fenomén Ryby — neschopnost rozlišit mezi autentickou komunikací, která utváří prostředí ("rybí rap"), a povrchním šumem, který pouze zaplňuje prostor ("ptačí křikot"). Tým zaměňuje hlasitost za vliv, zatímco přehlíží tiché formy komunikace, které skutečně formují kulturu.</p>
+        </section>
+
+        <!-- POHÁDKA -->
+        <details>
+            <summary class="pohadka-summary">📖 Pohádka o Rybě</summary>
+            <div class="details-inner" id="pohadka-text"></div>
+        </details>
+
+        <!-- KLÍČ K ÚHLŮM -->
+        <details>
+            <summary>🔑 Klíč k úhlům – Ryba</summary>
+            <div class="details-inner" id="klic-uhlu"></div>
+        </details>
+
+        <!-- JAK MYŠ ČTE RYBU -->
+        <details>
+            <summary>🐟 Jak myš čte Rybu</summary>
+            <div class="details-inner" id="jak-mys-cte"></div>
+        </details>
+
+        <!-- DIAGNOSTICKÁ MATICE -->
+        <details>
+            <summary>📊 Diagnostická matice</summary>
+            <div class="details-inner" id="diagnosticka-matice"></div>
+        </details>
+
+        <!-- OTÁZKY -->
+        <div class="questions-box">
+            <h3>🐟 Tři otázky pro tým (Ryba)</h3>
+            <div class="question-item">
+                <strong>Q1 – Interpretace:</strong>
+                <p>Proč lidé/týmy dávají přednost "ptačímu křikotu" – hlasitému, ale prázdnému projevu – před "rybím rapem", který je tichý, ale transformuje prostředí?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q2 – Identifikace:</strong>
+                <p>Kde ve vašem týmu/organizaci pozorujete "ptačí zpěv" a kde naopak probíhá "rybí rap" – tichá, vibrační práce, která skutečně posouvá věci vpřed?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q3 – Transformace:</strong>
+                <p>Co by se muselo stát, aby váš tým začal "vnímat, ne jen poslouchat"? Jak bychom mohli kultivovat prostředí, kde "ticho konečně dostane slovo nad hladinu"?</p>
+            </div>
+        </div>
+
+        <!-- SETUP -->
+        <div class="setup-row">
+            <label>Počet členů týmu:</label>
+            <input type="number" id="pocet-clenu" min="1" max="30" value="4">
+            <button class="btn" onclick="vytvorKarty()">Vytvořit zápisník</button>
+        </div>
+
+        <!-- AUTOSAVE -->
+        <div class="autosave-row" id="autosave-row">
+            <span>💾 Zápisník se průběžně ukládá — přežije i zavření prohlížeče.</span>
+            <button class="btn btn-danger" onclick="smazatZapisnik()">🗑 Vymazat zápisník</button>
+        </div>
+
+        <!-- MANAGEMENT TÝMŮ -->
+        <div class="team-mgmt">
+            <button class="btn btn-ghost" onclick="ulozitTym()">💾 Uložit tým</button>
+            <button class="btn btn-ghost" onclick="nacistTym()">📂 Načíst tým</button>
+            <button class="btn btn-ghost" onclick="exportURL()">🔗 Exportovat URL</button>
+            <button class="btn btn-ghost" onclick="importURL()">📋 Importovat z URL</button>
+        </div>
+        <div class="team-list" id="team-list"></div>
+
+        <div id="karty-clenu"></div>
+        <div id="tlacitko-vyhodnotit" style="display:none; margin:1.5rem 0;">
+            <button class="btn" onclick="vyhodnotit()">🐟 Vyhodnotit – ukázat kognitivní mapu týmu</button>
+        </div>
+
+        <div class="results" id="vysledky"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════
+        // DATA – POHÁDKA
+        // ═══════════════════════════════════════
+        const POHADKA = `O RYBĚ 
+        která rapovala
+
+        Říká se, že ryby mlčí.
+        Že nemají hlas.
+        Že jen plavou, koukají, a občas se nechají chytit.
+        Ale to je omyl. Kec.
+        Suchozemská lež.
+
+        Ryby totiž nemlčí.
+        Ryby rapujou.
+
+        Ne tak, jak si to představuješ – žádné mikrofony, žádné beaty z repro beden.
+        Rybí rap je jinej.
+        Je to rytmus proudů.
+        Je to nížka, výška vln a vlnek.
+        Je to tempo vodních kruhů.
+        Je to mezera mezi bublinama.
+
+        Pod vodou se zvuk jinak šíří.
+        Hlubší. Širší. Pomalejší.
+        A tak ryby neřvou.
+        Ryby vibrujou.
+
+        Každej druh rybí má svůj styl hudební.
+        Kosatky zpívají chansony – dlouhé, nostalgické, ovlivňují směry proudů.
+        Žraloci zpívaj gospel – hluboký a s ozvěnou.
+        Velryba si troufne na operu a medúzy jí dělaj vokály.
+        Delfin je folklor.
+        Chobotnice stříhne jazzové improvizace.
+        Piraňi balady.
+        A kapr zkouší hrdelní zpěvy.
+
+        A ryba?
+        Ryba má rap.
+        Ne kvůli slávě.
+        Kvůli přesnosti.
+
+        Flow je king a king je ryba.
+        Beat jí dělá sea i jezera.
+        Riff kape, flow teče.
+        Přesná slova proudí jak voda.
+        Její punchline je fontána.
+
+        Každý verš má váhu.
+        A tohle ryby umí.
+        Líp než ptáci.
+
+        Ptačí zpěv?
+        Křikot je to.
+        Řev, ryk, krákot, jekot.
+        Tempo? Melodie? Text?
+        Ptáci neumí dávat.
+        Ptáci umí jen sprostě nadávat.
+        Píp rýmuje s píp, jinak bez ideje.
+
+        Zato ryby fakt dávaj.
+        Dávaj rytmus vodě.
+        Dávaj smysl tichu.
+        Dávají beaty proudům.
+
+        A stalo se jednoho dne, že ryba začala rapovat i na hladině.
+        Ne pro ostatní.
+        Pro vodu.
+
+        A voda odpověděla.
+        Jinak se zavlnila.
+        Do rytmu se natřásala.
+        Tvořila verše jako vodní kruhy, v kterých byly další kruhy.
+
+        A tak se po kapkách roznáší všude kolem,
+        že první místo v hitparádě,
+        vyhrály ryby – nepochybně.
+
+        Ne proto, že zpívaj.
+        Ale proto, že ví…
+
+        …kdy mlčet.
+
+        Možná je čas,
+        aby se svět dozvěděl o rybím rapu.
+
+        Možná je čas,
+        aby se přestalo poslouchat a začalo se vnímat.
+
+        Možná je čas,
+        aby se ticho konečně dostalo nad hladinu.`;
+
+        // ═══════════════════════════════════════
+        // 12 SPECIFICKÝCH ÚHLŮ – RYBA
+        // ═══════════════════════════════════════
+        const RYBA_UHLY = [
+            { id: 1, nazev: "Vibrační komunikace", stupne: "150°", barva: "#5a8a5a",
+              jadro: "Ryby vibrujou. Jejich komunikace je tělesná, prostřednictvím prostředí. Skutečný vliv je vždy vibrační, ne deklarační.",
+              stopa: "Důraz na neverbální komunikaci, energii, atmosféru. 'Ne co se řeklo, ale co se cítilo.'",
+              poznamka: "Zde někdo ví, že slova jsou jen povrch. Že pod hladinou se děje mnohem víc – a to je to, co skutečně hýbe světem.",
+              q3: "Zavést 'čtení vibrací': Před zahájením agendy věnovat 2 minuty popisu atmosféry v místnosti. Trénovat vnímavost k prostředí." },
+            { id: 2, nazev: "Systémový dopad", stupne: "60°", barva: "#9b72b5",
+              jadro: "Rybí rap ovlivňuje vlastnosti vody. Skutečná komunikace není o předání informace, ale o změně systému.",
+              stopa: "Důraz na dopad, změnu prostředí, metriky kvality. 'Jak se změnilo naše společné prostředí?'",
+              poznamka: "Zde někdo měří úspěch komunikace ne podle toho, co bylo řečeno, ale podle toho, co se změnilo. A to je vzácné.",
+              q3: "Měřit úspěch komunikace podle odpovědi: 'Jak se změnilo naše společné prostředí (důvěra, jasnost, energie) po této výměně?'" },
+            { id: 3, nazev: "Přesnost před hlasitostí", stupne: "0°", barva: "#5a7fa8",
+              jadro: "Flow je king. Ryba rapuje kvůli přesnosti. Hodnotu má ten, kdo je nejpřesnější – jeho slova mají váhu.",
+              stopa: "Důraz na přesnost, úspornost, váhu slov. 'Méně je více.' 'Každé slovo musí nést význam.'",
+              poznamka: "Zde někdo chápe, že nejhlasitější není nejdůležitější. A že jedno přesné slovo převáží hodinu prázdných řečí.",
+              q3: "Zavést 'váhu slova': Každý má na meetingu limitovaný počet promluv. Nutí to k úspornosti a přesnosti." },
+            { id: 4, nazev: "Různorodé žánry", stupne: "330°", barva: "#8060b0",
+              jadro: "Každý druh ryb má svůj styl. Systém oceňuje diverzitu projevu. Ptačí svět homogenizuje: všichni jen píp a píp.",
+              stopa: "Důraz na diverzitu stylů, individuality, odmítání uniformity. 'Každý má svůj hlas.'",
+              poznamka: "Zde někdo ví, že tým je orchestr, ne pochodová kapela. A že síla je v různosti hlasů, ne v jejich stejnosti.",
+              q3: "Mapovat 'hudební mapu týmu': Kdo je gospelista, kdo dává jemné detaily? Oceňovat rozdíly." },
+            { id: 5, nazev: "Ptačí křikot", stupne: "240°", barva: "#c8722a",
+              jadro: "Ptačí zpěv je křikot – opakování prázdných forem, bez ideje. Většina lidské komunikace je jen píp rýmující se s píp.",
+              stopa: "Důraz na prázdnotu, opakování, absenci obsahu. Identifikace frází a rituálů bez smyslu.",
+              poznamka: "Zde někdo prohlédl, že většina meetingů je jen ptačí křikot. A už ho to nebaví poslouchat.",
+              q3: "Provést 'audit ptačího křiku': Identifikovat 3 nejprázdnější fráze nebo rituály a eliminovat je." },
+            { id: 6, nazev: "Mlčení jako dovednost", stupne: "120°", barva: "#8e7248",
+              jadro: "Ryby vyhrály, protože vědí, kdy mlčet. Síla není v nekonečném projevu, ale ve strategickém tichu.",
+              stopa: "Důraz na ticho, pauzy, reflexi. 'Ticho je součástí práce.'",
+              poznamka: "Zde někdo ví, že ticho není prázdné. Je plné toho, co ještě nebylo řečeno. A umí v něm být.",
+              q3: "Zavést 'rybí pauzy': Po klíčových otázkách povinná 1–2 minuty ticha na reflexi. Ticho je součástí práce." },
+            { id: 7, nazev: "Komunikace s prostředím", stupne: "270°", barva: "#a83060",
+              jadro: "Ryba rapovala pro vodu. A voda odpověděla. Nejvyšší forma komunikace je s vlastním ekosystémem.",
+              stopa: "Důraz na dialog se systémem, ne jen s publikem. 'Mluvím pro tým, nebo ke týmu?'",
+              poznamka: "Zde někdo chápe, že komunikace není jen výměna slov. Je to rozhovor s celým prostředím. A to odpovídá.",
+              q3: "Před každou komunikací se zeptat: 'Mluvím ke týmu, nebo pro náš společný systém?' A přizpůsobit jazyk." },
+            { id: 8, nazev: "Ticho, které nese obsah", stupne: "30°", barva: "#6a9e72",
+              jadro: "Možná je čas, aby se ticho dostalo nad hladinu. Ticho není absence, ale nositel obsahu.",
+              stopa: "Důraz na tiché hlasy, psanou komunikaci, zviditelnění neviditelného.",
+              poznamka: "Zde někdo slyší i to, co není řečeno. A ví, že ti nejtišší často nesou nejhlubší pravdu.",
+              q3: "Vytvořit mechanismy pro 'zviditelnění ticha': Psané reflexe, tiché brainstormingy, ocenění pro ty, kdo mluví prací." },
+            { id: 9, nazev: "Beaty, které tvoří prostředí", stupne: "180°", barva: "#a85a5a",
+              jadro: "Beat jí dělá sea i jezera. Komunikace je neoddělitelná od prostředí – je jím tvořena a zároveň ho tvoří.",
+              stopa: "Důraz na rytmus, kontext, integraci komunikace do práce. 'Nechat beat práce tvarovat komunikaci.'",
+              poznamka: "Zde někdo respektuje přirozený rytmus. Ví, že nejlepší komunikace nevzniká na povel, ale v proudu práce.",
+              q3: "Integrovat komunikaci do 'proudů práce': Místo formálních meetingů častěji komunikovat v kontextu práce." },
+            { id: 10, nazev: "Vnímání místo poslouchání", stupne: "300°", barva: "#6080a0",
+              jadro: "Rybí hudbu nelze slyšet uchem, ale okem, tělem. Musíme přestat poslouchat a začít vnímat.",
+              stopa: "Důraz na celostní percepci, vjemy, neverbální signály. 'Co jsi pocítil?'",
+              poznamka: "Zde někdo ví, že uši nestačí. Že skutečné porozumění vyžaduje celé tělo. A je ochoten ho použít.",
+              q3: "Po setkáních se ptát nejen 'Co sis odnesl?', ale i 'Co jsi pocítil? Co nebylo řečeno?'" },
+            { id: 11, nazev: "Autentické vyjádření", stupne: "210°", barva: "#c8a832",
+              jadro: "Úhoř nemá hudební ambice. Autenticita spočívá v tom, že každý vyjadřuje svou vlastní podstatu.",
+              stopa: "Důraz na autenticitu, vlastní styl, odmítání role. 'Tohle jsem já. Nic víc, nic míň.'",
+              poznamka: "Zde někdo ví, kým je. A nepotřebuje se přetvařovat. Jeho síla je v tom, že rapuje svým vlastním hlasem.",
+              q3: "Pomoci každému identifikovat jeho 'komunikační žánr' a hledat způsoby, jak ho integrovat do společného orchestru." },
+            { id: 12, nazev: "Neviditelné vítězství", stupne: "90°", barva: "#5fa8a0",
+              jadro: "První místo vyhrály ryby – ale neviditelně, pod hladinou. Skutečný úspěch je o dopadu na systém, ne o popularitě.",
+              stopa: "Důraz na skryté úspěchy, systémový dopad, neviditelné hrdiny. 'Hitparáda pod hladinou.'",
+              poznamka: "Zde někdo ví, že největší vítězství jsou ta, o kterých se nemluví. A umí je ocenit.",
+              q3: "Zavést 'hitparádu pod hladinou': Pravidelně oceňovat neviditelné úspěchy, které změnily kvalitu prostředí." }
+        ];
+
+        // ═══════════════════════════════════════
+        // DIAGNOSTICKÁ MATICE
+        // ═══════════════════════════════════════
+        const DIAG_MATICE = [
+            { uhel: "1. Vibrační komunikace", diagnoza: "Tým komunikuje pouze na obsahové úrovni, je 'hluchý' k emocím a energii ve skupině.",
+              intervence: "'Teploměr vibrací': Na začátku a konci setkání každý ukáže palcem nahoru/dolů, jak cítí energii v místnosti." },
+            { uhel: "2. Systémový dopad", diagnoza: "Schůze jsou chápány jako nutné zlo pro předání informací, ne jako příležitost utvářet kulturu.",
+              intervence: "Měřit úspěch komunikace podle změny prostředí, ne podle délky nebo počtu bodů." },
+            { uhel: "3. Přesnost před hlasitostí", diagnoza: "V týmu převládají hlasití řečníci, zatímco přesní a tiší jsou přehlíženi.",
+              intervence: "'Kolo ticha': Každý mluví, jen když drží předmět. Po předání musí přijít pauza." },
+            { uhel: "4. Různorodé žánry", diagnoza: "Týmová kultura vyžaduje uniformní styl komunikace, individuality jsou potlačeny.",
+              intervence: "'Festival žánrů': Jeden meeting, kde každý použije alternativní komunikační styl." },
+            { uhel: "5. Ptačí křikot", diagnoza: "Komunikace je hlasitá, plná žargonu a opakování, ale málo obsahová.",
+              intervence: "'Detox ptačího křiku': Zrušit jeden pravidelný meeting měsíčně, zavést async update." },
+            { uhel: "6. Mlčení jako dovednost", diagnoza: "Ticho je považováno za nepohodlí. Všechny pauzy jsou okamžitě zaplněny slovem.",
+              intervence: "'Rybí minuta': Po každé klíčové otázce 60 sekund absolutního ticha na myšlenky." },
+            { uhel: "7. Komunikace s prostředím", diagnoza: "Komunikace směřuje 'nahoru' nebo 'ven', ale málokdy 'dovnitř' k systému týmu.",
+              intervence: "Před každou komunikací se ptát: 'Mluvím ke týmu, nebo pro náš společný systém?'" },
+            { uhel: "8. Ticho, které nese obsah", diagnoza: "Tišší členové jsou považováni za pasivní. Jejich tichá práce je neviditelná.",
+              intervence: "Zavést psané reflexe místo ústních reportů, ocenění pro 'tiché hrdiny'." },
+            { uhel: "9. Beaty, které tvoří prostředí", diagnoza: "Komunikace je oddělena od reálné práce. Schůze jsou vytržené z kontextu.",
+              intervence: "Integrovat komunikaci do proudů práce – async updates, pair work." },
+            { uhel: "10. Vnímání místo poslouchání", diagnoza: "Tým hodnotí úspěch komunikace jen podle 'co bylo řečeno', ignoruje neverbální rovinu.",
+              intervence: "Po setkáních se ptát: 'Co jsi pocítil? Co jsi zaznamenal, co nebylo řečeno?'" },
+            { uhel: "11. Autentické vyjádření", diagnoza: "Lidé jsou nuceni hrát role, které neodpovídají jejich přirozenému stylu.",
+              intervence: "Pomoci každému identifikovat jeho 'komunikační žánr' a respektovat ho." },
+            { uhel: "12. Neviditelné vítězství", diagnoza: "Tým oslavuje jen viditelné úspěchy. Tiché, systémové úspěchy jsou přehlíženy.",
+              intervence: "'Hitparáda pod hladinou': Pravidelně oceňovat neviditelné úspěchy." }
+        ];
+
+        // ═══════════════════════════════════════
+        // JAK MYŠ ČTE RYBU
+        // ═══════════════════════════════════════
+        const JAK_MYS_CTE = `
+        <p><em>Myš dostala pohádku o Rybě – o té, která rapuje pod hladinou. Přečetla ji. Zavřela oči. A začala naslouchat.</em></p>
+        <p>Tahle pohádka je o něčem jiném než Kocour nebo Netopýr. Není o moci ani o skrývání. Je o tom, co je slyšet – a co není. O tom, že skutečná komunikace nemusí být hlasitá.</p>
+        <h3>OTÁZKA 1 (Interpretace)</h3>
+        <p><strong>Odpověď A:</strong> "Protože ptačí křikot je vidět. Šéf si všimne, kdo mluví na poradě. Nevšimne si, kdo potichu změnil kulturu týmu."<br>→ <strong style="color:#c8722a">MYŠ PŘIŘADILA: Úhel 5 – Ptačí křikot (240°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Protože rybí rap vyžaduje odvahu být přesný. Jednodušší je opakovat firemní fráze."<br>→ <strong style="color:#5a7fa8">MYŠ PŘIŘADILA: Úhel 3 – Přesnost před hlasitostí (0°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Protože neumíme naslouchat. Chceme rychlé odpovědi, ne hluboké vnímání."<br>→ <strong style="color:#6080a0">MYŠ PŘIŘADILA: Úhel 10 – Vnímání místo poslouchání (300°)</strong></p>
+        <h3>OTÁZKA 2 (Identifikace)</h3>
+        <p><strong>Odpověď A:</strong> "Ptačí zpěv jsou naše měsíční reporty. Rybí rap je Slack kanál, kam lidi píšou, co skutečně řeší."<br>→ <strong style="color:#6a9e72">MYŠ PŘIŘADILA: Úhel 8 – Ticho, které nese obsah (30°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Ptačí zpěv je náš šéf na poradách. Rybí rap jsou konverzace u kávy."<br>→ <strong style="color:#a83060">MYŠ PŘIŘADILA: Úhel 7 – Komunikace s prostředím (270°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Ptačí zpěv jsou naše hodnoty napsané na zdi. Rybí rap je to, jak se k sobě chováme."<br>→ <strong style="color:#5fa8a0">MYŠ PŘIŘADILA: Úhel 12 – Neviditelné vítězství (90°)</strong></p>
+        <h3>OTÁZKA 3 (Transformace)</h3>
+        <p><strong>Odpověď A:</strong> "Museli bychom zrušit půlku meetingů. Ale to si nikdo netroufne."<br>→ <strong style="color:#8e7248">MYŠ PŘIŘADILA: Úhel 6 – Mlčení jako dovednost (120°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Aby 'flow' dostalo přednost před 'křikem'."<br>→ <strong style="color:#a85a5a">MYŠ PŘIŘADILA: Úhel 9 – Beaty, které tvoří prostředí (180°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Každý by si musel najít svůj vlastní 'žánr'."<br>→ <strong style="color:#c8a832">MYŠ PŘIŘADILA: Úhel 11 – Autentické vyjádření (210°)</strong></p>
+        <h3>CO Z TOHO MYŠ VYČETLA?</h3>
+        <p><strong>PŘETÍŽENÉ ÚHLY:</strong> Ptačí křikot (5) – 12×, Přesnost před hlasitostí (3) – 9×<br>Tým perfektně diagnostikuje problém. Ví, co je špatně. Ale ještě neví, co s tím.</p>
+        <p><strong>DEFICIENTNÍ ÚHLY:</strong> Vibrační komunikace (1) – 1×, Systémový dopad (2) – 0×, Mlčení jako dovednost (6) – 1×<br>Tým neumí pracovat s neverbální rovinou. Nevidí svůj dopad na systém. A bojí se ticha.</p>
+        <p><strong>CO MYŠ NAVRHLA:</strong> Detox ptačího křiku – zrušit jeden meeting. Zavést rybí pauzy – 60 sekund ticha před rozhodnutím. Trénovat čtení vibrací.</p>`;
+
+        // ═══════════════════════════════════════
+        // NAPLNĚNÍ HTML
+        // ═══════════════════════════════════════
+        document.getElementById('pohadka-text').innerHTML = `<p style="white-space:pre-line">${POHADKA}</p>`;
+        document.getElementById('jak-mys-cte').innerHTML = JAK_MYS_CTE;
+
+        document.getElementById('klic-uhlu').innerHTML = RYBA_UHLY.map(u => `
+        <div class="uhel-item">
+          <div class="uhel-color" style="background:${u.barva}"></div>
+          <div class="uhel-content">
+            <strong>${u.id}. ${u.nazev} <span style="color:${u.barva}">●</span> ${u.stupne}</strong>
+            <div class="uhel-desc"><strong>Jádro:</strong> ${u.jadro}<br><strong>Ryba poznamená:</strong> „${u.poznamka}"<br><strong>Stopa v odpovědi:</strong> ${u.stopa}</div>
+            <div class="uhel-desc"><strong>Q3 – Návrh intervence:</strong> ${u.q3}</div>
+          </div>
+        </div>`).join('');
+
+        document.getElementById('diagnosticka-matice').innerHTML = `
+        <table class="mapa-tabulka">
+          <tr><th>Úhel</th><th>Týmová diagnóza</th><th>Akční intervence</th></tr>
+          ${DIAG_MATICE.map(d => `<tr><td>${d.uhel}</td><td>${d.diagnoza}</td><td>${d.intervence}</td></tr>`).join('')}
+        </table>`;
+
+        // ═══════════════════════════════════════
+        // LOGIKA ZÁPISNÍKU
+        // ═══════════════════════════════════════
+        const SAVE_KEY = 'ryba_diagnostika_session';
+        let aktualniSession = null;
+
+        function ulozit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value) || 0;
+            if (pocet < 1) return;
+            const data = { pocet, clenove: [] };
+            for (let i = 1; i <= pocet; i++) {
+                const jEl = document.getElementById(`jmeno-${i}`);
+                if (!jEl) continue;
+                data.clenove.push({
+                    jmeno: jEl.value,
+                    o1: document.getElementById(`odpoved-${i}-1`)?.value || '',
+                    o2: document.getElementById(`odpoved-${i}-2`)?.value || '',
+                    o3: document.getElementById(`odpoved-${i}-3`)?.value || '',
+                    u1: document.getElementById(`uhel-${i}-1`)?.value || '',
+                    u2: document.getElementById(`uhel-${i}-2`)?.value || '',
+                    u3: document.getElementById(`uhel-${i}-3`)?.value || ''
+                });
+            }
+            aktualniSession = data;
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function nacistUlozene() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (!data?.pocet) return;
+                aktualniSession = data;
+                document.getElementById('pocet-clenu').value = data.pocet;
+                vytvorKartyHTML(data.pocet);
+                data.clenove.forEach((c, idx) => {
+                    const i = idx + 1;
+                    const jEl = document.getElementById(`jmeno-${i}`);
+                    if (!jEl) return;
+                    jEl.value = c.jmeno || '';
+                    document.getElementById(`odpoved-${i}-1`).value = c.o1 || '';
+                    document.getElementById(`odpoved-${i}-2`).value = c.o2 || '';
+                    document.getElementById(`odpoved-${i}-3`).value = c.o3 || '';
+                    document.getElementById(`uhel-${i}-1`).value = c.u1 || '';
+                    document.getElementById(`uhel-${i}-2`).value = c.u2 || '';
+                    document.getElementById(`uhel-${i}-3`).value = c.u3 || '';
+                    aktualizujStav(i);
+                });
+                document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+                document.getElementById('autosave-row').style.display = 'flex';
+                document.getElementById('vysledky').style.display = 'none';
+            } catch (e) {}
+        }
+
+        function smazatZapisnik() {
+            if (!confirm('Opravdu vymazat celý zápisník?')) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            document.getElementById('karty-clenu').innerHTML = '';
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'none';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'none';
+            aktualniSession = null;
+        }
+
+        function aktualizujStav(i) {
+            const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim();
+            const u1 = document.getElementById(`uhel-${i}-1`)?.value;
+            const u2 = document.getElementById(`uhel-${i}-2`)?.value;
+            const u3 = document.getElementById(`uhel-${i}-3`)?.value;
+            const prirazeno = [u1, u2, u3].filter(Boolean).length;
+            const nadpisEl = document.getElementById(`nadpis-${i}`);
+            const stavEl = document.getElementById(`stav-${i}`);
+            if (nadpisEl) nadpisEl.textContent = jmeno || `Člen ${i}`;
+            if (stavEl) {
+                stavEl.textContent = prirazeno === 3 ? '✓ hotovo' : prirazeno > 0 ? `${prirazeno}/3 přiřazeno` : 'nevyplněno';
+                stavEl.className = 'clen-stav' + (prirazeno === 3 ? ' hotovo' : '');
+            }
+        }
+
+        function vytvorKartyHTML(pocet) {
+            const options = RYBA_UHLY.map(u => `<option value="${u.id}">${u.id}. ${u.nazev} (${u.stupne})</option>`).join('');
+            const sel = `<option value="">— nevybráno —</option>${options}`;
+            let html = '';
+            for (let i = 1; i <= pocet; i++) {
+                html += `
+                <details class="clen-card" id="karta-${i}" open>
+                  <summary class="clen-summary">
+                    <span class="clen-jmeno" id="nadpis-${i}">Člen ${i}</span>
+                    <span class="clen-stav" id="stav-${i}">nevyplněno</span>
+                  </summary>
+                  <div class="clen-body">
+                    <div class="field">
+                      <label>Jméno / iniciály</label>
+                      <input type="text" id="jmeno-${i}" placeholder="jméno (volitelné)" style="width:100%;padding:0.4rem;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.8rem;border-radius:var(--radius)" oninput="aktualizujStav(${i});ulozit();">
+                    </div>
+                    <div class="field">
+                      <label>Q1 – Interpretace:</label>
+                      <textarea id="odpoved-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-1" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q2 – Identifikace:</label>
+                      <textarea id="odpoved-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-2" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q3 – Transformace:</label>
+                      <textarea id="odpoved-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-3" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                  </div>
+                </details>`;
+            }
+            document.getElementById('karty-clenu').innerHTML = html;
+        }
+
+        function vytvorKarty() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            if (!pocet || pocet < 1) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            aktualniSession = null;
+            vytvorKartyHTML(pocet);
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'flex';
+        }
+
+        function vyhodnotit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            const pocty = {};
+            RYBA_UHLY.forEach(u => pocty[u.id] = { count: 0, nazev: u.nazev, barva: u.barva, stupne: u.stupne, q3: u.q3 });
+            let celkem = 0;
+            for (let i = 1; i <= pocet; i++) {
+                for (let q = 1; q <= 3; q++) {
+                    const val = document.getElementById(`uhel-${i}-${q}`)?.value;
+                    if (val) { pocty[val].count++; celkem++; }
+                }
+            }
+            if (celkem === 0) { alert('Přiřaď aspoň jeden úhel před vyhodnocením.'); return; }
+
+            const pretizene = [], deficitni = [], vyvazene = [], nepouzite = [];
+            RYBA_UHLY.forEach(u => {
+                const p = pocty[u.id];
+                p.procento = celkem > 0 ? p.count / celkem : 0;
+                if (p.count === 0) nepouzite.push(p);
+                else if (p.procento >= 0.30) pretizene.push(p);
+                else if (p.procento <= 0.10) deficitni.push(p);
+                else vyvazene.push(p);
+            });
+
+            const barHTML = RYBA_UHLY.map(u => {
+                const p = pocty[u.id];
+                const w = Math.round(p.procento * 100);
+                return w > 0 ? `<div class="bar-seg" style="width:${w}%;background:${u.barva}" title="${u.nazev} ${w}%"></div>` : '';
+            }).join('');
+
+            let html = `
+            <div class="bar-section">
+              <div class="bar-wrap">${barHTML}</div>
+              <div class="bar-legend">
+                ${RYBA_UHLY.filter(u => pocty[u.id].count > 0).map(u => `<div class="bar-leg-item"><span class="bar-leg-dot" style="background:${u.barva}"></span>${u.nazev} (${pocty[u.id].count}×)</div>`).join('')}
+              </div>
+            </div>
+            <h2 style="font-family:var(--serif);font-size:1.4rem;color:var(--accent);margin-bottom:0.5rem;">🐟 Kognitivní mapa týmu</h2>
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:1rem;">Celkem přiřazeno: <strong>${celkem}</strong> úhlů od <strong>${pocet}</strong> členů</p>
+            <table class="mapa-tabulka">
+              <tr><th>Úhel</th><th>Počet</th><th>%</th><th>Typ</th></tr>
+              ${RYBA_UHLY.map(u => {
+                const p = pocty[u.id];
+                const proc = Math.round(p.procento * 100);
+                let typ = '◇ vyvážený', trida = '';
+                if (p.count === 0) { typ = '—'; trida = 'deficitni'; }
+                else if (p.procento >= 0.30) { typ = '▲ přetížený'; trida = 'pretizeny'; }
+                else if (p.procento <= 0.10) { typ = '▽ deficitní'; trida = 'deficitni'; }
+                return `<tr class="${trida}"><td><span style="color:${u.barva}">●</span> ${u.nazev} <span style="font-size:0.7rem;color:var(--dim)">${u.stupne}</span></td><td>${p.count}×</td><td>${proc}%</td><td>${typ}</td></tr>`;
+              }).join('')}
+            </table>`;
+
+            if (pretizene.length > 0) {
+                html += `<div class="vysledky-section"><h3>▲ Přetížené úhly (nad 30 %)</h3>`;
+                pretizene.forEach(p => {
+                    const protivahy = deficitni.concat(nepouzite).slice(0, 2);
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}× (${Math.round(p.procento*100)}%)`;
+                    if (protivahy.length > 0) {
+                        html += `<br><em>Trénink deficitu:</em><br>`;
+                        protivahy.forEach(def => { html += `→ <strong>${def.nazev}:</strong> ${def.q3}<br>`; });
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+
+            const vsechnyDeficitni = deficitni.concat(nepouzite);
+            if (vsechnyDeficitni.length > 0) {
+                html += `<div class="vysledky-section"><h3>▽ Deficitní úhly (pod 10 % nebo vůbec)</h3>`;
+                vsechnyDeficitni.forEach(p => {
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}×<br><em>Návrh úkolu:</em> ${p.q3}</div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `<button class="btn btn-ghost" style="margin-top:1rem;" onclick="window.print()">🖨 Vytisknout výsledky</button>`;
+            html += `<p style="margin-top:1rem;font-size:0.8rem;">🔮 Chceš vygenerovat workshop na míru? <a href="generativni_mod.html">Generativní mód</a> | <a href="workshop_90_minut.html">Hotový workshop</a></p>`;
+
+            const el = document.getElementById('vysledky');
+            el.innerHTML = html;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Správa týmů
+        function ulozitTym() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const nazev = prompt('Název týmu:') || `Tým ${new Date().toLocaleDateString('cs-CZ')}`;
+            const tymy = JSON.parse(localStorage.getItem('ryba_tymy') || '{}');
+            tymy[nazev] = aktualniSession;
+            localStorage.setItem('ryba_tymy', JSON.stringify(tymy));
+            zobrazTymy();
+        }
+        function nacistTym() {
+            const tymy = JSON.parse(localStorage.getItem('ryba_tymy') || '{}');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { alert('Žádné uložené týmy.'); return; }
+            const nazev = prompt('Název týmu k načtení:\n' + keys.join('\n'));
+            if (!nazev || !tymy[nazev]) return;
+            aktualniSession = tymy[nazev];
+            localStorage.setItem(SAVE_KEY, JSON.stringify(aktualniSession));
+            nacistUlozene();
+        }
+        function exportURL() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const encoded = btoa(encodeURIComponent(JSON.stringify(aktualniSession)));
+            const url = window.location.origin + window.location.pathname + '?session=' + encoded;
+            navigator.clipboard.writeText(url).then(() => alert('URL zkopírováno!'));
+        }
+        function importURL() {
+            const text = prompt('Vlož URL se session:');
+            if (!text) return;
+            try {
+                const url = new URL(text);
+                const encoded = url.searchParams.get('session');
+                if (!encoded) throw new Error();
+                const data = JSON.parse(decodeURIComponent(atob(encoded)));
+                aktualniSession = data;
+                localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                nacistUlozene();
+            } catch (e) { alert('Neplatná URL.'); }
+        }
+        function zobrazTymy() {
+            const tymy = JSON.parse(localStorage.getItem('ryba_tymy') || '{}');
+            const el = document.getElementById('team-list');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { el.innerHTML = ''; return; }
+            el.innerHTML = keys.map(k => `<span onclick="nacistTym('${k}')">${k}</span>`).join('');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { nacistUlozene(); zobrazTymy(); });
+    </script>
+</body>
+</html>
