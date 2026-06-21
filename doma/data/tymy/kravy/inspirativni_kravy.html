@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐄 Krávy – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0d0a; --bg-el: #1a1610; --text: #f0e8d8; --dim: #706040; --mid: #a09070;
+            --accent: #c89860; --accent-dim: #3a2818; --border: #1f1810; --highlight: rgba(200,152,96,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#daa868}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(15,13,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-img{width:100%;max-width:200px;max-height:280px;object-fit:contain;filter:grayscale(100%) contrast(1.2);opacity:0.85;margin:0 auto 1rem;display:block;border-radius:var(--radius)}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#0f0d0a;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#c0b8a8}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#0f0d0a;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#daa868;border-color:#daa868}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#706050;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#daa868}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Krávy</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <img src="../../../ilustrace/kravy.jpg" alt="Krávy" class="hero-img" onerror="this.style.display='none'">
+        <p class="hero-label">Kreativní engine · Karta Krávy</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Kravách. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Jazykový šum jako metoda",stupne:"0°",barva:"#5a7fa8",phrase:"Bu není slovo. Bu je stav. Opakující se prázdný zvuk.",category:"produkty, obaly",idea:"Navrhněte produkt, který je 'anti-bu' – například sluchátka, která detekují buzzwordy a přehrávají je jako bílý šum. Nebo diář s kolonkou 'Dnešní dávka bu' pro sledování prázdných frází, které jste za den slyšeli."},
+    {id:2,angle:"Jazykový šum jako metoda",stupne:"0°",barva:"#5a7fa8",phrase:"Bu je jazyk beze smyslu. Má funkční hodnotu – navodit stav zmatení.",category:"loga, vizuální identita",idea:"Logo, které je 'prázdným zvukem' – kruh, který nic neříká, ale působí. Nebo logo složené jen z interpunkce. Značka, která ironicky komentuje svět plný 'bu'."},
+    {id:3,angle:"Jazykový šum jako metoda",stupne:"0°",barva:"#5a7fa8",phrase:"Identifikovat 'bu' ve své komunikaci a odstranit ho.",category:"copywriting, obsah",idea:"Spusťte rubriku 'Lovci bu' – každý týden analyzujte jeden firemní dokument a škrtněte v něm všechna prázdná slova. To, co zbyde, je skutečný obsah. Výsledky publikujte."},
+    {id:4,angle:"Jazykový šum jako metoda",stupne:"0°",barva:"#5a7fa8",phrase:"Překládat 'bu' do jednoduchých tvrzení. Pokud to nelze, je to jen šum.",category:"design, vizuální identita",idea:"Vytvořte 'Překladač bu' – plakát nebo aplikaci, která ukazuje běžné korporátní fráze a vedle nich jejich 'překlad do češtiny'. Design, který učí jasnosti."},
+    {id:5,angle:"Útok na hlavu",stupne:"30°",barva:"#6a9e72",phrase:"Cílem není přesvědčit, ale znejistit. Rozbít sebejistotu.",category:"produkty, obaly",idea:"Vytvořte 'Ochrannou přilbu proti bu' – metaforický předmět (třeba čepici s nápisem 'Moje hlava, můj úsudek'), který si člověk nasadí, když jde do prostředí plného gaslightingu. Fyzická kotva jistoty."},
+    {id:6,angle:"Útok na hlavu",stupne:"30°",barva:"#6a9e72",phrase:"Lidé se ptají 'čí hlavu to drbou?' Ztrácejí vlastnictví myšlenek.",category:"loga, vizuální identita",idea:"Logo, které je 'podpisem' – osobní, nezaměnitelné, ručně psané. Značka, která říká: 'Toto je moje. Nikdo mi to nevezme.'"},
+    {id:7,angle:"Útok na hlavu",stupne:"30°",barva:"#6a9e72",phrase:"Chránit si 'hlavu'. Psát si vlastní poznámky a rozhodnutí.",category:"copywriting, obsah",idea:"Napište 'Manifest hlavy' – osobní prohlášení každého člena týmu: 'Toto jsou moje hodnoty, toto je můj úsudek, toto si nenechám vzít.' Veřejně sdílené jako vzájemná ochrana."},
+    {id:8,angle:"Útok na hlavu",stupne:"30°",barva:"#6a9e72",phrase:"Když začne 'bu', říct si: 'Toto je moje hlava a můj úsudek.'",category:"design, vizuální identita",idea:"Navrhněte vizuální identitu pro kampaň 'Moje hlava' – používající motiv lebky nebo mozku s korunou. Design, který oslavuje suverenitu myšlení."},
+    {id:9,angle:"Nuda bez plotu",stupne:"60°",barva:"#9b72b5",phrase:"Krávy se nudily, chyběly jim mantinely. Místo práce blbnou hlavy.",category:"produkty, obaly",idea:"Vytvořte 'Plotostroj' – nástroj pro definování hranic rolí v týmu. Sada karet s otázkami: 'Co je můj úkol?', 'Co už není můj úkol?', 'Kde končím já a začínáš ty?'"},
+    {id:10,angle:"Nuda bez plotu",stupne:"60°",barva:"#9b72b5",phrase:"Když systém nedefinuje smysluplnou práci, zaplní ho šum.",category:"loga, vizuální identita",idea:"Logo, které je 'plotem' – jasná linka ohraničující prostor. Značka, která říká: 'Víme, co je naše práce. A co není.'"},
+    {id:11,angle:"Nuda bez plotu",stupne:"60°",barva:"#9b72b5",phrase:"Dát 'kravám plot'. Jasně definovat jejich roli a odpovědnosti.",category:"copywriting, obsah",idea:"Napište 'Plotovou listinu' – dokument, který jasně definuje role v týmu, včetně toho, co která role NEdělá. Pověste na viditelné místo."},
+    {id:12,angle:"Nuda bez plotu",stupne:"60°",barva:"#9b72b5",phrase:"Bez plotu se nudily. Nuda je matka všeho 'bu'.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Dej mi plot' – plakáty s prázdným prostorem ohraničeným pevnou linkou. Design, který ukazuje, že svoboda bez hranic je chaos."},
+    {id:13,angle:"Zamlžená realita",stupne:"90°",barva:"#5fa8a0",phrase:"Realita je strašně pevná. Výrazy se tváří, jako by byly jediné.",category:"produkty, obaly",idea:"Vytvořte 'Kotvičku reality' – fyzický předmět (třeba těžítko s nápisem 'Fakta'), který se pokládá na stůl při diskusích. Když někdo začne mlžit, kdokoli může na kotvičku ukázat."},
+    {id:14,angle:"Zamlžená realita",stupne:"90°",barva:"#5fa8a0",phrase:"Držet se 'pevné reality'. Trvat na faktech, datech, jasných definicích.",category:"loga, vizuální identita",idea:"Logo, které je 'ostré' – geometrické, přesné, bez rozmazání. Značka, která říká: 'My nemlžíme. My říkáme, jak to je.'"},
+    {id:15,angle:"Zamlžená realita",stupne:"90°",barva:"#5fa8a0",phrase:"Ptát se: 'Co konkrétně tím myslíš? Jak to změříme?'",category:"copywriting, obsah",idea:"Spusťte sérii 'Konkrétní dotazy' – šablony otázek, které můžete použít, když někdo mlží. 'Můžeš uvést příklad?', 'Jak to poznáme, že se to stalo?', 'Co je první krok?'"},
+    {id:16,angle:"Zamlžená realita",stupne:"90°",barva:"#5fa8a0",phrase:"Krávy nesnáší jednoznačnost. Chtějí vše relativizovat.",category:"design, vizuální identita",idea:"Vizuální identita založená na kontrastu – ostré linie vs. rozmazané plochy. Design, který ukazuje boj mezi jasností a mlhou."},
+    {id:17,angle:"Volnost v nesmyslu",stupne:"120°",barva:"#8e7248",phrase:"Bu je volnost. Krávy tvrdí, že osvobozují od jistoty.",category:"produkty, obaly",idea:"Vytvořte 'Detektor falešné hlubokomyslnosti' – karty s frázemi, které znějí hluboce, ale nic neříkají. Když někdo takovou frázi použije, ukážete mu kartu. Hravý nástroj proti 'bu'."},
+    {id:18,angle:"Volnost v nesmyslu",stupne:"120°",barva:"#8e7248",phrase:"Nepodlehnout obhajobě nesmyslu. Volnost je možnost volit smysl.",category:"loga, vizuální identita",idea:"Logo, které je 'otevřené' – ale s jasným středem. Značka, která říká: 'Jsme svobodní – a volíme si smysl.'"},
+    {id:19,angle:"Volnost v nesmyslu",stupne:"120°",barva:"#8e7248",phrase:"Odpovědět: 'Volnost je možnost volit smysl, ne ho popírat.'",category:"copywriting, obsah",idea:"Napište esej 'Chvála smyslu' – manifest o tom, proč je smysluplná řeč aktem svobody, ne vězení. Oslavte ty, kdo se odváží říkat jasné věci."},
+    {id:20,angle:"Volnost v nesmyslu",stupne:"120°",barva:"#8e7248",phrase:"Tím se zbavují odpovědnosti za to, že něco říkají.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Kdo mluví, odpovídá' – plakáty, které ukazují, že za slovy stojí člověk. Design, který vrací odpovědnost."},
+    {id:21,angle:"Přežvykování slovních druhů",stupne:"150°",barva:"#5a8a5a",phrase:"Krávy se připravují na formu, ne na obsah. Přežvykují slovní druhy.",category:"produkty, obaly",idea:"Vytvořte 'Předpřipravenou agendu' – šablonu pro porady, která začíná otázkou 'Jaký problém řešíme?' a končí 'Co je výstup?'. Žádné 'přežvykování' – rovnou k věci."},
+    {id:22,angle:"Přežvykování slovních druhů",stupne:"150°",barva:"#5a8a5a",phrase:"Přeskočit fázi 'přežvykování'. Začít otázkou: 'Jakou skutečnou potřebu chceme vyřešit?'",category:"loga, vizuální identita",idea:"Logo, které je 'otázkou' – zakončené otazníkem. Značka, která se neustále ptá po podstatě."},
+    {id:23,angle:"Přežvykování slovních druhů",stupne:"150°",barva:"#5a8a5a",phrase:"Starají se více o správnost formulí než o výsledek.",category:"copywriting, obsah",idea:"Spusťte 'Výsledkový newsletter' – místo popisu činnosti pište jen o výsledcích. 'Tento týden jsme dosáhli...' Žádné 'pracovali jsme na...'."},
+    {id:24,angle:"Přežvykování slovních druhů",stupne:"150°",barva:"#5a8a5a",phrase:"Každé ráno vstaly, přežvykovaly slovní druhy a pak šly do vesnice.",category:"design, vizuální identita",idea:"Vizuální rituál 'Ranní přežvykování' – ironický plakát do kanceláře, který ukazuje krávu přežvykující slovník. Připomínka, abyste nedělali totéž."},
+    {id:25,angle:"Vesnice v strachu",stupne:"180°",barva:"#a85a5a",phrase:"Celá komunita je zasažena. Lidé se bojí mluvit jasně.",category:"produkty, obaly",idea:"Vytvořte 'Bezpečnou schránku' – fyzickou krabici s otvorem, kam může kdokoli vhodit lístek s jasnou myšlenkou, kterou se bojí říct nahlas. Jednou týdně se schránka otevře a lístky se čtou (anonymně)."},
+    {id:26,angle:"Vesnice v strachu",stupne:"180°",barva:"#a85a5a",phrase:"Vytvořit 'bezpečné stáje' – prostory, kde je 'bu' zakázáno.",category:"loga, vizuální identita",idea:"Logo, které je 'útočištěm' – uzavřený, bezpečný tvar. Značka, která říká: 'U nás je bezpečno. Tady se 'bu' netoleruje.'"},
+    {id:27,angle:"Vesnice v strachu",stupne:"180°",barva:"#a85a5a",phrase:"Když někdo řekne něco smysluplného, v dálce se ozve 'bu'.",category:"copywriting, obsah",idea:"Napište 'Příběhy z vesnice' – sérii krátkých textů o lidech, kteří se odvážili říct něco jasného. A co se stalo pak. Oslava odvahy."},
+    {id:28,angle:"Vesnice v strachu",stupne:"180°",barva:"#a85a5a",phrase:"A všichni vědí, že krávy poslouchají.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Krávy poslouchají' – plakáty s motivem kravských uší. Ironický komentář ke kultuře dohledu."},
+    {id:29,angle:"Jazyk jako postava",stupne:"210°",barva:"#c8a832",phrase:"Jazyk získává vlastní agenturu. Už ho nikdo neřídí, ale všichni ho musí používat.",category:"produkty, obaly",idea:"Vytvořte 'Slovník kravštiny' – ironický slovník nejpoužívanějších firemních frází s jejich 'překladem' a hodnocením 'míry bu'. Produkt, který pomáhá rozpoznat, kdy mluví jazyk, ne člověk."},
+    {id:30,angle:"Jazyk jako postava",stupne:"210°",barva:"#c8a832",phrase:"Osvobodit jazyk. Přestat používat naučené fráze.",category:"loga, vizuální identita",idea:"Logo, které je 'osvobozené' – ručně psané, nepravidelné, autentické. Značka, která odmítá 'kravštinu'."},
+    {id:31,angle:"Jazyk jako postava",stupne:"210°",barva:"#c8a832",phrase:"Lidé už nemluví – je jimi 'mluveno' systémovým jazykem.",category:"copywriting, obsah",idea:"Spusťte 'Týden bez kravštiny' – sedm dní, kdy nikdo nesmí použít žádnou z předem definovaných firemních frází. Kdo je použije, platí 'pokutu' do týmové kasy."},
+    {id:32,angle:"Jazyk jako postava",stupne:"210°",barva:"#c8a832",phrase:"Vzít jazykovi 'hlavu' zpět.",category:"design, vizuální identita",idea:"Vizuální manifest 'Bereme si jazyk zpět' – plakát, který vizuálně 'dekonstruuje' korporátní žargon a znovu ho skládá do smysluplných vět."},
+    {id:33,angle:"Hlava jako louka",stupne:"240°",barva:"#c8722a",phrase:"Hlava je jen louka, kde se dá bloudit. Možná osvobozující myšlenka.",category:"produkty, obaly",idea:"Vytvořte 'Bloudítko' – zápisník pro volné asociace, bez linek, bez struktury. Pro chvíle, kdy chcete bloudit dobrovolně, ne pod tlakem 'bu'."},
+    {id:34,angle:"Hlava jako louka",stupne:"240°",barva:"#c8722a",phrase:"Převzít kontrolu nad 'blouděním'. Záměrně si vyhradit čas na hru s ideami.",category:"loga, vizuální identita",idea:"Logo, které je 'loukou' – otevřené, organické, ale s viditelnou cestou. Značka, která říká: 'Bloudíme rádi. Ale s mapou.'"},
+    {id:35,angle:"Hlava jako louka",stupne:"240°",barva:"#c8722a",phrase:"Bloudění může být osvobozující – ale jen když je dobrovolné, ne vnucené.",category:"copywriting, obsah",idea:"Napište 'Manifest bloudění' – o rozdílu mezi kreativním blouděním (svoboda) a zmatením z 'bu' (útlak). Jak rozpoznat jedno od druhého."},
+    {id:36,angle:"Hlava jako louka",stupne:"240°",barva:"#c8722a",phrase:"A palouk nesnáší jistotu.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Palouk vs. pevnost' – kontrast mezi otevřenou loukou (kreativita) a pevností (jistota). Design, který ukazuje, že obojí má své místo."},
+    {id:37,angle:"Kolektivní pochybování",stupne:"270°",barva:"#a83060",phrase:"Lidé si nejsou jistí, jestli za ně myslí krávy. Totální ztráta agency.",category:"produkty, obaly",idea:"Vytvořte 'Test autorského myšlení' – sadu karet s otázkami: 'Je toto opravdu můj názor?', 'Kdy jsem ho poprvé slyšel/a?', 'Co bych řekl/a, kdybych se nebál/a?' Produkt pro obnovu vlastního hlasu."},
+    {id:38,angle:"Kolektivní pochybování",stupne:"270°",barva:"#a83060",phrase:"Provést 'test autorského myšlení': Pokud zní tvé názory jako firemní komunikace, je čas na očistu.",category:"loga, vizuální identita",idea:"Logo, které je 'otiskem prstu' – unikátní, nekopírovatelné. Značka, která říká: 'Každý máme svůj hlas.'"},
+    {id:39,angle:"Kolektivní pochybování",stupne:"270°",barva:"#a83060",phrase:"Už nepoznám, co je můj názor a co mi bylo vloženo do hlavy.",category:"copywriting, obsah",idea:"Spusťte 'Očistnou kúru' – sérii cvičení, kde každý píše o stejném tématu nejdřív 'kravštinou' a pak 'svým hlasem'. Porovnání a diskuse."},
+    {id:40,angle:"Kolektivní pochybování",stupne:"270°",barva:"#a83060",phrase:"Jazyk systému se stane tvým vnitřním hlasem.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Čí hlas to je?' – používající motivy ozvěny, duté hlavy, reproduktorů. Design, který se ptá po původu myšlenek."},
+    {id:41,angle:"Návštěva vesnice",stupne:"300°",barva:"#6080a0",phrase:"Krávy nejsou pasivní. Jdou aktivně šířit zmatek. Stoupnou si na náves.",category:"produkty, obaly",idea:"Vytvořte 'Obranný štít návsi' – sadu karet s odpověďmi na 'bu'. 'Jaký problém řešíš?', 'Co konkrétně potřebuješ?', 'Můžeš to říct bez frází?' Karty pro každého, kdo čelí invazi."},
+    {id:42,angle:"Návštěva vesnice",stupne:"300°",barva:"#6080a0",phrase:"Bránit náves. Mít připravené jasné otázky.",category:"loga, vizuální identita",idea:"Logo, které je 'štítem' – ochranným symbolem. Značka, která říká: 'Naši náves si chránit umíme.'"},
+    {id:43,angle:"Návštěva vesnice",stupne:"300°",barva:"#6080a0",phrase:"'Bu' není ambientní hluk. Je to cílená kampaň.",category:"copywriting, obsah",idea:"Napište 'Průvodce obranou návsi' – manuál pro týmy, jak rozpoznat cílené 'bu' a jak na něj reagovat. Strategie, taktiky, příklady."},
+    {id:44,angle:"Návštěva vesnice",stupne:"300°",barva:"#6080a0",phrase:"Stoupnou si na náves a začnou. A my posloucháme.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Náves je naše' – plakáty, které vyzývají k obraně veřejného prostoru před 'bu'. Design, který mobilizuje."},
+    {id:45,angle:"Vratký význam",stupne:"330°",barva:"#8060b0",phrase:"Krávy dosáhly svého: podkopaly důvěru v samotný pojem významu.",category:"produkty, obaly",idea:"Vytvořte 'Kotvičku významu' – sadu magnetických kartiček s definicemi klíčových pojmů, na kterých se tým shodl. Pověste na magnetickou tabuli. Když někdo začne mlžit, ukážete na definici."},
+    {id:46,angle:"Vratký význam",stupne:"330°",barva:"#8060b0",phrase:"Budovat 'pevnosti významu'. Pro klíčové pojmy vytvořit společné definice.",category:"loga, vizuální identita",idea:"Logo, které je 'slovníkem' – obsahuje definici. Značka, která říká: 'My víme, co naše slova znamenají.'"},
+    {id:47,angle:"Vratký význam",stupne:"330°",barva:"#8060b0",phrase:"Význam je vratký. Slova nic nezaručují.",category:"copywriting, obsah",idea:"Spusťte projekt 'Pevnost význam' – každý měsíc tým definuje jeden klíčový pojem. Vytvoří k němu definici, příklady a 'test významu'. Postupně budujete slovník."},
+    {id:48,angle:"Vratký význam",stupne:"330°",barva:"#8060b0",phrase:"A všichni vědí... že význam je vratký.",category:"design, vizuální identita",idea:"Vizuální identita 'Vratký význam' – používající nestabilní typografii, která se 'houpe'. Design, který ironicky komentuje stav jazyka – a vyzývá k jeho opravě."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Krávy · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('kravy_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('kravy_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('kravy_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('kravy_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('kravy_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('kravy_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
