@@ -1,4 +1,4 @@
-# chces-mys
+se# chces-mys
 ## slovnik mezer
 
 ---
@@ -250,7 +250,7 @@ kreativita, fyzika jazyka, metadenik
 - [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
 - [inspirativni_kocour](doma/data/tymy/kocour/inspirativni_kocour.html)
 - [generativni_kocour](doma/data/tymy/kocour/generativni_kocour.html)
-- [workshop_kocour](doma/data/tymy/kocour/workshop_90_minut_kocour.html)
+- [workshop_kocour](doma/data/tymy/kocour/workshop_90_min_kocour.html)
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
 
