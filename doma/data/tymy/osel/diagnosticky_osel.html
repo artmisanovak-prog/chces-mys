@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐴 Osel – diagnostický mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0d0a; --bg-el: #1a1610; --text: #f0e8d8; --dim: #706040; --mid: #a09070;
+            --accent: #c08848; --accent-dim: #3a2810; --border: #1f1810; --highlight: rgba(192,136,72,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: var(--mono); font-weight: 300; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+        a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #daa058; }
+        .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.5rem; }
+        nav { position: sticky; top: 0; z-index: 100; background: rgba(15,13,10,.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0.8rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .nav-brand { font-family: var(--serif); font-size: 0.9rem; font-weight: 400; color: var(--text); }
+        .nav-brand em { font-style: italic; color: var(--accent); }
+        .nav-links { display: flex; gap: 0.8rem; flex-wrap: wrap; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .nav-links a { color: var(--dim); padding: 0.25rem 0.5rem; border: 1px solid transparent; transition: 0.15s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); border-color: var(--accent); }
+        .hero { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .hero-img { width: 100%; max-width: 400px; max-height: 560px; object-fit: contain; filter: grayscale(100%) contrast(1.2); opacity: 0.85; margin-bottom: 1.5rem; border-radius: var(--radius); display: block; margin-left: auto; margin-right: auto; }
+        .hero-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+        h1 { font-family: var(--serif); font-size: clamp(2.2rem,6vw,3.8rem); font-weight: 400; line-height: 1.0; margin-bottom: 0.3rem; color: var(--text); }
+        h1 em { font-style: italic; color: var(--accent); }
+        .hero-quote { font-family: var(--serif); font-size: 1rem; font-style: italic; color: var(--mid); margin: 0.8rem 0 1.2rem; border-left: 2px solid var(--accent); padding-left: 1rem; max-width: 500px; margin-left: auto; margin-right: auto; text-align: left; line-height: 1.7; }
+        .fenomen-desc { font-size: 0.85rem; color: var(--dim); max-width: 560px; margin: 0 auto; line-height: 1.8; }
+        details { border: 1px solid var(--border); background: var(--bg-el); margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s; }
+        details[open] { border-color: var(--accent); }
+        summary { cursor: pointer; padding: 0.9rem 1.2rem; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); list-style: none; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; transition: color 0.2s; }
+        summary:hover { color: var(--text); }
+        summary::after { content: "▼"; font-size: 0.6rem; transition: transform 0.3s; flex-shrink: 0; }
+        details[open] summary::after { transform: rotate(180deg); }
+        details[open] summary { color: var(--accent); }
+        .details-inner { padding: 0 1.2rem 1.5rem; font-family: var(--serif); font-size: 0.92rem; line-height: 1.9; color: #c0b8a8; }
+        .details-inner p { margin-bottom: 0.8rem; }
+        .details-inner strong { color: var(--accent); font-weight: 500; }
+        .details-inner em { color: var(--mid); }
+        .pohadka-summary { background: var(--accent); color: #0f0d0a !important; font-weight: 500; }
+        .pohadka-summary:hover { color: #0f0d0a !important; }
+        .uhel-item { border-bottom: 1px solid var(--border); padding: 0.8rem 0; display: flex; gap: 0.8rem; align-items: flex-start; }
+        .uhel-item:last-child { border-bottom: none; }
+        .uhel-color { width: 6px; min-height: 100%; border-radius: 1px; flex-shrink: 0; align-self: stretch; }
+        .uhel-content { flex: 1; }
+        .uhel-content strong { display: block; color: var(--text); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .uhel-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.6; margin-bottom: 0.4rem; }
+        .questions-box { background: var(--bg-el); border: 1px solid var(--border); padding: 1.2rem; margin: 1.5rem 0; border-radius: var(--radius); }
+        .questions-box h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--accent); margin-bottom: 0.8rem; }
+        .question-item { margin-bottom: 0.8rem; }
+        .question-item strong { display: block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 0.2rem; }
+        .question-item p { font-size: 0.9rem; color: var(--dim); font-family: var(--serif); }
+        .setup-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; padding: 0.8rem 1rem; background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius); }
+        .setup-row label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+        .setup-row input[type=number] { width: 60px; padding: 0.5rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 1rem; text-align: center; border-radius: var(--radius); }
+        .btn { padding: 0.55rem 1.4rem; background: var(--accent); color: #0f0d0a; border: 1px solid var(--accent); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); transition: 0.15s; }
+        .btn:hover { background: #daa058; border-color: #daa058; }
+        .btn-ghost { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); background: transparent; }
+        .btn-danger { background: transparent; color: #706050; border: 1px solid #2a1e10; }
+        .btn-danger:hover { border-color: #a08060; color: #c0b090; background: transparent; }
+        .clen-card { border: 1px solid var(--border); background: var(--bg-el); margin-bottom: 0.5rem; border-radius: var(--radius); overflow: hidden; }
+        .clen-summary { cursor: pointer; padding: 0.8rem 1.2rem; font-size: 0.85rem; list-style: none; display: flex; align-items: center; gap: 0.8rem; user-select: none; transition: background 0.15s; }
+        .clen-summary:hover { background: rgba(192,136,72,0.08); }
+        .clen-summary::before { content: "▸"; font-family: var(--mono); font-size: 0.7rem; color: var(--dim); transition: transform 0.2s; }
+        .clen-card[open] .clen-summary::before { transform: rotate(90deg); }
+        .clen-jmeno { flex: 1; font-weight: 500; color: var(--text); }
+        .clen-stav { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+        .clen-stav.hotovo { color: var(--accent); font-weight: 500; }
+        .clen-body { padding: 0 1.2rem 1rem; border-top: 1px solid var(--border); }
+        .clen-body .field { margin-bottom: 0.8rem; }
+        .clen-body label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.3rem; }
+        .clen-body textarea { width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--serif); font-size: 0.85rem; line-height: 1.6; resize: vertical; min-height: 50px; border-radius: var(--radius); }
+        .clen-body textarea:focus { outline: none; border-color: var(--accent); }
+        .clen-body select { width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.75rem; border-radius: var(--radius); margin-top: 0.3rem; }
+        .autosave-row { display: none; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 0.6rem 1rem; background: rgba(192,136,72,0.06); border: 1px solid var(--border); border-radius: var(--radius); margin: 1rem 0; font-size: 0.72rem; color: var(--dim); }
+        .results { display: none; margin-top: 2rem; border-top: 2px solid var(--accent); padding-top: 1.5rem; }
+        .mapa-tabulka { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 1rem 0; }
+        .mapa-tabulka th, .mapa-tabulka td { border: 1px solid var(--border); padding: 0.5rem 0.8rem; text-align: left; }
+        .mapa-tabulka th { background: var(--accent); color: #0f0d0a; font-family: var(--mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.65rem; }
+        .mapa-tabulka td { background: var(--bg-el); }
+        .pretizeny td { background: rgba(192,136,72,0.15); font-weight: 500; }
+        .deficitni td { color: var(--dim); }
+        .vysledky-section { margin-bottom: 1.5rem; }
+        .vysledky-section h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+        .vysledky-section .uhel-out { margin-bottom: 0.6rem; padding-left: 0.8rem; border-left: 2px solid var(--accent); font-size: 0.85rem; color: var(--mid); line-height: 1.6; }
+        .bar-section { margin: 1.5rem 0; }
+        .bar-wrap { display: flex; height: 14px; border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem; }
+        .bar-seg { height: 100%; transition: width 0.4s ease; }
+        .bar-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.65rem; color: var(--dim); }
+        .bar-leg-item { display: flex; align-items: center; gap: 0.3rem; }
+        .bar-leg-dot { width: 8px; height: 8px; border-radius: 1px; }
+        .team-mgmt { margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .team-list { margin: 1rem 0; font-size: 0.78rem; color: var(--dim); }
+        .team-list span { margin-right: 0.8rem; cursor: pointer; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); transition: 0.15s; }
+        .team-list span:hover { border-color: var(--accent); color: var(--text); }
+        @media print { nav, .btn, .setup-row, .autosave-row, .team-mgmt, .team-list, .bar-section { display: none !important; } details[open] summary { display: none; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="nav-brand"><em>Osel</em> · diagnostický mód</span>
+        <div class="nav-links">
+            <a href="generativni_mod.html">Generátor</a>
+            <a href="workshop_90_minut.html">Workshop</a>
+            <a href="inspirativni_mod.html">Inspirace</a>
+            <a href="../">Zpět na kartu</a>
+        </div>
+    </nav>
+    <div class="wrap">
+        <section class="hero">
+            <img src="../../../ilustrace/osel.jpg" alt="Osel" class="hero-img" onerror="this.style.display='none'">
+            <p class="hero-label">Týmové dysfunkce · Karta Osel</p>
+            <h1>Osel</h1>
+            <p class="hero-quote">„levá pravá seno sláma pro jednoho psina pro druhého oslovina"</p>
+            <p class="fenomen-desc">Fenomén Osla — paralýza z nejednoznačnosti a falešná jistota. Tým je uvězněn mezi alternativami, které nedokáže rozlišit, protože mu chybí jasná kritéria, vlastní úsudek nebo odvaha volit. Místo toho přijímá prázdné symboly a stává se průvodcem, který jen vypadá, že ví.</p>
+        </section>
+        <details>
+            <summary class="pohadka-summary">📖 Pohádka o Osli</summary>
+            <div class="details-inner" id="pohadka-text"></div>
+        </details>
+        <details>
+            <summary>🔑 Klíč k úhlům – Osel</summary>
+            <div class="details-inner" id="klic-uhlu"></div>
+        </details>
+        <details>
+            <summary>🐴 Jak myš čte Osla</summary>
+            <div class="details-inner" id="jak-mys-cte"></div>
+        </details>
+        <details>
+            <summary>📊 Diagnostická matice</summary>
+            <div class="details-inner" id="diagnosticka-matice"></div>
+        </details>
+        <div class="questions-box">
+            <h3>🐴 Tři otázky pro tým (Osel)</h3>
+            <div class="question-item"><strong>Q1 – Analýza paralýzy:</strong><p>Proč osel nedokázal rozlišit seno od slámy, přestože rozdíl je zásadní? Co mu bránilo použít vlastní smysly a spoléhat se na vlastní zkušenost?</p></div>
+            <div class="question-item"><strong>Q2 – Identifikace iluze:</strong><p>Kde v našem týmu/procesu vytváříme 'cedulky' – prázdné štítky, rituály, reporty nebo buzzwordy, které mají zakrýt, že ve skutečnosti nevíme, kudy kam?</p></div>
+            <div class="question-item"><strong>Q3 – Transformace:</strong><p>Co by se muselo stát, aby se náš tým stal skutečným průvodcem – tedy aby věděl, kam jde, a ne jen 'vypadal, že ví'? Jak proměnit 'oslovinu' (jít dál bez vědění) v 'myšinu' (jít s vědomím cíle)?</p></div>
+        </div>
+        <div class="setup-row"><label>Počet členů týmu:</label><input type="number" id="pocet-clenu" min="1" max="30" value="4"><button class="btn" onclick="vytvorKarty()">Vytvořit zápisník</button></div>
+        <div class="autosave-row" id="autosave-row"><span>💾 Zápisník se průběžně ukládá — přežije i zavření prohlížeče.</span><button class="btn btn-danger" onclick="smazatZapisnik()">🗑 Vymazat zápisník</button></div>
+        <div class="team-mgmt">
+            <button class="btn btn-ghost" onclick="ulozitTym()">💾 Uložit tým</button>
+            <button class="btn btn-ghost" onclick="nacistTym()">📂 Načíst tým</button>
+            <button class="btn btn-ghost" onclick="exportURL()">🔗 Exportovat URL</button>
+            <button class="btn btn-ghost" onclick="importURL()">📋 Importovat z URL</button>
+        </div>
+        <div class="team-list" id="team-list"></div>
+        <div id="karty-clenu"></div>
+        <div id="tlacitko-vyhodnotit" style="display:none; margin:1.5rem 0;"><button class="btn" onclick="vyhodnotit()">🐴 Vyhodnotit – ukázat kognitivní mapu týmu</button></div>
+        <div class="results" id="vysledky"></div>
+    </div>
+    <script>
+        const POHADKA = `O OSLOVI
+který šel vlevo, ale myslel si, že jde vpravo
+
+Osel se narodil mezi dvěma hromadami.  
+Jedna byla seno.  
+Druhá sláma.  
+A nikdo mu neřekl, která je která.
+
+„Levá," řekl někdo.  
+„Pravá," řekl jiný.  
+„Seno," řekl hlas.  
+„Sláma," řekl stín.
+
+Osel se podíval.  
+Obě hromady vypadaly stejně.  
+Jedna trochu měkčí.  
+Jedna trochu hlučnější.  
+Ale jinak? Chaos.
+
+„Pro jednoho psina," řekl hlas.  
+„Pro druhého oslovina," dodal jiný.  
+A osel se zamyslel:  
+„Kdo jsem já? Psina, nebo oslovina?"
+
+Šel vlevo.  
+Pak se otočil.  
+A šel vpravo.  
+Ale vypadalo to stejně.  
+Země byla země.  
+Hromada byla hromada.  
+A pravidla? Neviditelná.
+
+Potkal myš.  
+Ta si zapisovala, co se děje.  
+„Kam jdeš?" zeptala se.  
+„Nevím," řekl osel.  
+„Levá, pravá, seno, sláma. Všechno se mi míchá."
+
+Myš si poznamenala:  
+Osel – zmatený, ale důsledný.
+
+„A co hledáš?"  
+„Správnost," řekl osel.  
+„A co to je?"  
+„To, co se neřekne nahlas, ale všichni to očekávají."
+
+Myš se zamyslela.  
+A pak mu podala cedulku.  
+Na jedné straně bylo napsáno „seno".  
+Na druhé „sláma".  
+Ale písmo bylo stejné.
+
+Osel si ji pověsil na krk.  
+A šel dál.  
+Levá.  
+Pravá.  
+Seno.  
+Sláma.
+
+A když ho někdo zastavil a zeptal se:  
+„Kam jdeš?"  
+Řekl:  
+„Podle cedulky."  
+„A co je na ní?"  
+„To, co si myslíš, že tam je."
+
+A tak se stal průvodcem.  
+Ne tím, co ví.  
+Ale tím, co jde.  
+A když se někdo ztratil,  
+šel za oslem.  
+Protože i když neví,  
+vypadá, že ví.
+
+A když se někdo ptal, co je to „oslovina",  
+myš řekla:  
+„To je, když jdeš dál, i když nevíš, kam."`;
+
+        const OSEL_UHLY = [
+            { id:1, nazev:"Ztracená senzorika", stupne:"0°", barva:"#5a7fa8", jadro:"Osel zapomněl, že má jazyk a čich. Ztratil kontakt s primárními daty reality.", stopa:"Důraz na přímou zkušenost, testování, kontakt s realitou.", poznamka:"Zde někdo ví, že nestačí poslouchat hlasy. Že realita se musí ochutnat, očichat, zažít na vlastní kůži.", q3:"Zavést pravidlo 'ochutnávky': Před každým velkým rozhodnutím musí alespoň jeden člen týmu získat přímou, nefiltrovanou zkušenost." },
+            { id:2, nazev:"Protichůdné pokyny", stupne:"30°", barva:"#6a9e72", jadro:"Osel je bombardován protichůdnými radami od anonymních autorit. Chybí mu jeden jasný hlas.", stopa:"Důraz na smíšené signály, nejasné priority, mnohohlavé vedení.", poznamka:"Zde někdo ví, že když všichni radí a nikdo nerozhoduje, tak se nepohne nic. A že je to horší než špatné rozhodnutí.", q3:"Ustavit 'jednotné velení' pro každý projekt. Pokud jsou pokyny protichůdné, vyžadovat jejich konfrontaci a vyjasnění." },
+            { id:3, nazev:"Existenciální krize", stupne:"60°", barva:"#9b72b5", jadro:"Osel se neptá jen 'co jíst', ale 'kým být'. Volba mezi hromadami je volbou identity.", stopa:"Důraz na identitu, smysl, poslání. 'Jsme inovátoři, nebo dodavatelé?'", poznamka:"Zde někdo ví, že bez identity není směr. A že otázka 'kým jsme' je důležitější než otázka 'co děláme'.", q3:"Workshop 'Kdo jsme': Vytvořit jasné prohlášení identity týmu. Odpovědět: 'Když jsme v nejlepší formě, jací jsme?'" },
+            { id:4, nazev:"Neviditelná pravidla", stupne:"90°", barva:"#5fa8a0", jadro:"Osel žije v systému, kde se očekává, že bude vědět, jak se chovat, ale nikdo mu pravidla nesdělí.", stopa:"Důraz na implicitní normy, nepsaná pravidla, kulturní předpoklady.", poznamka:"Zde někdo ví, že nejtěžší je trefit se do pravidel, která nikdo nevyslovil. A že to je past hlavně pro nové.", q3:"Zviditelnit pravidla. Sepsat 'ústavu týmu' – explicitní pravidla chování, rozhodování, komunikace." },
+            { id:5, nazev:"Důsledný blud", stupne:"120°", barva:"#8e7248", jadro:"Osel pokračuje v pohybu, i když neví kam. Jeho důslednost je v samotné akci, ne v dosažení cíle.", stopa:"Důraz na setrvačnost, sunk cost fallacy, aktivitu bez smyslu.", poznamka:"Zde někdo ví, že důslednost ve špatném směru je horší než nečinnost. A že zaneprázdněnost není totéž co smysl.", q3:"Zavést pravidelné 'stání v krajině': Každý měsíc se zastavit a ptát se: 'Proč to děláme? Kam to vede?'" },
+            { id:6, nazev:"Hledání správnosti", stupne:"150°", barva:"#5a8a5a", jadro:"Osel hledá 'správnost', kterou definuje jako 'to, co se neřekne nahlas, ale všichni to očekávají.'", stopa:"Důraz na mindreading, nevyřčená očekávání, skrytý konsensus.", poznamka:"Zde někdo ví, že nejistější je to, co se musí uhodnout. A že to je tyranie, která dusí komunikaci.", q3:"Povinnost vyslovovat očekávání. Na konci každého setkání shrnout: 'Co od koho očekáváme do příště?'" },
+            { id:7, nazev:"Prázdné cedulky", stupne:"180°", barva:"#a85a5a", jadro:"Myš dá oslovi cedulku, ale písmo je stejné. Cedulka je prázdný symbol, který má vytvořit iluzi rozlišení.", stopa:"Důraz na buzzwordy, prázdné štítky, rituály bez obsahu.", poznamka:"Zde někdo prohlédl, že většina firemních slov jsou prázdné cedulky. A že jediný test je: 'Co to konkrétně znamená?'", q3:"Testovat 'cedulky' otázkou: 'Co konkrétně znamená toto slovo v praxi pro náš dnešní úkol?'" },
+            { id:8, nazev:"Průvodce z impostor syndromu", stupne:"210°", barva:"#c8a832", jadro:"Osel se stane průvodcem ne proto, že ví, ale proto, že jde. Jeho autorita je založena na vnějším dojmu.", stopa:"Důraz na dojem jistoty, rétoriku bez hloubky, vedení bez kompetence.", poznamka:"Zde někdo ví, že nejnebezpečnější jsou ti, co vypadají, že ví. A že skutečná síla je říct 'nevím'.", q3:"Podporovat kulturu, kde je v pořádku říct 'nevím' a ptát se 'co si o tom myslíte?'" },
+            { id:9, nazev:"Definice osloviny", stupne:"240°", barva:"#c8722a", jadro:"Myš definuje 'oslovinu' jako 'když jdeš dál, i když nevíš, kam.' Je to pohyb jako únik od tíhy otázky 'proč?'", stopa:"Důraz na setrvačnost, plýtvání energií, útěk před smyslem.", poznamka:"Zde někdo ví, že někdy je statečnější zastavit než pokračovat. A že oslovina je organizační spánek.", q3:"Zavést 'brzdu osloviny': U každého projektu stanovit milníky, kde se ptáme: 'Má ještě smysl pokračovat?'" },
+            { id:10, nazev:"Myš jako pozorovatel", stupne:"270°", barva:"#a83060", jadro:"Myš pozoruje a zapisuje. Je svědkem, ne spasitelem. Její role je zaznamenat realitu.", stopa:"Důraz na objektivního pozorovatele, etnografa, data bez hodnocení.", poznamka:"Zde někdo chápe, že někdy stačí jen zapisovat. Že pozorování je samo o sobě intervencí.", q3:"Pověřit střídavě členy týmu rolí 'pozorovatele' na schůzích. Jen si dělat poznámky." },
+            { id:11, nazev:"Subjektivní realita", stupne:"300°", barva:"#6080a0", jadro:"Když se někdo zeptá, co je na cedulce, osel odpoví: 'To, co si myslíš, že tam je.' Cedulka je prázdná projekční plocha.", stopa:"Důraz na vágnost, projekci, iluzi shody.", poznamka:"Zde někdo ví, že slova, kterým každý rozumí jinak, jsou horší než ticho. A že je třeba testovat významy.", q3:"Dělat 'test interpretace': Nechat každého napsat, co pro něj znamená klíčové heslo nebo cíl." },
+            { id:12, nazev:"Cesta jako účel", stupne:"330°", barva:"#8060b0", jadro:"Osel nenachází seno ani slámu, ale nachází novou identitu: průvodce. Cesta se stává cílem.", stopa:"Důraz na proces místo výsledku, smíření s nejistotou.", poznamka:"Zde někdo chápe, že někdy je cesta opravdu cíl. Ale jen tehdy, když je to vědomá volba, ne oslí osud.", q3:"Pravidelně se vracet k původnímu 'proč': 'Kvůli čemu jsme tohle vůbec začali? Je ten důvod stále platný?'" }
+        ];
+
+        const DIAG_MATICE = [
+            { uhel:"1. Ztracená senzorika", diagnoza:"Tým žije z druhé ruky. Ztratil přímý kontakt s realitou.", intervence:"'Den přímé zkušenosti': Každý musí strávit 2 hodiny v přímém kontaktu s 'realitou'." },
+            { uhel:"2. Protichůdné pokyny", diagnoza:"Tým je paralyzován mnohohlavým vedením.", intervence:"'Mapa rozhodovacích pravomocí': Explicitně nakreslit, kdo má za co zodpovědnost." },
+            { uhel:"3. Existenciální krize", diagnoza:"Tým neví, kdo je a kam patří.", intervence:"'Workshop identity': Odpovědět: Čím jsme jedineční? Co by o nás řekl nejlepší zákazník?" },
+            { uhel:"4. Neviditelná pravidla", diagnoza:"Pravidla jsou implicitní, nepsaná.", intervence:"Sepsat 'ústavu týmu' – explicitní pravidla chování a rozhodování." },
+            { uhel:"5. Důsledný blud", diagnoza:"Tým setrvává v nefunkčních procesech.", intervence:"'Stání v krajině': Každý měsíc se ptát 'Proč to děláme? Kam to vede?'" },
+            { uhel:"6. Hledání správnosti", diagnoza:"Tým trpí mindreadingem – hádáním nevyřčených očekávání.", intervence:"Povinnost vyslovovat očekávání na konci každého setkání." },
+            { uhel:"7. Prázdné cedulky", diagnoza:"Komunikace je plná buzzwordů a prázdných frází.", intervence:"'Škrtací pátek': Vybrat 3 buzzwordy a celý den je nesmí nikdo použít." },
+            { uhel:"8. Průvodce z impostor syndromu", diagnoza:"Vedení budí dojem vševědoucnosti.", intervence:"'Schůze Nevím': Leader musí přiznat jednu věc, kterou neví." },
+            { uhel:"9. Definice osloviny", diagnoza:"Tým pokračuje ze setrvačnosti.", intervence:"'Brzda osloviny': U každého projektu milníky pro zastavení." },
+            { uhel:"10. Myš jako pozorovatel", diagnoza:"Chybí objektivní data o vlastních procesech.", intervence:"Střídavě pověřovat člena týmu rolí 'pozorovatele' na schůzích." },
+            { uhel:"11. Subjektivní realita", diagnoza:"Vize jsou formulovány tak vágně, že si je každý vykládá jinak.", intervence:"'Test interpretace': Každý napíše, co pro něj znamená klíčový cíl." },
+            { uhel:"12. Cesta jako účel", diagnoza:"Aktivita se stala měřítkem hodnoty místo smyslu.", intervence:"Pravidelně se vracet k původnímu 'proč' projektu." }
+        ];
+
+        const JAK_MYS_CTE = `
+        <p><em>Myš dostala pohádku o Osli – o tom, který šel vlevo, ale myslel si, že jde vpravo. Přečetla ji. Odložila. A začala si zapisovat.</em></p>
+        <p>Tahle pohádka je o něčem jiném než Kocour nebo Netopýr. Není o akci, ale o paralýze. O tom, co se stane, když nevíte, co je seno a co sláma – a nikdo vám to neřekne.</p>
+        <h3>OTÁZKA 1 (Analýza paralýzy)</h3>
+        <p><strong>Odpověď A:</strong> "Osel nemohl rozlišit seno od slámy, protože ztratil důvěru ve vlastní smysly. Místo aby ochutnal, poslouchal hlasy."<br>→ <strong style="color:#5a7fa8">MYŠ PŘIŘADILA: Úhel 1 – Ztracená senzorika (0°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Protože mu chybělo jediné jasné kritérium. Každý říkal něco jiného – 'levá', 'pravá', 'seno', 'sláma'."<br>→ <strong style="color:#6a9e72">MYŠ PŘIŘADILA: Úhel 2 – Protichůdné pokyny (30°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Protože nevěděl, kým je. Jestli je psina, nebo oslovina. Bez identity není volba možná."<br>→ <strong style="color:#9b72b5">MYŠ PŘIŘADILA: Úhel 3 – Existenciální krize (60°)</strong></p>
+        <h3>OTÁZKA 2 (Identifikace iluze)</h3>
+        <p><strong>Odpověď A:</strong> "Naše 'cedulky' jsou reporty, které všichni píšou a nikdo nečte. Ale všichni předstírají, že jsou důležité."<br>→ <strong style="color:#a85a5a">MYŠ PŘIŘADILA: Úhel 7 – Prázdné cedulky (180°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Náš šéf je náš 'osel'. Vypadá, že ví, a my ho následujeme, i když tušíme, že bloudí."<br>→ <strong style="color:#c8a832">MYŠ PŘIŘADILA: Úhel 8 – Průvodce z impostor syndromu (210°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Máme spoustu nepsaných pravidel. Noví lidé se to učí tak, že selžou. Je to kruté, ale 'tak to u nás chodí'."<br>→ <strong style="color:#5fa8a0">MYŠ PŘIŘADILA: Úhel 4 – Neviditelná pravidla (90°)</strong></p>
+        <h3>OTÁZKA 3 (Transformace)</h3>
+        <p><strong>Odpověď A:</strong> "Museli bychom začít testovat, ne jen mluvit. Místo 'myslím si' říkat 'vyzkoušel jsem'."<br>→ <strong style="color:#5a7fa8">MYŠ PŘIŘADILA: Úhel 1 – Ztracená senzorika (0°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Museli bychom přiznat, že nevíme. A pak hledat odpověď společně."<br>→ <strong style="color:#c8a832">MYŠ PŘIŘADILA: Úhel 8 – Průvodce z impostor syndromu (210°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Museli bychom se zastavit. Říct: 'Tohle už nedává smysl.' A mít odvahu to říct nahlas."<br>→ <strong style="color:#c8722a">MYŠ PŘIŘADILA: Úhel 9 – Definice osloviny (240°)</strong></p>
+        <h3>CO Z TOHO MYŠ VYČETLA?</h3>
+        <p><strong>PŘETÍŽENÉ ÚHLY:</strong> Ztracená senzorika (1) – 10×, Prázdné cedulky (7) – 9×, Průvodce z impostor syndromu (8) – 8×<br>Tým ztratil kontakt s realitou a nahradil ho prázdnými symboly. Následuje slepého vůdce.</p>
+        <p><strong>DEFICIENTNÍ ÚHLY:</strong> Důsledný blud (5) – 1×, Myš jako pozorovatel (10) – 0×, Cesta jako účel (12) – 1×<br>Tým neumí rozpoznat vlastní setrvačnost. A nemá objektivní data o svých procesech.</p>
+        <p><strong>CO MYŠ NAVRHLA:</strong> 'Den přímé zkušenosti' – každý stráví den v kontaktu s realitou. A 'Škrtací pátek' – den bez buzzwordů.</p>`;
+
+        document.getElementById('pohadka-text').innerHTML = `<p style="white-space:pre-line">${POHADKA}</p>`;
+        document.getElementById('jak-mys-cte').innerHTML = JAK_MYS_CTE;
+        document.getElementById('klic-uhlu').innerHTML = OSEL_UHLY.map(u => `
+        <div class="uhel-item"><div class="uhel-color" style="background:${u.barva}"></div><div class="uhel-content">
+            <strong>${u.id}. ${u.nazev} <span style="color:${u.barva}">●</span> ${u.stupne}</strong>
+            <div class="uhel-desc"><strong>Jádro:</strong> ${u.jadro}<br><strong>Osel poznamená:</strong> „${u.poznamka}"<br><strong>Stopa v odpovědi:</strong> ${u.stopa}</div>
+            <div class="uhel-desc"><strong>Q3 – Návrh intervence:</strong> ${u.q3}</div>
+        </div></div>`).join('');
+        document.getElementById('diagnosticka-matice').innerHTML = `
+        <table class="mapa-tabulka"><tr><th>Úhel</th><th>Týmová diagnóza</th><th>Akční intervence</th></tr>
+        ${DIAG_MATICE.map(d => `<tr><td>${d.uhel}</td><td>${d.diagnoza}</td><td>${d.intervence}</td></tr>`).join('')}</table>`;
+
+        const SAVE_KEY = 'osel_diagnostika_session';
+        let aktualniSession = null;
+        function ulozit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value) || 0;
+            if (pocet < 1) return;
+            const data = { pocet, clenove: [] };
+            for (let i = 1; i <= pocet; i++) {
+                const jEl = document.getElementById(`jmeno-${i}`);
+                if (!jEl) continue;
+                data.clenove.push({ jmeno: jEl.value,
+                    o1: document.getElementById(`odpoved-${i}-1`)?.value || '',
+                    o2: document.getElementById(`odpoved-${i}-2`)?.value || '',
+                    o3: document.getElementById(`odpoved-${i}-3`)?.value || '',
+                    u1: document.getElementById(`uhel-${i}-1`)?.value || '',
+                    u2: document.getElementById(`uhel-${i}-2`)?.value || '',
+                    u3: document.getElementById(`uhel-${i}-3`)?.value || '' });
+            }
+            aktualniSession = data;
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+        function nacistUlozene() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY); if (!raw) return;
+                const data = JSON.parse(raw); if (!data?.pocet) return;
+                aktualniSession = data;
+                document.getElementById('pocet-clenu').value = data.pocet;
+                vytvorKartyHTML(data.pocet);
+                data.clenove.forEach((c, idx) => {
+                    const i = idx + 1;
+                    const jEl = document.getElementById(`jmeno-${i}`); if (!jEl) return;
+                    jEl.value = c.jmeno || '';
+                    document.getElementById(`odpoved-${i}-1`).value = c.o1 || '';
+                    document.getElementById(`odpoved-${i}-2`).value = c.o2 || '';
+                    document.getElementById(`odpoved-${i}-3`).value = c.o3 || '';
+                    document.getElementById(`uhel-${i}-1`).value = c.u1 || '';
+                    document.getElementById(`uhel-${i}-2`).value = c.u2 || '';
+                    document.getElementById(`uhel-${i}-3`).value = c.u3 || '';
+                    aktualizujStav(i);
+                });
+                document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+                document.getElementById('autosave-row').style.display = 'flex';
+                document.getElementById('vysledky').style.display = 'none';
+            } catch (e) {}
+        }
+        function smazatZapisnik() { if (!confirm('Opravdu vymazat celý zápisník?')) return; try { localStorage.removeItem(SAVE_KEY); } catch (e) {} document.getElementById('karty-clenu').innerHTML = ''; document.getElementById('tlacitko-vyhodnotit').style.display = 'none'; document.getElementById('vysledky').style.display = 'none'; document.getElementById('autosave-row').style.display = 'none'; aktualniSession = null; }
+        function aktualizujStav(i) {
+            const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim();
+            const prirazeno = [document.getElementById(`uhel-${i}-1`)?.value, document.getElementById(`uhel-${i}-2`)?.value, document.getElementById(`uhel-${i}-3`)?.value].filter(Boolean).length;
+            const nadpisEl = document.getElementById(`nadpis-${i}`);
+            const stavEl = document.getElementById(`stav-${i}`);
+            if (nadpisEl) nadpisEl.textContent = jmeno || `Člen ${i}`;
+            if (stavEl) { stavEl.textContent = prirazeno === 3 ? '✓ hotovo' : prirazeno > 0 ? `${prirazeno}/3 přiřazeno` : 'nevyplněno'; stavEl.className = 'clen-stav' + (prirazeno === 3 ? ' hotovo' : ''); }
+        }
+        function vytvorKartyHTML(pocet) {
+            const options = OSEL_UHLY.map(u => `<option value="${u.id}">${u.id}. ${u.nazev} (${u.stupne})</option>`).join('');
+            const sel = `<option value="">— nevybráno —</option>${options}`;
+            let html = '';
+            for (let i = 1; i <= pocet; i++) {
+                html += `
+                <details class="clen-card" id="karta-${i}" open>
+                  <summary class="clen-summary"><span class="clen-jmeno" id="nadpis-${i}">Člen ${i}</span><span class="clen-stav" id="stav-${i}">nevyplněno</span></summary>
+                  <div class="clen-body">
+                    <div class="field"><label>Jméno / iniciály</label><input type="text" id="jmeno-${i}" placeholder="jméno (volitelné)" style="width:100%;padding:0.4rem;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.8rem;border-radius:var(--radius)" oninput="aktualizujStav(${i});ulozit();"></div>
+                    <div class="field"><label>Q1 – Analýza paralýzy:</label><textarea id="odpoved-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea><select id="uhel-${i}-1" onchange="aktualizujStav(${i});ulozit();">${sel}</select></div>
+                    <div class="field"><label>Q2 – Identifikace iluze:</label><textarea id="odpoved-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea><select id="uhel-${i}-2" onchange="aktualizujStav(${i});ulozit();">${sel}</select></div>
+                    <div class="field"><label>Q3 – Transformace:</label><textarea id="odpoved-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea><select id="uhel-${i}-3" onchange="aktualizujStav(${i});ulozit();">${sel}</select></div>
+                  </div>
+                </details>`;
+            }
+            document.getElementById('karty-clenu').innerHTML = html;
+        }
+        function vytvorKarty() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            if (!pocet || pocet < 1) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            aktualniSession = null;
+            vytvorKartyHTML(pocet);
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'flex';
+        }
+        function vyhodnotit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            const pocty = {}; OSEL_UHLY.forEach(u => pocty[u.id] = { count:0, nazev:u.nazev, barva:u.barva, stupne:u.stupne, q3:u.q3 });
+            let celkem = 0;
+            for (let i = 1; i <= pocet; i++) { for (let q = 1; q <= 3; q++) { const val = document.getElementById(`uhel-${i}-${q}`)?.value; if (val) { pocty[val].count++; celkem++; } } }
+            if (celkem === 0) { alert('Přiřaď aspoň jeden úhel před vyhodnocením.'); return; }
+            const pretizene = [], deficitni = [], vyvazene = [], nepouzite = [];
+            OSEL_UHLY.forEach(u => { const p = pocty[u.id]; p.procento = celkem > 0 ? p.count / celkem : 0; if (p.count === 0) nepouzite.push(p); else if (p.procento >= 0.30) pretizene.push(p); else if (p.procento <= 0.10) deficitni.push(p); else vyvazene.push(p); });
+            const barHTML = OSEL_UHLY.map(u => { const p = pocty[u.id]; const w = Math.round(p.procento * 100); return w > 0 ? `<div class="bar-seg" style="width:${w}%;background:${u.barva}" title="${u.nazev} ${w}%"></div>` : ''; }).join('');
+            let html = `
+            <div class="bar-section"><div class="bar-wrap">${barHTML}</div><div class="bar-legend">${OSEL_UHLY.filter(u => pocty[u.id].count > 0).map(u => `<div class="bar-leg-item"><span class="bar-leg-dot" style="background:${u.barva}"></span>${u.nazev} (${pocty[u.id].count}×)</div>`).join('')}</div></div>
+            <h2 style="font-family:var(--serif);font-size:1.4rem;color:var(--accent);margin-bottom:0.5rem;">🐴 Kognitivní mapa týmu</h2>
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:1rem;">Celkem přiřazeno: <strong>${celkem}</strong> úhlů od <strong>${pocet}</strong> členů</p>
+            <table class="mapa-tabulka"><tr><th>Úhel</th><th>Počet</th><th>%</th><th>Typ</th></tr>
+            ${OSEL_UHLY.map(u => { const p = pocty[u.id]; const proc = Math.round(p.procento * 100); let typ = '◇ vyvážený', trida = ''; if (p.count === 0) { typ = '—'; trida = 'deficitni'; } else if (p.procento >= 0.30) { typ = '▲ přetížený'; trida = 'pretizeny'; } else if (p.procento <= 0.10) { typ = '▽ deficitní'; trida = 'deficitni'; } return `<tr class="${trida}"><td><span style="color:${u.barva}">●</span> ${u.nazev} <span style="font-size:0.7rem;color:var(--dim)">${u.stupne}</span></td><td>${p.count}×</td><td>${proc}%</td><td>${typ}</td></tr>`; }).join('')}
+            </table>`;
+            if (pretizene.length > 0) { html += `<div class="vysledky-section"><h3>▲ Přetížené úhly (nad 30 %)</h3>`; pretizene.forEach(p => { const protivahy = deficitni.concat(nepouzite).slice(0, 2); html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}× (${Math.round(p.procento*100)}%)`; if (protivahy.length > 0) { html += `<br><em>Trénink deficitu:</em><br>`; protivahy.forEach(def => { html += `→ <strong>${def.nazev}:</strong> ${def.q3}<br>`; }); } html += `</div>`; }); html += `</div>`; }
+            const vsechnyDeficitni = deficitni.concat(nepouzite);
+            if (vsechnyDeficitni.length > 0) { html += `<div class="vysledky-section"><h3>▽ Deficitní úhly (pod 10 % nebo vůbec)</h3>`; vsechnyDeficitni.forEach(p => { html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}×<br><em>Návrh úkolu:</em> ${p.q3}</div>`; }); html += `</div>`; }
+            html += `<button class="btn btn-ghost" style="margin-top:1rem;" onclick="window.print()">🖨 Vytisknout výsledky</button>`;
+            html += `<p style="margin-top:1rem;font-size:0.8rem;">🔮 Chceš vygenerovat workshop na míru? <a href="generativni_mod.html">Generativní mód</a> | <a href="workshop_90_minut.html">Hotový workshop</a></p>`;
+            document.getElementById('vysledky').innerHTML = html;
+            document.getElementById('vysledky').style.display = 'block';
+            document.getElementById('vysledky').scrollIntoView({ behavior: 'smooth' });
+        }
+        function ulozitTym() { if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; } const nazev = prompt('Název týmu:') || `Tým ${new Date().toLocaleDateString('cs-CZ')}`; const tymy = JSON.parse(localStorage.getItem('osel_tymy') || '{}'); tymy[nazev] = aktualniSession; localStorage.setItem('osel_tymy', JSON.stringify(tymy)); zobrazTymy(); }
+        function nacistTym() { const tymy = JSON.parse(localStorage.getItem('osel_tymy') || '{}'); const keys = Object.keys(tymy); if (keys.length === 0) { alert('Žádné uložené týmy.'); return; } const nazev = prompt('Název týmu k načtení:\n' + keys.join('\n')); if (!nazev || !tymy[nazev]) return; aktualniSession = tymy[nazev]; localStorage.setItem(SAVE_KEY, JSON.stringify(aktualniSession)); nacistUlozene(); }
+        function exportURL() { if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; } const encoded = btoa(encodeURIComponent(JSON.stringify(aktualniSession))); const url = window.location.origin + window.location.pathname + '?session=' + encoded; navigator.clipboard.writeText(url).then(() => alert('URL zkopírováno!')); }
+        function importURL() { const text = prompt('Vlož URL se session:'); if (!text) return; try { const url = new URL(text); const encoded = url.searchParams.get('session'); if (!encoded) throw new Error(); const data = JSON.parse(decodeURIComponent(atob(encoded))); aktualniSession = data; localStorage.setItem(SAVE_KEY, JSON.stringify(data)); nacistUlozene(); } catch (e) { alert('Neplatná URL.'); } }
+        function zobrazTymy() { const tymy = JSON.parse(localStorage.getItem('osel_tymy') || '{}'); const el = document.getElementById('team-list'); const keys = Object.keys(tymy); if (keys.length === 0) { el.innerHTML = ''; return; } el.innerHTML = keys.map(k => `<span onclick="nacistTym('${k}')">${k}</span>`).join(''); }
+        window.addEventListener('DOMContentLoaded', () => { nacistUlozene(); zobrazTymy(); });
+    </script>
+</body>
+</html>
