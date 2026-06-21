@@ -37,28 +37,6 @@
 
 --- 
 
-## kocour
-- [diagnosticky_kocour](doma/data/tymy/kocour/diagnosticky_kocour.html)
-- [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
-- [inspirativni_kocour](doma/data/tymy/kocour/inspirativni_kocour.html)
-- [generativni_kocour](doma/data/tymy/kocour/generativni_kocour.html)
-- [workshop_kocour](doma/data/tymy/kocour/workshop_90_minut_kocour.html)
-- [workshop_pav](doma/nastroje/workshop_pav.html)
-- [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
-
-## netopyr
-- [diagnosticky](doma/data/tymy/netopyr/diagnosticky_netopyr.html)
-- [inspirativni](doma/data/tymy/netopyr/inspirativni_netopyr.html)
-- [generativni](doma/data/tymy/netopyr/generativni_netopyr.html)
-- [workshop90min](doma/data/tymy/netopyr/workshop_90_min_netopyr.html)
-
-## ryba
-- [diagnosticky](doma/data/tymy/ryba/diagnosticky_ryba.html)
-- [inspirativni](doma/data/tymy/ryba/inspirativni_ryba.html)
-- [generativni](doma/data/tymy/ryba/generativni_ryba.html)
-- [workshop90min](doma/data/tymy/ryba/workshop_90_min_ryba.html)
-
-
 ---
 
 - [detektor struktury kresby](doma/nastroje/detektor_struktury_kresby.html)
@@ -264,6 +242,59 @@ kreativita, fyzika jazyka, metadenik
 - [moucha figury](doma/data/figury/moucha_figury.html)
 - [gepard figury](doma/data/figury/gepard_figury.html)
 
+---
+
+
+## kocour
+- [diagnosticky_kocour](doma/data/tymy/kocour/diagnosticky_kocour.html)
+- [diagnostika_kocour](doma/data/tymy/kocour/diagnostika_kocour.html)
+- [inspirativni_kocour](doma/data/tymy/kocour/inspirativni_kocour.html)
+- [generativni_kocour](doma/data/tymy/kocour/generativni_kocour.html)
+- [workshop_kocour](doma/data/tymy/kocour/workshop_90_minut_kocour.html)
+- [workshop_pav](doma/nastroje/workshop_pav.html)
+- [kocour_diagnosticky](doma/data/tymy/kocour/kocour_diagnosticky.html)
+
+## netopyr
+- [diagnosticky](doma/data/tymy/netopyr/diagnosticky_netopyr.html)
+- [inspirativni](doma/data/tymy/netopyr/inspirativni_netopyr.html)
+- [generativni](doma/data/tymy/netopyr/generativni_netopyr.html)
+- [workshop90min](doma/data/tymy/netopyr/workshop_90_min_netopyr.html)
+
+## ryba
+- [diagnosticky](doma/data/tymy/ryba/diagnosticky_ryba.html)
+- [inspirativni](doma/data/tymy/ryba/inspirativni_ryba.html)
+- [generativni](doma/data/tymy/ryba/generativni_ryba.html)
+- [workshop90min](doma/data/tymy/ryba/workshop_90_min_ryba.html)
+
+## zajic
+- [diagnosticky](doma/data/tymy/zajic/diagnosticky_zajic.html)
+- [inspirativni](doma/data/tymy/zajic/inspirativni_zajic.html)
+- [generativni](doma/data/tymy/zajic/generativni_zajic.html)
+- [workshop90min](doma/data/tymy/zajic/workshop_90_min_zajic.html)
+
+## osel
+- [diagnosticky](doma/data/tymy/osel/diagnosticky_osel.html)
+- [inspirativni](doma/data/tymy/osel/inspirativni_osel.html)
+- [generativni](doma/data/tymy/osel/generativni_osel.html)
+- [workshop90min](doma/data/tymy/osel/workshop_90_min_osel.html)
+
+## vrabec
+- [diagnosticky](doma/data/tymy/vrabec/diagnosticky_vrabec.html)
+- [inspirativni](doma/data/tymy/vrabec/inspirativni_vrabec.html)
+- [generativni](doma/data/tymy/vrabec/generativni_vrabec.html)
+- [workshop90min](doma/data/tymy/vrabec/workshop_90_min_vrabec.html)
+
+## tygr
+- [diagnosticky](doma/data/tymy/tygr/diagnosticky_tygr.html)
+- [inspirativni](doma/data/tymy/tygr/inspirativni_tygr.html)
+- [generativni](doma/data/tymy/tygr/generativni_tygr.html)
+- [workshop90min](doma/data/tymy/tygr/workshop_90_min_tygr.html)
+
+- ## kravy
+- [diagnosticky](doma/data/tymy/kravy/diagnosticky_kravy.html)
+- [inspirativni](doma/data/tymy/kravy/inspirativni_kravy.html)
+- [generativni](doma/data/tymy/kravy/generativni_kravy.html)
+- [workshop90min](doma/data/tymy/kravy/workshop_90_min_kravy.html)
 
 ---
 
