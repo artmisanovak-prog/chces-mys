@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐇 Zajíc – diagnostická část · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0b07;
+            --bg-el: #1a1410;
+            --text: #f5ede0;
+            --dim: #6b5840;
+            --mid: #9a8070;
+            --accent: #d97a38;
+            --accent-dim: #3a2010;
+            --border: #1f1810;
+            --highlight: rgba(217, 122, 56, 0.2);
+            --serif: 'Spectral', serif;
+            --mono: 'Space Grotesk', sans-serif;
+            --radius: 3px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            font-weight: 300;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #eb9a5a; }
+        .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* navigace */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15, 11, 7, 0.94); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+        }
+        .nav-brand { font-family: var(--serif); font-size: 0.9rem; font-weight: 400; color: var(--text); }
+        .nav-brand em { font-style: italic; color: var(--accent); }
+        .nav-links { display: flex; gap: 0.8rem; flex-wrap: wrap; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .nav-links a { color: var(--dim); padding: 0.25rem 0.5rem; border: 1px solid transparent; transition: 0.15s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); border-color: var(--accent); }
+
+        /* hero */
+        .hero { padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .hero-img { width: 100%; max-width: 400px; max-height: 560px; object-fit: contain; filter: grayscale(100%) contrast(1.2); opacity: 0.85; margin-bottom: 1.5rem; border-radius: var(--radius); display: block; margin-left: auto; margin-right: auto; }
+        .hero-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+        h1 { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 400; line-height: 1.0; margin-bottom: 0.3rem; color: var(--text); }
+        h1 em { font-style: italic; color: var(--accent); }
+        .hero-quote {
+            font-family: var(--serif); font-size: 1rem; font-style: italic; color: var(--mid);
+            margin: 0.8rem 0 1.2rem; border-left: 2px solid var(--accent);
+            padding-left: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;
+            text-align: left; line-height: 1.7;
+        }
+        .fenomen-desc { font-size: 0.85rem; color: var(--dim); max-width: 560px; margin: 0 auto; line-height: 1.8; }
+
+        /* akordeony */
+        details {
+            border: 1px solid var(--border); background: var(--bg-el);
+            margin-bottom: 1rem; border-radius: var(--radius); overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        details[open] { border-color: var(--accent); }
+        summary {
+            cursor: pointer; padding: 0.9rem 1.2rem;
+            font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--mid);
+            list-style: none; user-select: none;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+            transition: color 0.2s;
+        }
+        summary:hover { color: var(--text); }
+        summary::after { content: "▼"; font-size: 0.6rem; transition: transform 0.3s; flex-shrink: 0; }
+        details[open] summary::after { transform: rotate(180deg); }
+        details[open] summary { color: var(--accent); }
+        .details-inner {
+            padding: 0 1.2rem 1.5rem; font-family: var(--serif);
+            font-size: 0.92rem; line-height: 1.9; color: #c0b0a0;
+        }
+        .details-inner p { margin-bottom: 0.8rem; }
+        .details-inner strong { color: var(--accent); font-weight: 500; }
+        .details-inner em { color: var(--mid); }
+
+        /* pohádka */
+        .pohadka-summary { background: var(--accent); color: #0f0b07 !important; font-weight: 500; }
+        .pohadka-summary:hover { color: #0f0b07 !important; }
+
+        /* klíč k úhlům */
+        .uhel-item {
+            border-bottom: 1px solid var(--border); padding: 0.8rem 0;
+            display: flex; gap: 0.8rem; align-items: flex-start;
+        }
+        .uhel-item:last-child { border-bottom: none; }
+        .uhel-color { width: 6px; min-height: 100%; border-radius: 1px; flex-shrink: 0; align-self: stretch; }
+        .uhel-content { flex: 1; }
+        .uhel-content strong { display: block; color: var(--text); font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+        .uhel-stupne { font-size: 0.7rem; color: var(--dim); margin-bottom: 0.3rem; }
+        .uhel-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.6; margin-bottom: 0.4rem; }
+        .uhel-klice { font-size: 0.72rem; color: var(--dim); font-style: italic; }
+
+        /* otázky */
+        .questions-box {
+            background: var(--bg-el); border: 1px solid var(--border);
+            padding: 1.2rem; margin: 1.5rem 0; border-radius: var(--radius);
+        }
+        .questions-box h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--accent); margin-bottom: 0.8rem; }
+        .question-item { margin-bottom: 0.8rem; }
+        .question-item strong { display: block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 0.2rem; }
+        .question-item p { font-size: 0.9rem; color: var(--dim); font-family: var(--serif); }
+
+        /* setup */
+        .setup-row {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            margin: 1rem 0; padding: 0.8rem 1rem;
+            background: var(--bg-el); border: 1px solid var(--border); border-radius: var(--radius);
+        }
+        .setup-row label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+        .setup-row input[type=number] {
+            width: 60px; padding: 0.5rem; border: 1px solid var(--border);
+            background: var(--bg); color: var(--text); font-family: var(--mono);
+            font-size: 1rem; text-align: center; border-radius: var(--radius);
+        }
+        .btn {
+            padding: 0.55rem 1.4rem; background: var(--accent); color: #0f0b07;
+            border: 1px solid var(--accent); font-family: var(--mono);
+            font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; border-radius: var(--radius); transition: 0.15s;
+        }
+        .btn:hover { background: #eb9a5a; border-color: #eb9a5a; }
+        .btn-ghost { background: transparent; color: var(--dim); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); background: transparent; }
+        .btn-danger { background: transparent; color: #6b5040; border: 1px solid #2a1a10; }
+        .btn-danger:hover { border-color: #9a7060; color: #c0a090; background: transparent; }
+
+        /* karty členů */
+        .clen-card { border: 1px solid var(--border); background: var(--bg-el); margin-bottom: 0.5rem; border-radius: var(--radius); overflow: hidden; }
+        .clen-summary {
+            cursor: pointer; padding: 0.8rem 1.2rem; font-size: 0.85rem;
+            list-style: none; display: flex; align-items: center; gap: 0.8rem;
+            user-select: none; transition: background 0.15s;
+        }
+        .clen-summary:hover { background: rgba(217, 122, 56, 0.08); }
+        .clen-summary::before { content: "▸"; font-family: var(--mono); font-size: 0.7rem; color: var(--dim); transition: transform 0.2s; }
+        .clen-card[open] .clen-summary::before { transform: rotate(90deg); }
+        .clen-jmeno { flex: 1; font-weight: 500; color: var(--text); }
+        .clen-stav { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+        .clen-stav.hotovo { color: var(--accent); font-weight: 500; }
+        .clen-body { padding: 0 1.2rem 1rem; border-top: 1px solid var(--border); }
+        .clen-body .field { margin-bottom: 0.8rem; }
+        .clen-body label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.3rem; }
+        .clen-body textarea {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--serif); font-size: 0.85rem;
+            line-height: 1.6; resize: vertical; min-height: 50px; border-radius: var(--radius);
+        }
+        .clen-body textarea:focus { outline: none; border-color: var(--accent); }
+        .clen-body select {
+            width: 100%; padding: 0.5rem; background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--mono); font-size: 0.75rem;
+            border-radius: var(--radius); margin-top: 0.3rem;
+        }
+
+        /* autosave */
+        .autosave-row {
+            display: none; align-items: center; gap: 1rem; flex-wrap: wrap;
+            padding: 0.6rem 1rem; background: rgba(217, 122, 56, 0.06);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            margin: 1rem 0; font-size: 0.72rem; color: var(--dim);
+        }
+
+        /* výsledky */
+        .results { display: none; margin-top: 2rem; border-top: 2px solid var(--accent); padding-top: 1.5rem; }
+        .mapa-tabulka { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin: 1rem 0; }
+        .mapa-tabulka th, .mapa-tabulka td { border: 1px solid var(--border); padding: 0.5rem 0.8rem; text-align: left; }
+        .mapa-tabulka th { background: var(--accent); color: #0f0b07; font-family: var(--mono); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.65rem; }
+        .mapa-tabulka td { background: var(--bg-el); }
+        .pretizeny td { background: rgba(217, 122, 56, 0.15); font-weight: 500; }
+        .deficitni td { color: var(--dim); }
+        .vysledky-section { margin-bottom: 1.5rem; }
+        .vysledky-section h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+        .vysledky-section .uhel-out { margin-bottom: 0.6rem; padding-left: 0.8rem; border-left: 2px solid var(--accent); font-size: 0.85rem; color: var(--mid); line-height: 1.6; }
+
+        /* bar proužek */
+        .bar-section { margin: 1.5rem 0; }
+        .bar-wrap { display: flex; height: 14px; border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem; }
+        .bar-seg { height: 100%; transition: width 0.4s ease; }
+        .bar-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.65rem; color: var(--dim); }
+        .bar-leg-item { display: flex; align-items: center; gap: 0.3rem; }
+        .bar-leg-dot { width: 8px; height: 8px; border-radius: 1px; }
+
+        /* management týmů */
+        .team-mgmt { margin: 1rem 0; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .team-list { margin: 1rem 0; font-size: 0.78rem; color: var(--dim); }
+        .team-list span { margin-right: 0.8rem; cursor: pointer; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); transition: 0.15s; }
+        .team-list span:hover { border-color: var(--accent); color: var(--text); }
+
+        @media print {
+            nav, .btn, .setup-row, .autosave-row, .team-mgmt, .team-list, .bar-section { display: none !important; }
+            details[open] summary { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="nav-brand"><em>Zajíc</em> · diagnostická část</span>
+        <div class="nav-links">
+            <a href="generativni_zajic.html">Generátor</a>
+            <a href="workshop_90_minut_zajic.html">Workshop</a>
+            <a href="inspirativni_zajic.html">Inspirace</a>
+            <a href="../">Zpět na kartu</a>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <section class="hero">
+            <img src="../../../ilustrace/zajic.jpg" alt="Zajíc" class="hero-img" onerror="this.style.display='none'">
+            <p class="hero-label">Týmové dysfunkce · Karta Zajíc</p>
+            <h1>Zajíc</h1>
+            <p class="hero-quote">„zaječice skočí do plamenů ale neshoří"</p>
+            <p class="fenomen-desc">Fenomén Zajíce — transformace reálného selhání, omylu nebo nedostatku v kolektivní mýtus o hrdinství. Tým nahrazuje nepříjemnou pravdu ("jen jsem se lekla, skočila blbě") inspirativním narativem ("ohňuvzdorná hrdinka"), který zakrývá skutečné příčiny a zranitelnosti.</p>
+        </section>
+
+        <!-- POHÁDKA -->
+        <details>
+            <summary class="pohadka-summary">📖 Pohádka o Zaječici</summary>
+            <div class="details-inner" id="pohadka-text"></div>
+        </details>
+
+        <!-- KLÍČ K ÚHLŮM -->
+        <details>
+            <summary>🔑 Klíč k úhlům – Zajíc</summary>
+            <div class="details-inner" id="klic-uhlu"></div>
+        </details>
+
+        <!-- JAK MYŠ ČTE ZAJÍCE -->
+        <details>
+            <summary>🐇 Jak myš čte Zajíce</summary>
+            <div class="details-inner" id="jak-mys-cte"></div>
+        </details>
+
+        <!-- DIAGNOSTICKÁ MATICE -->
+        <details>
+            <summary>📊 Diagnostická matice</summary>
+            <div class="details-inner" id="diagnosticka-matice"></div>
+        </details>
+
+        <!-- OTÁZKY -->
+        <div class="questions-box">
+            <h3>🐇 Tři otázky pro tým (Zajíc)</h3>
+            <div class="question-item">
+                <strong>Q1 – Interpretace:</strong>
+                <p>Zaječice "jen zakopla o vlastní strach" a skočila do ohně omylem. Proč se z tohoto selhání instinktu stal mýtus o "ohňuvzdorné hrdince"? Co tato transformace říká o naší potřebě převyprávět chyby jako hrdinství?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q2 – Identifikace:</strong>
+                <p>Kde ve vašem týmu převyprávíme "skočení do ohně" – tedy reálné chyby, selhání nebo nedostatky – jako "ohňuvzdorné hrdinství"? Jaké nepříjemné pravdy zakrýváme inspirativními příběhy?</p>
+            </div>
+            <div class="question-item">
+                <strong>Q3 – Transformace:</strong>
+                <p>Co by se muselo stát, aby náš tým dokázal "sedět na okraji pole a čistit si spálené vousky" – tedy čelit realitě svých omylů a zranění, aniž by je okamžitě transformoval v legendu?</p>
+            </div>
+        </div>
+
+        <!-- SETUP -->
+        <div class="setup-row">
+            <label>Počet členů týmu:</label>
+            <input type="number" id="pocet-clenu" min="1" max="30" value="4">
+            <button class="btn" onclick="vytvorKarty()">Vytvořit zápisník</button>
+        </div>
+
+        <!-- AUTOSAVE -->
+        <div class="autosave-row" id="autosave-row">
+            <span>💾 Zápisník se průběžně ukládá — přežije i zavření prohlížeče.</span>
+            <button class="btn btn-danger" onclick="smazatZapisnik()">🗑 Vymazat zápisník</button>
+        </div>
+
+        <!-- MANAGEMENT TÝMŮ -->
+        <div class="team-mgmt">
+            <button class="btn btn-ghost" onclick="ulozitTym()">💾 Uložit tým</button>
+            <button class="btn btn-ghost" onclick="nacistTym()">📂 Načíst tým</button>
+            <button class="btn btn-ghost" onclick="exportURL()">🔗 Exportovat URL</button>
+            <button class="btn btn-ghost" onclick="importURL()">📋 Importovat z URL</button>
+        </div>
+        <div class="team-list" id="team-list"></div>
+
+        <div id="karty-clenu"></div>
+        <div id="tlacitko-vyhodnotit" style="display:none; margin:1.5rem 0;">
+            <button class="btn" onclick="vyhodnotit()">🐇 Vyhodnotit – ukázat kognitivní mapu týmu</button>
+        </div>
+
+        <div class="results" id="vysledky"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════
+        // DATA – POHÁDKA
+        // ═══════════════════════════════════════
+        const POHADKA = `O ZAJEČICI
+aneb zajícem nezatopíš
+
+Bylo jedno pole, takové obyčejné, plné trávy, obilí a prachu. V létě, slunce stálo vysoko, dokázalo se to pole vznítit jedinou jiskrou. A tak se i stalo: zapraskalo suché stéblo, rozfoukal se vítr, a oheň se rozběhl přes lány rychleji než lidský krok. Všechna zvířata, která tam byla, věděla, co mají dělat. Utíkat. Utíkat pryč, co nejdál, co nejrychleji. Utíkal bažant, myši, i celé hejno koroptví. A také zajíci.
+
+Jenže jeden zajíc – vlastně zaječice – byla jiná. Nebyla statečnější než ostatní, nebyla chytřejší, dokonce ani nebyla rychlejší. Jen se lekla tak moc, že zapomněla na všechny instinkty. A zatímco ostatní běželi kupředu před ohněm, ona udělala pravý opak: skočila přímo do plamenů.
+
+Teď byste čekali, že se promění v popel a zůstane po ní jen smutný pach spálených chlupů. Ale kdepak. Ona dopadla do místa, které už bylo shořelé. Tam, kde oheň už dávno sežral všechen svůj pokrm a nechal jen černou zemi. A tak zaječice prošla plameny, aniž by jí ublížily.
+
+A tohle se stalo legendou. Protože všechno, co přežije proti logice, se stane pohádkou.
+
+Zajíci si pak začali vyprávět, že ona je ohnivzdorná. Že se jí žádný žár nemůže dotknout, protože oheň si ji spletl s popelem a nechal ji být. Jiní říkali, že to byla náhoda – že jen zakopla a náhodou dopadla do bezpečí. Ale pohádky o náhodě nebývají uvěřitelné, proto si přidávali vlastní verze.
+
+Jedni tvrdili, že zaječice byla vyvolená – že měla v srsti zakódované znamení, neviditelné očima, ale čitelné plamenům. Jiní, že ji chránila pradávná smlouva mezi ohněm a zajíci: „Když skočíš do mých úst dobrovolně, já tě nespálím." A další vykládali, že to byla zkouška – že kdo se dokáže vzdát vlastního pudu sebezáchovy, ten se stává nesmrtelným.
+
+A tak zaječice, která jen zakopla o vlastní strach, byla prohlášena za hrdinku.
+
+Ale ona sama se nikdy necítila hrdinkou. Když seděla večer na okraji pole a čistila si spálené vousky, říkala si: „Já jsem se jen lekla. Jen jsem skočila blbě." A přitom se kolem ní scházeli ostatní a šeptali: „Podívej, to je ta, co neshorí."
+
+Časem začala chápat, že nezáleží na tom, co se opravdu stalo. Realita byla jen podklad, jako spáleniště pod jejími tlapkami. To, co rostlo nad ní, byla řeč, příběh, legenda. A tak se naučila nosit svůj omyl jako korunu. Když se jí někdo ptal, jak to udělala, neodpovídala. Jen se tajemně usmála a trochu si načechrala srst, aby to vypadalo, že opravdu skrývá nějaké kouzlo.
+
+Od té doby se traduje, že zajíce nemůžeš zapálit. Že není palivo, že není dřevo na hranici. Oheň ho možná spálí, ale nikdy nepohltí. Protože kdo jednou skočil do plamenů a vyšel ven živý, toho si už žádný oheň netroufne znovu.
+
+A děti v lese se učí od matek tuto pohádku: „Neboj se strachu. Strach tě může hodit tam, kam by tě nikdy nenapadlo jít. A možná právě tam je cesta k přežití."
+
+A tak se stalo, že jedna zaječice, co jen udělala chybu, se zapsala do paměti jako hrdinka.
+
+A její příběh? Ten pořád doutná, i když pole dávno vychladlo.`;
+
+        // ═══════════════════════════════════════
+        // 12 SPECIFICKÝCH ÚHLŮ – ZAJÍC
+        // ═══════════════════════════════════════
+        const ZAJIC_UHLY = [
+            { id: 1, nazev: "Převyprávění selhání", stupne: "0°", barva: "#5a7fa8",
+              jadro: "Chyba jako hrdinství. Selhání (panika, špatný úsudek) je převyprávěno jako odvaha nebo výjimečná vlastnost. Chyba se stává legendou.",
+              stopa: "Důraz na transformaci faktů na inspirativní příběh. 'Zázračné zachránění se stává plánovaným úspěchem.'",
+              poznamka: "Zde někdo vidí, že realita byla jen podklad. To, co rostlo nad ní, byla řeč, příběh, legenda.",
+              q3: "Při reflexi projektů oddělit faktické příčiny od narativu: 'Co se skutečně stalo vs. Jak to vyprávíme?'" },
+            { id: 2, nazev: "Nošení omylu jako koruny", stupne: "30°", barva: "#6a9e72",
+              jadro: "Performativní identita. Zaječice se naučila nosit svůj omyl jako korunu. Její identita je založena na nesprávném výkladu jejího selhání.",
+              stopa: "Důraz na identitu založenou na mýtu. 'Ten, který vždy přežije krizi.' Uvěznění v očekávání.",
+              poznamka: "Zde někdo chápe, že koruna může být těžší než samotný pád. A že legenda, která nás definuje, nás zároveň uvězňuje.",
+              q3: "Pomoci jednotlivcům 'svléknout korunu': Oddělit, kdo skutečně jsou, od mýtu, který o nich vyprávějí jiní." },
+            { id: 3, nazev: "Spáleniště jako bezpečí", stupne: "60°", barva: "#9b72b5",
+              jadro: "Když oheň už prošel. Zaječice skočila do místa, které už bylo shořelé. Její bezpečí nebylo v odolnosti, ale v načasování.",
+              stopa: "Důraz na načasování, ne na odolnost. 'Byli jsme skutečně odolní, nebo jsme jen přišli ve správný čas?'",
+              poznamka: "Zde někdo rozlišuje mezi odolností vůči ohni a příchodem po požáru. A ví, že to není totéž.",
+              q3: "Při analýze úspěchu se ptát: 'Byli jsme odolní, nebo jsme jen přišli ve správný čas, kdy už hrozba pominula?'" },
+            { id: 4, nazev: "Kódované znamení", stupne: "90°", barva: "#5fa8a0",
+              jadro: "Iluze výjimečnosti. Kolektiv vytváří mystické vysvětlení pro náhodu, protože náhoda je nepohodlná – nedá se replikovat ani kontrolovat.",
+              stopa: "Důraz na mystické vlastnosti, 'vyvolení', 'mají to v genech'. Odpor k přijetí náhody.",
+              poznamka: "Zde někdo ví, že náhoda je nepohodlná. A že je jednodušší vymyslet znamení v srsti, než přiznat, že to byla jen šťastná náhoda.",
+              q3: "Demystifikovat úspěch: Hledat kontextuální, replikovatelné faktory. Mluvit o štěstí jako o legitimním faktoru." },
+            { id: 5, nazev: "Pradávná smlouva", stupne: "120°", barva: "#8e7248",
+              jadro: "Racionalizace iracionálního. Iracionální akt (skočit do ohně) je reinterpretován jako součást vyššího řádu. Náhoda dostává pravidla.",
+              stopa: "Důraz na principy, filozofii, předurčení. 'Náš úspěch byl předurčen naší filozofií.'",
+              poznamka: "Zde někdo vidí, jak vytváříme složité teorie, abychom se vyhnuli nepohodlí z nahodilosti.",
+              q3: "Přijmout roli nahodilosti: Zavést fráze jako 'měli jsme štěstí' bez pocitu, že to snižuje úspěch." },
+            { id: 6, nazev: "Zkouška", stupne: "150°", barva: "#5a8a5a",
+              jadro: "Testování hranic prostřednictvím omylu. Omyl je reinterpretován jako záměrná, odvážná zkouška limitů.",
+              stopa: "Důraz na odvahu, experimentování, testování hranic. Stírání hranice mezi riskem a pošetilostí.",
+              poznamka: "Zde někdo ví, že ne každý skok do ohně byl plánovaný experiment. Některé byly prostě chyby. A to je v pořádku.",
+              q3: "Rozlišovat mezi riskem a omylem: 'Děláme to jako záměrný experiment, nebo riskujeme omylem?'" },
+            { id: 7, nazev: "Tajemný úsměv", stupne: "180°", barva: "#a85a5a",
+              jadro: "Performativní nejasnost. Zaječice se naučila, že mlčením a záhadným výrazem udržuje mýtus. Nejistota živí legendu lépe než vysvětlení.",
+              stopa: "Důraz na tajemství, neprůhlednost, mystifikaci. 'Když se jí ptali, jak to udělala, neodpovídala.'",
+              poznamka: "Zde někdo prohlédl, že tajemný úsměv je někdy jen maska. A že za ním může být prázdno – nebo strach.",
+              q3: "Nabádat k transparentnosti: 'Pokud jsi měl štěstí nebo udělal chybu, řekni to. Tajemství buduje kult, ne tým.'" },
+            { id: 8, nazev: "Nepalivost", stupne: "210°", barva: "#c8a832",
+              jadro: "Když selhání vytvoří imunitu. Jedno přežité selhání vytváří mýtus o totální odolnosti. Omyl se stává zdrojem domnělé nesmrtelnosti.",
+              stopa: "Důraz na aroganci z minulého přežití. 'Přežili jsme tohle, zvládneme cokoli.'",
+              poznamka: "Zde někdo ví, že minulé přežití není zárukou budoucí odolnosti. A že mýtus o nepalivosti je nebezpečný.",
+              q3: "Pravidelně se ptát: 'Kde jsme dnes zranitelní, i když jsme v minulosti přežili velké ohně?'" },
+            { id: 9, nazev: "Příběh, který doutná", stupne: "240°", barva: "#c8722a",
+              jadro: "Neuzavřená minulost. Trauma nebo významná událost zůstává aktivní v kolektivní paměti, i když konkrétní situace skončila. Příběh žije vlastním životem.",
+              stopa: "Důraz na nevyhaslé příběhy, staré křivdy, neuzavřené konflikty. 'Ten příběh pořád doutná.'",
+              poznamka: "Zde někdo cítí, že pod povrchem pořád něco hoří. I když pole dávno vychladlo, žár zůstává.",
+              q3: "Vědomě 'hasit doutnající příběhy': Pravidelná sezení, kde se explicitně pojmenují a uzavřou staré příběhy." },
+            { id: 10, nazev: "Vyučovací pohádka", stupne: "270°", barva: "#a83060",
+              jadro: "Přenos zkreslené lekce. Z omylu se stává univerzální lekce. Konkrétní chyba je zobecněna na životní moudrost.",
+              stopa: "Důraz na lekce, principy, ponaučení. 'Děti se učí: Neboj se strachu.' Zobecnění bez kontextu.",
+              poznamka: "Zde někdo ví, že každá lekce má své hranice. A že to, co platilo na spáleništi, nemusí platit jinde.",
+              q3: "Kontextualizovat lekce: Vždy doplnit: 'Za jakých specifických podmínek tato lekce platí? Kdy by neplatila?'" },
+            { id: 11, nazev: "Realita jako podklad", stupne: "300°", barva: "#6080a0",
+              jadro: "Fakta vs. výklad. Realita je jen podklad – to, co roste nad ní, je řeč, příběh, legenda. Fakta jsou jen výchozím bodem.",
+              stopa: "Důraz na rozdíl mezi fakty a výkladem. 'Co se stalo vs. co to znamená.' Oficiální verze příběhu.",
+              poznamka: "Zde někdo vidí, že žijeme ve dvou světech: ve světě faktů a ve světě příběhů. A že ten druhý je často silnější.",
+              q3: "Při diskusi o minulých událostech nejprve stanovit 'co se stalo' (fakta), a teprve potom 'co to znamená' (výklad)." },
+            { id: 12, nazev: "Hrdinka proti vůli", stupne: "330°", barva: "#8060b0",
+              jadro: "Když jsi celebritou svého omylu. Status byl přidělen kolektivem bez souhlasu, na základě špatného výkladu motivů.",
+              stopa: "Důraz na nepohodlí v přidělené roli. 'Nikdy se necítila hrdinkou.' Syndrom podvodníka.",
+              poznamka: "Zde někdo ví, jaké to je být oslavován za něco, co nebylo tvoje rozhodnutí. A jak těžké je tu korunu nosit.",
+              q3: "Při oceňování se ptát: 'Cítíš se v této roli dobře? Odpovídá to tvému prožívání situace?'" }
+        ];
+
+        // ═══════════════════════════════════════
+        // DIAGNOSTICKÁ MATICE
+        // ═══════════════════════════════════════
+        const DIAG_MATICE = [
+            { uhel: "1. Převyprávění selhání", diagnoza: "Chyby a omyly jsou systematicky reinterpretovány jako strategické tahy nebo hrdinství.",
+              intervence: "'Autopsie bez příběhu': První fáze analýzy pouze fakta, bez hodnocení. Zakázat slova jako 'hrdinsky', 'geniálně'." },
+            { uhel: "2. Nošení omylu jako koruny", diagnoza: "Jednotlivci nebo týmy jsou definováni mýty o minulých událostech.",
+              intervence: "'Den bez koruny': Bezpečný prostor, kde si lidé mohou 'svléknout korunu' a mluvit o skutečnosti." },
+            { uhel: "3. Spáleniště jako bezpečí", diagnoza: "Tým si myslí, že je odolný, ale ve skutečnosti jen těží z toho, že oheň už uhasl.",
+              intervence: "Rozlišovat mezi odolností a příchodem po požáru. Ptát se: 'Kdyby oheň přišel znovu, obstojíme?'" },
+            { uhel: "4. Kódované znamení", diagnoza: "Úspěchy jsou připisovány mystickým vlastnostem místo analyzovatelným faktorům.",
+              intervence: "'Demystifikační workshop': Rozebrat úspěch na replikovatelné faktory a přiznat roli štěstí." },
+            { uhel: "5. Pradávná smlouva", diagnoza: "Tým vytváří složité teorie vysvětlující nahodilé úspěchy.",
+              intervence: "Zavést fráze jako 'měli jsme štěstí' bez pocitu, že to snižuje úspěch." },
+            { uhel: "6. Zkouška", diagnoza: "Riskantní rozhodnutí, která vyšla, jsou prezentována jako záměrné experimenty.",
+              intervence: "Rozlišovat: 'Děláme to jako záměrný experiment, nebo riskujeme omylem?'" },
+            { uhel: "7. Tajemný úsměv", diagnoza: "Lídři udržují tajemství kolem svých úspěchů, vytváří kulturu mystifikace.",
+              intervence: "'Transparentnost místo tajemství': Za každým úspěchem sdílet konkrétní kroky a roli štěstí." },
+            { uhel: "8. Nepalivost", diagnoza: "Minulé přežití krize vytváří nebezpečnou aroganci a podceňování rizik.",
+              intervence: "'Test zranitelnosti': Pravidelně se ptát: 'Kde jsme dnes zranitelní?'" },
+            { uhel: "9. Příběh, který doutná", diagnoza: "Staré události stále ovlivňují současné rozhodování, i když jsou formálně uzavřené.",
+              intervence: "Pravidelná sezení pro 'hašení doutnajících příběhů' – pojmenovat a uzavřít staré křivdy." },
+            { uhel: "10. Vyučovací pohádka", diagnoza: "Z konkrétních situací jsou vytvářeny obecné principy slepě aplikované jinde.",
+              intervence: "Kontextualizovat lekce: 'Za jakých podmínek tato lekce platí? Kdy by neplatila?'" },
+            { uhel: "11. Realita jako podklad", diagnoza: "Oficiální verze příběhu se výrazně liší od faktů, ale všichni ji přijímají.",
+              intervence: "Při diskusi nejprve stanovit fakta ('co se stalo'), pak teprve výklad ('co to znamená')." },
+            { uhel: "12. Hrdinka proti vůli", diagnoza: "Lidé jsou prohlašováni za hrdiny na základě událostí, které sami vnímají jako omyl.",
+              intervence: "Při oceňování se ptát: 'Cítíš se v této roli dobře? Odpovídá to tvému prožívání?'" }
+        ];
+
+        // ═══════════════════════════════════════
+        // JAK MYŠ ČTE ZAJÍCE
+        // ═══════════════════════════════════════
+        const JAK_MYS_CTE = `
+        <p><em>Myš dostala pohádku o Zaječici – o té, co skočila do plamenů a neshořela. Přečetla ji. Zavřela oči. A začala přemýšlet o tom, jak příběhy přepisují realitu.</em></p>
+        <p>Tahle pohádka je jiná než všechny ostatní. Není o tom, co zvíře dělá – je o tom, co s jeho příběhem udělají ostatní. Zaječice udělala chybu. Bála se, skočila blbě. Ale kolektiv z toho udělal legendu.</p>
+        <h3>OTÁZKA 1 (Interpretace)</h3>
+        <p><strong>Odpověď A:</strong> "Z omylu se stal mýtus, protože tým potřebuje hrdiny. Když přežijeme krizi, nemůžeme přiznat, že to bylo štěstí – to by znamenalo, že nemáme kontrolu."<br>→ <strong style="color:#5a7fa8">MYŠ PŘIŘADILA: Úhel 1 – Převyprávění selhání (0°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Protože je to pohodlnější. Když řekneme 'jsme ohnivzdorní', cítíme se silní. Když řekneme 'měli jsme štěstí', cítíme se zranitelní."<br>→ <strong style="color:#6a9e72">MYŠ PŘIŘADILA: Úhel 2 – Nošení omylu jako koruny (30°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Protože náhoda nemá smysl. Lidský mozek nesnáší nahodilost. Tak si vymyslíme znamení v srsti, pradávnou smlouvu, cokoli, co dá chaosu řád."<br>→ <strong style="color:#5a8a5a">MYŠ PŘIŘADILA: Úhel 5 – Pradávná smlouva (120°)</strong></p>
+        <h3>OTÁZKA 2 (Identifikace)</h3>
+        <p><strong>Odpověď A:</strong> "Náš největší 'zaječicí moment' je projekt, který přežil jen díky tomu, že konkurence udělala ještě větší chybu. Ale vyprávíme to jako 'geniální strategii'."<br>→ <strong style="color:#6080a0">MYŠ PŘIŘADILA: Úhel 11 – Realita jako podklad (300°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Náš CEO je náš 'Zajíc'. Jednou udělal riskantní rozhodnutí, které vyšlo, a teď je považován za vizionáře. Ale on sám říká, že to byla jen panika."<br>→ <strong style="color:#c8a832">MYŠ PŘIŘADILA: Úhel 12 – Hrdinka proti vůli (210°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Když se nám něco nepovede, hned to převyprávíme jako 'cennou lekci'. Nikdy si nepřiznáme, že to prostě byla blbost."<br>→ <strong style="color:#5fa8a0">MYŠ PŘIŘADILA: Úhel 10 – Vyučovací pohádka (90°)</strong></p>
+        <h3>OTÁZKA 3 (Transformace)</h3>
+        <p><strong>Odpověď A:</strong> "Museli bychom přestat potřebovat hrdiny. To je těžké. Hrdinové nám dávají jistotu."<br>→ <strong style="color:#8e7248">MYŠ PŘIŘADILA: Úhel 5 – Pradávná smlouva (120°)</strong></p>
+        <p><strong>Odpověď B:</strong> "Museli bychom umět sedět v tichu a nevyprávět. Jen být s tím, co se stalo. Bez příkras."<br>→ <strong style="color:#a83060">MYŠ PŘIŘADILA: Úhel 9 – Příběh, který doutná (240°)</strong></p>
+        <p><strong>Odpověď C:</strong> "Někdo by musel jít příkladem. Přiznat: 'To nebyla strategie, to byla panika. A přežili jsme.' Když to udělá lídr, ostatní si oddechnou."<br>→ <strong style="color:#c8722a">MYŠ PŘIŘADILA: Úhel 7 – Tajemný úsměv (180°)</strong></p>
+        <h3>CO Z TOHO MYŠ VYČETLA?</h3>
+        <p><strong>PŘETÍŽENÉ ÚHLY:</strong> Převyprávění selhání (1) – 10×, Realita jako podklad (11) – 8×, Pradávná smlouva (5) – 7×<br>Tým je mistr v převyprávění reality. Ví, že si vymýšlí – ale neumí přestat.</p>
+        <p><strong>DEFICIENTNÍ ÚHLY:</strong> Spáleniště jako bezpečí (3) – 1×, Zkouška (6) – 0×, Nepalivost (8) – 1×<br>Tým neumí rozlišit mezi skutečnou odolností a pouhým štěstím. A nevidí nebezpečí vlastní arogance.</p>
+        <p><strong>CO MYŠ NAVRHLA:</strong> 'Autopsie bez příběhu' – jedna porada měsíčně, kde se projekt rozebere jen na fakta. A 'Den bez koruny' – kde lídři přiznají své skutečné motivy a omyly.</p>`;
+
+        // ═══════════════════════════════════════
+        // NAPLNĚNÍ HTML
+        // ═══════════════════════════════════════
+        document.getElementById('pohadka-text').innerHTML = `<p style="white-space:pre-line">${POHADKA}</p>`;
+        document.getElementById('jak-mys-cte').innerHTML = JAK_MYS_CTE;
+
+        document.getElementById('klic-uhlu').innerHTML = ZAJIC_UHLY.map(u => `
+        <div class="uhel-item">
+          <div class="uhel-color" style="background:${u.barva}"></div>
+          <div class="uhel-content">
+            <strong>${u.id}. ${u.nazev} <span style="color:${u.barva}">●</span> ${u.stupne}</strong>
+            <div class="uhel-desc"><strong>Jádro:</strong> ${u.jadro}<br><strong>Zajíc poznamená:</strong> „${u.poznamka}"<br><strong>Stopa v odpovědi:</strong> ${u.stopa}</div>
+            <div class="uhel-desc"><strong>Q3 – Návrh intervence:</strong> ${u.q3}</div>
+          </div>
+        </div>`).join('');
+
+        document.getElementById('diagnosticka-matice').innerHTML = `
+        <table class="mapa-tabulka">
+          <tr><th>Úhel</th><th>Týmová diagnóza</th><th>Akční intervence</th></tr>
+          ${DIAG_MATICE.map(d => `<tr><td>${d.uhel}</td><td>${d.diagnoza}</td><td>${d.intervence}</td></tr>`).join('')}
+        </table>`;
+
+        // ═══════════════════════════════════════
+        // LOGIKA ZÁPISNÍKU
+        // ═══════════════════════════════════════
+        const SAVE_KEY = 'zajic_diagnostika_session';
+        let aktualniSession = null;
+
+        function ulozit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value) || 0;
+            if (pocet < 1) return;
+            const data = { pocet, clenove: [] };
+            for (let i = 1; i <= pocet; i++) {
+                const jEl = document.getElementById(`jmeno-${i}`);
+                if (!jEl) continue;
+                data.clenove.push({
+                    jmeno: jEl.value,
+                    o1: document.getElementById(`odpoved-${i}-1`)?.value || '',
+                    o2: document.getElementById(`odpoved-${i}-2`)?.value || '',
+                    o3: document.getElementById(`odpoved-${i}-3`)?.value || '',
+                    u1: document.getElementById(`uhel-${i}-1`)?.value || '',
+                    u2: document.getElementById(`uhel-${i}-2`)?.value || '',
+                    u3: document.getElementById(`uhel-${i}-3`)?.value || ''
+                });
+            }
+            aktualniSession = data;
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        function nacistUlozene() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (!data?.pocet) return;
+                aktualniSession = data;
+                document.getElementById('pocet-clenu').value = data.pocet;
+                vytvorKartyHTML(data.pocet);
+                data.clenove.forEach((c, idx) => {
+                    const i = idx + 1;
+                    const jEl = document.getElementById(`jmeno-${i}`);
+                    if (!jEl) return;
+                    jEl.value = c.jmeno || '';
+                    document.getElementById(`odpoved-${i}-1`).value = c.o1 || '';
+                    document.getElementById(`odpoved-${i}-2`).value = c.o2 || '';
+                    document.getElementById(`odpoved-${i}-3`).value = c.o3 || '';
+                    document.getElementById(`uhel-${i}-1`).value = c.u1 || '';
+                    document.getElementById(`uhel-${i}-2`).value = c.u2 || '';
+                    document.getElementById(`uhel-${i}-3`).value = c.u3 || '';
+                    aktualizujStav(i);
+                });
+                document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+                document.getElementById('autosave-row').style.display = 'flex';
+                document.getElementById('vysledky').style.display = 'none';
+            } catch (e) {}
+        }
+
+        function smazatZapisnik() {
+            if (!confirm('Opravdu vymazat celý zápisník?')) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            document.getElementById('karty-clenu').innerHTML = '';
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'none';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'none';
+            aktualniSession = null;
+        }
+
+        function aktualizujStav(i) {
+            const jmeno = document.getElementById(`jmeno-${i}`)?.value?.trim();
+            const u1 = document.getElementById(`uhel-${i}-1`)?.value;
+            const u2 = document.getElementById(`uhel-${i}-2`)?.value;
+            const u3 = document.getElementById(`uhel-${i}-3`)?.value;
+            const prirazeno = [u1, u2, u3].filter(Boolean).length;
+            const nadpisEl = document.getElementById(`nadpis-${i}`);
+            const stavEl = document.getElementById(`stav-${i}`);
+            if (nadpisEl) nadpisEl.textContent = jmeno || `Člen ${i}`;
+            if (stavEl) {
+                stavEl.textContent = prirazeno === 3 ? '✓ hotovo' : prirazeno > 0 ? `${prirazeno}/3 přiřazeno` : 'nevyplněno';
+                stavEl.className = 'clen-stav' + (prirazeno === 3 ? ' hotovo' : '');
+            }
+        }
+
+        function vytvorKartyHTML(pocet) {
+            const options = ZAJIC_UHLY.map(u => `<option value="${u.id}">${u.id}. ${u.nazev} (${u.stupne})</option>`).join('');
+            const sel = `<option value="">— nevybráno —</option>${options}`;
+            let html = '';
+            for (let i = 1; i <= pocet; i++) {
+                html += `
+                <details class="clen-card" id="karta-${i}" open>
+                  <summary class="clen-summary">
+                    <span class="clen-jmeno" id="nadpis-${i}">Člen ${i}</span>
+                    <span class="clen-stav" id="stav-${i}">nevyplněno</span>
+                  </summary>
+                  <div class="clen-body">
+                    <div class="field">
+                      <label>Jméno / iniciály</label>
+                      <input type="text" id="jmeno-${i}" placeholder="jméno (volitelné)" style="width:100%;padding:0.4rem;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.8rem;border-radius:var(--radius)" oninput="aktualizujStav(${i});ulozit();">
+                    </div>
+                    <div class="field">
+                      <label>Q1 – Interpretace:</label>
+                      <textarea id="odpoved-${i}-1" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-1" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q2 – Identifikace:</label>
+                      <textarea id="odpoved-${i}-2" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-2" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                    <div class="field">
+                      <label>Q3 – Transformace:</label>
+                      <textarea id="odpoved-${i}-3" placeholder="Zapiš odpověď…" oninput="ulozit();"></textarea>
+                      <select id="uhel-${i}-3" onchange="aktualizujStav(${i});ulozit();">${sel}</select>
+                    </div>
+                  </div>
+                </details>`;
+            }
+            document.getElementById('karty-clenu').innerHTML = html;
+        }
+
+        function vytvorKarty() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            if (!pocet || pocet < 1) return;
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            aktualniSession = null;
+            vytvorKartyHTML(pocet);
+            document.getElementById('tlacitko-vyhodnotit').style.display = 'block';
+            document.getElementById('vysledky').style.display = 'none';
+            document.getElementById('autosave-row').style.display = 'flex';
+        }
+
+        function vyhodnotit() {
+            const pocet = parseInt(document.getElementById('pocet-clenu').value);
+            const pocty = {};
+            ZAJIC_UHLY.forEach(u => pocty[u.id] = { count: 0, nazev: u.nazev, barva: u.barva, stupne: u.stupne, q3: u.q3 });
+            let celkem = 0;
+            for (let i = 1; i <= pocet; i++) {
+                for (let q = 1; q <= 3; q++) {
+                    const val = document.getElementById(`uhel-${i}-${q}`)?.value;
+                    if (val) { pocty[val].count++; celkem++; }
+                }
+            }
+            if (celkem === 0) { alert('Přiřaď aspoň jeden úhel před vyhodnocením.'); return; }
+
+            const pretizene = [], deficitni = [], vyvazene = [], nepouzite = [];
+            ZAJIC_UHLY.forEach(u => {
+                const p = pocty[u.id];
+                p.procento = celkem > 0 ? p.count / celkem : 0;
+                if (p.count === 0) nepouzite.push(p);
+                else if (p.procento >= 0.30) pretizene.push(p);
+                else if (p.procento <= 0.10) deficitni.push(p);
+                else vyvazene.push(p);
+            });
+
+            const barHTML = ZAJIC_UHLY.map(u => {
+                const p = pocty[u.id];
+                const w = Math.round(p.procento * 100);
+                return w > 0 ? `<div class="bar-seg" style="width:${w}%;background:${u.barva}" title="${u.nazev} ${w}%"></div>` : '';
+            }).join('');
+
+            let html = `
+            <div class="bar-section">
+              <div class="bar-wrap">${barHTML}</div>
+              <div class="bar-legend">
+                ${ZAJIC_UHLY.filter(u => pocty[u.id].count > 0).map(u => `<div class="bar-leg-item"><span class="bar-leg-dot" style="background:${u.barva}"></span>${u.nazev} (${pocty[u.id].count}×)</div>`).join('')}
+              </div>
+            </div>
+            <h2 style="font-family:var(--serif);font-size:1.4rem;color:var(--accent);margin-bottom:0.5rem;">🐇 Kognitivní mapa týmu</h2>
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:1rem;">Celkem přiřazeno: <strong>${celkem}</strong> úhlů od <strong>${pocet}</strong> členů</p>
+            <table class="mapa-tabulka">
+              <tr><th>Úhel</th><th>Počet</th><th>%</th><th>Typ</th></tr>
+              ${ZAJIC_UHLY.map(u => {
+                const p = pocty[u.id];
+                const proc = Math.round(p.procento * 100);
+                let typ = '◇ vyvážený', trida = '';
+                if (p.count === 0) { typ = '—'; trida = 'deficitni'; }
+                else if (p.procento >= 0.30) { typ = '▲ přetížený'; trida = 'pretizeny'; }
+                else if (p.procento <= 0.10) { typ = '▽ deficitní'; trida = 'deficitni'; }
+                return `<tr class="${trida}"><td><span style="color:${u.barva}">●</span> ${u.nazev} <span style="font-size:0.7rem;color:var(--dim)">${u.stupne}</span></td><td>${p.count}×</td><td>${proc}%</td><td>${typ}</td></tr>`;
+              }).join('')}
+            </table>`;
+
+            if (pretizene.length > 0) {
+                html += `<div class="vysledky-section"><h3>▲ Přetížené úhly (nad 30 %)</h3>`;
+                pretizene.forEach(p => {
+                    const protivahy = deficitni.concat(nepouzite).slice(0, 2);
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}× (${Math.round(p.procento*100)}%)`;
+                    if (protivahy.length > 0) {
+                        html += `<br><em>Trénink deficitu:</em><br>`;
+                        protivahy.forEach(def => { html += `→ <strong>${def.nazev}:</strong> ${def.q3}<br>`; });
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+
+            const vsechnyDeficitni = deficitni.concat(nepouzite);
+            if (vsechnyDeficitni.length > 0) {
+                html += `<div class="vysledky-section"><h3>▽ Deficitní úhly (pod 10 % nebo vůbec)</h3>`;
+                vsechnyDeficitni.forEach(p => {
+                    html += `<div class="uhel-out"><strong style="color:${p.barva}">${p.nazev}</strong> – ${p.count}×<br><em>Návrh úkolu:</em> ${p.q3}</div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `<button class="btn btn-ghost" style="margin-top:1rem;" onclick="window.print()">🖨 Vytisknout výsledky</button>`;
+            html += `<p style="margin-top:1rem;font-size:0.8rem;">🔮 Chceš vygenerovat workshop na míru? <a href="generativni_mod.html">Generativní mód</a> | <a href="workshop_90_minut.html">Hotový workshop</a></p>`;
+
+            const el = document.getElementById('vysledky');
+            el.innerHTML = html;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Správa týmů
+        function ulozitTym() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const nazev = prompt('Název týmu:') || `Tým ${new Date().toLocaleDateString('cs-CZ')}`;
+            const tymy = JSON.parse(localStorage.getItem('zajic_tymy') || '{}');
+            tymy[nazev] = aktualniSession;
+            localStorage.setItem('zajic_tymy', JSON.stringify(tymy));
+            zobrazTymy();
+        }
+        function nacistTym() {
+            const tymy = JSON.parse(localStorage.getItem('zajic_tymy') || '{}');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { alert('Žádné uložené týmy.'); return; }
+            const nazev = prompt('Název týmu k načtení:\n' + keys.join('\n'));
+            if (!nazev || !tymy[nazev]) return;
+            aktualniSession = tymy[nazev];
+            localStorage.setItem(SAVE_KEY, JSON.stringify(aktualniSession));
+            nacistUlozene();
+        }
+        function exportURL() {
+            if (!aktualniSession) { alert('Nejdřív vytvoř zápisník.'); return; }
+            const encoded = btoa(encodeURIComponent(JSON.stringify(aktualniSession)));
+            const url = window.location.origin + window.location.pathname + '?session=' + encoded;
+            navigator.clipboard.writeText(url).then(() => alert('URL zkopírováno!'));
+        }
+        function importURL() {
+            const text = prompt('Vlož URL se session:');
+            if (!text) return;
+            try {
+                const url = new URL(text);
+                const encoded = url.searchParams.get('session');
+                if (!encoded) throw new Error();
+                const data = JSON.parse(decodeURIComponent(atob(encoded)));
+                aktualniSession = data;
+                localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                nacistUlozene();
+            } catch (e) { alert('Neplatná URL.'); }
+        }
+        function zobrazTymy() {
+            const tymy = JSON.parse(localStorage.getItem('zajic_tymy') || '{}');
+            const el = document.getElementById('team-list');
+            const keys = Object.keys(tymy);
+            if (keys.length === 0) { el.innerHTML = ''; return; }
+            el.innerHTML = keys.map(k => `<span onclick="nacistTym('${k}')">${k}</span>`).join('');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { nacistUlozene(); zobrazTymy(); });
+    </script>
+</body>
+</html>
