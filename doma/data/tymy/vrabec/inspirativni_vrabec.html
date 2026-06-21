@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐦 Vrabec – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0d0a; --bg-el: #1a1610; --text: #f0e8d8; --dim: #706040; --mid: #a09070;
+            --accent: #c89860; --accent-dim: #3a2818; --border: #1f1810; --highlight: rgba(200,152,96,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#daa868}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(15,13,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-img{width:100%;max-width:200px;max-height:280px;object-fit:contain;filter:grayscale(100%) contrast(1.2);opacity:0.85;margin:0 auto 1rem;display:block;border-radius:var(--radius)}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#0f0d0a;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#c0b8a8}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#0f0d0a;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#daa868;border-color:#daa868}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#706050;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#daa868}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Vrabec</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <img src="../../../ilustrace/vrabec.jpg" alt="Vrabec" class="hero-img" onerror="this.style.display='none'">
+        <p class="hero-label">Kreativní engine · Karta Vrabec</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Vrabci. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Falešná jistota",stupne:"0°",barva:"#5a7fa8",phrase:"Zvolili jsme vrabce kvůli iluzi kontroly a okamžité dostupnosti.",category:"produkty, obaly",idea:"Navrhněte produkt, který je záměrně 'dočasný' – má zabudovanou životnost nebo mechanismus, který po určité době signalizuje: 'Už jsem se vymkl kontrole. Vyměň mě.' Např. hrnek, který po roce změní barvu, nebo software s 'expirační' notifikací."},
+    {id:2,angle:"Falešná jistota",stupne:"0°",barva:"#5a7fa8",phrase:"Holub byl vzdálený. Vrabec byl hmatatelný a okamžitý.",category:"loga, vizuální identita",idea:"Logo, které má 'dočasnou' a 'trvalou' verzi. Dočasná verze je jednoduchá, rychlá, 'vrabčí'. Trvalá verze je propracovaná, 'holubí'. Značka, která přiznává, že i ona někdy sáhne po kompromisu."},
+    {id:3,angle:"Falešná jistota",stupne:"0°",barva:"#5a7fa8",phrase:"Přiznat si, že 'jistota' byla iluzí. Setřást vrabce znamená přijmout dočasnou nejistotu.",category:"copywriting, obsah",idea:"Napište manifest 'Chvála nejistoty' – o tom, proč je dočasná nejistota lepší než trvalý kompromis. Oslavte rozhodnutí pustit vrabce, i když ještě nemáte holuba."},
+    {id:4,angle:"Falešná jistota",stupne:"0°",barva:"#5a7fa8",phrase:"Vrabec v hrsti. Jistota, která se stala pastí.",category:"design, vizuální identita",idea:"Vizuální identita používající motiv 'sevřené dlaně' – prsty, které něco drží, ale nemůžou se otevřít. Design, který vyjadřuje napětí mezi kontrolou a svobodou."},
+    {id:5,angle:"Kvalitativní degradace",stupne:"30°",barva:"#6a9e72",phrase:"Tým se uspokojil s málem. Snížený standard je nová norma.",category:"produkty, obaly",idea:"Vytvořte 'Stupnici degradace' – fyzický metr, který ukazuje, jak moc se produkt vzdálil od původní vize. Od 'holuba' po 'vrabčí hnízdo'. Používá se na retrospektivách."},
+    {id:6,angle:"Kvalitativní degradace",stupne:"30°",barva:"#6a9e72",phrase:"Znovu definovat, kdo je náš 'holub'. Jaké jsou jeho skutečné atributy?",category:"loga, vizuální identita",idea:"Logo, které má 'aspirační' verzi – ideální podobu, ke které značka směřuje. Není to oficiální logo, ale 'hvězda', která ukazuje směr. Značka, která přiznává, že ještě není tam, kde chce být."},
+    {id:7,angle:"Kvalitativní degradace",stupne:"30°",barva:"#6a9e72",phrase:"Holub – důstojný, nedosažitelný. Vrabec – malý, nervózní.",category:"copywriting, obsah",idea:"Napište 'Dopis od holuba' – fiktivní dopis od vašeho ideálního já (produktu, týmu) adresovaný vašemu současnému já. Co by vám holub řekl o vašem vrabci?"},
+    {id:8,angle:"Kvalitativní degradace",stupne:"30°",barva:"#6a9e72",phrase:"Každý nás vidí s 'vrabčím hnízdem'. Jsme tím týmem, který dělá kompromisy.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Před a po' – ukazující kontrast mezi původním záměrem (holub) a současnou realitou (vrabec). Syrové, upřímné, bez příkras."},
+    {id:9,angle:"Ztracená kontrola",stupne:"60°",barva:"#9b72b5",phrase:"Hrst je metafora pro kontrolu. Živé systémy se vymykají.",category:"produkty, obaly",idea:"Vytvořte 'Auditní kartu kontroly' – nástroj, který pomáhá týmům mapovat, kde ztratily kontrolu nad svými projekty. Karta s otázkami: 'Kdo to řídí?', 'Kdo přidává větvičky?', 'Kdo může říct stop?'"},
+    {id:10,angle:"Ztracená kontrola",stupne:"60°",barva:"#9b72b5",phrase:"To, co mělo být nástrojem, se stalo subjektem.",category:"loga, vizuální identita",idea:"Logo, které je 'naruby' – symbol, který se vymkl kontrole a žije vlastním životem. Např. ikona, která 'utíká' z ohraničeného prostoru. Značka, která přiznává, že věci se někdy zvrtnou."},
+    {id:11,angle:"Ztracená kontrola",stupne:"60°",barva:"#9b72b5",phrase:"Provést audit kontroly: U kterých 'vrabců' jsme ztratili iniciativu?",category:"copywriting, obsah",idea:"Spusťte sérii článků 'Ztracená kontrola' – příběhy projektů, které se vymkly z rukou. Co se stalo? Kde byl bod zlomu? A co teď?"},
+    {id:12,angle:"Ztracená kontrola",stupne:"60°",barva:"#9b72b5",phrase:"Vrabec na hlavě určuje náš vzhled, náladu a myšlení.",category:"design, vizuální identita",idea:"Vizuální styl 'Kontrola vs. chaos' – jedna polovina designu je pevná, strukturovaná (hrst), druhá je divoká, rozpadlá (hlava). Obě koexistují v jedné identitě."},
+    {id:13,angle:"Identifikační past",stupne:"90°",barva:"#5fa8a0",phrase:"Náš kompromis se stal naší vizitkou. Jsme tým s 'vrabčím hnízdem'.",category:"produkty, obaly",idea:"Vytvořte 'Reklamační štít' – fyzický štítek, který si tým může pověsit na dveře: 'Jsme tým s vrabčím hnízdem. Pracujeme na tom.' Produkt, který mění stigma na otevřenost."},
+    {id:14,angle:"Identifikační past",stupne:"90°",barva:"#5fa8a0",phrase:"Změnit vyprávění. Místo 'máme problém' říkat 'procházíme fází učení'.",category:"loga, vizuální identita",idea:"Logo, které má 'fázi' – ukazatel, na kterém stupni transformace se značka nachází. 'Fáze vrabce', 'Fáze stavění hnízda', 'Fáze setřesení', 'Fáze holuba'."},
+    {id:15,angle:"Identifikační past",stupne:"90°",barva:"#5fa8a0",phrase:"Vrabec přestal být řešením, stal se naší definicí.",category:"copywriting, obsah",idea:"Napište článek 'Jak jsme se stali vrabčím hnízdem' – upřímná firemní zpověď o tom, jak se z kompromisu stala identita. A co s tím děláte."},
+    {id:16,angle:"Identifikační past",stupne:"90°",barva:"#5fa8a0",phrase:"Hnízdo z pochybností a ranních vlasů. Sebenaplňující se proroctví.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Sundej to hnízdo' – používající motivy rozcuchaných vlasů, ve kterých je zapletené peří. Syrová, osobní grafika o stigmatu."},
+    {id:17,angle:"Pasivní rezignace",stupne:"120°",barva:"#8e7248",phrase:"Možná je lepší holub... Dáma jen konstatuje, ale nekoná.",category:"produkty, obaly",idea:"Vytvořte 'Krabičku prvního kroku' – sadu, která obsahuje jednu konkrétní akci, kterou lze udělat hned. 'Dnes sundám jednu větvičku.' Produkt proti prokrastinaci."},
+    {id:18,angle:"Pasivní rezignace",stupne:"120°",barva:"#8e7248",phrase:"Přerušit cyklus rezignace malou, vítěznou akcí.",category:"loga, vizuální identita",idea:"Logo s 'akčním tlačítkem' – prvek, který vybízí ke kliknutí, k akci. Značka, která říká: 'Neseď a nedívej se. Udělej první krok.'"},
+    {id:19,angle:"Pasivní rezignace",stupne:"120°",barva:"#8e7248",phrase:"Jsme tak unavení udržováním vrabce, že nemáme energii na změnu.",category:"copywriting, obsah",idea:"Napište 'Manifest unavených' – pro všechny, kdo jsou vyčerpaní z udržování kompromisů. O tom, že únava je legitimní. A že první krok může být jen odpočinek."},
+    {id:20,angle:"Pasivní rezignace",stupne:"120°",barva:"#8e7248",phrase:"Zůstáváme v bolestivém, ale známém stavu.",category:"design, vizuální identita",idea:"Vizuální styl 'Známá bolest' – používající opakující se, únavné vzory, které evokují rutinu a rezignaci. Design, který je záměrně nepříjemný – aby probudil."},
+    {id:21,angle:"Dynamika návratnosti",stupne:"150°",barva:"#5a8a5a",phrase:"I špatné rozhodnutí vytváří vazby. Sunk costs nás drží u vrabce.",category:"produkty, obaly",idea:"Vytvořte 'Kalkulačku utopených nákladů' – fyzické počítadlo, které ukazuje, kolik času a peněz už bylo investováno do udržování vrabce. Vedle je tlačítko: 'Kolik by stálo začít znovu?'"},
+    {id:22,angle:"Dynamika návratnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Sečtěte čas a energii věnované vrabci. Co bychom za to mohli postavit?",category:"loga, vizuální identita",idea:"Logo, které je 'účetnictvím' – obsahuje číslice, grafy, symboly nákladů. Značka, která umí počítat. A ukazuje, že kompromis je dražší než změna."},
+    {id:23,angle:"Dynamika návratnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Strach z přiznání chyby je silnější než touha po změně.",category:"copywriting, obsah",idea:"Napište 'Přiznání chyby' – vzorový text, který může vedoucí týmu použít, když chce přiznat, že se spletl. 'Vybrali jsme vrabce. Byla to chyba. Pojďme to změnit.'"},
+    {id:24,angle:"Dynamika návratnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Pustit vrabce znamená přiznat, že naše původní investice byla chybná.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Odepsáno' – používající razítka 'ODEPSÁNO', 'ZTRÁTA', 'CHYBA'. Ale s krásnou typografií. Design, který oslavuje odvahu přiznat omyl."},
+    {id:25,angle:"Ideál jako dekorace",stupne:"180°",barva:"#a85a5a",phrase:"Holub je krásný, ale nefunkční. Je příliš vzdálený.",category:"produkty, obaly",idea:"Vytvořte 'Snímací dalekohled' – produkt, který pomáhá 'přiblížit' vzdálené cíle. Metaforický nástroj pro plánování: 'Jak dostaneme holuba ze střechy dolů?'"},
+    {id:26,angle:"Ideál jako dekorace",stupne:"180°",barva:"#a85a5a",phrase:"Sundat holuba ze střechy. Převést ho z vize na 5 konkrétních kritérií.",category:"loga, vizuální identita",idea:"Logo, které je 'žebříkem' – symbolem cesty od země (realita) ke střeše (vize). Značka, která ukazuje, že ideál není dekorace, ale cíl."},
+    {id:27,angle:"Ideál jako dekorace",stupne:"180°",barva:"#a85a5a",phrase:"Holub se stal výčitkou, připomínkou selhání, ne inspirací.",category:"copywriting, obsah",idea:"Napište 'Dopis holubovi' – omluvu za to, že jste ho nechali jen jako dekoraci. A slib, že ho konečně sundáte ze střechy."},
+    {id:28,angle:"Ideál jako dekorace",stupne:"180°",barva:"#a85a5a",phrase:"Nikdy jsme nesestoupili z úrovně vize na úroveň akčního plánu.",category:"design, vizuální identita",idea:"Vizuální šablona 'Od vize k akci' – prázdný plakát, který má nahoře 'Holub' (vize) a dole prázdné kroky. Design, který nutí vyplnit cestu."},
+    {id:29,angle:"Názor jako parazit",stupne:"210°",barva:"#c8a832",phrase:"Vrabec je 'názor, co se nedá setřást'. Zakořenil se jako dogma.",category:"produkty, obaly",idea:"Vytvořte 'Dogmatickou kostku' – hrací kostku, která má na každé straně jednu firemní frázi-dogma ('To nejde', 'Na víc nemáme'). Používá se na poradách: když někdo řekne dogma, hodí kostkou a musí ho obhájit."},
+    {id:30,angle:"Názor jako parazit",stupne:"210°",barva:"#c8a832",phrase:"Vytáhnout dogma na světlo. Popsat ho jako cizí entitu.",category:"loga, vizuální identita",idea:"Logo, které je 'antitezí dogmatu' – obsahuje prvek, který boří zažité představy. Např. přeškrtnuté 'to nejde'. Značka, která aktivně bojuje proti vlastním paradigmatům."},
+    {id:31,angle:"Názor jako parazit",stupne:"210°",barva:"#c8a832",phrase:"Každý nový nápad je poměřován vrabčím dogmatem a zamítnut.",category:"copywriting, obsah",idea:"Spusťte rubriku 'Pohřbené nápady' – exhumujte nápady, které byly v minulosti zamítnuty kvůli dogmatům. Které z nich by dnes obstály?"},
+    {id:32,angle:"Názor jako parazit",stupne:"210°",barva:"#c8a832",phrase:"Zeptat se: 'Proč tě tu ještě hostíme?' A vědomě ho vypudit.",category:"design, vizuální identita",idea:"Vizuální rituál 'Vyhánění dogmat' – plakáty, na které se napíšou škodlivé fráze a pak se slavnostně spálí (nebo skartují). Design, který je katarzí."},
+    {id:33,angle:"Inovace proti sobě",stupne:"240°",barva:"#c8722a",phrase:"Každé naše přizpůsobení se vrabci je další větvičkou do jeho hnízda.",category:"produkty, obaly",idea:"Vytvořte 'Stopař větviček' – nástroj, který vizuálně ukazuje, kolik workaroundů a dočasných řešení tým přidal k původnímu problému. Každá větvička má svou kartičku."},
+    {id:34,angle:"Inovace proti sobě",stupne:"240°",barva:"#c8722a",phrase:"Zastavit cyklus 'přidávání větviček'. Moratorium na vylepšování.",category:"loga, vizuální identita",idea:"Logo s 'moratoriem' – červeným razítkem STOP přes stávající symbol. Značka, která říká: 'Už nebudeme vylepšovat špatné. Začínáme znovu.'"},
+    {id:35,angle:"Inovace proti sobě",stupne:"240°",barva:"#c8722a",phrase:"Tým se stává inženýrem své vlastní pasti.",category:"copywriting, obsah",idea:"Napište článek 'Jak jsme postavili vlastní past' – detailní popis toho, jak tým vynalézáním dočasných řešení vytvořil systém, ze kterého nemůže ven."},
+    {id:36,angle:"Inovace proti sobě",stupne:"240°",barva:"#c8722a",phrase:"Místo řešení kořene problému vymýšlíme chytrá, ale dočasná vylepšení.",category:"design, vizuální identita",idea:"Vizuální koncept 'Lepení' – design, který používá prvky záplat, lepení, provizorních oprav. Estetika dočasnosti, která se stala trvalou."},
+    {id:37,angle:"Sociální percepce",stupne:"270°",barva:"#a83060",phrase:"Všichni říkali: 'To je vrabčí hnízdo.' Tým je stigmatizován.",category:"produkty, obaly",idea:"Vytvořte 'Odznak stigmatu' – ironický odznak, který tým nosí, aby přiznal svůj problém. 'Ano, máme vrabčí hnízdo. A pracujeme na tom.' Produkt, který mění stigma na sílu."},
+    {id:38,angle:"Sociální percepce",stupne:"270°",barva:"#a83060",phrase:"Změnit narativ z problému na hrdinský příběh transformace.",category:"loga, vizuální identita",idea:"Logo, které je 'před a po' – dvě verze, které ukazují cestu od vrabčího hnízda k holubovi. Značka, která vypráví příběh transformace."},
+    {id:39,angle:"Sociální percepce",stupne:"270°",barva:"#a83060",phrase:"Začneme sami sebe vnímat jako 'ten tým s vrabčím hnízdem'.",category:"copywriting, obsah",idea:"Napište 'Manifest znovuzrození' – text, kterým tým oficiálně oznamuje, že opouští starou identitu a začíná novou kapitolu. Slavnostní, důstojný."},
+    {id:40,angle:"Sociální percepce",stupne:"270°",barva:"#a83060",phrase:"Externí pozorovatelé nás definují podle naší zátěže.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Vidíš hnízdo? My vidíme transformaci.' – plakáty, které ukazují dvě perspektivy: vnější (stigma) a vnitřní (cesta)."},
+    {id:41,angle:"Volba mezi špatným a horším",stupne:"300°",barva:"#6080a0",phrase:"Původní úsloví staví falešnou dichotomii. Realita ukázala třetí, nejhorší variantu.",category:"produkty, obaly",idea:"Vytvořte 'Kompas třetí cesty' – nástroj, který pomáhá najít alternativu, když se zdá, že jsou jen dvě špatné možnosti. Karty s otázkami, které rozšiřují perspektivu."},
+    {id:42,angle:"Volba mezi špatným a horším",stupne:"300°",barva:"#6080a0",phrase:"Přestat uvažovat v dichotomiích. Hledat třetí cestu.",category:"loga, vizuální identita",idea:"Logo, které je 'třetí možností' – symbol, který se vymyká binárnímu myšlení. Není to A ani B, je to něco úplně jiného. Značka, která odmítá falešné volby."},
+    {id:43,angle:"Volba mezi špatným a horším",stupne:"300°",barva:"#6080a0",phrase:"Možná nejde o to chytit holuba, ale naučit se létat.",category:"copywriting, obsah",idea:"Napište esej 'Místo honby za holubem' – o tom, že někdy řešením není dosáhnout ideálu, ale změnit sebe. Metafora učení se létat."},
+    {id:44,angle:"Volba mezi špatným a horším",stupne:"300°",barva:"#6080a0",phrase:"Špatná jistota může být horší než nejistý ideál.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Jistota vs. svoboda' – kontrast mezi pevnou, ale stísněnou hrstí (jistota) a otevřeným nebem (svoboda). Design, který nutí přemýšlet."},
+    {id:45,angle:"Akceptace vs. akce",stupne:"330°",barva:"#8060b0",phrase:"Celý příběh je o pasivitě. Chybí rozhodná akce.",category:"produkty, obaly",idea:"Vytvořte 'Spouštěč akce' – fyzické tlačítko, které po zmáčknutí spustí odpočet. 'Za 5 vteřin začínám.' Produkt pro lidi, kteří potřebují impuls k činu."},
+    {id:46,angle:"Akceptace vs. akce",stupne:"330°",barva:"#8060b0",phrase:"Spustit projekt 'Velké setřesení'. Jediný cíl pro příští čtvrtletí.",category:"loga, vizuální identita",idea:"Logo s 'odpočtem' – dynamický prvek, který ukazuje, kolik času zbývá do 'Velkého setřesení'. Značka, která je v pohybu."},
+    {id:47,angle:"Akceptace vs. akce",stupne:"330°",barva:"#8060b0",phrase:"Tým je v režimu oběti. Čeká, až se situace vyřeší sama.",category:"copywriting, obsah",idea:"Napište 'Výzvu k akci' – interní dokument, který říká: 'Přestáváme čekat. Tohle jsou naše první tři kroky.' Datum. Podpis. Závazek."},
+    {id:48,angle:"Akceptace vs. akce",stupne:"330°",barva:"#8060b0",phrase:"Jediný způsob, jak setřást vrabce, je vstát a zatřást.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Velké setřesení' – dynamická grafika, která evokuje pohyb, třes, uvolnění. Design, který je sám o sobě akcí."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Vrabec · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('vrabec_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('vrabec_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('vrabec_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('vrabec_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('vrabec_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('vrabec_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
