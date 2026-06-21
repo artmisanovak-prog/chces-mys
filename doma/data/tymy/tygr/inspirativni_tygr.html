@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐅 Tygr – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a05; --bg-el: #14120a; --text: #f5f0e0; --dim: #6b5830; --mid: #9a8040;
+            --accent: #d9803a; --accent-dim: #3a2010; --border: #1f180a; --highlight: rgba(217,128,58,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#eb9a5a}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(10,10,5,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-img{width:100%;max-width:200px;max-height:280px;object-fit:contain;filter:grayscale(100%) contrast(1.2);opacity:0.85;margin:0 auto 1rem;display:block;border-radius:var(--radius)}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#0a0a05;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#c0b090}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#0a0a05;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#eb9a5a;border-color:#eb9a5a}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#6b5040;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#eb9a5a}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Tygr</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <img src="../../../ilustrace/tygr.jpg" alt="Tygr" class="hero-img" onerror="this.style.display='none'">
+        <p class="hero-label">Kreativní engine · Karta Tygr</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Tygrovi. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Systémová chyba",stupne:"0°",barva:"#5a7fa8",phrase:"Žába odhalila bug v programu 'pohádka'. Kód umožňoval proměnu v cokoli.",category:"produkty, obaly",idea:"Vytvořte produkt, který má záměrně 'bug' – třeba hrnek s ouškem, které je naschvál jinde, než čekáte. Nebo diář s 'chybou' v číslování, která vás nutí přemýšlet o tom, co je vlastně správně. Produkt, který říká: 'Chyba je feature.'"},
+    {id:2,angle:"Systémová chyba",stupne:"0°",barva:"#5a7fa8",phrase:"Očekávala se proměna v prince, ale kód umožňoval proměnu v cokoli.",category:"loga, vizuální identita",idea:"Logo, které je 'bugem' – má v sobě záměrnou asymetrii, která by v normálním designu byla považována za chybu. Ale tady je to hlavní prvek. Značka, která říká: 'Naše chyby jsou naše identita.'"},
+    {id:3,angle:"Systémová chyba",stupne:"0°",barva:"#5a7fa8",phrase:"Implementovat 'testovací prostředí' pro nápady, kde se nesoudí podle pravidel.",category:"copywriting, obsah",idea:"Napište sérii článků 'Naše krásné chyby' – o tom, co se ve firmě pokazilo, ale vedlo to k něčemu lepšímu. Každý článek je oslavou bugu, který změnil systém."},
+    {id:4,angle:"Systémová chyba",stupne:"0°",barva:"#5a7fa8",phrase:"Kód umožňoval proměnu v cokoli. To je chyba, která je darem.",category:"design, vizuální identita",idea:"Vizuální styl postavený na 'glitchi' – záměrné digitální chyby, posunuté pixely, rozpadlé písmo. Design, který oslavuje nedokonalost kódu."},
+    {id:5,angle:"Jazyková rebelie",stupne:"30°",barva:"#6a9e72",phrase:"'Princ' je jen slovo, 'tygr' je její slovo. Ukazuje moc přejmenovávat realitu.",category:"produkty, obaly",idea:"Vytvořte produkt, který si uživatel může sám pojmenovat – třeba bílý sešit s prázdným polem na obálce a fixou. Nebo lahev s etiketou, kterou lze přepsat. Produkt, který říká: 'Pojmenuj si mě sám.'"},
+    {id:6,angle:"Jazyková rebelie",stupne:"30°",barva:"#6a9e72",phrase:"Vytvořit nový slovník. Místo 'problém' říkat 'příležitost k překladu'.",category:"loga, vizuální identita",idea:"Logo, které je 'slovem' – typografické logo, kde je jeden znak záměrně 'špatně'. Třeba 'A' obráceně vzhůru nohama. Značka, která přejmenovává realitu."},
+    {id:7,angle:"Jazyková rebelie",stupne:"30°",barva:"#6a9e72",phrase:"Máme fráze jako 'to nejde', 'nesedí do konceptu' – to jsou kouzla, která brání proměně.",category:"copywriting, obsah",idea:"Spusťte 'Slovníkovou revoluci' – sepište všechny zakazující fráze, které váš tým používá, a ke každé napište 'překlad' do jazyka možností. 'To nejde' → 'Zatím jsme nenašli cestu.'"},
+    {id:8,angle:"Jazyková rebelie",stupne:"30°",barva:"#6a9e72",phrase:"Přejmenujte svou budoucnost. Jaké slovo nahradí 'princ'?",category:"design, vizuální identita",idea:"Vytvořte plakátovou kampaň 'Nová slova' – každý plakát obsahuje jedno staré slovo (přeškrtnuté) a jedno nové. Vizuální manifest jazykové rebelie."},
+    {id:9,angle:"Autentická volba",stupne:"60°",barva:"#9b72b5",phrase:"Žába věděla, kým je, a odmítla být tím, kým ji systém chtěl mít.",category:"produkty, obaly",idea:"Vytvořte 'Autentický diář' – každá stránka má dvě kolonky: 'Co se ode mě očekává' a 'Co doopravdy chci'. Produkt pro lidi, kteří se rozhodují mezi systémem a sebou samými."},
+    {id:10,angle:"Autentická volba",stupne:"60°",barva:"#9b72b5",phrase:"Autenticita nad poslušností.",category:"loga, vizuální identita",idea:"Logo, které je 'neharmonické' – používá barvy, které k sobě 'nepatří', tvary, které se 'bijí'. Ale dohromady to funguje. Značka, která je věrná sobě, ne pravidlům."},
+    {id:11,angle:"Autentická volba",stupne:"60°",barva:"#9b72b5",phrase:"Zavést 'žabí kruhy', kde každý řekne: 'Kdybych mohl být čímkoli v tomto projektu...'",category:"copywriting, obsah",idea:"Napište sérii profilů lidí z vašeho týmu – ale ne podle jejich pozice, nýbrž podle jejich tajného přání. 'Kdybych nebyl ajťák, byl bych...' Oslava skrytých identit."},
+    {id:12,angle:"Autentická volba",stupne:"60°",barva:"#9b72b5",phrase:"Někdy musíš říct ne princi, aby ses mohl stát tygrem.",category:"design, vizuální identita",idea:"Vizuální identita pro kampaň 'Řekni ne' – pomáhá lidem odmítnout role, které jim byly přiděleny, a najít vlastní. Grafika, která je syrová, osobní, autentická."},
+    {id:13,angle:"Trauma tradice",stupne:"90°",barva:"#5fa8a0",phrase:"Princezna byla zraněná, protože jí systém slíbil jednoduché kouzlo, ale život je složitější.",category:"produkty, obaly",idea:"Vytvořte 'Balíček první pomoci po zklamání' – sadu, která obsahuje čaj, hořkou čokoládu, zápisník na vztek a kartičku s nápisem 'Tradice lžou'. Pro každého, kdo čekal prince a dostal chaos."},
+    {id:14,angle:"Trauma tradice",stupne:"90°",barva:"#5fa8a0",phrase:"Uspořádat 'pohřeb' pro jednu zastaralou tradici. Vědomě se jí vzdát.",category:"loga, vizuální identita",idea:"Logo, které má 'smuteční' variantu – černou, zádumčivou, používanou při oficiálním ukončování starých projektů nebo procesů. Značka, která umí pohřbívat."},
+    {id:15,angle:"Trauma tradice",stupne:"90°",barva:"#5fa8a0",phrase:"Držíme se starých metod, i když už nefungují, jen protože 'to tak vždycky bylo'.",category:"copywriting, obsah",idea:"Napište 'Smuteční oznámení' za každou tradici, kterou firma opouští. Oficiální, důstojné rozloučení. 'Dnes umírá náš starý schvalovací proces. Sloužil nám 12 let. Děkujeme.'"},
+    {id:16,angle:"Trauma tradice",stupne:"90°",barva:"#5fa8a0",phrase:"Tradice jsou někdy násilí. Která vás bolí?",category:"design, vizuální identita",idea:"Vytvořte 'Zeď bolestivých tradic' – fyzickou nástěnku, kam lidé můžou anonymně napsat, která tradice je zraňuje. Design, který dává hlas bolesti."},
+    {id:17,angle:"Překladač přání",stupne:"120°",barva:"#8e7248",phrase:"Nejde o kouzlo, ale o překlad. Žába nepřeložila 'žába→princ', ale 'přání→skutečnost'.",category:"produkty, obaly",idea:"Vytvořte 'Překladač' – fyzický nástroj (třeba karty s otázkami), který pomáhá překládat, co lidé říkají, na to, co doopravdy chtějí. Pro schůze, porady, briefy."},
+    {id:18,angle:"Překladač přání",stupne:"120°",barva:"#8e7248",phrase:"Před každým briefem se ptát: 'Co je za tím přáním? Co doopravdy chce stát?'",category:"loga, vizuální identita",idea:"Logo, které je 'otazníkem' – doslova. Nebo obsahuje prvek, který vypadá jako klíčová dírka. Značka, která říká: 'My se ptáme, co je za tím.'"},
+    {id:19,angle:"Překladač přání",stupne:"120°",barva:"#8e7248",phrase:"Klient říká, co chce, ale my řešíme, co řekl, ne co skutečně potřebuje.",category:"copywriting, obsah",idea:"Spusťte sérii 'Přeloženo z klientštiny' – humorné i vážné články o tom, co klienti říkají a co tím doopravdy myslí. Učebnice překladu přání."},
+    {id:20,angle:"Překladač přání",stupne:"120°",barva:"#8e7248",phrase:"Slyšet skutečné touhy. To je umění.",category:"design, vizuální identita",idea:"Vizuální styl 'Překladač' – používá dvě vrstvy: povrchovou (co je řečeno) a skrytou (co je myšleno). Obě jsou vidět, ale ta skrytá je důležitější."},
+    {id:21,angle:"Kontrakulturní posun",stupne:"150°",barva:"#5a8a5a",phrase:"Pohádka není o výjimce, ale o změně paradigmatu. Nová generace přichází s jinými pravidly.",category:"produkty, obaly",idea:"Vytvořte 'Balíček nové generace' – sadu nástrojů pro mladší členy týmu, kteří chtějí změnit pravidla. Obsahuje: manifest, kartičky s otázkami pro starší kolegy, a návod, jak přežít v systému, který vás nechápe."},
+    {id:22,angle:"Kontrakulturní posun",stupne:"150°",barva:"#5a8a5a",phrase:"Vytvořit 'mostový tým' lidí z různých generací.",category:"loga, vizuální identita",idea:"Logo, které je 'mostem' – spojuje dva vizuální světy: jeden tradiční, druhý radikálně moderní. Značka, která překládá mezi generacemi."},
+    {id:23,angle:"Kontrakulturní posun",stupne:"150°",barva:"#5a8a5a",phrase:"Starší nerozumí mladším. Místo dialogu konflikt.",category:"copywriting, obsah",idea:"Napište 'Manifest mezigeneračního příměří' – dokument, který sepíšou společně zástupci různých generací ve firmě. Co si navzájem slibují."},
+    {id:24,angle:"Kontrakulturní posun",stupne:"150°",barva:"#5a8a5a",phrase:"Je čas napsat novou pohádku.",category:"design, vizuální identita",idea:"Vytvořte vizuální kampaň 'Nová pohádka' – plakáty, které ukazují staré firemní příběhy a vedle nich nové verze. Design, který vypráví o změně."},
+    {id:25,angle:"Nebezpečná svoboda",stupne:"180°",barva:"#a85a5a",phrase:"Když každá žába může být čímkoli, systém se rozpadne. Potřebujeme pravidla.",category:"produkty, obaly",idea:"Vytvořte 'Krabičku posledních pravidel' – sadu karet s minimálními nutnými pravidly, bez kterých se tým rozpadne. Všechno ostatní je volná hra. Produkt pro týmy, které se bojí chaosu."},
+    {id:26,angle:"Nebezpečná svoboda",stupne:"180°",barva:"#a85a5a",phrase:"Definovat 'nesvatou trojici' – 3 věci, které se NESMÍ měnit.",category:"loga, vizuální identita",idea:"Logo, které je 'kotvou' – pevným bodem uprostřed chaosu. Značka, která říká: 'Tohle jsou naše tři neměnné věci. Zbytek je volný.'"},
+    {id:27,angle:"Nebezpečná svoboda",stupne:"180°",barva:"#a85a5a",phrase:"Raději držíme špatný proces, než abychom riskovali, že se vše rozpadne.",category:"copywriting, obsah",idea:"Napište článek 'Chvála chaosu' – o tom, proč je trocha nepořádku zdravá. A proč přehnaná kontrola dusí inovaci. Manifest pro ty, kdo se bojí svobody."},
+    {id:28,angle:"Nebezpečná svoboda",stupne:"180°",barva:"#a85a5a",phrase:"Svoboda bez hranic je anarchie. Ale které hranice jsou nutné?",category:"design, vizuální identita",idea:"Vizuální systém 'Hranice a svoboda' – každá stránka, každý dokument má jasně vyznačenou 'zónu pravidel' a 'zónu svobody'. Design, který učí rozlišovat."},
+    {id:29,angle:"Láska jako souhlas",stupne:"210°",barva:"#c8a832",phrase:"Klíčové slovo je 'souhlas'. Láska je vyjednávání, ne diktát.",category:"produkty, obaly",idea:"Vytvořte 'Smlouvu o souhlasu' – fyzický dokument, který podepisují obě strany před začátkem spolupráce. Není právně závazný, ale lidsky ano. Produkt pro týmy, které chtějí vyjednávat, ne diktovat."},
+    {id:30,angle:"Láska jako souhlas",stupne:"210°",barva:"#c8a832",phrase:"Zavést 'předpolibkové dohody': než začneme projekt, dohodnout se.",category:"loga, vizuální identita",idea:"Logo, které je 'podpisem' – dvě linky, které se protínají jako dva podpisy na smlouvě. Značka, která říká: 'Než začneme, dohodneme se.'"},
+    {id:31,angle:"Láska jako souhlas",stupne:"210°",barva:"#c8a832",phrase:"Management 'líbá' projekty, ale bez souhlasu týmu na podmínkách.",category:"copywriting, obsah",idea:"Napište 'Předpolibkový protokol' – šablonu pro začátek každého projektu. Otázky, na které musí obě strany odpovědět, než se 'políbí'. 'Do čeho se měníš? Souhlasíš?'"},
+    {id:32,angle:"Láska jako souhlas",stupne:"210°",barva:"#c8a832",phrase:"Bez souhlasu je i ta nejkrásnější proměna násilím.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Souhlas' – série plakátů, které ukazují, jak vypadá spolupráce se souhlasem a bez něj. Grafika, která je tichá, ale silná."},
+    {id:33,angle:"Narativní sabotáž",stupne:"240°",barva:"#c8722a",phrase:"Žába sabotovala příběh, aby napsala lepší. Někdy musíš rozbít vyprávění.",category:"produkty, obaly",idea:"Vytvořte 'Sabotérovo pero' – pero, které píše červeně a je určeno jen na škrtání. Používá se na poradách, když někdo řekne frázi, která patří do starého příběhu. Produkt pro disruptory."},
+    {id:34,angle:"Narativní sabotáž",stupne:"240°",barva:"#c8722a",phrase:"Pověřit někoho rolí 'sabotéra příběhu'.",category:"loga, vizuální identita",idea:"Logo, které má 'sabotážní' variantu – deformovanou, převrácenou, rozbitou. Používá se, když firma vědomě boří starý příběh. Značka, která umí sabotovat sama sebe."},
+    {id:35,angle:"Narativní sabotáž",stupne:"240°",barva:"#c8722a",phrase:"A co kdyby se z toho stal tygr místo prince?",category:"copywriting, obsah",idea:"Spusťte rubriku 'Sabotážní pátek' – každý týden jeden článek, který zpochybňuje nějaký firemní předpoklad. 'Co kdyby naše největší jistota byla omyl?'"},
+    {id:36,angle:"Narativní sabotáž",stupne:"240°",barva:"#c8722a",phrase:"Starý příběh musí zemřít, aby se zrodil nový.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Smrt starého příběhu' – používající prvky destrukce, trhání, pálení. Ale s příslibem nového začátku. Design, který je katarzí."},
+    {id:37,angle:"Metamorfóza jako proces",stupne:"270°",barva:"#a83060",phrase:"Nešlo o okamžitou proměnu, ale o proces: pulec→žába→tygr.",category:"produkty, obaly",idea:"Vytvořte 'Vývojový diář' – zápisník, který je rozdělený do fází. Každá fáze má jinou barvu, jiné otázky. 'Fáze pulce: Co se právě líhne?' 'Fáze žáby: Co už umím?' 'Fáze tygra: Čím chci být?'"},
+    {id:38,angle:"Metamorfóza jako proces",stupne:"270°",barva:"#a83060",phrase:"Mapovat proměny projektů jako vývojové fáze, ne jako binární selhání/úspěch.",category:"loga, vizuální identita",idea:"Logo, které má 'vývojové fáze' – tři varianty, které ukazují růst. Pulec. Žába. Tygr. Značka, která ukazuje, že je na cestě."},
+    {id:39,angle:"Metamorfóza jako proces",stupne:"270°",barva:"#a83060",phrase:"Každá fáze má svůj smysl. I pulec je důležitý.",category:"copywriting, obsah",idea:"Napište 'Oslavu pulce' – článek o důležitosti začátků, které ještě nevypadají jako úspěch. O tom, že každý tygr byl jednou pulcem."},
+    {id:40,angle:"Metamorfóza jako proces",stupne:"270°",barva:"#a83060",phrase:"Změna není skok, ale cesta.",category:"design, vizuální identita",idea:"Vizuální styl 'Fáze' – každé oddělení, každý projekt má svou barvu podle fáze, ve které se nachází. Design, který respektuje proces."},
+    {id:41,angle:"Nepřeložitelná podstata",stupne:"300°",barva:"#6080a0",phrase:"Některé věci jsou nepřeložitelné, jen zažité.",category:"produkty, obaly",idea:"Vytvořte 'Tajemný objekt' – produkt, který nemá návod. Jeho účel není vysvětlený. Každý si s ním musí poradit sám. Produkt, který oslavuje nepřeložitelné."},
+    {id:42,angle:"Nepřeložitelná podstata",stupne:"300°",barva:"#6080a0",phrase:"Identifikovat 3 věci v týmu, které jsou 'nepřeložitelné', a chránit je.",category:"loga, vizuální identita",idea:"Logo, které je 'šifrou' – obsahuje prvek, který nelze snadno vysvětlit, ale každý ho cítí. Značka, která má tajemství."},
+    {id:43,angle:"Nepřeložitelná podstata",stupne:"300°",barva:"#6080a0",phrase:"Když se snažíme přeložit kulturu týmu, intuici, důvěru do reportů a metrik.",category:"copywriting, obsah",idea:"Napište 'Manifest nepřeložitelného' – o tom, co ve vaší firmě nelze změřit, ale je to to nejcennější. O důvěře, intuici, atmosféře. A proč je máme chránit."},
+    {id:44,angle:"Nepřeložitelná podstata",stupne:"300°",barva:"#6080a0",phrase:"Některé věci jsou nepřeložitelné. A to je v pořádku.",category:"design, vizuální identita",idea:"Vizuální kampaň 'Nepřeložitelné' – používající abstraktní tvary, které nemají jasný význam. Design, který říká: 'Nesnaž se všechno pochopit.'"},
+    {id:45,angle:"Budoucnost jako možnost",stupne:"330°",barva:"#8060b0",phrase:"Princezna nepolíbila budoucnost (pevný princ), ale možnost (otevřený tygr).",category:"produkty, obaly",idea:"Vytvořte 'Kompas možností' – není to kompas, který ukazuje sever. Je to prázdná růžice, do které si každý napíše svůj vlastní směr. Produkt pro vizionáře."},
+    {id:46,angle:"Budoucnost jako možnost",stupne:"330°",barva:"#8060b0",phrase:"Kdybychom mohli být čímkoli v 5 letech, čím bychom byli?",category:"loga, vizuální identita",idea:"Logo, které je 'otevřené' – nemá pevný tvar, je to soustava možností. Značka, která říká: 'Ještě jsme se nerozhodli, kým budeme. A to je naše síla.'"},
+    {id:47,angle:"Budoucnost jako možnost",stupne:"330°",barva:"#8060b0",phrase:"Budoucnost je otevřená, ne determinovaná.",category:"copywriting, obsah",idea:"Napište 'Dopis z budoucnosti' – každý člen týmu napíše dopis sám sobě za 5 let. Ale ne jeden – tři verze. Tři různé budoucnosti. Oslava otevřenosti."},
+    {id:48,angle:"Budoucnost jako možnost",stupne:"330°",barva:"#8060b0",phrase:"Možná nebudu princeznou. Možná budu tou, co líbá tygry.",category:"design, vizuální identita",idea:"Vizuální identita 'Možná' – používající nedokončené tvary, náznaky, rozpracované linky. Design, který nikdy není hotový. Protože možnost je vždy otevřená."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Tygr · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('tygr_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('tygr_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('tygr_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('tygr_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('tygr_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('tygr_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
