@@ -148,8 +148,11 @@ kreativita, fyzika jazyka, metadenik
 
 ---
 
-- [kocour_uhly](doma/karty/uhly/uhly_kocour.html)
-- [kocour_uhly1](doma/karty/uhly/uhly_kocour1.html)
+- [ukoly_kocour](doma/karty/ukoly/ukoly_kocour.html)
+- [ukoly_kocour1](doma/karty/ukoly/ukoly_kocour1.html)
+[ukoly_ryba](doma/karty/ukoly/ukoly_ryba.html)
+- [ukoly_zajic](doma/karty/ukoly/ukoly_zajic.html)
+
   
 ---
 
