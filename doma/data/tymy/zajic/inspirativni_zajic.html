@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐇 Zajíc – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0b07; --bg-el: #1a1410; --text: #f5ede0; --dim: #6b5840; --mid: #9a8070;
+            --accent: #d97a38; --accent-dim: #3a2010; --border: #1f1810; --highlight: rgba(217,122,56,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#eb9a5a}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(15,11,7,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-img{width:100%;max-width:200px;max-height:280px;object-fit:contain;filter:grayscale(100%) contrast(1.2);opacity:0.85;margin:0 auto 1rem;display:block;border-radius:var(--radius)}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#0f0b07;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#c0b0a0}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#0f0b07;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#eb9a5a;border-color:#eb9a5a}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#6b5040;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#eb9a5a}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Zajíc</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <img src="../../../ilustrace/zajic.jpg" alt="Zajíc" class="hero-img" onerror="this.style.display='none'">
+        <p class="hero-label">Kreativní engine · Karta Zajíc</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Zaječici. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Převyprávění selhání",stupne:"0°",barva:"#5a7fa8",phrase:"Chyba jako hrdinství. Realita je jen podklad, legenda roste nad ní.",category:"produkty, obaly",idea:"Navrhněte produkt, který oslavuje 'skutečnou verzi' příběhu – například diář 'Co se skutečně stalo' s oddílem pro fakta a oddílem pro legendy. Obal, který má dvě vrstvy: vnější oficiální a vnitřní pravdivou."},
+    {id:2,angle:"Převyprávění selhání",stupne:"0°",barva:"#5a7fa8",phrase:"Zázračné zachránění se stává plánovaným úspěchem.",category:"loga, vizuální identita",idea:"Logo, které má dvě varianty – 'oficiální legendu' (lesklou, dokonalou) a 'skutečnou verzi' (strohou, syrovou) dostupnou po kliknutí nebo přiblížení. Značka, která přiznává svou dvojí tvář."},
+    {id:3,angle:"Převyprávění selhání",stupne:"0°",barva:"#5a7fa8",phrase:"Při reflexi oddělit fakta od narativu: 'Co se skutečně stalo vs. Jak to vyprávíme?'",category:"copywriting, obsah",idea:"Pište případové studie, které uvádějí na pravou míru firemní mýty. Každá případovka má dvě části: 'Legenda' (co se říká) a 'Spáleniště' (co se skutečně stalo). Transparentnost jako konkurenční výhoda."},
+    {id:4,angle:"Převyprávění selhání",stupne:"0°",barva:"#5a7fa8",phrase:"Co se skutečně stalo vs. Jak to vyprávíme.",category:"design, vizuální identita",idea:"Navrhněte vizuální identitu s 'vrstvami pravdy' – veřejná vrstva (web, sociální sítě) je uhlazená, interní vrstva (intranet, dokumenty) je syrová a přiznává omyly. Obě používají stejné logo, ale v jiném kontextu."},
+    {id:5,angle:"Nošení omylu jako koruny",stupne:"30°",barva:"#6a9e72",phrase:"Naučila se nosit svůj omyl jako korunu. Její identita je založena na mýtu.",category:"produkty, obaly",idea:"Vytvořte 'Korunu z omylů' – fyzický předmět, který si tým předává jako připomínku, že chyby jsou součástí růstu. Může to být speciální čepice, odznak nebo keramický předmět, který se 'dědí'."},
+    {id:6,angle:"Nošení omylu jako koruny",stupne:"30°",barva:"#6a9e72",phrase:"Legenda, která nás definuje, nás zároveň uvězňuje.",category:"loga, vizuální identita",idea:"Logo s 'trhlinou' – nedokonalostí, která je záměrně zvýrazněná jako klíčový prvek identity. Značka, která říká: 'Tahle chyba nás definuje – a jsme na ni hrdí.'"},
+    {id:7,angle:"Nošení omylu jako koruny",stupne:"30°",barva:"#6a9e72",phrase:"Oddělit, kdo skutečně jsou, od mýtu, který o nich vyprávějí jiní.",category:"copywriting, obsah",idea:"Napište manifest 'Jak jsme se stali tím, kým nejsme' – ironická firemní autobiografie, která přiznává, které 'úspěchy' byly ve skutečnosti omyly nebo náhody. Oslava autenticity."},
+    {id:8,angle:"Nošení omylu jako koruny",stupne:"30°",barva:"#6a9e72",phrase:"'Den bez koruny' – bezpečný prostor, kde si lidé mohou 'svléknout korunu'.",category:"design, vizuální identita",idea:"Designový prvek 'koruna', který lze nasadit a sundat – symbolizuje možnost volby identity. V kanceláři může být věšák s 'korunami', které si člověk může vzít, nebo naopak odložit."},
+    {id:9,angle:"Spáleniště jako bezpečí",stupne:"60°",barva:"#9b72b5",phrase:"Dopadla do místa, které už bylo shořelé. Její bezpečí nebylo v odolnosti, ale v načasování.",category:"produkty, obaly",idea:"Produkt z recyklovaných materiálů – 'Z popela vzniklý' – oslavující transformaci zničeného v nové. Například sešit z recyklovaného papíru s viditelnými zbytky původního materiálu."},
+    {id:10,angle:"Spáleniště jako bezpečí",stupne:"60°",barva:"#9b72b5",phrase:"Byli jsme odolní, nebo jsme jen přišli ve správný čas, kdy už hrozba pominula?",category:"loga, vizuální identita",idea:"Logo vytvořené z negativního prostoru – 'spáleniště', ze kterého vyrůstá nový tvar. Okolní černá plocha je stejně důležitá jako samotný symbol."},
+    {id:11,angle:"Spáleniště jako bezpečí",stupne:"60°",barva:"#9b72b5",phrase:"Rozlišovat mezi odolností vůči ohni a příchodem po požáru.",category:"copywriting, obsah",idea:"Pište o tom, co jste se naučili z 'požárů' – krizí, které formovaly firmu. Ale vždy rozlišujte: 'Tohle jsme přežili díky odolnosti. Tohle díky štěstí. Tohle díky načasování.'"},
+    {id:12,angle:"Spáleniště jako bezpečí",stupne:"60°",barva:"#9b72b5",phrase:"Když oheň už prošel. Bezpečí nebylo v odolnosti, ale v načasování.",category:"design, vizuální identita",idea:"Vizuální styl inspirovaný 'popáleným papírem' – hnědé okraje, textury ohně, přechody od černé k okrové. Design, který nese stopy minulosti."},
+    {id:13,angle:"Kódované znamení",stupne:"90°",barva:"#5fa8a0",phrase:"Měla v srsti zakódované znamení, neviditelné očima, ale čitelné plamenům.",category:"produkty, obaly",idea:"Šperk nebo talisman s 'tajným kódem' – každý kus má unikátní gravírování, které je viditelné jen pod určitým světlem. Produkt, který nese skrytý význam."},
+    {id:14,angle:"Kódované znamení",stupne:"90°",barva:"#5fa8a0",phrase:"Kolektiv vytváří mystické vysvětlení pro náhodu, protože náhoda je nepohodlná.",category:"loga, vizuální identita",idea:"Logo se skrytým elementem viditelným jen pod určitým úhlem nebo světlem – jako hologram. Značka, která odměňuje pozorné."},
+    {id:15,angle:"Kódované znamení",stupne:"90°",barva:"#5fa8a0",phrase:"Demystifikovat úspěch: Hledat kontextuální, replikovatelné faktory.",category:"copywriting, obsah",idea:"Vytvořte sérii článků 'Naše skrytá znamení' – o talentech, které nejsou na první pohled vidět, ale jsou klíčové pro úspěch. Oslava nenápadných dovedností."},
+    {id:16,angle:"Kódované znamení",stupne:"90°",barva:"#5fa8a0",phrase:"Mluvit o štěstí jako o legitimním faktoru úspěchu.",category:"design, vizuální identita",idea:"Identita s 'tajným jazykem' – ikony a symboly, kterým rozumí jen zasvěcení. Interní komunikace používá jeden vizuální slovník, externí druhý."},
+    {id:17,angle:"Pradávná smlouva",stupne:"120°",barva:"#8e7248",phrase:"Když skočíš do mých úst dobrovolně, já tě nespálím.",category:"produkty, obaly",idea:"Produkt s 'smlouvou' – certifikátem pravosti, který je zároveň uměleckým dílem. Každý zákazník dostane osobní 'smlouvu' se značkou."},
+    {id:18,angle:"Pradávná smlouva",stupne:"120°",barva:"#8e7248",phrase:"Iracionální akt je reinterpretován jako součást vyššího řádu.",category:"loga, vizuální identita",idea:"Logo jako pečeť – odkazující na staré cechovní značky a řemeslné tradice. Značka, která staví na důvěře a závazku."},
+    {id:19,angle:"Pradávná smlouva",stupne:"120°",barva:"#8e7248",phrase:"Přijmout roli nahodilosti: 'měli jsme štěstí'.",category:"copywriting, obsah",idea:"Napište 'Smlouvu mezi námi a zákazníky' – netradiční obchodní podmínky psané jako manifest. 'Neslibujeme zázraky. Slibujeme, že když uděláme chybu, řekneme to.'"},
+    {id:20,angle:"Pradávná smlouva",stupne:"120°",barva:"#8e7248",phrase:"Náhoda dostává pravidla. Chaos dostává řád.",category:"design, vizuální identita",idea:"Vizuální styl používající prvky starých listin, pečetí a kaligrafie. Moderní značka, která se odkazuje k tradici."},
+    {id:21,angle:"Zkouška",stupne:"150°",barva:"#5a8a5a",phrase:"Kdo se dokáže vzdát vlastního pudu sebezáchovy, ten se stává nesmrtelným.",category:"produkty, obaly",idea:"Vytvořte 'Testovací sadu' – produkt, který má dvě verze: 'riskantní experiment' a 'bezpečnou klasiku'. Zákazník si vybere, jestli chce jistotu, nebo dobrodružství."},
+    {id:22,angle:"Zkouška",stupne:"150°",barva:"#5a8a5a",phrase:"Omyl je reinterpretován jako záměrná, odvážná zkouška limitů.",category:"loga, vizuální identita",idea:"Logo s 'testovacím razítkem' – dynamický prvek, který signalizuje, že značka experimentuje. Může se měnit podle toho, jestli je firma zrovna v 'bezpečné' nebo 'experimentální' fázi."},
+    {id:23,angle:"Zkouška",stupne:"150°",barva:"#5a8a5a",phrase:"Rozlišovat: 'Děláme to jako záměrný experiment, nebo riskujeme omylem?'",category:"copywriting, obsah",idea:"Pište o svých 'zkouškách' – experimentech, které nevyšly, ale něco vás naučily. Každý neúspěšný experiment má svůj 'pitevní protokol'."},
+    {id:24,angle:"Zkouška",stupne:"150°",barva:"#5a8a5a",phrase:"Stírání hranice mezi riskem a pošetilostí.",category:"design, vizuální identita",idea:"Designový systém s 'experimentálním módem' – barevné varianty pro riskantní projekty, bezpečné barvy pro rutinní práci. Vizuální rozlišení rizika."},
+    {id:25,angle:"Tajemný úsměv",stupne:"180°",barva:"#a85a5a",phrase:"Neodpovídala. Jen se tajemně usmála. Nejistota živí legendu.",category:"produkty, obaly",idea:"Produkt, který 'mlčí' – minimalistický, bez zbytečných popisků, nechává prostor pro fantazii. Obal, který neříká nic, a právě tím říká všechno."},
+    {id:26,angle:"Tajemný úsměv",stupne:"180°",barva:"#a85a5a",phrase:"Mlčením a záhadným výrazem udržuje mýtus.",category:"loga, vizuální identita",idea:"Logo, které je jen náznakem – úsměvem, obrysem, nedokončeným tvarem. Značka, která nechává prostor pro interpretaci."},
+    {id:27,angle:"Tajemný úsměv",stupne:"180°",barva:"#a85a5a",phrase:"Tajemství buduje kult, ne tým.",category:"copywriting, obsah",idea:"Pište texty, které končí otázkou – nechávají čtenáře v napětí. Ale zároveň buďte transparentní: 'Tohle nevíme. Tohle jsme se nedozvěděli. Tohle je stále záhada.'"},
+    {id:28,angle:"Tajemný úsměv",stupne:"180°",barva:"#a85a5a",phrase:"'Pokud jsi měl štěstí nebo udělal chybu, řekni to.'",category:"design, vizuální identita",idea:"Kampaň 'Beze slov' – vizuální komunikace bez textu, jen s obrazy a emocemi. Ale s QR kódem, který vede k 'pravdivé verzi'."},
+    {id:29,angle:"Nepalivost",stupne:"210°",barva:"#c8a832",phrase:"Od té doby se traduje, že zajíce nemůžeš zapálit.",category:"produkty, obaly",idea:"Ohnivzdorný produkt – doslova (např. svíčka v bezpečnostním obalu) nebo metaforicky (produkt, který 'přežije' extrémní podmínky). Oslava odolnosti."},
+    {id:30,angle:"Nepalivost",stupne:"210°",barva:"#c8a832",phrase:"Minulé přežití není zárukou budoucí odolnosti.",category:"loga, vizuální identita",idea:"Logo, které 'odolává' – funguje v negativu, v malém měřítku, v pohybu. Značka, která přežije jakékoli podmínky."},
+    {id:31,angle:"Nepalivost",stupne:"210°",barva:"#c8a832",phrase:"Kde jsme dnes zranitelní, i když jsme v minulosti přežili velké ohně?",category:"copywriting, obsah",idea:"Napište 'Manifest nepalivosti' – co všechno vaše firma přežila a proč je teď silnější. Ale také: 'A tady jsou naše současné zranitelnosti, které si nechceme přiznat.'"},
+    {id:32,angle:"Nepalivost",stupne:"210°",barva:"#c8a832",phrase:"Jedno přežité selhání vytváří mýtus o totální odolnosti.",category:"design, vizuální identita",idea:"Vizuální identita, která se 'nepálí' – používá materiály a barvy odkazující na oheň a popel. Brand, který přežil krizi a nese to jako odznak."},
+    {id:33,angle:"Příběh, který doutná",stupne:"240°",barva:"#c8722a",phrase:"Její příběh? Ten pořád doutná, i když pole dávno vychladlo.",category:"produkty, obaly",idea:"Produkt, který 'doutná' – např. vonná svíčka s dlouhým dohoříváním, nebo čaj s pomalým louhováním. Produkt, který vydrží."},
+    {id:34,angle:"Příběh, který doutná",stupne:"240°",barva:"#c8722a",phrase:"Trauma nebo událost zůstává aktivní v kolektivní paměti.",category:"loga, vizuální identita",idea:"Logo s 'doutnajícím' prvkem – animací, která se pomalu mění. Žhavé jádro, které nikdy úplně nevyhasne."},
+    {id:35,angle:"Příběh, který doutná",stupne:"240°",barva:"#c8722a",phrase:"Vědomě 'hasit doutnající příběhy': Pravidelná sezení, kde se uzavřou staré příběhy.",category:"copywriting, obsah",idea:"Pište o 'doutnajících' tématech – věcech, které ve firmě dlouho zrají, než vybuchnou. Pojmenujte je dřív, než shoří."},
+    {id:36,angle:"Příběh, který doutná",stupne:"240°",barva:"#c8722a",phrase:"Příběh žije vlastním životem. Pod povrchem pořád něco hoří.",category:"design, vizuální identita",idea:"Barevná paleta 'doutnání' – přechody od oranžové přes rudou až po černou. Design, který pracuje s teplem a žárem."},
+    {id:37,angle:"Vyučovací pohádka",stupne:"270°",barva:"#a83060",phrase:"Děti se učí: 'Neboj se strachu. Strach tě může hodit tam, kam by tě nikdy nenapadlo jít.'",category:"produkty, obaly",idea:"Vytvořte 'Pohádkovou sadu' – produkt, který vypráví příběh (např. čokoláda s příběhem na obalu). Každý produkt je jedna lekce."},
+    {id:38,angle:"Vyučovací pohádka",stupne:"270°",barva:"#a83060",phrase:"Z omylu se stává univerzální lekce. Konkrétní chyba je zobecněna.",category:"loga, vizuální identita",idea:"Logo, které je zároveň ilustrací – vypravěčský prvek. Značka, která neprodává jen produkt, ale i příběh."},
+    {id:39,angle:"Vyučovací pohádka",stupne:"270°",barva:"#a83060",phrase:"Za jakých specifických podmínek tato lekce platí? Kdy by neplatila?",category:"copywriting, obsah",idea:"Pište 'pohádky pro dospělé' – firemní storytelling s morálním ponaučením. Ale vždy s dodatkem: 'Tahle lekce platí jen za těchto podmínek.'"},
+    {id:40,angle:"Vyučovací pohádka",stupne:"270°",barva:"#a83060",phrase:"Zobecnění bez kontextu. Co platilo na spáleništi, nemusí platit jinde.",category:"design, vizuální identita",idea:"Ilustrační styl jako z dětských knížek, ale s dospělým obsahem. Design, který vypráví."},
+    {id:41,angle:"Realita jako podklad",stupne:"300°",barva:"#6080a0",phrase:"Realita byla jen podklad. To, co rostlo nad ní, byla řeč, příběh, legenda.",category:"produkty, obaly",idea:"Produkt, který odkrývá svou 'pravou tvář' – např. obal, který se po otevření promění. Vnější vrstva je marketing, vnitřní je pravda."},
+    {id:42,angle:"Realita jako podklad",stupne:"300°",barva:"#6080a0",phrase:"Fakta vs. výklad. Žijeme ve dvou světech: faktů a příběhů.",category:"loga, vizuální identita",idea:"Logo, které má 'skrytou pravdu' – po rozkliknutí/rozbalení ukáže jinou verzi. Veřejná verze a interní verze."},
+    {id:43,angle:"Realita jako podklad",stupne:"300°",barva:"#6080a0",phrase:"Nejprve stanovit 'co se stalo' (fakta), pak 'co to znamená' (výklad).",category:"copywriting, obsah",idea:"Napište 'Pravdivou zprávu' – interní dokument, který říká věci tak, jak jsou, bez příkras. Jednou za rok. Pro celou firmu."},
+    {id:44,angle:"Realita jako podklad",stupne:"300°",barva:"#6080a0",phrase:"Oficiální verze příběhu se liší od faktů, ale všichni ji přijímají.",category:"design, vizuální identita",idea:"Vizuální koncept 'vrstev pravdy' – co je na povrchu (web, marketing) vs. co je uvnitř (intranet, dokumenty). Design, který přiznává vrstvení."},
+    {id:45,angle:"Hrdinka proti vůli",stupne:"330°",barva:"#8060b0",phrase:"Nikdy se necítila hrdinkou. Ale byla prohlášena za hrdinku.",category:"produkty, obaly",idea:"Vytvořte 'Odmítnutou korunu' – produkt, který ironicky komentuje slávu (např. tričko s nápisem 'Nechtěl jsem být hrdina'). Pro všechny, kdo jsou oslavováni za něco, co nebyla jejich volba."},
+    {id:46,angle:"Hrdinka proti vůli",stupne:"330°",barva:"#8060b0",phrase:"Status byl přidělen kolektivem bez souhlasu, na základě špatného výkladu.",category:"loga, vizuální identita",idea:"Logo, které se 'schovává' – nenápadné, skromné, vyhýbá se pozornosti. Značka, která nechce být na piedestalu."},
+    {id:47,angle:"Hrdinka proti vůli",stupne:"330°",barva:"#8060b0",phrase:"Cítíš se v této roli dobře? Odpovídá to tvému prožívání?",category:"copywriting, obsah",idea:"Pište rozhovory s 'nehrdiny' – lidmi z firmy, kteří jsou oslavováni, ale sami se tak necítí. Dejte jim prostor říct: 'Já jsem se jen lekla.'"},
+    {id:48,angle:"Hrdinka proti vůli",stupne:"330°",barva:"#8060b0",phrase:"Jaké to je být oslavován za něco, co nebylo tvoje rozhodnutí.",category:"design, vizuální identita",idea:"Vizuální styl 'tiché hrdinky' – jemné barvy, nenápadné prvky, intimní fotografie. Design, který nekřičí."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Zajíc · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('zajic_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('zajic_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('zajic_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('zajic_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('zajic_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('zajic_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
