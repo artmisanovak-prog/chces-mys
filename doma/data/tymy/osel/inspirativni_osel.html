@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐴 Osel – inspirativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0d0a; --bg-el: #1a1610; --text: #f0e8d8; --dim: #706040; --mid: #a09070;
+            --accent: #c08848; --accent-dim: #3a2810; --border: #1f1810; --highlight: rgba(192,136,72,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+        a{color:var(--accent);text-decoration:none;transition:color .2s}
+        a:hover{color:#daa058}
+        .wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(15,13,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 1.5rem;text-align:center;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+        .hero-img{width:100%;max-width:200px;max-height:280px;object-fit:contain;filter:grayscale(100%) contrast(1.2);opacity:0.85;margin:0 auto 1rem;display:block;border-radius:var(--radius)}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);font-weight:400;line-height:1.0;margin-bottom:0.3rem;color:var(--text)}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-size:0.85rem;color:var(--dim);max-width:500px;margin:0.8rem auto 0;line-height:1.7}
+        .filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;justify-content:center}
+        .filter-btn{padding:0.4rem 1rem;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:0.15s}
+        .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+        .filter-btn.active{background:var(--accent);color:#0f0d0a;border-color:var(--accent)}
+        .idea-box{background:var(--bg-el);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;transition:border-color 0.3s;position:relative}
+        .idea-box.highlight{border-color:var(--accent)}
+        .idea-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap}
+        .idea-color{width:4px;height:40px;border-radius:1px;flex-shrink:0}
+        .idea-meta{flex:1}
+        .idea-category{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem}
+        .idea-angle{font-family:var(--serif);font-size:0.85rem;color:var(--mid);font-style:italic}
+        .idea-phrase{font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:1rem;padding-left:0.5rem;border-left:2px solid var(--accent);font-style:italic}
+        .idea-text{font-family:var(--serif);font-size:0.95rem;line-height:1.8;color:#c0b8a8}
+        .btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+        .btn{padding:0.55rem 1.4rem;background:var(--accent);color:#0f0d0a;border:1px solid var(--accent);font-family:var(--mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:var(--radius);transition:0.15s}
+        .btn:hover{background:#daa058;border-color:#daa058}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{border-color:var(--accent);color:var(--text);background:transparent}
+        .angle-info{margin-top:1rem;font-size:0.72rem;color:var(--dim);border-top:1px solid var(--border);padding-top:0.8rem;display:flex;align-items:center;gap:0.5rem}
+        .angle-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .saved-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+        .saved-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--accent);margin-bottom:0.8rem}
+        .saved-item{background:var(--bg-el);border:1px solid var(--border);padding:0.8rem;margin-bottom:0.5rem;border-radius:var(--radius);font-size:0.8rem;color:var(--mid);display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem}
+        .saved-item .remove-btn{background:transparent;border:none;color:#706050;cursor:pointer;font-size:0.7rem;padding:0.2rem;transition:0.15s;flex-shrink:0}
+        .saved-item .remove-btn:hover{color:#daa058}
+        @media print{nav,.btn-row,.filters,.saved-section{display:none!important}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Osel</em> · inspirativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+
+<div class="wrap">
+    <section class="hero">
+        <img src="../../../ilustrace/osel.jpg" alt="Osel" class="hero-img" onerror="this.style.display='none'">
+        <p class="hero-label">Kreativní engine · Karta Osel</p>
+        <h1>Inspirativní <em>mód</em></h1>
+        <p class="hero-desc">Náhodné nápady na produkty, loga, copywriting a design – generované z pohádky o Osli. Vyber kategorii a losuj.</p>
+    </section>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-category="vše">Vše</button>
+        <button class="filter-btn" data-category="produkty, obaly">Produkty / obaly</button>
+        <button class="filter-btn" data-category="loga, vizuální identita">Loga / identita</button>
+        <button class="filter-btn" data-category="copywriting, obsah">Copywriting</button>
+        <button class="filter-btn" data-category="design, vizuální identita">Design</button>
+    </div>
+
+    <div class="idea-box highlight" id="ideaBox">
+        <div id="ideaContent"><p style="text-align:center;color:var(--dim);padding:2rem;">Klikni na <strong>Losovat nápad</strong> a něco ti vyjede...</p></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn" onclick="losovat()">🎲 Losovat nápad</button>
+        <button class="btn btn-ghost" onclick="ulozitNapad()">💾 Uložit</button>
+        <button class="btn btn-ghost" onclick="kopirovat()">📋 Kopírovat</button>
+        <button class="btn btn-ghost" onclick="sdiletURL()">🔗 Sdílet URL</button>
+    </div>
+
+    <div class="saved-section" id="savedSection" style="display:none;">
+        <h3>💾 Uložené nápady</h3>
+        <div id="savedList"></div>
+        <button class="btn btn-ghost" style="margin-top:0.5rem;font-size:0.6rem;" onclick="smazatVse()">🗑 Smazat vše</button>
+    </div>
+</div>
+
+<script>
+const NAPADY = [
+    {id:1,angle:"Ztracená senzorika",stupne:"0°",barva:"#5a7fa8",phrase:"Osel zapomněl, že má jazyk a čich. Nepokusil se seno ochutnat.",category:"produkty, obaly",idea:"Navrhněte produkt, který nutí uživatele používat všechny smysly – např. degustační sadu, kde každý vzorek je zabalen v neprůhledném obalu a musí se nejdřív očichat, osahat, a teprve pak ochutnat. Produkt, který vrací lidi k primární zkušenosti."},
+    {id:2,angle:"Ztracená senzorika",stupne:"0°",barva:"#5a7fa8",phrase:"Spoléhá na cizí popisy, ne na vlastní zkušenost.",category:"loga, vizuální identita",idea:"Logo, které je 'hmatové' – reliéfní, s texturou, která vybízí k doteku. Na vizitkách a hlavičkovém papíře je použita ražba nebo parciální lak. Značka, kterou musíte cítit, ne jen vidět."},
+    {id:3,angle:"Ztracená senzorika",stupne:"0°",barva:"#5a7fa8",phrase:"Zavést pravidlo 'ochutnávky': před rozhodnutím získat přímou zkušenost.",category:"copywriting, obsah",idea:"Pište 'senzorické reporty' – nepoužívejte data z druhé ruky, ale popisujte jen to, co jste sami zažili, ochutnali, očichali. Osobní, syrové texty bez abstraktních pojmů."},
+    {id:4,angle:"Ztracená senzorika",stupne:"0°",barva:"#5a7fa8",phrase:"Ztratil kontakt s primárními daty reality.",category:"design, vizuální identita",idea:"Vizuální identita postavená na 'otiscích' – doslova. Použijte skeny skutečných povrchů, textur, otisků prstů. Nic digitálně vytvořeného. Všechno musí mít původ v reálném světě."},
+    {id:5,angle:"Protichůdné pokyny",stupne:"30°",barva:"#6a9e72",phrase:"Levá, řekl někdo. Pravá, řekl jiný. Osel je bombardován protichůdnými radami.",category:"produkty, obaly",idea:"Vytvořte 'Rozhodovací kostku' – produkt, který má na každé straně jinou možnost. Když si nevíte rady, hodíte kostkou. Není to návod na rozhodování, ale připomínka, že někdy je lepší náhoda než věčná paralýza."},
+    {id:6,angle:"Protichůdné pokyny",stupne:"30°",barva:"#6a9e72",phrase:"Chybí mu jeden jasný hlas nebo schopnost si vybrat, kterému věřit.",category:"loga, vizuální identita",idea:"Logo, které je 'jednohlasé' – minimalistické, s jedním výrazným prvkem, bez zbytečných detailů. Značka, která říká: 'My víme, kdo jsme. Nebudeme vás mást.'"},
+    {id:7,angle:"Protichůdné pokyny",stupne:"30°",barva:"#6a9e72",phrase:"Ustavit 'jednotné velení' pro každý projekt.",category:"copywriting, obsah",idea:"Pište manifest 'Jeden hlas' – dokument, který stanovuje, že v každé komunikaci smí zaznít jen jedna klíčová myšlenka. Ostatní se škrtá. Radikální redakce."},
+    {id:8,angle:"Protichůdné pokyny",stupne:"30°",barva:"#6a9e72",phrase:"Vyžadovat konfrontaci protichůdných pokynů na společném fóru.",category:"design, vizuální identita",idea:"Navrhněte 'Konfrontační tabuli' – fyzický panel v kanceláři, kam se připichují protichůdné požadavky od různých šéfů. Až když jsou vedle sebe, musí se vyřešit."},
+    {id:9,angle:"Existenciální krize",stupne:"60°",barva:"#9b72b5",phrase:"Kdo jsem já? Psina, nebo oslovina? Volba mezi hromadami je volbou identity.",category:"produkty, obaly",idea:"Vytvořte 'Deník identity' – zápisník, který má na každé stránce dvě kolonky: 'Kdo jsem dnes?' a 'Kým chci být zítra?'. Produkt pro lidi a týmy v přechodu."},
+    {id:10,angle:"Existenciální krize",stupne:"60°",barva:"#9b72b5",phrase:"Neví, zda je vtipem nebo vážnou bytostí.",category:"loga, vizuální identita",idea:"Logo, které má dvě polohy – seriózní a hravou. Přepíná se podle kontextu. Značka, která se nebojí říct: 'Jsme obojí. A je to v pořádku.'"},
+    {id:11,angle:"Existenciální krize",stupne:"60°",barva:"#9b72b5",phrase:"Workshop 'Kdo jsme': odpovědět na otázku identity.",category:"copywriting, obsah",idea:"Napište 'Deklaraci identity' – jednostránkový dokument, který říká: 'Jsme tým, který...' a 'Nikdy nebudeme...' Zarámujte a pověste na zeď."},
+    {id:12,angle:"Existenciální krize",stupne:"60°",barva:"#9b72b5",phrase:"Bez identity není směr.",category:"design, vizuální identita",idea:"Vizuální styl, který je postaven na 'kotvě' – jeden klíčový symbol, ze kterého všechno vychází. Když tým ztrácí směr, podívá se na kotvu a ví."},
+    {id:13,angle:"Neviditelná pravidla",stupne:"90°",barva:"#5fa8a0",phrase:"Pravidla? Neviditelná. Osel žije v systému, kde se očekává, že bude vědět.",category:"produkty, obaly",idea:"Vytvořte 'Krabičku pravidel' – fyzickou sadu karet s pravidly, která jsou obvykle nepsaná. Každý nový člen týmu ji dostane jako uvítací balíček."},
+    {id:14,angle:"Neviditelná pravidla",stupne:"90°",barva:"#5fa8a0",phrase:"Nikdo mu neřekl, která je která.",category:"loga, vizuální identita",idea:"Logo, které je 'čitelné' – bez skrytých významů, bez abstrakce. Značka, která říká všechno na rovinu. Nic mezi řádky."},
+    {id:15,angle:"Neviditelná pravidla",stupne:"90°",barva:"#5fa8a0",phrase:"Sepsat 'ústavu týmu' – explicitní pravidla chování.",category:"copywriting, obsah",idea:"Napište 'Ústavu' – dokument, který obsahuje jasná, konkrétní pravidla: 'Jak se u nás rozhoduje', 'Jak se u nás komunikuje', 'Co se u nás toleruje a co ne'. Žádné vágnosti."},
+    {id:16,angle:"Neviditelná pravidla",stupne:"90°",barva:"#5fa8a0",phrase:"Země byla země. Hromada byla hromada. Rozdíly jsou pro zasvěcené.",category:"design, vizuální identita",idea:"Vytvořte vizuální manuál pro 'nezasvěcené' – plakát nebo brožuru, která vysvětluje, co ve firmě znamenají různé zkratky, rituály a pojmy. Pro každého, kdo se cítí jako osel mezi hromadami."},
+    {id:17,angle:"Důsledný blud",stupne:"120°",barva:"#8e7248",phrase:"Osel – zmatený, ale důsledný. Pokračuje v pohybu, i když neví kam.",category:"produkty, obaly",idea:"Vytvořte 'Stopky setrvačnosti' – časovač, který po 25 minutách práce zazvoní a zeptá se: 'Proč to děláš? Kam to vede?' Produkt proti bezmyšlenkovité aktivitě."},
+    {id:18,angle:"Důsledný blud",stupne:"120°",barva:"#8e7248",phrase:"Je to pohyb pro pohyb.",category:"loga, vizuální identita",idea:"Logo, které je 'zastavitelné' – obsahuje prvek, který vypadá jako tlačítko pauzy. Značka, která říká: 'Než budeme pokračovat, zastavme se a přemýšlejme.'"},
+    {id:19,angle:"Důsledný blud",stupne:"120°",barva:"#8e7248",phrase:"Zavést pravidelné 'stání v krajině': Proč to děláme? Kam to vede?",category:"copywriting, obsah",idea:"Pište 'Zastavovací reporty' – jednou za měsíc shrňte, co tým dělá, a hlavně: 'Proč to děláme? Kam to vede? Má to ještě smysl?' Pokud ne, navrhněte zastavení."},
+    {id:20,angle:"Důsledný blud",stupne:"120°",barva:"#8e7248",phrase:"Důslednost ve špatném směru je horší než nečinnost.",category:"design, vizuální identita",idea:"Vizuální prvek 'semaforu' – na každém projektovém dashboardu musí být jasně vidět: zelená (má smysl pokračovat), oranžová (pochybnosti), červená (zastavit). Nic mezi tím."},
+    {id:21,angle:"Hledání správnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Správnost je to, co se neřekne nahlas, ale všichni to očekávají.",category:"produkty, obaly",idea:"Vytvořte 'Hru na správnost' – karetní hru, kde hráči hádají, co si ostatní myslí. Kdo se nejvíc trefí, vyhrává. Ale pointa je v diskusi: 'Proč jsme to museli hádat? Proč to neřekneme nahlas?'"},
+    {id:22,angle:"Hledání správnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Je to skrytý konsensus, nevyřčená společenská smlouva.",category:"loga, vizuální identita",idea:"Logo, které je 'transparentní' – doslova používá průhledné prvky. Nic není skryté. Značka, která nic nepředpokládá."},
+    {id:23,angle:"Hledání správnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Povinnost vyslovovat očekávání na konci každého setkání.",category:"copywriting, obsah",idea:"Pište 'Očekávacíkové zápisy' – na konci každého meetingu musí být sekce 'Co od koho očekáváme'. Konkrétně. Bez házení."},
+    {id:24,angle:"Hledání správnosti",stupne:"150°",barva:"#5a8a5a",phrase:"Zakázat věty typu 'mělo by to být jasné'.",category:"design, vizuální identita",idea:"Vytvořte 'Zeď jasnosti' – místo v kanceláři, kam se píšou věci, které 'by měly být jasné', ale nejsou. Dokud tam visí, musí se vyřešit."},
+    {id:25,angle:"Prázdné cedulky",stupne:"180°",barva:"#a85a5a",phrase:"Myš dala oslovi cedulku. Na jedné straně seno, na druhé sláma. Ale písmo bylo stejné.",category:"produkty, obaly",idea:"Vytvořte 'Oboustrannou cedulku' – produkt, který má dvě strany s různými nápisy, ale stejným fontem. Používá se jako rekvizita na workshopy o komunikaci: 'Která strana je pravda? Obě. Ale musíš se podívat blíž.'"},
+    {id:26,angle:"Prázdné cedulky",stupne:"180°",barva:"#a85a5a",phrase:"Cedulka je prázdný symbol, který má vytvořit iluzi rozlišení.",category:"loga, vizuální identita",idea:"Logo, které je 'anti-cedulkou' – obsahuje jen tvar, žádný text. Každý si do něj může promítnout, co chce. Značka, která odmítá nálepkovat."},
+    {id:27,angle:"Prázdné cedulky",stupne:"180°",barva:"#a85a5a",phrase:"Testovat cedulky: 'Co konkrétně znamená toto slovo v praxi?'",category:"copywriting, obsah",idea:"Spusťte sérii 'Cedulkový detox' – každý týden vyberte jeden firemní buzzword a napište o něm článek: co skutečně znamená, proč ho používáme, a čím ho nahradit."},
+    {id:28,angle:"Prázdné cedulky",stupne:"180°",barva:"#a85a5a",phrase:"Přepsat cedulky do konkrétních, pozorovatelných akcí.",category:"design, vizuální identita",idea:"Vytvořte 'Překladač' – vizuální slovník, který ke každému firemnímu buzzwordu ukazuje konkrétní obrázek nebo akci. Místo 'synergie' – obrázek dvou lidí, kteří spolu něco nesou."},
+    {id:29,angle:"Průvodce z impostor syndromu",stupne:"210°",barva:"#c8a832",phrase:"Stal se průvodcem. Ne tím, co ví. Ale tím, co jde.",category:"produkty, obaly",idea:"Vytvořte 'Kompas pro průvodce' – jednoduchý nástroj, který nepomáhá najít správný směr, ale pomáhá přiznat, že ho neznáte. Je na něm napsáno: 'Nevím. Ale jdu s vámi.'"},
+    {id:30,angle:"Průvodce z impostor syndromu",stupne:"210°",barva:"#c8a832",phrase:"Lidé ho následují, protože vypadá, že ví.",category:"loga, vizuální identita",idea:"Logo, které je 'upřímné' – obsahuje prvek nedokonalosti, přiznání, že značka není vševědoucí. Např. otazník jako součást loga."},
+    {id:31,angle:"Průvodce z impostor syndromu",stupne:"210°",barva:"#c8a832",phrase:"Podporovat kulturu, kde je v pořádku říct 'nevím'.",category:"copywriting, obsah",idea:"Napište 'Manifest nevědění' – dokument, který oslavuje, co všechno váš tým nebo firma NEVÍ. A proč je to v pořádku. Oslava pokory."},
+    {id:32,angle:"Průvodce z impostor syndromu",stupne:"210°",barva:"#c8a832",phrase:"Autorita založená na vnějším dojmu, ne na skutečné kompetenci.",category:"design, vizuální identita",idea:"Vytvořte 'Odznak nevím' – fyzický odznak, který může kdokoli nosit, když přiznává, že něco neví. Mění to kulturu: z 'nevím' se stává odvaha, ne slabost."},
+    {id:33,angle:"Definice osloviny",stupne:"240°",barva:"#c8722a",phrase:"Oslovina je, když jdeš dál, i když nevíš, kam.",category:"produkty, obaly",idea:"Vytvořte 'Brzdu' – fyzický předmět (např. dřevěnou kostku s nápisem STOP), který se dává doprostřed stolu, když někdo cítí, že tým pokračuje ze setrvačnosti. Dokud tam leží, musí se řešit 'proč'."},
+    {id:34,angle:"Definice osloviny",stupne:"240°",barva:"#c8722a",phrase:"Je to pohyb jako únik od tíhy otázky 'proč?'",category:"loga, vizuální identita",idea:"Logo, které obsahuje 'otazník' jako svůj integrální prvek. Značka, která se neustále ptá 'proč?' a je na to hrdá."},
+    {id:35,angle:"Definice osloviny",stupne:"240°",barva:"#c8722a",phrase:"Zavést 'brzdu osloviny': u každého projektu milníky pro zastavení.",category:"copywriting, obsah",idea:"Pište 'Stop-reporty' – u každého projektu předem stanovte milníky, kde se musíte zastavit a napsat: 'Má ještě smysl pokračovat? Proč?' A odpověď musí být konkrétní."},
+    {id:36,angle:"Definice osloviny",stupne:"240°",barva:"#c8722a",phrase:"Statečnější je někdy zastavit než pokračovat.",category:"design, vizuální identita",idea:"Vytvořte 'Zeď zastavených projektů' – místo, kde se oslavují projekty, které tým vědomě ukončil. Jsou to trofeje, ne prohry."},
+    {id:37,angle:"Myš jako pozorovatel",stupne:"270°",barva:"#a83060",phrase:"Myš si zapisovala, co se děje. Je svědkem, ne spasitelem.",category:"produkty, obaly",idea:"Vytvořte 'Zápisník pozorovatele' – deník určený jen pro pozorování, bez hodnocení. Každá stránka má nahoře 'Co jsem viděl/a' a dole prázdno. Žádné 'co si o tom myslím'."},
+    {id:38,angle:"Myš jako pozorovatel",stupne:"270°",barva:"#a83060",phrase:"Její role je zaznamenat realitu, ne ji měnit.",category:"loga, vizuální identita",idea:"Logo, které je 'záznamové' – vypadá jako otisk, stopa, záznam. Nic víc, nic míň. Značka, která jen dokumentuje."},
+    {id:39,angle:"Myš jako pozorovatel",stupne:"270°",barva:"#a83060",phrase:"Pověřit členy týmu rolí pozorovatele na schůzích.",category:"copywriting, obsah",idea:"Pište 'Pozorovatelské reporty' – jednou za měsíc někdo napíše zprávu o tom, co pozoroval na týmové dynamice. Bez návrhů, bez řešení. Jen popis."},
+    {id:40,angle:"Myš jako pozorovatel",stupne:"270°",barva:"#a83060",phrase:"Pozorování je samo o sobě intervencí.",category:"design, vizuální identita",idea:"Vytvořte 'Pozorovatelské okno' – v kanceláři nebo na webu místo, kam se umisťují postřehy bez komentáře. Jen 'viděl jsem toto'. Nic víc."},
+    {id:41,angle:"Subjektivní realita",stupne:"300°",barva:"#6080a0",phrase:"Co je na cedulce? To, co si myslíš, že tam je.",category:"produkty, obaly",idea:"Vytvořte 'Projekční plátno' – produkt, který je záměrně prázdný. Bílá kniha, bílé tričko, bílý hrnek. Každý si do něj promítne, co chce. Produkt jako zrcadlo."},
+    {id:42,angle:"Subjektivní realita",stupne:"300°",barva:"#6080a0",phrase:"Každý do ní promítá své vlastní obavy, touhy a předpoklady.",category:"loga, vizuální identita",idea:"Logo, které je 'otevřené interpretaci' – abstraktní tvar, který si každý může vyložit po svém. Značka, která říká: 'Význam tvoříš ty.'"},
+    {id:43,angle:"Subjektivní realita",stupne:"300°",barva:"#6080a0",phrase:"Dělat 'test interpretace': každý napíše, co pro něj znamená klíčový cíl.",category:"copywriting, obsah",idea:"Spusťte 'Významový audit' – nechte každého v týmu napsat, co pro něj znamenají klíčové pojmy (vize, mise, hodnoty). Pak to porovnejte a diskutujte o rozdílech."},
+    {id:44,angle:"Subjektivní realita",stupne:"300°",barva:"#6080a0",phrase:"Iluze shody – každý si myslí, že mluví o tom samém.",category:"design, vizuální identita",idea:"Vytvořte 'Mapu významů' – vizuální diagram, který ukazuje, jak různí lidé v týmu chápou stejné slovo. Čím víc se čáry rozcházejí, tím větší iluze shody."},
+    {id:45,angle:"Cesta jako účel",stupne:"330°",barva:"#8060b0",phrase:"Osel se stal průvodcem. Cesta se stala cílem.",category:"produkty, obaly",idea:"Vytvořte 'Cestovní deník' – zápisník, který neobsahuje cílovou destinaci, ale jen otázky na cestu: 'Co jsi dnes viděl?', 'Co tě překvapilo?', 'Kam bys šel zítra?'"},
+    {id:46,angle:"Cesta jako účel",stupne:"330°",barva:"#8060b0",phrase:"Je to tragické i osvobozující zároveň.",category:"loga, vizuální identita",idea:"Logo, které je 'na cestě' – dynamické, v pohybu, nikdy ne statické. Značka, která říká: 'Jsme v procesu. A to je v pořádku.'"},
+    {id:47,angle:"Cesta jako účel",stupne:"330°",barva:"#8060b0",phrase:"Pravidelně se vracet k původnímu 'proč'.",category:"copywriting, obsah",idea:"Pište 'Kotvové články' – jednou za čtvrt roku se vraťte k původnímu důvodu, proč váš projekt nebo tým vznikl. Je to stále platné? Nebo už je čas jít jinam?"},
+    {id:48,angle:"Cesta jako účel",stupne:"330°",barva:"#8060b0",phrase:"Cesta je cíl – ale jen když je to vědomá volba, ne oslí osud.",category:"design, vizuální identita",idea:"Vytvořte 'Kompas osudu' – vizuální nástroj, který rozlišuje mezi 'jdu, protože chci' a 'jdu, protože nevím, jak zastavit'. Dvě polohy. Jedna je svoboda, druhá oslovina."}
+];
+
+let aktualniKategorie = 'vše';
+let aktualniNapad = null;
+
+document.getElementById('filters').addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        aktualniKategorie = e.target.dataset.category;
+        losovat();
+    }
+});
+
+function getNapadyPodleKategorie() {
+    if (aktualniKategorie === 'vše') return [...NAPADY];
+    return NAPADY.filter(n => n.category.toLowerCase().includes(aktualniKategorie.toLowerCase()));
+}
+
+function losovat() {
+    const pool = getNapadyPodleKategorie();
+    if (pool.length === 0) {
+        aktualniNapad = null;
+        document.getElementById('ideaContent').innerHTML = '<p style="text-align:center;color:var(--dim);padding:2rem;">Pro tuto kategorii zatím nejsou nápady. Zkus jinou.</p>';
+        return;
+    }
+    aktualniNapad = pool[Math.floor(Math.random() * pool.length)];
+    zobrazNapad(aktualniNapad);
+    if (history.pushState) {
+        const params = new URLSearchParams();
+        params.set('cat', aktualniKategorie);
+        params.set('id', aktualniNapad.id);
+        window.history.pushState({}, '', '?' + params.toString());
+    }
+}
+
+function zobrazNapad(n) {
+    document.getElementById('ideaContent').innerHTML = `
+        <div class="idea-header">
+            <div class="idea-color" style="background:${n.barva}"></div>
+            <div class="idea-meta">
+                <div class="idea-category">${n.category}</div>
+                <div class="idea-angle">${n.angle} · ${n.stupne}</div>
+            </div>
+        </div>
+        <div class="idea-phrase">"${n.phrase}"</div>
+        <div class="idea-text">${n.idea}</div>
+        <div class="angle-info"><span class="angle-dot" style="background:${n.barva}"></span> ${n.angle} · ${n.stupne}</div>
+    `;
+    document.getElementById('ideaBox').classList.add('highlight');
+}
+
+function kopirovat() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    navigator.clipboard.writeText(`${aktualniNapad.phrase}\n\n${aktualniNapad.idea}\n\n— Osel · ${aktualniNapad.angle} (${aktualniNapad.stupne})`).then(() => alert('Zkopírováno!'));
+}
+
+function ulozitNapad() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const saved = JSON.parse(localStorage.getItem('osel_inspirace') || '[]');
+    if (saved.some(s => s.id === aktualniNapad.id)) { alert('Tento nápad už máš uložený.'); return; }
+    saved.unshift(aktualniNapad);
+    localStorage.setItem('osel_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatUlozeny(id) {
+    let saved = JSON.parse(localStorage.getItem('osel_inspirace') || '[]');
+    saved = saved.filter(s => s.id !== id);
+    localStorage.setItem('osel_inspirace', JSON.stringify(saved));
+    zobrazUlozene();
+}
+
+function smazatVse() {
+    if (confirm('Smazat všechny uložené nápady?')) { localStorage.removeItem('osel_inspirace'); zobrazUlozene(); }
+}
+
+function zobrazUlozene() {
+    const saved = JSON.parse(localStorage.getItem('osel_inspirace') || '[]');
+    const listEl = document.getElementById('savedList');
+    const sectionEl = document.getElementById('savedSection');
+    if (saved.length === 0) { sectionEl.style.display = 'none'; return; }
+    sectionEl.style.display = 'block';
+    listEl.innerHTML = saved.map(s => `<div class="saved-item"><div><span style="color:${s.barva}">●</span> <strong>${s.phrase.slice(0,60)}${s.phrase.length>60?'…':''}</strong><br><span style="font-size:0.7rem;color:var(--dim)">${s.category} · ${s.angle} (${s.stupne})</span></div><button class="remove-btn" onclick="smazatUlozeny(${s.id})">✕</button></div>`).join('');
+}
+
+function sdiletURL() {
+    if (!aktualniNapad) { alert('Nejdřív něco vylosuj.'); return; }
+    const params = new URLSearchParams();
+    params.set('cat', aktualniKategorie);
+    params.set('id', aktualniNapad.id);
+    navigator.clipboard.writeText(window.location.origin + window.location.pathname + '?' + params.toString()).then(() => alert('URL zkopírováno!'));
+}
+
+function nacistZURL() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const id = parseInt(params.get('id'));
+    if (cat) {
+        aktualniKategorie = cat;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.category === cat));
+    }
+    if (id) {
+        const napad = NAPADY.find(n => n.id === id);
+        if (napad) { aktualniNapad = napad; zobrazNapad(napad); return; }
+    }
+    losovat();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    zobrazUlozene();
+    window.location.search ? nacistZURL() : losovat();
+});
+</script>
+</body>
+</html>
