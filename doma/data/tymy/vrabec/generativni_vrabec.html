@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🐦 Vrabec – generativní mód · Týmové dysfunkce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0d0a; --bg-el: #1a1610; --text: #f0e8d8; --dim: #706040; --mid: #a09070;
+            --accent: #c89860; --accent-dim: #3a2818; --border: #1f1810; --highlight: rgba(200,152,96,0.2);
+            --serif: 'Spectral', serif; --mono: 'Space Grotesk', sans-serif; --radius: 3px;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--mono);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+        a{color:var(--accent);text-decoration:none;transition:color .15s}
+        a:hover{color:#daa868}
+        .wrap{max-width:780px;margin:0 auto;padding:0 1.5rem 3rem}
+        nav{position:sticky;top:0;z-index:100;background:rgba(15,13,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+        .nav-brand{font-family:var(--serif);font-size:0.9rem;font-weight:400;color:var(--text)}
+        .nav-brand em{font-style:italic;color:var(--accent)}
+        .nav-links{display:flex;gap:0.8rem;flex-wrap:wrap;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase}
+        .nav-links a{color:var(--dim);padding:0.25rem 0.5rem;border:1px solid transparent;transition:0.15s}
+        .nav-links a:hover,.nav-links a.active{color:var(--text);border-color:var(--accent)}
+        .hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2rem;text-align:center}
+        .hero-label{font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+        h1{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.2rem);font-weight:400;line-height:1.0;margin-bottom:6px}
+        h1 em{font-style:italic;color:var(--accent)}
+        .hero-desc{font-family:var(--serif);font-size:0.95rem;font-style:italic;color:var(--mid);margin-top:0.5rem}
+        .hero-intro{border-left:2px solid var(--accent);padding:10px 16px;margin-top:1.2rem;font-size:0.85rem;color:var(--dim);background:rgba(200,152,96,0.06);border-radius:var(--radius);text-align:left;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7}
+        h2{font-family:var(--serif);font-size:1.6rem;font-weight:400;margin:2.5rem 0 1rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border);color:var(--text)}
+        .kombinace{border:1px solid var(--border);background:var(--bg-el);margin-bottom:1.5rem;border-radius:var(--radius);overflow:hidden}
+        .kombinace-hlavicka{background:var(--accent);color:#0f0d0a;padding:0.9rem 1.2rem;font-family:var(--mono);font-size:0.75rem;letter-spacing:0.05em;display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap}
+        .kombinace-hlavicka .uhly-badge{display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:#0f0d0a}
+        .kombinace-hlavicka .uhly-badge span{display:inline-block;width:10px;height:10px;border-radius:1px}
+        .kombinace-telo{padding:1.2rem}
+        .kombinace-nazev{font-family:var(--serif);font-size:1.1rem;font-weight:500;margin-bottom:0.5rem;color:var(--text)}
+        .kombinace-cil{font-size:0.85rem;color:var(--dim);font-style:italic;margin-bottom:0.8rem;border-left:2px solid var(--accent);padding-left:0.8rem}
+        .kombinace-cviceni{font-size:0.88rem;line-height:1.8;color:#c0b8a8}
+        .kombinace-cviceni p{margin-bottom:0.5rem}
+        .kombinace-cviceni ol{margin-left:1.3rem}
+        .vlastni-box{background:var(--bg-el);border:1px solid var(--border);padding:1.5rem;margin:2rem 0;border-radius:var(--radius)}
+        .vlastni-box p{font-size:0.88rem;color:var(--dim);margin-bottom:1.2rem}
+        .vybery{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.2rem}
+        .vyber-skupina{flex:1;min-width:200px}
+        .vyber-skupina label{display:block;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem}
+        .vyber-skupina select{width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);font-family:var(--serif);font-size:0.85rem;color:var(--text);background:var(--bg);border-radius:var(--radius);appearance:none;cursor:pointer}
+        .vyber-skupina select:focus{outline:none;border-color:var(--accent)}
+        .btn{padding:0.6rem 1.4rem;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--accent);color:#0f0d0a;border:1px solid var(--accent);cursor:pointer;border-radius:var(--radius);transition:0.15s;display:inline-flex;align-items:center;gap:0.4rem}
+        .btn:hover{background:#daa868;border-color:#daa868}
+        .btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--border)}
+        .btn-ghost:hover{background:transparent;color:var(--text);border-color:var(--accent)}
+        .vysledek-kombinace{display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+        .vysledek-kombinace h3{font-family:var(--serif);font-size:1.3rem;font-weight:400;margin-bottom:1rem;color:var(--accent)}
+        .uhel-panel{background:var(--bg);border:1px solid var(--border);padding:1rem 1.2rem;margin-bottom:0.8rem;border-radius:var(--radius)}
+        .uhel-panel strong{display:flex;align-items:center;gap:0.5rem;font-size:0.95rem;margin-bottom:0.4rem;color:var(--text)}
+        .uhel-panel .color-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+        .uhel-panel .meta{font-size:0.8rem;color:var(--dim);font-style:italic;margin-bottom:0.6rem}
+        .uhel-panel .q3-text{font-size:0.85rem;border-left:2px solid var(--accent);padding-left:0.8rem;color:#c0b8a8;line-height:1.7}
+        .hint{background:rgba(200,152,96,0.06);padding:1rem 1.2rem;margin-top:1rem;font-size:0.8rem;color:var(--dim);font-style:italic;border-radius:var(--radius);border:1px solid var(--border);line-height:1.7}
+        .odkazy-dole{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;flex-wrap:wrap;font-size:0.8rem}
+        @media print{.btn,.vybery,select,.nav-links{display:none}}
+    </style>
+</head>
+<body>
+<nav>
+    <span class="nav-brand"><em>Vrabec</em> · generativní mód</span>
+    <div class="nav-links">
+        <a href="diagnosticky_mod.html">Diagnostika</a>
+        <a href="generativni_mod.html" class="active">Generátor</a>
+        <a href="workshop_90_minut.html">Workshop</a>
+        <a href="inspirativni_mod.html">Inspirace</a>
+        <a href="../">Zpět na kartu</a>
+    </div>
+</nav>
+<div class="wrap">
+    <section class="hero">
+        <p class="hero-label">Týmové dysfunkce · Karta Vrabec</p>
+        <h1>Generativní <em>mód</em></h1>
+        <p class="hero-desc">Spojení dvou úhlů – nový workshop</p>
+        <div class="hero-intro">Vrabec umí generovat workshopy. Stačí spojit dva úhly. Tady máte 4 hotové kombinace — rovnou k použití.</div>
+    </section>
+    <h2>🧩 Hotové kombinace</h2>
+
+    <div class="kombinace">
+        <div class="kombinace-hlavicka">Kombinace 1 + 5<div class="uhly-badge"><span style="background:#5a7fa8"></span> Falešná jistota · 0° × <span style="background:#8e7248"></span> Pasivní rezignace · 120°</div></div>
+        <div class="kombinace-telo">
+            <div class="kombinace-nazev">Z hrsti na hlavu</div>
+            <div class="kombinace-cil">Cíl: Prolomit iluzi jistoty a přejít od pasivního konstatování k akci.</div>
+            <div class="kombinace-cviceni">
+                <p><strong>Cvičení (25 minut):</strong></p>
+                <ol>
+                    <li>Každý napíše na lístek jednu věc, kterou tým drží "v hrsti" – kompromis, o kterém si myslí, že ho kontroluje.</li>
+                    <li>Lístky se zamíchají a losují. Každý čte cizí lístek nahlas a přidá: "A podle mě už je to na hlavě, protože..."</li>
+                    <li>Společně vyberte jednoho vrabce, u kterého se shodnete, že už dávno nesedí v hrsti.</li>
+                    <li>Výstup: Jeden konkrétní krok, který tým udělá do týdne, aby začal vrabce setřásat.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="kombinace">
+        <div class="kombinace-hlavicka">Kombinace 3 + 9<div class="uhly-badge"><span style="background:#9b72b5"></span> Ztracená kontrola · 60° × <span style="background:#c8722a"></span> Inovace proti sobě · 240°</div></div>
+        <div class="kombinace-telo">
+            <div class="kombinace-nazev">Konec větviček</div>
+            <div class="kombinace-cil">Cíl: Zastavit cyklus přidávání workaroundů a získat zpět kontrolu.</div>
+            <div class="kombinace-cviceni">
+                <p><strong>Cvičení (30 minut):</strong></p>
+                <ol>
+                    <li>Vyberte jeden problém, který tým dlouhodobě "vylepšuje" místo aby ho vyřešil.</li>
+                    <li>Sepište všechny "větvičky" – workaroundy, patche, dočasná řešení, která k němu byla přidána.</li>
+                    <li>U každé větvičky se ptejte: "Přiblížila nás k řešení, nebo jen udržela vrabce na hlavě?"</li>
+                    <li>Vyhlaste moratorium: "Po dobu jednoho měsíce nepřidáme žádnou další větvičku. Veškerou energii dáme do hledání nového řešení."</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="kombinace">
+        <div class="kombinace-hlavicka">Kombinace 4 + 10<div class="uhly-badge"><span style="background:#5fa8a0"></span> Identifikační past · 90° × <span style="background:#a83060"></span> Sociální percepce · 270°</div></div>
+        <div class="kombinace-telo">
+            <div class="kombinace-nazev">Nové peří</div>
+            <div class="kombinace-cil">Cíl: Změnit vyprávění o sobě – z "týmu s vrabčím hnízdem" na "tým v transformaci".</div>
+            <div class="kombinace-cviceni">
+                <p><strong>Cvičení (25 minut):</strong></p>
+                <ol>
+                    <li>Napište na tabuli: "Jak nás vidí ostatní?" a "Jací doopravdy jsme?"</li>
+                    <li>Do prvního sloupce napište všechny nálepky a stigmata, která vám dala organizace.</li>
+                    <li>Do druhého sloupce napište, co je na vás skutečně cenné – bez ohledu na nálepky.</li>
+                    <li>Vytvořte společně jednu větu, která bude vaším novým příběhem. Začněte slovy: "Jsme tým, který..."</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="kombinace">
+        <div class="kombinace-hlavicka">Kombinace 7 + 12<div class="uhly-badge"><span style="background:#a85a5a"></span> Ideál jako dekorace · 180° × <span style="background:#8060b0"></span> Akceptace vs. akce · 330°</div></div>
+        <div class="kombinace-telo">
+            <div class="kombinace-nazev">Sundat holuba</div>
+            <div class="kombinace-cil">Cíl: Převést ideál z dekorace na akční plán a udělat první krok.</div>
+            <div class="kombinace-cviceni">
+                <p><strong>Nové pravidlo pro tým:</strong></p>
+                <p>Zavedeme <strong>Holubí akční plán</strong>. Vybereme jeden ideál, který jsme odložili jako "nedosažitelný". Rozložíme ho na 5 konkrétních, měřitelných kroků. První krok uděláme do konce týdne. Každý další krok bude mít svého majitele a termín. Holub přestane být ozdobou – stane se cílem.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>🔭 Vlastní kombinace</h2>
+    <div class="vlastni-box">
+        <p>Vyber dva různé úhly a spojí se jejich Q3 — úkoly, které z nich vyplývají. Zbytek je na tobě.</p>
+        <div class="vybery">
+            <div class="vyber-skupina"><label>Úhel A:</label><select id="uhel-a"><option value="">— vyber úhel —</option></select></div>
+            <div class="vyber-skupina"><label>Úhel B:</label><select id="uhel-b"><option value="">— vyber úhel —</option></select></div>
+        </div>
+        <button class="btn" onclick="generuj()">🔮 Spojit úhly</button>
+        <div class="vysledek-kombinace" id="vysledek">
+            <h3>Tvoje kombinace</h3>
+            <div id="panel-a" class="uhel-panel"></div>
+            <div id="panel-b" class="uhel-panel"></div>
+            <div class="hint">Spoj úkoly do jednoho cvičení. Lidé s úhlem A dostanou za úkol pracovat způsobem úhlu B.</div>
+        </div>
+    </div>
+    <div class="odkazy-dole">
+        <span>🔮 Hotový workshop → <a href="workshop_90_minut.html">Workshop 90 minut</a></span>
+        <span>🧠 Diagnostika → <a href="diagnosticky_mod.html">Diagnostický mód</a></span>
+    </div>
+</div>
+
+<script>
+const VRABEC_UHLY = [
+    {id:1,nazev:"Falešná jistota",stupne:"0°",barva:"#5a7fa8",metafora:"Zvolili jsme vrabce kvůli iluzi kontroly.",q3:"Přiznat si, že 'jistota' byla iluzí. Setřást vrabce znamená přijmout dočasnou nejistotu."},
+    {id:2,nazev:"Kvalitativní degradace",stupne:"30°",barva:"#6a9e72",metafora:"Tým se uspokojil s málem. Ambice klesly.",q3:"Znovu definovat, kdo je náš 'holub'. Začít první krok."},
+    {id:3,nazev:"Ztracená kontrola",stupne:"60°",barva:"#9b72b5",metafora:"Hrst je metafora pro kontrolu. Systémy se vymykají.",q3:"Provést audit kontroly: U kterých 'vrabců' jsme ztratili iniciativu?"},
+    {id:4,nazev:"Identifikační past",stupne:"90°",barva:"#5fa8a0",metafora:"Kompromis se stal vizitkou. Jsme tým s hnízdem.",q3:"Změnit vyprávění. Místo 'máme problém' říkat 'procházíme fází učení'."},
+    {id:5,nazev:"Pasivní rezignace",stupne:"120°",barva:"#8e7248",metafora:"Možná je lepší holub... Ale nekoná.",q3:"Přerušit cyklus rezignace malou, vítěznou akcí."},
+    {id:6,nazev:"Dynamika návratnosti",stupne:"150°",barva:"#5a8a5a",metafora:"I špatné rozhodnutí vytváří vazby. Sunk costs.",q3:"Sečtěte čas a energii věnované vrabci. Co bychom za to mohli postavit?"},
+    {id:7,nazev:"Ideál jako dekorace",stupne:"180°",barva:"#a85a5a",metafora:"Holub je krásný, ale nefunkční. Je příliš vzdálený.",q3:"Sundat holuba ze střechy. Převést ho z vize na 5 konkrétních kritérií."},
+    {id:8,nazev:"Názor jako parazit",stupne:"210°",barva:"#c8a832",metafora:"Vrabec je názor, co se nedá setřást. Dogma.",q3:"Vytáhnout dogma na světlo. Zeptat se: 'Proč tě tu ještě hostíme?'"},
+    {id:9,nazev:"Inovace proti sobě",stupne:"240°",barva:"#c8722a",metafora:"Každý workaround je další větvička do hnízda.",q3:"Zastavit cyklus 'přidávání větviček'. Moratorium na vylepšování."},
+    {id:10,nazev:"Sociální percepce",stupne:"270°",barva:"#a83060",metafora:"Všichni to vidí. Tým je stigmatizován.",q3:"Veřejně prezentovat plán na odstranění 'vrabčího hnízda'."},
+    {id:11,nazev:"Volba mezi špatným a horším",stupne:"300°",barva:"#6080a0",metafora:"Falešná dichotomie. Realita ukázala třetí variantu.",q3:"Přestat uvažovat v dichotomiích. Hledat třetí cestu."},
+    {id:12,nazev:"Akceptace vs. akce",stupne:"330°",barva:"#8060b0",metafora:"Celý příběh je o pasivitě. Chybí akce.",q3:"Spustit projekt 'Velké setřesení'. Jediný cíl pro příští čtvrtletí."}
+];
+document.addEventListener('DOMContentLoaded',()=>{
+    const opt = VRABEC_UHLY.map(u=>`<option value="${u.id}">${u.id}. ${u.nazev} (${u.stupne})</option>`).join('');
+    document.getElementById('uhel-a').innerHTML = '<option value="">— vyber úhel —</option>'+opt;
+    document.getElementById('uhel-b').innerHTML = '<option value="">— vyber úhel —</option>'+opt;
+});
+function generuj(){
+    const a=VRABEC_UHLY.find(u=>u.id===parseInt(document.getElementById('uhel-a').value));
+    const b=VRABEC_UHLY.find(u=>u.id===parseInt(document.getElementById('uhel-b').value));
+    if(!a||!b||a.id===b.id){alert('Vyber dva různé úhly.');return}
+    document.getElementById('panel-a').innerHTML=`<strong><span class="color-dot" style="background:${a.barva}"></span>${a.id}. ${a.nazev} · ${a.stupne}</strong><div class="meta">${a.metafora}</div><div class="q3-text">${a.q3}</div>`;
+    document.getElementById('panel-b').innerHTML=`<strong><span class="color-dot" style="background:${b.barva}"></span>${b.id}. ${b.nazev} · ${b.stupne}</strong><div class="meta">${b.metafora}</div><div class="q3-text">${b.q3}</div>`;
+    const el=document.getElementById('vysledek');el.style.display='block';el.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
