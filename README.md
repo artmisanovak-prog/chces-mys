@@ -142,16 +142,17 @@ kreativita, fyzika jazyka, metadenik
 - [ebook3](doma/nastroje/ebook3.hml)
 
 ---
+
 - [workshop kocour](doma/nastroje/worshop_kocour.html)
 - [workshop_pav](doma/nastroje/workshop_pav.html)
 - [diagnostika tymu](doma/mimo/diagnostika_tymu.html)
 
 ---
 
-- [ukoly_kocour](doma/karty/ukoly/ukoly_kocour.html)
-- [ukoly_kocour1](doma/karty/ukoly/ukoly_kocour1.html)
-[ukoly_ryba](doma/karty/ukoly/ukoly_ryba.html)
-- [ukoly_zajic](doma/karty/ukoly/ukoly_zajic.html)
+- [ukoly_kocour](doma/data/ukoly/ukoly_kocour.html)
+- [ukoly_kocour1](doma/data/ukoly/ukoly_kocour1.html)
+- [ukoly_ryba](doma/data/ukoly/ukoly_ryba.html)
+- [ukoly_zajic](doma/data/ukoly/ukoly_zajic.html)
 
   
 ---
