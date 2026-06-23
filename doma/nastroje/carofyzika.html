@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Čarofyzika · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0d0a; --s1:#171410; --s2:#1e1a14; --s3:#252018;
+  --cr:#e8e0d0; --dm:rgba(232,224,208,.42); --d2:rgba(232,224,208,.15);
+  --ta:#a89880; --th:#c0aa90;
+  --ca:#b8e040; --cd:rgba(184,224,64,.18);
+  --fs:'Cormorant Garamond',Georgia,serif;
+  --fm:'DM Mono',monospace;
+  --r:4px;
+}
+html{background:var(--bg);color:var(--cr);font-family:var(--fm);font-size:13px;-webkit-tap-highlight-color:transparent}
+body{overflow:hidden;height:100dvh;width:100vw;position:fixed}
+
+.outer{width:100vw;height:100dvh;overflow:hidden;position:relative}
+.wrap{display:flex;width:400vw;height:100dvh;
+  transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform}
+.sec{width:100vw;height:100dvh;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;flex-shrink:0;
+  overscroll-behavior-y:contain;touch-action:pan-y}
+
+.sh{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--d2);
+  display:flex;justify-content:space-between;align-items:flex-start;padding:.85rem 1rem .65rem}
+.sh h1{font-family:var(--fs);font-size:1.4rem;font-weight:300;line-height:1}
+.sh h1 em{color:var(--ca);font-style:italic}
+.sh-sub{font-size:.58rem;color:var(--dm);letter-spacing:.08em;margin-top:.18rem}
+.sh-nav{display:flex;align-items:center;gap:.28rem;padding-top:.1rem;flex-shrink:0}
+.nb{width:29px;height:29px;border-radius:var(--r);background:var(--s2);border:1px solid var(--d2);
+  color:var(--ta);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;transition:all .15s;touch-action:manipulation;line-height:1}
+.nb:hover{border-color:var(--ca);color:var(--ca)}
+.nb:disabled{opacity:.22;cursor:default;pointer-events:none}
+
+.sb{padding:.85rem 1rem 3rem}
+
+.ac{border:1px solid var(--d2);border-radius:var(--r);margin-bottom:.6rem;overflow:hidden}
+.ach{display:flex;justify-content:space-between;align-items:center;padding:.62rem .85rem;
+  cursor:pointer;background:var(--s1);font-size:.66rem;color:var(--cr);
+  text-transform:uppercase;letter-spacing:.08em;user-select:none;touch-action:manipulation;transition:background .15s}
+.ach:hover{background:var(--s2)}
+.ach .ach-ic{color:var(--ca);margin-right:.5rem;font-size:.8rem}
+.acarr{transition:transform .25s;font-size:.55rem;color:var(--dm)}
+.ac.open .acarr{transform:rotate(180deg)}
+.acb{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1);background:var(--s1)}
+.ac.open .acb{max-height:5000px}
+.aci{padding:.75rem .9rem 1rem}
+.aci p{font-size:.78rem;line-height:1.66;margin-bottom:.8rem;color:var(--cr)}
+.aci p strong{color:var(--ca)}
+.aci p:last-child{margin-bottom:0}
+
+.lp{background:var(--s1);border:1px solid var(--d2);border-radius:var(--r);padding:.7rem;margin-bottom:.65rem}
+.lpt{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;
+  font-size:.58rem;color:var(--dm);text-transform:uppercase;letter-spacing:.08em}
+.lcnt{color:var(--ta)}
+.lg-wrap{position:relative;width:100%}
+.lg{position:relative;display:grid;gap:6px;margin:0 auto;transition:gap .2s;z-index:2}
+.lg.free{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:6px}
+.lg-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.lc{position:relative;overflow:hidden;cursor:pointer;border-radius:2px;
+  background:var(--s2);aspect-ratio:74/105;transition:opacity .15s;z-index:2}
+.lc.land{aspect-ratio:105/74}
+.lc img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.05);display:block;pointer-events:none}
+.lc:hover{opacity:.68}
+.lx{position:absolute;inset:0;background:rgba(15,13,10,.68);display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;color:var(--cr);opacity:0;transition:opacity .15s;pointer-events:none}
+.lc:hover .lx{opacity:1}
+.lc.mv{cursor:grab}.lc.mv:active{cursor:grabbing}.lc.dragging{opacity:.28}
+.lg-empty{padding:1.6rem;text-align:center;color:var(--dm);font-size:.7rem;width:100%}
+
+.zoom-ov{position:fixed;inset:0;z-index:200;background:rgba(15,13,10,.93);
+  display:flex;align-items:center;justify-content:center;cursor:zoom-out;animation:fdin .18s ease}
+@keyframes fdin{from{opacity:0}to{opacity:1}}
+.zoom-ov img{max-width:88vw;max-height:86vh;object-fit:contain;
+  filter:grayscale(100%) contrast(1.08);border:1px solid var(--d2);border-radius:var(--r)}
+.zoom-nm{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);
+  font-family:var(--fs);font-size:1.05rem;color:var(--ca);font-style:italic;white-space:nowrap}
+
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:5px;
+  max-height:46vh;overflow-y:auto;padding-right:2px}
+.libc{cursor:pointer;border:1px solid var(--d2);border-radius:3px;padding:3px;background:var(--s2);
+  display:flex;flex-direction:column;align-items:center;transition:border-color .15s;position:relative}
+.libc:hover{border-color:var(--ca)}
+.libc img{width:100%;aspect-ratio:74/105;object-fit:cover;border-radius:2px;
+  filter:grayscale(100%) contrast(1.05);display:block}
+.libc.land img{aspect-ratio:105/74}
+.libn{font-size:.52rem;color:var(--dm);margin-top:3px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.bdg{position:absolute;top:-4px;right:-4px;background:var(--ca);color:var(--bg);
+  width:15px;height:15px;border-radius:50%;font-size:.48rem;font-weight:bold;
+  display:none;align-items:center;justify-content:center}
+.bdg.on{display:flex}
+.zico{position:absolute;top:3px;left:3px;width:17px;height:17px;
+  background:rgba(15,13,10,.72);border-radius:2px;display:flex;align-items:center;
+  justify-content:center;font-size:.6rem;color:var(--dm);opacity:0;
+  transition:opacity .15s;cursor:zoom-in;z-index:2}
+.libc:hover .zico{opacity:1}
+
+.gps{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:.55rem}
+.gpb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:.42rem;
+  border:1px solid var(--d2);border-radius:var(--r);background:var(--s2);cursor:pointer;
+  transition:all .15s;touch-action:manipulation}
+.gpb:hover,.gpb.on{border-color:var(--ca);background:var(--s3)}
+.gm{display:grid;gap:2px;width:26px;height:26px}
+.gmc{background:rgba(168,152,128,.26);border:1px solid rgba(168,152,128,.42);border-radius:1px}
+.gpl{font-size:.48rem;color:var(--dm)}
+
+.btn{background:var(--ca);color:var(--bg);border:none;padding:.5rem 1rem;
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;border-radius:var(--r);touch-action:manipulation}
+.btn:hover{background:#cdf060}
+.btn.o{background:transparent;color:var(--ca);border:1px solid var(--ca)}
+.btn.o:hover{background:var(--cd)}
+.btn.o.on{background:var(--cd);color:#cdf060}
+.btn.sm{padding:.35rem .75rem;font-size:.56rem}
+.br{display:flex;flex-wrap:wrap;gap:.38rem;align-items:center}
+
+.cst{display:flex;gap:4px;overflow-x:auto;padding-bottom:3px;margin-bottom:.5rem;
+  scrollbar-width:thin;scrollbar-color:var(--d2) transparent}
+.csc{flex-shrink:0;width:52px;cursor:pointer;border:2px solid transparent;border-radius:3px;
+  overflow:hidden;background:var(--s2);transition:border-color .15s}
+.csc img{width:100%;aspect-ratio:74/105;object-fit:cover;filter:grayscale(100%) contrast(1.05);display:block}
+.csc.land img{aspect-ratio:105/74}
+.csc.on{border-color:var(--ca)}
+.cscn{font-size:.44rem;color:var(--dm);text-align:center;padding:1px 0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.atbl{display:flex;flex-direction:column;gap:0;margin-bottom:.6rem;
+  background:var(--s1);border:1px solid var(--d2);border-radius:var(--r);padding:.3rem .6rem}
+.atrow{display:flex;align-items:center;gap:.5rem;padding:.32rem 0;cursor:pointer;
+  border-bottom:1px solid var(--d2);transition:background .15s}
+.atrow:last-child{border-bottom:none}
+.atrow:hover{background:var(--s2)}
+.atrow.on{background:var(--s2)}
+.atdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#2a2520;transition:background .2s}
+.atname{font-size:.66rem;color:var(--cr);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atangle{font-size:.58rem;color:var(--dm);flex-shrink:0}
+
+.ww{display:flex;flex-direction:column;align-items:center;margin-bottom:.5rem;position:relative}
+.wc{position:relative;width:min(280px,82vw);height:min(280px,82vw)}
+.wc canvas{width:100%;height:100%;display:block;cursor:pointer;touch-action:none}
+.wlabels{position:absolute;inset:0;pointer-events:none}
+.wlabel{position:absolute;font-size:.56rem;font-family:var(--fm);white-space:nowrap;
+  transform:translate(-50%,-50%);pointer-events:none;letter-spacing:.01em}
+.aname{font-size:.7rem;color:var(--ca);text-align:center;min-height:1.1em;margin-top:.3rem}
+.prg{font-size:.58rem;color:var(--dm);margin-bottom:.32rem}
+.prg b{color:var(--ta)}
+
+.adesc{background:var(--s1);border-left:3px solid var(--ca);border-radius:0 var(--r) var(--r) 0;
+  padding:.6rem .8rem;margin-bottom:.55rem;font-size:.72rem;line-height:1.55;color:var(--cr);display:none}
+.adesc.on{display:block}
+.adesc b{color:var(--ca)}
+
+.gs{background:var(--s2);border-left:3px solid var(--ca);padding:.7rem .85rem;border-radius:0 var(--r) var(--r) 0}
+.gst{font-family:var(--fs);font-style:italic;font-size:1.02rem;line-height:1.44;color:var(--cr);margin-bottom:.42rem}
+.gsm{font-size:.56rem;color:var(--dm);letter-spacing:.05em;margin-bottom:.42rem}
+.gsf{font-size:.76rem;line-height:1.48;margin-bottom:.28rem;color:var(--cr)}
+.gsfl{font-size:.52rem;color:var(--dm);text-transform:uppercase;letter-spacing:.07em;display:inline-block;margin-right:.28rem}
+.gse{font-size:.72rem;color:var(--dm);font-style:italic;padding:.38rem 0}
+
+.ot{display:grid;grid-template-columns:repeat(2,1fr);gap:.38rem;margin-bottom:.8rem}
+@media(min-width:480px){.ot{grid-template-columns:repeat(3,1fr)}}
+.otb{background:var(--s1);border:1px solid var(--d2);color:var(--cr);padding:.58rem .45rem;
+  font-family:var(--fm);font-size:.56rem;text-align:left;cursor:pointer;border-radius:var(--r);
+  transition:all .15s;touch-action:manipulation}
+.otb:hover,.otb.on{border-color:var(--ca);background:var(--s2)}
+.otic{font-size:.95rem;display:block;margin-bottom:3px}
+.otlb{display:block;text-transform:uppercase;letter-spacing:.06em}
+.res{background:var(--s1);border:1px solid var(--d2);border-radius:var(--r);padding:1rem;display:none}
+.res.on{display:block}
+.res h2{font-family:var(--fs);font-weight:300;font-size:1.12rem;color:var(--ca);margin-bottom:.72rem}
+.res h3{font-family:var(--fs);font-weight:300;font-size:.92rem;color:var(--ta);margin:.9rem 0 .3rem}
+.res p{line-height:1.58;margin-bottom:.38rem;font-size:.8rem}
+.res .blk{border-left:2px solid var(--d2);padding-left:.7rem;margin-bottom:.82rem}
+.res .blk strong{color:var(--ca)}
+.res .ct{display:inline-block;background:var(--cd);color:var(--ca);border-radius:3px;padding:0 4px;font-size:.65rem;font-weight:bold}
+.res .mn{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem}
+.res .mn img{width:48px;aspect-ratio:74/105;object-fit:cover;border-radius:3px;filter:grayscale(100%) contrast(1.05);
+  border:1px solid var(--d2)}
+
+.intro-bg{position:fixed;top:0;left:0;width:100vw;height:100dvh;z-index:0;pointer-events:none;
+  background-image:url('../ilustrace/bg_uvod.jpg');
+  background-size:cover;background-position:center center;background-repeat:no-repeat;
+  opacity:.08;filter:grayscale(100%) contrast(1.1)}
+#s0 .sb{position:relative;z-index:1}
+.intro-content{max-width:540px;padding:0 0 4rem}
+.intro-lead{font-family:var(--fs);font-size:1.4rem;font-weight:300;font-style:italic;
+  line-height:1.4;color:var(--ca);margin-bottom:1.2rem}
+.intro-sub{font-size:.78rem;line-height:1.6;color:var(--dm);margin-bottom:1.3rem}
+
+.license-box,.contact-box{font-size:.74rem;line-height:1.65;color:var(--dm)}
+.license-box strong,.contact-box strong{color:var(--cr)}
+.license-box a,.contact-box a{color:var(--ca);text-decoration:none}
+.license-box a:hover,.contact-box a:hover{text-decoration:underline}
+.license-box p,.contact-box p{margin-bottom:.6rem}
+.linklist{display:flex;flex-direction:column;gap:.4rem;margin-top:.3rem}
+.linklist a{font-size:.74rem;color:var(--ca);text-decoration:none;display:flex;align-items:center;gap:.4rem}
+.linklist a:hover{text-decoration:underline}
+.linklist .lar{font-size:.7rem;opacity:.6}
+
+.lbl{font-size:.58rem;color:var(--dm);text-transform:uppercase;letter-spacing:.09em;margin-bottom:.45rem;display:block}
+.notice{font-size:.6rem;color:var(--dm);border-left:2px solid var(--d2);padding:.28rem .48rem;margin:.45rem 0;line-height:1.5}
+.empty{text-align:center;padding:2rem 1rem;color:var(--dm);font-size:.76rem;border:1px dashed var(--d2);border-radius:var(--r)}
+.empty .ei{font-size:1.4rem;margin-bottom:.38rem}
+.toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ca);color:var(--bg);
+  padding:.38rem .9rem;border-radius:var(--r);font-size:.62rem;z-index:999;pointer-events:none;
+  animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translateX(-50%)}}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--d2);border-radius:2px}
+@media print{
+  .sh,.btn,.br,.ot,.cst,.atbl,.ww,.gps,.ac,.intro-bg{display:none!important}
+  .res{display:block!important;border:none;background:white;color:black}
+  body,html{background:white;color:black}
+}
+</style>
+</head>
+<body>
+<div class="outer">
+<div class="wrap" id="W">
+
+<!-- ══ SEC 0 · ÚVOD ══ -->
+<section class="sec" id="s0">
+  <div class="intro-bg"></div>
+  <div class="sh">
+    <div><h1>čaro<em>fyzika</em></h1><div class="sh-sub">Chceš myš? · generátor & kombinátor</div></div>
+    <div class="sh-nav">
+      <button class="nb" disabled>←</button>
+      <button class="nb" onclick="go(1)">→</button>
+    </div>
+  </div>
+  <div class="sb">
+    <div class="intro-content">
+      <p class="intro-lead">Poskládej kompozici z fenoménů.<br>Každé zvíře je porucha.<br>Každá porucha má dvanáct tváří.</p>
+      <p class="intro-sub">Rozbal sekce níže — pohádka o myši, jak nástroj funguje, a co celý systém vlastně je.</p>
+
+      <div style="margin-bottom:1.3rem">
+        <button class="btn" onclick="go(1)">Začít → výběr karet</button>
+      </div>
+
+      <div class="ac" id="acPohadka">
+        <div class="ach" onclick="tog('acPohadka')"><span><span class="ach-ic">◌</span>Pohádka o myši</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <p>Myš nebyla nikdy obyčejná. Zatímco ostatní zvířata v lese řešila, kdo má pravdu a kdo se mýlí, myš si jen všímala. Seděla v koutě, pozorovala, a co uviděla — to zapsala do mezer mezi větami, mezi gesty, mezi tím, co bylo řečeno a co zůstalo viset ve vzduchu.</p>
+          <p>Nebyla soudce. Nehodnotila, jestli je něco správně nebo špatně. Zajímalo ji jen jedno: <strong>jak se to dá zapsat.</strong> Jakým tvarem, jakým pohybem, jakým zvukem.</p>
+          <p>Jednoho dne si všimla, že každá věc, kterou pozoruje, vypadá jinak podle toho, odkud se na ni dívá. Tak vzala dvanáct kamenů, postavila je do kruhu kolem sebe, a každý kámen nazvala jiným úhlem. Absurdní. Ironický. Filozofický. Naivní. A tak dál — všech dvanáct.</p>
+          <p>Od té doby, když myš zapisuje fenomén, neptá se „co to je", ale <strong>„jak to vypadá odsud, a jak odtamtud."</strong> A z těch dvanácti pohledů na jednu věc vzniká celý svět možností — protože nic není jen jedna pravda.</p>
+        </div></div>
+      </div>
+
+      <div class="ac" id="acManual">
+        <div class="ach" onclick="tog('acManual')"><span><span class="ach-ic">◎</span>Jak nástroj funguje</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <p><strong>1 · Vyber mřížku a karty</strong> — mřížka určuje rozmístění kompozice. Klikej na karty v knihovně — přidají se do layoutu nahoře. Stejnou kartu lze přidat víckrát. Klik na kartu v layoutu ji odebere. Ikona lupy v knihovně zobrazí detail ilustrace.</p>
+          <p><strong>2 · Přiřaď úhly</strong> — klikni na kartu v pruhu nahoře, pak klikni na segment úhloměru. Tabulka pod úhloměrem ukazuje stav všech karet najednou. Klik na úhel v tabulce zobrazí jeho popis.</p>
+          <p><strong>3 · Zvol typ výstupu</strong> — partitura pohybu, workshop, kreativní úkol, hra, scénář nebo instalace. Výstup lze vytisknout, stáhnout jako JSON, nebo uložit jako odkaz — ten zakóduje celou sestavu do URL.</p>
+          <p>Nástroj funguje online i offline — stáhni repozitář jako ZIP, rozbal a otevři soubor v prohlížeči. Žádný server, žádná instalace.</p>
+        </div></div>
+      </div>
+
+      <div class="ac" id="acSystem">
+        <div class="ach" onclick="tog('acSystem')"><span><span class="ach-ic">◈</span>O systému Chceš myš?</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <p>Základní jednotkou systému je <strong>chyba</strong> — anomálie, odchylka, porucha. Ne jako něco k opravě, ale jako místo, kde vzniká rozvoj. Chyba má tvar zvířete. Zvíře je fenomén. Fenomén je zároveň jazyková figura, kognitivní vzorec a tělesná kvalita — v závislosti na úhlu pohledu.</p>
+          <p>Dvanáct úhlů pohledu jsou dvanáct způsobů, jak se fenomén projeví: analyticky, kulturně, filozoficky, naivně, jazykově, metaforicky, asociačně, introspektivně, ironicky, groteskně, absurdně, surrealisticky. Nejsou to hodnocení ani popisy. Jsou to různé druhy pravdy o téže věci.</p>
+          <p>Systém je multigenerativní — výstupem není hotový tvor, ale prostor možností. Co z toho vyplyne závisí na interpretaci a konkrétním použití: choreografie, scénáře, workshopy, vědecké teorie, pravidla pro jiné systémy.</p>
+          <p>Jazyk není popis reality — je její tvůrce. Struktura řekne víc než obsah. A abstraktní věci dostávají fyzické tělo.</p>
+        </div></div>
+      </div>
+
+      <div class="ac" id="acRepo">
+        <div class="ach" onclick="tog('acRepo')"><span><span class="ach-ic">◫</span>Repo dům — další nástroje</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <p>Čarofyzika je jeden z nástrojů systému Chceš myš?. Celý projekt funguje na principu <strong>Repo domu</strong> — sbírka samostatných HTML nástrojů, bez serveru, bez databáze, hostovaných na GitHub Pages.</p>
+          <div class="linklist">
+            <a href="https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/doma/KOCOUR/data/kocour-diagnostika.html" target="_blank"><span class="lar">↗</span>Kocour — diagnostický mód pro týmy</a>
+            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/figury/kocour_figury.html" target="_blank"><span class="lar">↗</span>Kocour — Fyzika jazyka</a>
+            <a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" target="_blank"><span class="lar">↗</span>chcesmys.cz — hlavní rozcestník</a>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="ac" id="acLicence">
+        <div class="ach" onclick="tog('acLicence')"><span><span class="ach-ic">◇</span>Licence</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <div class="license-box">
+            <p><strong>Čarofyzika · Chceš myš?</strong><br>Autorka: Art Misa Novak<br>
+            <a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" target="_blank">chcesmys.cz</a></p>
+            <p>Obsah systému (ilustrace, texty, koncepty, data) je chráněn autorským právem. Nástroj je volně dostupný pro osobní, vzdělávací a nekomerční použití. Komerční použití, šíření nebo odvozená díla pouze s písemným souhlasem autorky.</p>
+            <p>Tento soubor je součástí projektu <strong>Repo dům</strong> — samostatně fungující HTML nástroj bez serveru a závislostí.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="ac" id="acKontakt">
+        <div class="ach" onclick="tog('acKontakt')"><span><span class="ach-ic">◆</span>Kontakt & zpětná vazba</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <div class="contact-box">
+            <p>Autorka: <strong>Art Misa Novak</strong></p>
+            <p>Web: <a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" target="_blank">chcesmys.cz</a></p>
+            <p>Zpětná vazba, spolupráce, komerční použití: napiš přes web nebo GitHub Issues.</p>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ SEC 1 · KARTY ══ -->
+<section class="sec" id="s1">
+  <div class="sh">
+    <div><h1>čaro<em>fyzika</em></h1><div class="sh-sub">1 · výběr karet</div></div>
+    <div class="sh-nav">
+      <button class="nb" onclick="go(0)">←</button>
+      <button class="nb" onclick="go(2)">→</button>
+    </div>
+  </div>
+  <div class="sb">
+    <div class="lp">
+      <div class="lpt"><span>Layout · klik = odeber</span><span class="lcnt" id="LCNT">0 karet</span></div>
+      <div class="lg-wrap" id="LGWRAP">
+        <svg class="lg-svg" id="LGSVG"></svg>
+        <div class="lg free" id="LG"></div>
+      </div>
+    </div>
+    <span class="lbl">Mřížka layoutu</span>
+    <div class="gps" id="GPS"></div>
+    <div class="br" style="margin-bottom:.55rem">
+      <button class="btn sm" onclick="randFill()">↺ Náhodně</button>
+      <button class="btn o sm" onclick="clearAll()">✕ Smazat vše</button>
+      <button class="btn o sm" id="MVB" onclick="toggleMV()" style="display:none">⇄ Přesouvat</button>
+      <button class="btn o sm" onclick="copyLink()">⎘ Uložit odkaz</button>
+    </div>
+    <div class="notice">Stejnou kartu lze přidat vícekrát. Klik v layoutu ji odebere. Ikona ⌕ v knihovně zobrazí detail ilustrace. Knihovna se posunuje, layout výše se vždy zobrazí celý.</div>
+    <div class="ac open" id="acL" style="margin-top:.65rem">
+      <div class="ach" onclick="tog('acL')"><span>Knihovna karet · klikni pro přidání</span><span class="acarr">▾</span></div>
+      <div class="acb"><div class="aci"><div class="lib" id="LIB"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SEC 2 · ÚHLY ══ -->
+<section class="sec" id="s2">
+  <div class="sh">
+    <div><h1>čaro<em>fyzika</em></h1><div class="sh-sub">2 · úhly pohledu</div></div>
+    <div class="sh-nav">
+      <button class="nb" onclick="go(1)">←</button>
+      <button class="nb" onclick="go(3)">→</button>
+    </div>
+  </div>
+  <div class="sb">
+    <div id="AE" class="empty" style="display:none">
+      <div class="ei">○</div>
+      Žádné karty nebyly vybrány.<br>
+      <button class="btn sm" style="margin-top:.8rem" onclick="go(1)">← Výběr karet</button>
+    </div>
+    <div id="AM" style="display:none">
+      <div class="prg" id="PRG"></div>
+      <div class="cst" id="CST"></div>
+      <div class="atbl" id="ATBL"></div>
+      <div class="adesc" id="ADESC"></div>
+      <div class="ww">
+        <div class="wc">
+          <canvas id="WHL" width="280" height="280"></canvas>
+          <div class="wlabels" id="WLABELS"></div>
+        </div>
+        <div class="aname" id="AN">klikni na kartu výše, pak zvol úhel</div>
+      </div>
+      <div class="ac open" id="acGS">
+        <div class="ach" onclick="tog('acGS')"><span>Generativní výstup karty</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci" id="GEN"><div class="gse">— vyber kartu a úhel —</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SEC 3 · VÝSTUP ══ -->
+<section class="sec" id="s3">
+  <div class="sh">
+    <div><h1>čaro<em>fyzika</em></h1><div class="sh-sub">3 · výstup</div></div>
+    <div class="sh-nav">
+      <button class="nb" onclick="go(2)">←</button>
+      <button class="nb" disabled>→</button>
+    </div>
+  </div>
+  <div class="sb">
+    <div id="OE" class="empty" style="display:none">
+      <div class="ei">○</div>
+      Žádné karty nebyly vybrány.<br>
+      <button class="btn sm" style="margin-top:.8rem" onclick="go(1)">← Výběr karet</button>
+    </div>
+    <div id="OM" style="display:none">
+      <span class="lbl">Typ výstupu</span>
+      <div class="ot" id="OT"></div>
+      <div class="br" style="margin-bottom:.85rem">
+        <button class="btn o sm" onclick="expJSON()">↓ JSON</button>
+        <button class="btn o sm" onclick="copyLink()">⎘ Sdílet</button>
+        <button class="btn o sm" onclick="window.print()">⎙ Tisk</button>
+      </div>
+      <div class="res" id="RES"></div>
+
+      <div class="ac" id="acHelp3">
+        <div class="ach" onclick="tog('acHelp3')"><span>Návod, licence & kontakt</span><span class="acarr">▾</span></div>
+        <div class="acb"><div class="aci">
+          <p>Výstup vychází z toho, co jsi nastavil/a v sekcích 1 a 2 — sestava karet a jejich úhly pohledu. Vyber typ výstupu výše, je generován automaticky.</p>
+          <p><strong>Tisk</strong> uloží jen samotný výstup bez ovládacích prvků. <strong>JSON</strong> stáhne strukturovaná data ke každé kartě. <strong>Sdílet</strong> zkopíruje odkaz s celou sestavou zakódovanou v URL.</p>
+          <p>Autorka: <strong>Art Misa Novak</strong> · <a href="https://artmisanovak-prog.github.io/Fenomeny_Kreativni_Slovnik_Mezer_Chces_Mys/" target="_blank" style="color:var(--ca)">chcesmys.cz</a></p>
+          <p>Nástroj je volně dostupný pro osobní, vzdělávací a nekomerční použití. Komerční použití pouze s písemným souhlasem autorky.</p>
+          <div class="linklist">
+            <a href="https://artmisanovak-prog.github.io/chces_MYS_slovnik_mezer/doma/KOCOUR/data/kocour-diagnostika.html" target="_blank"><span class="lar">↗</span>Kocour — diagnostický mód pro týmy</a>
+            <a href="https://artmisanovak-prog.github.io/chces-mys/doma/data/figury/kocour_figury.html" target="_blank"><span class="lar">↗</span>Kocour — Fyzika jazyka</a>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<div class="zoom-ov" id="ZOV" style="display:none" onclick="closeZoom()">
+  <img id="ZIMG" src="" alt="">
+  <div class="zoom-nm" id="ZNM"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  ČAROFYZIKA · Chceš myš? · chcesmys.cz · Art Misa Novak
+// ══════════════════════════════════════════════════════════════
+
+// ── GEN DATA ─────────────────────────────────────────────────
+// ↓↓↓  ZDE VLOŽ CELÝ OBSAH GEN_DATA (pole od [ do ])  ↓↓↓
+const GEN_DATA = [];
+// ↑↑↑  ZDE KONČÍ GEN_DATA  ↑↑↑
+
+const IMG = 'https://artmisanovak-prog.github.io/chces-mys/doma/ilustrace/';
+
+// pořadí karet — land karty (slon, had, moucha) jsou na konci
+const CARD_ORDER = [
+  'mys','kocour','ryba','zajic','motyl','pav','cap','krokodyl','netopyr','pavouk',
+  'kravy','tygr','jednorozec','liska','vrabec','drak','prase','kliste','zizala',
+  'plamenak','lemur','panda','vlk','parohy','opice','osel','hvezdice','zralok',
+  'husy','hyena','beran','veverka','psi_smecka',
+  'slon','had','moucha'
+];
+const LAND_CARDS = ['slon','had','moucha'];
+
+// ── 12 ÚHLŮ ──────────────────────────────────────────────────
+const UH = [
+  {id:'analyticky',     n:'Analytický',     c:'#e8e0d0', d:0,   desc:'Rozebírá fenomén na součásti. Hledá mechanismus, ne dojem — co z čeho vyplývá a jak to funguje.'},
+  {id:'kulturni',       n:'Kulturní',        c:'#a8d5a2', d:30,  desc:'Vidí fenomén jako součást širšího kontextu — zvyku, normy, mýtu, který společnost vytvořila a udržuje.'},
+  {id:'filozoficky',    n:'Filozofický',     c:'#b3d4ff', d:60,  desc:'Ptá se po podstatě a smyslu. Co tento fenomén říká o existenci, pravdě nebo bytí samém.'},
+  {id:'naivni',         n:'Naivní',          c:'#40e0d0', d:90,  desc:'Vidí věc poprvé, bez teorie. Jednoduché vysvětlení, upřímný údiv, žádná interpretace navíc.'},
+  {id:'jazykovy',       n:'Jazykový',        c:'#c8a2c8', d:120, desc:'Sleduje, jak se fenomén projevuje v jazyce — jako figura, jako syntax, jako slovo, které se stává tělem.'},
+  {id:'metaforicky',    n:'Metaforický',     c:'#7ec8a0', d:150, desc:'Překládá fenomén do obrazu z jiné oblasti. Jedna věc vysvětlená skrze podobnost s jinou.'},
+  {id:'asociacni',      n:'Asociační',       c:'#d2b48c', d:180, desc:'Skáče od jedné myšlenky k druhé volným řetězením. Spojuje vzdálené věci nečekanou logikou.'},
+  {id:'introspektivni', n:'Introspektivní',  c:'#ffd700', d:210, desc:'Obrací pohled dovnitř. Co tento fenomén znamená pro mě, jak rezonuje s vlastní zkušeností.'},
+  {id:'ironicky',       n:'Ironický',        c:'#ffa500', d:240, desc:'Říká jedno a myslí druhé. Odstup, který obrací očekávaný význam naruby.'},
+  {id:'groteskni',      n:'Groteskní',       c:'#dc143c', d:270, desc:'Zveličuje do absurdity. Tělesnost, deformace, přehnaná fyzická kvalita fenoménu.'},
+  {id:'absurdni',       n:'Absurdní',        c:'#d47fc4', d:300, desc:'Vychyluje logiku zcela mimo realitu. Fenomén funguje podle pravidel, která nedávají smysl — a přesto platí.'},
+  {id:'surrealisticky', n:'Surrealistický',  c:'#c8956a', d:330, desc:'Otevírá fenomén snové, ne-lineární logice. Realita se ohýbá, hranice mizí.'},
+];
+const UM = Object.fromEntries(UH.map(u=>[u.id,u]));
+
+// ── KARTY ────────────────────────────────────────────────────
+function mkCards(){
+  const present=new Map();
+  GEN_DATA.forEach(d=>{
+    if(!present.has(d.id)&&d.nazev&&d.nazev!=='X')
+      present.set(d.id,true);
+  });
+  // zachovej definované pořadí, ale jen karty které mají data NEBO jsou v explicitním seznamu
+  const out=[];
+  CARD_ORDER.forEach(id=>{
+    out.push({id,n:id[0].toUpperCase()+id.slice(1).replace(/_/g,' '),land:LAND_CARDS.includes(id)});
+  });
+  // přidej případné karty z dat, které nejsou v CARD_ORDER (fallback, ať nic nezmizí)
+  present.forEach((_,id)=>{
+    if(!out.find(c=>c.id===id)) out.push({id,n:id[0].toUpperCase()+id.slice(1).replace(/_/g,' '),land:LAND_CARDS.includes(id)});
+  });
+  return out;
+}
+const CARDS=mkCards();
+const CM=Object.fromEntries(CARDS.map(c=>[c.id,c]));
+
+// ── MŘÍŽKY ───────────────────────────────────────────────────
+const GR=[
+  {id:'free',lb:'Volně', c:0,r:0,cnt:0},
+  {id:'r3',  lb:'1×3',  c:3,r:1,cnt:3},
+  {id:'c3',  lb:'3×1',  c:1,r:3,cnt:3},
+  {id:'r6',  lb:'3×2',  c:3,r:2,cnt:6},
+  {id:'c6',  lb:'2×3',  c:2,r:3,cnt:6},
+  {id:'sq',  lb:'3×3',  c:3,r:3,cnt:9},
+  {id:'c9',  lb:'1×9',  c:1,r:9,cnt:9},
+  {id:'r9',  lb:'9×1',  c:9,r:1,cnt:9},
+];
+let GID='free';
+
+// ── STAV ─────────────────────────────────────────────────────
+let LC=[];
+let ACI=0;
+let MV=false;
+let SEC=0;
+let OTS=null;
+let DRAG=null;
+let activeAngleDesc=null;
+
+// ── NAVIGACE — pouze přes šipky, žádné swipe gesto ───────────
+function go(n){
+  SEC=Math.max(0,Math.min(3,n));
+  document.getElementById('W').style.transform=`translateX(-${SEC*100}vw)`;
+  if(SEC===2)refA();
+  if(SEC===3)refO();
+  updHash();
+}
+function tog(id){document.getElementById(id).classList.toggle('open')}
+
+// ── ZOOM ─────────────────────────────────────────────────────
+function openZoom(src,name){
+  document.getElementById('ZIMG').src=src;
+  document.getElementById('ZNM').textContent=name;
+  document.getElementById('ZOV').style.display='flex';
+}
+function closeZoom(){document.getElementById('ZOV').style.display='none'}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeZoom()});
+
+// ── GRID PRESETS ─────────────────────────────────────────────
+function renderGP(){
+  const el=document.getElementById('GPS');el.innerHTML='';
+  GR.forEach(g=>{
+    const b=document.createElement('button');
+    b.className='gpb'+(g.id===GID?' on':'');
+    b.onclick=()=>setG(g.id);
+    const m=document.createElement('div');m.className='gm';
+    const cols=g.c===0?3:Math.min(g.c,5);
+    const rows=g.r===0?2:Math.min(g.r,5);
+    m.style.cssText=`grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)`;
+    for(let i=0;i<cols*rows;i++){const x=document.createElement('div');x.className='gmc';m.appendChild(x)}
+    const lb=document.createElement('span');lb.className='gpl';lb.textContent=g.lb;
+    b.appendChild(m);b.appendChild(lb);el.appendChild(b);
+  });
+}
+function setG(id){GID=id;renderGP();renderLC();updHash()}
+
+// ── LIBRARY ──────────────────────────────────────────────────
+function renderLib(){
+  const el=document.getElementById('LIB');el.innerHTML='';
+  CARDS.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='libc'+(c.land?' land':'');
+    div.title=c.n;
+    const src=IMG+c.id+'.jpg';
+    const img=document.createElement('img');
+    img.src=src;img.alt=c.n;
+    img.onerror=()=>{img.src=ph(c.n,72,102)};
+    img.addEventListener('click',()=>addCard(c.id));
+    const zi=document.createElement('div');
+    zi.className='zico';zi.textContent='⌕';
+    zi.addEventListener('click',e=>{e.stopPropagation();openZoom(src,c.n)});
+    const nm=document.createElement('div');
+    nm.className='libn';nm.textContent=c.n;
+    nm.addEventListener('click',()=>addCard(c.id));
+    const bg=document.createElement('div');
+    bg.className='bdg';bg.id='B'+c.id;
+    div.appendChild(img);div.appendChild(zi);div.appendChild(nm);div.appendChild(bg);
+    el.appendChild(div);
+  });
+}
+function updB(id){
+  const b=document.getElementById('B'+id);if(!b)return;
+  const n=LC.filter(c=>c.id===id).length;
+  b.textContent=n;b.classList.toggle('on',n>0);
+}
+
+// ── LAYOUT — vždy se celé vejde, karty se zmenšují podle počtu ──
+function addCard(id,ang=null){LC.push({id,ang});renderLC();updB(id);updHash()}
+function rmCard(i){
+  const id=LC[i].id;LC.splice(i,1);
+  if(ACI>=LC.length)ACI=Math.max(0,LC.length-1);
+  renderLC();updB(id);updHash();
+}
+
+function renderLC(){
+  const wrap=document.getElementById('LGWRAP');
+  const el=document.getElementById('LG');
+  const svg=document.getElementById('LGSVG');
+  const n=LC.length;
+  document.getElementById('LCNT').textContent=
+    n===0?'0 karet':n===1?'1 karta':n<5?n+' karty':n+' karet';
+
+  svg.innerHTML='';
+  el.innerHTML='';
+
+  if(!n){
+    el.className='lg free';
+    el.style.cssText='';
+    el.innerHTML='<div class="lg-empty">Klikni na kartu v knihovně níže</div>';
+    return;
+  }
+
+  const g=GR.find(x=>x.id===GID);
+  // šířka dostupného prostoru (omezena na šířku panelu)
+  const maxW = Math.min(wrap.clientWidth || 340, 520);
+  const maxH = window.innerHeight * 0.42; // ať se vejde i s ostatním obsahem
+
+  let cols, rows;
+  if(g && g.c>0){ cols=g.c; rows=g.r; }
+  else {
+    // volné rozmístění — odhad čtvercového gridu podle počtu karet
+    cols = Math.ceil(Math.sqrt(n));
+    rows = Math.ceil(n/cols);
+  }
+
+  const gap=6;
+  // karta poměr 74:105 (~0.705) — spočítej max velikost karty aby se vše vešlo
+  let cardW = (maxW - gap*(cols-1)) / cols;
+  let cardWfromH = ((maxH - gap*(rows-1)) / rows) * (74/105);
+  cardW = Math.max(34, Math.min(cardW, cardWfromH, 110));
+  const cardH = cardW * (105/74);
+
+  el.className='lg';
+  el.style.display='grid';
+  el.style.gridTemplateColumns=`repeat(${cols}, ${cardW}px)`;
+  el.style.gridTemplateRows=`repeat(${rows}, ${cardH}px)`;
+  el.style.justifyContent='center';
+  el.style.width='100%';
+  wrap.style.minHeight=(rows*cardH + (rows-1)*gap)+'px';
+
+  const positions=[];
+  LC.forEach((card,i)=>{
+    const ci=CM[card.id];if(!ci)return;
+    const div=document.createElement('div');
+    div.className='lc'+(ci.land?' land':'')+(MV?' mv':'');
+    div.dataset.i=i;
+    div.style.width=cardW+'px';
+    div.style.height=cardH+'px';
+    const img=document.createElement('img');
+    img.src=IMG+card.id+'.jpg';img.alt=ci.n;
+    img.onerror=()=>{img.src=ph(ci.n,72,102)};
+    img.draggable=false;
+    const x=document.createElement('div');x.className='lx';x.textContent='✕';
+    div.appendChild(img);div.appendChild(x);
+    if(MV){
+      div.draggable=true;
+      div.addEventListener('dragstart',e=>{e.dataTransfer.effectAllowed='move';DRAG=i;div.classList.add('dragging')});
+      div.addEventListener('dragend',()=>{div.classList.remove('dragging');DRAG=null});
+      div.addEventListener('dragover',e=>e.preventDefault());
+      div.addEventListener('drop',e=>{
+        e.preventDefault();if(DRAG===null||DRAG===i)return;
+        const [mv]=LC.splice(DRAG,1);LC.splice(i,0,mv);renderLC();updHash();
+      });
+    }
+    div.addEventListener('click',()=>{if(!MV)rmCard(i)});
+    el.appendChild(div);
+  });
+
+  // spojnice mezi kartami — po vykreslení změř pozice a nakresli linky v SVG
+  requestAnimationFrame(()=>{
+    const wrapRect=wrap.getBoundingClientRect();
+    svg.setAttribute('width',wrapRect.width);
+    svg.setAttribute('height',wrapRect.height);
+    svg.setAttribute('viewBox',`0 0 ${wrapRect.width} ${wrapRect.height}`);
+    const cards=[...el.children];
+    const centers=cards.map(c=>{
+      const r=c.getBoundingClientRect();
+      return {x:r.left-wrapRect.left+r.width/2, y:r.top-wrapRect.top+r.height/2};
+    });
+    for(let i=0;i<centers.length-1;i++){
+      const a=centers[i],b=centers[i+1];
+      if(!a||!b)continue;
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',a.x);line.setAttribute('y1',a.y);
+      line.setAttribute('x2',b.x);line.setAttribute('y2',b.y);
+      line.setAttribute('stroke','#b8e040');
+      line.setAttribute('stroke-width','1');
+      line.setAttribute('stroke-opacity','0.35');
+      line.setAttribute('stroke-dasharray','3,3');
+      svg.appendChild(line);
+    }
+  });
+}
+
+function toggleMV(){
+  MV=!MV;
+  const b=document.getElementById('MVB');
+  b.classList.toggle('on',MV);
+  b.textContent=MV?'⇄ Přesouvat ✓':'⇄ Přesouvat';
+  renderLC();
+}
+function clearAll(){
+  const ids=[...new Set(LC.map(c=>c.id))];
+  LC=[];ids.forEach(updB);renderLC();updHash();
+}
+function randFill(){
+  if(!CARDS.length)return;
+  const g=GR.find(x=>x.id===GID);
+  const n=g&&g.cnt>0?g.cnt:6;
+  clearAll();
+  for(let i=0;i<n;i++)addCard(CARDS[Math.floor(Math.random()*CARDS.length)].id);
+}
+window.addEventListener('resize',()=>{ if(SEC===1) renderLC(); });
+
+// ── ANGLES ───────────────────────────────────────────────────
+function refA(){
+  const empty=!LC.length;
+  document.getElementById('AE').style.display=empty?'block':'none';
+  document.getElementById('AM').style.display=empty?'none':'block';
+  if(empty)return;
+  if(ACI>=LC.length)ACI=0;
+  renderCST();renderATBL();drawW(LC[ACI]?.ang||null);renderWLabels();updPrg();updGen();
+}
+function renderCST(){
+  const el=document.getElementById('CST');el.innerHTML='';
+  LC.forEach((card,i)=>{
+    const ci=CM[card.id];if(!ci)return;
+    const div=document.createElement('div');
+    div.className='csc'+(ci.land?' land':'')+(i===ACI?' on':'');
+    div.onclick=()=>{ACI=i;renderCST();renderATBL();drawW(LC[i].ang||null);updGen()};
+    const img=document.createElement('img');
+    img.src=IMG+card.id+'.jpg';img.alt=ci.n;
+    img.onerror=()=>{img.src=ph(ci.n,52,74)};
+    const nm=document.createElement('div');nm.className='cscn';nm.textContent=ci.n;
+    div.appendChild(img);div.appendChild(nm);el.appendChild(div);
+  });
+  const ac=el.querySelector('.on');
+  if(ac)ac.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+}
+function renderATBL(){
+  const el=document.getElementById('ATBL');el.innerHTML='';
+  LC.forEach((card,i)=>{
+    const ci=CM[card.id];if(!ci)return;
+    const row=document.createElement('div');
+    row.className='atrow'+(i===ACI?' on':'');
+    const dot=document.createElement('div');dot.className='atdot';
+    if(card.ang&&UM[card.ang])dot.style.background=UM[card.ang].c;
+    const nm=document.createElement('div');nm.className='atname';nm.textContent=ci.n;
+    const ag=document.createElement('div');ag.className='atangle';
+    ag.textContent=card.ang?UM[card.ang]?.n:'—';
+    if(card.ang)ag.style.color=UM[card.ang]?.c;
+    row.appendChild(dot);row.appendChild(nm);row.appendChild(ag);
+    row.onclick=()=>{ACI=i;renderCST();renderATBL();drawW(LC[i].ang||null);updGen()};
+    el.appendChild(row);
+  });
+}
+function updPrg(){
+  const done=LC.filter(c=>c.ang).length;
+  document.getElementById('PRG').innerHTML=`<b>${done}</b> ze <b>${LC.length}</b> karet má úhel`;
+}
+function showAngleDesc(u){
+  const el=document.getElementById('ADESC');
+  if(!u){el.classList.remove('on');el.innerHTML='';return}
+  el.innerHTML=`<b>${u.n}</b> — ${u.desc}`;
+  el.classList.add('on');
+}
+
+// ── WHEEL — segmenty barevné, popisky MIMO kolo aby šly přečíst ──
+function drawW(selId,hovId){
+  const cv=document.getElementById('WHL'),ctx=cv.getContext('2d');
+  const W=cv.width,CX=W/2,CY=W/2,RM=W*.40,Rm=W*.14;
+  ctx.clearRect(0,0,W,W);
+  const sa=(Math.PI*2)/12;
+  UH.forEach((u,i)=>{
+    const a0=-Math.PI/2+i*sa+.025,a1=a0+sa-.05;
+    const iS=u.id===selId,iH=u.id===hovId;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,RM,a0,a1);ctx.closePath();
+    ctx.fillStyle=iS?u.c+'cc':iH?u.c+'66':u.c+'28';ctx.fill();
+    ctx.strokeStyle=(iS||iH)?u.c:'rgba(168,152,128,.12)';
+    ctx.lineWidth=(iS||iH)?1.5:.7;ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,Rm,0,Math.PI*2);
+  ctx.fillStyle='#0f0d0a';ctx.fill();
+  ctx.strokeStyle='rgba(168,152,128,.18)';ctx.lineWidth=1;ctx.stroke();
+  const ctr=hovId?UM[hovId]:selId?UM[selId]:null;
+  if(ctr){
+    ctx.fillStyle=ctr.c;
+    ctx.font=`300 ${hovId?Math.round(W*.038):Math.round(W*.046)}px "Cormorant Garamond",serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(hovId?ctr.n:ctr.d+'°',CX,CY);
+  } else {
+    ctx.fillStyle='rgba(168,152,128,.26)';
+    ctx.font=`300 ${Math.round(W*.034)}px "DM Mono"`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('úhel',CX,CY);
+  }
+  const an=document.getElementById('AN');
+  if(selId&&UM[selId]){an.textContent=UM[selId].n;an.style.color=UM[selId].c}
+  else{an.textContent='klikni na segment';an.style.color=''}
+}
+function renderWLabels(){
+  const wrap=document.getElementById('WLABELS');wrap.innerHTML='';
+  const box=document.querySelector('.wc');
+  const size=box.clientWidth;
+  const CX=size/2, CY=size/2;
+  const sa=(Math.PI*2)/12;
+  const LR = size*.48; // popisky mírně za okrajem kola
+  UH.forEach((u,i)=>{
+    const mid=-Math.PI/2+i*sa+sa/2;
+    const x=CX+Math.cos(mid)*LR;
+    const y=CY+Math.sin(mid)*LR;
+    const lab=document.createElement('div');
+    lab.className='wlabel';
+    lab.textContent=u.n;
+    lab.style.left=x+'px';
+    lab.style.top=y+'px';
+    lab.style.color=u.c;
+    wrap.appendChild(lab);
+  });
+}
+window.addEventListener('resize',()=>{ if(SEC===2 && LC.length) renderWLabels(); });
+
+function whlPt(e){
+  const cv=document.getElementById('WHL'),r=cv.getBoundingClientRect(),sc=cv.width/r.width;
+  return{x:(e.clientX-r.left)*sc-cv.width/2,y:(e.clientY-r.top)*sc-cv.height/2};
+}
+function whlSeg(e){
+  const {x,y}=whlPt(e),d=Math.hypot(x,y),W=document.getElementById('WHL').width;
+  if(d<W*.14||d>W*.40)return -1;
+  let a=Math.atan2(y,x)+Math.PI/2;if(a<0)a+=Math.PI*2;
+  return Math.floor(a/(Math.PI*2/12));
+}
+function whlClick(e){
+  const i=whlSeg(e);if(i<0)return;
+  if(!LC[ACI]){ showAngleDesc(UH[i]); return }
+  LC[ACI].ang=UH[i].id;
+  drawW(UH[i].id);renderATBL();updPrg();updGen();updHash();
+  showAngleDesc(UH[i]);
+}
+const WCV=document.getElementById('WHL');
+WCV.addEventListener('click',whlClick);
+WCV.addEventListener('mousemove',e=>{
+  const i=whlSeg(e);
+  drawW(LC[ACI]?.ang||null,i>=0?UH[i].id:undefined);
+});
+WCV.addEventListener('mouseleave',()=>drawW(LC[ACI]?.ang||null));
+WCV.addEventListener('touchend',e=>{
+  e.preventDefault();
+  const t=e.changedTouches[0];
+  const i=whlSeg({clientX:t.clientX,clientY:t.clientY});
+  if(i<0)return;
+  if(!LC[ACI]){ showAngleDesc(UH[i]); return }
+  LC[ACI].ang=UH[i].id;
+  drawW(UH[i].id);renderATBL();updPrg();updGen();updHash();
+  showAngleDesc(UH[i]);
+},{passive:false});
+
+// ── GEN SENTENCE ─────────────────────────────────────────────
+function updGen(){
+  const el=document.getElementById('GEN');
+  const card=LC[ACI];
+  if(!card){el.innerHTML='<div class="gse">— vyber kartu —</div>';return}
+  if(!card.ang){el.innerHTML='<div class="gse">— klikni na segment úhloměru —</div>';return}
+  const d=GEN_DATA.find(x=>x.id===card.id&&x.uhel===card.ang);
+  const ci=CM[card.id],u=UM[card.ang];
+  if(!d||d.nazev==='X'){
+    el.innerHTML=`<div class="gse">Pro ${ci?.n} × ${u?.n} zatím nejsou data.</div>`;return;
+  }
+  const f=(lbl,v)=>v&&v!=='X'?`<div class="gsf"><span class="gsfl">${lbl}</span>${v}</div>`:'';
+  el.innerHTML=`<div class="gs">
+    <div class="gst">${d.nazev}</div>
+    <div class="gsm">${ci?.n} · <span style="color:${u?.c}">${u?.n}</span> · ${d.intenzita||''}</div>
+    ${f('pohyb',d.pohyb)}${f('zvuk',d.zvuk)}${f('tělo',d.kvalita_tela)}${f('funkce',d.funkce)}
+    ${(d.pole||[]).filter(p=>p!=='X').length?f('pole',(d.pole||[]).filter(p=>p!=='X').join(' · ')):''}
+  </div>`;
+}
+
+// ── OUTPUT ───────────────────────────────────────────────────
+const OTP=[
+  {id:'choreo',  ic:'◌',lb:'Partitura pohybu'},
+  {id:'ws',      ic:'◎',lb:'Workshop pro tým'},
+  {id:'creative',ic:'◈',lb:'Kreativní úkol'},
+  {id:'kids',    ic:'◆',lb:'Hra pro děti'},
+  {id:'film',    ic:'◻',lb:'Scénář'},
+  {id:'inst',    ic:'◰',lb:'Instalace'},
+];
+function refO(){
+  const empty=!LC.length;
+  document.getElementById('OE').style.display=empty?'block':'none';
+  document.getElementById('OM').style.display=empty?'none':'block';
+  if(empty)return;
+  const el=document.getElementById('OT');el.innerHTML='';
+  OTP.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='otb'+(t.id===OTS?' on':'');
+    b.onclick=()=>genOut(t.id);
+    b.innerHTML=`<span class="otic">${t.ic}</span><span class="otlb">${t.lb}</span>`;
+    el.appendChild(b);
+  });
+  if(OTS)genOut(OTS,true);
+}
+function genOut(id,silent=false){
+  OTS=id;
+  document.querySelectorAll('.otb').forEach(b=>{
+    b.classList.toggle('on',b.querySelector('.otlb')?.textContent===OTP.find(t=>t.id===id)?.lb);
+  });
+  const its=LC.map(card=>{
+    const ci=CM[card.id];
+    const d=card.ang?GEN_DATA.find(x=>x.id===card.id&&x.uhel===card.ang):null;
+    const vd=d&&d.nazev!=='X'?d:null;
+    return{card,ci,d:vd,u:card.ang?UM[card.ang]:null};
+  });
+  const v=its.filter(x=>x.d);
+  const g=GR.find(x=>x.id===GID);
+  let h=mn(its);
+  if(!v.length){
+    h+=`<p style="color:var(--dm);font-size:.78rem">Přiřaďte úhly kartám v sekci 2 — pak se výstup vygeneruje automaticky.</p>`;
+  } else {
+    if(id==='choreo')  h+=bChoreo(its,v,g);
+    if(id==='ws')      h+=bWS(its,v,g);
+    if(id==='creative')h+=bCr(v);
+    if(id==='kids')    h+=bKids(v);
+    if(id==='film')    h+=bFilm(its,v);
+    if(id==='inst')    h+=bInst(v,g);
+  }
+  const res=document.getElementById('RES');
+  res.innerHTML=h;res.classList.add('on');
+  if(!silent)res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function mn(its){
+  let h='<div class="mn">';
+  its.forEach(x=>{if(x.ci)h+=`<img src="${IMG}${x.card.id}.jpg" alt="${x.ci.n}" onerror="this.style.display='none'">`});
+  return h+'</div>';
+}
+function ct(n){return`<span class="ct">${n}</span>`}
+function dl(l,v){return v&&v!=='X'?`<p><em style="font-size:.58rem;color:var(--dm)">${l}: </em>${v}</p>`:''}
+function pf(its){return its.filter(x=>x.d).flatMap(x=>x.d.pole||[]).filter(p=>p!=='X')}
+function s1(v){return v?.split(';')[0]?.split(',')[0]?.trim()||''}
+
+function bChoreo(its,v,g){
+  let h=`<h2>Partitura pohybu</h2><p>Sestava: ${v.length} postav${g?.cnt>0?' · rozmístění: '+g.lb:''}. Prostor sdílený, čas neurčený.</p>`;
+  v.forEach((x,i)=>{
+    h+=`<h3>${i+1}. ${x.ci?.n} <span style="color:${x.u?.c};font-size:.76rem">· ${x.u?.n}</span></h3><div class="blk">`;
+    h+=dl('Vstup',x.d?.pohyb)+dl('Tělo',x.d?.kvalita_tela)+dl('Zvuk',x.d?.zvuk);
+    h+=`<p style="font-family:var(--fs);font-style:italic;font-size:.9rem">"${x.d?.nazev}"</p>`;
+    h+=`<p style="font-size:.58rem;color:var(--dm)">intenzita: ${x.d?.intenzita}</p></div>`;
+    if(i<v.length-1)
+      h+=`<p style="text-align:center;font-size:.62rem;color:var(--dm);margin:.38rem 0">↓ ${x.ci?.n} ustupuje · ${v[i+1].ci?.n} vstupuje · napětí: <em>${x.d?.pole?.[0]}</em> × <em>${v[i+1].d?.pole?.[0]}</em></p>`;
+  });
+  if(v.length>1)h+=`<h3>Finální obraz</h3><div class="blk"><p>Simultánně: ${v.map(x=>ct(x.ci?.n)).join(' + ')}</p><p>Pole: ${pf(its).slice(0,6).join(' · ')}</p></div>`;
+  return h;
+}
+function bWS(its,v,g){
+  let h=`<h2>Workshop pro tým</h2><p>Počet rolí: ${v.length}${g?.cnt>0?' · rozmístění skupin: '+g.lb:''} · doporučeno ${v.length*2}–${v.length*4} lidí</p>`;
+  h+=`<h3>Krok 1 · Role</h3><div class="blk"><p>Každý losuje: ${v.map(x=>ct(x.ci?.n)).join(', ')}. Popis role čtěte potichu.</p>`;
+  v.forEach(x=>h+=`<p>${ct(x.ci?.n)}: <em>${x.d?.funkce}</em></p>`);
+  h+=`</div><h3>Krok 2 · Tělo (5 min)</h3><div class="blk">`;
+  v.forEach(x=>h+=`<p>${ct(x.ci?.n)}: ${x.d?.kvalita_tela}</p>`);
+  h+=`</div><h3>Krok 3 · Situace (10 min)</h3><div class="blk">`;
+  if(v.length>=2){
+    h+=`<p><strong>Zadání:</strong> ${ct(v[0].ci?.n)} (${s1(v[0].d?.pohyb)}) se setkává s ${ct(v[1].ci?.n)} (${s1(v[1].d?.pohyb)}).</p>`;
+    h+=`<p>Střet: <em>${v[0].d?.pole?.[0]}</em> vs. <em>${v[1].d?.pole?.[0]}</em></p>`;
+  } else h+=`<p>${ct(v[0].ci?.n)}: ${v[0].d?.funkce}</p>`;
+  h+=`</div><h3>Krok 4 · Reflexe (5 min)</h3><div class="blk">`;
+  h+=`<p>· Kdy jste byli ve své roli? Kdy mimo ni?</p>`;
+  h+=`<p>· Co bylo nejtěžší: ${pf(its).slice(0,3).join(', ')}?</p>`;
+  h+=`<p>· Jaký zvuk by celá situace vydávala?</p></div>`;
+  return h;
+}
+function bCr(v){
+  const forms=['Nakresli','Napiš','Pohybem vyjádři','Zazpívej','Vyfotografuj','Zaznamenej'];
+  let h=`<h2>Kreativní úkol</h2><p>Lze plnit samostatně nebo ve skupině.</p>`;
+  v.forEach((x,i)=>{
+    h+=`<h3>Úkol ${i+1} · ${ct(x.ci?.n)} × ${x.u?.n}</h3><div class="blk">`;
+    h+=`<p><strong>${forms[i%forms.length]}:</strong> ${x.d?.funkce}</p>`;
+    h+=`<p>Pohybová kvalita: <em>${s1(x.d?.pohyb)}</em></p>`;
+    if((x.d?.pole||[]).filter(p=>p!=='X').length)
+      h+=`<p>Klíčová slova: ${x.d.pole.filter(p=>p!=='X').join(' · ')}</p>`;
+    h+=`<p>Zvuk: ${s1(x.d?.zvuk)}</p></div>`;
+  });
+  if(v.length>1)h+=`<h3>Kombinační úkol</h3><div class="blk"><p>Co se stane, když ${v.map(x=>`<em>${x.d?.pole?.[0]}</em>`).join(' narazí na ')}?</p></div>`;
+  return h;
+}
+function bKids(v){
+  let h=`<h2>Hra pro děti</h2><p>Pohybová hra · věk 6+ · ${v.length+2}–${v.length*3} hráčů · 20–30 min</p>`;
+  h+=`<h3>Postavy</h3><div class="blk">`;
+  v.forEach(x=>h+=`<p>${ct(x.ci?.n)}: ${x.d?.typ?.replace(/_/g,' ')||''} — intenzita: ${x.d?.intenzita}</p>`);
+  h+=`</div><h3>Pravidla</h3><div class="blk">`;
+  h+=`<p>1. Každý dostane roli: ${v.map(x=>x.ci?.n).join(', ')}.</p>`;
+  h+=`<p>2. Vedoucí řekne jméno — hráči té role se pohybují podle popisu.</p>`;
+  v.slice(0,3).forEach((x,i)=>h+=`<p>${i+3}. ${ct(x.ci?.n)}: <em>${s1(x.d?.pohyb)}</em></p>`);
+  h+=`<p>${v.length+3}. Tlesknutí = všichni zamrznou. Kdo se pohne, vypadá.</p></div>`;
+  h+=`<h3>Zvuková runda</h3><div class="blk"><p>Zavřou oči — vedoucí vydá zvuk, hádají které zvíře:</p>`;
+  v.forEach(x=>h+=`<p>${ct(x.ci?.n)}: <em>${s1(x.d?.zvuk)||'...'}</em></p>`);
+  h+=`</div>`;
+  return h;
+}
+function bFilm(its,v){
+  let h=`<h2>Scénář krátkého filmu</h2><h3>Logline</h3><div class="blk">`;
+  if(v.length>=2)h+=`<p>${ct(v[0].ci?.n)}, která ${v[0].d?.funkce?.split(';')[0]}, se setkává s ${ct(v[1].ci?.n)}, která ${v[1].d?.funkce?.split(';')[0]}.</p>`;
+  else h+=`<p>${ct(v[0].ci?.n)}: ${v[0].d?.funkce}</p>`;
+  h+=`</div><h3>Postavy</h3><div class="blk">`;
+  v.forEach(x=>h+=`<p><strong>${x.ci?.n}</strong> (${x.u?.n}): ${x.d?.kvalita_tela?.split(';')[0]||''}</p>`);
+  h+=`</div>`;
+  v.forEach((x,i)=>{
+    h+=`<h3>Scéna ${i+1}</h3><div class="blk">`;
+    h+=dl('Akce',x.d?.pohyb)+dl('Zvuk',x.d?.zvuk);
+    h+=`<p><em style="font-family:var(--fs);font-size:.92rem">"${x.d?.nazev}"</em></p></div>`;
+  });
+  h+=`<h3>Závěrečný obraz</h3><div class="blk"><p>${pf(its).slice(0,5).join(' — ')}</p></div>`;
+  return h;
+}
+function bInst(v,g){
+  let h=`<h2>Instalační plán</h2><p>Zóny: ${v.length}${g?.cnt>0?' · rozmístění: '+g.c+'×'+g.r+' ('+g.lb+')':' · volné rozmístění'}</p>`;
+  v.forEach((x,i)=>{
+    h+=`<h3>Zóna ${i+1} · ${ct(x.ci?.n)}</h3><div class="blk">`;
+    h+=dl('Téma',x.d?.funkce)+dl('Zvukový design',x.d?.zvuk);
+    h+=dl('Pohyb návštěvníka',s1(x.d?.pohyb));
+    if((x.d?.pole||[]).filter(p=>p!=='X').length)
+      h+=`<p><em style="font-size:.58rem;color:var(--dm)">klíčová slova:</em> ${x.d.pole.filter(p=>p!=='X').join(' · ')}</p>`;
+    h+=`</div>`;
+  });
+  h+=`<h3>Trasa prostorem</h3><div class="blk"><p>${v.map((x,i)=>`Zóna ${i+1} · ${x.ci?.n} (${x.d?.intenzita})`).join(' → ')}</p></div>`;
+  return h;
+}
+
+// ── URL HASH ─────────────────────────────────────────────────
+function updHash(){
+  try{
+    const st={c:LC.map(x=>x.id),u:LC.map(x=>x.ang||null),g:GR.findIndex(x=>x.id===GID),s:SEC};
+    window.location.hash=btoa(JSON.stringify(st));
+  }catch(e){}
+}
+function loadHash(){
+  const h=window.location.hash.slice(1);if(!h)return;
+  try{
+    const st=JSON.parse(atob(h));
+    if(st.g!=null&&GR[st.g])GID=GR[st.g].id;
+    if(st.c?.length)LC=st.c.map((id,i)=>({id,ang:st.u?.[i]||null})).filter(x=>CM[x.id]);
+    if(st.s!=null)SEC=st.s;
+  }catch(e){}
+}
+function copyLink(){
+  updHash();
+  navigator.clipboard.writeText(location.href)
+    .then(()=>toast('Odkaz zkopírován — obsahuje karty, úhly i sekci'))
+    .catch(()=>prompt('Zkopíruj odkaz:',location.href));
+}
+function expJSON(){
+  const out=LC.map(card=>{
+    const d=card.ang?GEN_DATA.find(x=>x.id===card.id&&x.uhel===card.ang):null;
+    return{cardId:card.id,angleId:card.ang,angleName:card.ang?UM[card.ang]?.n:null,data:(d&&d.nazev!=='X')?d:null};
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+  a.download='carofyzika.json';a.click();
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function ph(n,w,h){
+  return`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect fill="%23222" width="${w}" height="${h}"/><text x="50%" y="50%" fill="%23888" text-anchor="middle" dominant-baseline="middle" font-size="7">${encodeURIComponent(n)}</text></svg>`;
+}
+function toast(msg){
+  const el=document.createElement('div');el.className='toast';el.textContent=msg;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),2800);
+}
+
+if(!('ontouchstart' in window))document.getElementById('MVB').style.display='';
+
+// ── INIT ─────────────────────────────────────────────────────
+loadHash();
+renderGP();
+renderLib();
+renderLC();
+CARDS.forEach(c=>updB(c.id));
+go(SEC);
+</script>
+</body>
+</html>
