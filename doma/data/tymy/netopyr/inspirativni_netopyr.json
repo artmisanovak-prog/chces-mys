@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "angle": "Estetika noci",
+    "nazev": "Estetika noci",
     "stupne": "0°",
     "barva": "#5a7fa8",
     "phrase": "V noci bylo všechno správně. Stíny měly tvar. Zvuky měly smysl.",
@@ -10,7 +10,7 @@
   },
   {
     "id": 2,
-    "angle": "Estetika noci",
+    "nazev": "Estetika noci",
     "stupne": "0°",
     "barva": "#5a7fa8",
     "phrase": "Lidé byli krásní, protože nebyli vidět.",
@@ -19,7 +19,7 @@
   },
   {
     "id": 3,
-    "angle": "Estetika noci",
+    "nazev": "Estetika noci",
     "stupne": "0°",
     "barva": "#5a7fa8",
     "phrase": "Letěl nad městem, kde se světla třpytila jako sliby.",
@@ -28,7 +28,7 @@
   },
   {
     "id": 4,
-    "angle": "Estetika noci",
+    "nazev": "Estetika noci",
     "stupne": "0°",
     "barva": "#5a7fa8",
     "phrase": "V noci krása, co ráno už se nehodí.",
@@ -37,7 +37,7 @@
   },
   {
     "id": 5,
-    "angle": "Rozpor mezi režimy",
+    "nazev": "Rozpor mezi režimy",
     "stupne": "240°",
     "barva": "#c8722a",
     "phrase": "Slova, co zněla jako poezie, se změnila v trapné poznámky.",
@@ -46,7 +46,7 @@
   },
   {
     "id": 6,
-    "angle": "Rozpor mezi režimy",
+    "nazev": "Rozpor mezi režimy",
     "stupne": "240°",
     "barva": "#c8722a",
     "phrase": "A pak přišlo ráno. A všechno se nehodilo.",
@@ -55,7 +55,7 @@
   },
   {
     "id": 7,
-    "angle": "Rozpor mezi režimy",
+    "nazev": "Rozpor mezi režimy",
     "stupne": "240°",
     "barva": "#c8722a",
     "phrase": "Doteky, co vibrovaly, se změnily v rozpaky.",
@@ -64,7 +64,7 @@
   },
   {
     "id": 8,
-    "angle": "Rozpor mezi režimy",
+    "nazev": "Rozpor mezi režimy",
     "stupne": "240°",
     "barva": "#c8722a",
     "phrase": "A netopýr se schoval. Do stropu. Do tmy. Do snu.",
@@ -73,7 +73,7 @@
   },
   {
     "id": 9,
-    "angle": "Jiný jazyk",
+    "nazev": "Jiný jazyk",
     "stupne": "150°",
     "barva": "#5a8a5a",
     "phrase": "Noc není lež. Je to jiný jazyk. Jiný smysl.",
@@ -82,7 +82,7 @@
   },
   {
     "id": 10,
-    "angle": "Jiný jazyk",
+    "nazev": "Jiný jazyk",
     "stupne": "150°",
     "barva": "#5a8a5a",
     "phrase": "Jiný druh pravdy, která se nehodí do denního světla.",
@@ -91,7 +91,7 @@
   },
   {
     "id": 11,
-    "angle": "Jiný jazyk",
+    "nazev": "Jiný jazyk",
     "stupne": "150°",
     "barva": "#5a8a5a",
     "phrase": "Jeho pohádky jsou jako kocovina. Bolí. Ale připomínají, že jsme žili.",
@@ -100,7 +100,7 @@
   },
   {
     "id": 12,
-    "angle": "Jiný jazyk",
+    "nazev": "Jiný jazyk",
     "stupne": "150°",
     "barva": "#5a8a5a",
     "phrase": "Básníci. Barmani. Ztracenci. Zamilovaní. Všichni, kdo v noci žili.",
@@ -109,7 +109,7 @@
   },
   {
     "id": 13,
-    "angle": "Skrývání a úkryt",
+    "nazev": "Skrývání a úkryt",
     "stupne": "210°",
     "barva": "#c8a832",
     "phrase": "A netopýr se schoval. Do stropu.",
@@ -118,7 +118,7 @@
   },
   {
     "id": 14,
-    "angle": "Skrývání a úkryt",
+    "nazev": "Skrývání a úkryt",
     "stupne": "210°",
     "barva": "#c8a832",
     "phrase": "Do tmy. Do snu.",
@@ -127,7 +127,7 @@
   },
   {
     "id": 15,
-    "angle": "Skrývání a úkryt",
+    "nazev": "Skrývání a úkryt",
     "stupne": "210°",
     "barva": "#c8a832",
     "phrase": "Jeho podstata není vítána ve světle dne.",
@@ -136,7 +136,7 @@
   },
   {
     "id": 16,
-    "angle": "Skrývání a úkryt",
+    "nazev": "Skrývání a úkryt",
     "stupne": "210°",
     "barva": "#c8a832",
     "phrase": "Do stropu. Do tmy. Do snu.",
@@ -145,7 +145,7 @@
   },
   {
     "id": 17,
-    "angle": "Společenství noci",
+    "nazev": "Společenství noci",
     "stupne": "60°",
     "barva": "#9b72b5",
     "phrase": "A nebyl v tom sám. Všichni, kdo v noci žili, to znali.",
@@ -154,7 +154,7 @@
   },
   {
     "id": 18,
-    "angle": "Společenství noci",
+    "nazev": "Společenství noci",
     "stupne": "60°",
     "barva": "#9b72b5",
     "phrase": "Básníci. Barmani. Ztracenci. Zamilovaní.",
@@ -163,7 +163,7 @@
   },
   {
     "id": 19,
-    "angle": "Společenství noci",
+    "nazev": "Společenství noci",
     "stupne": "60°",
     "barva": "#9b72b5",
     "phrase": "Je to o všech outsiderech, jejichž vnitřní hodiny jsou v rozporu s korporátním rytmem.",
@@ -172,7 +172,7 @@
   },
   {
     "id": 20,
-    "angle": "Společenství noci",
+    "nazev": "Společenství noci",
     "stupne": "60°",
     "barva": "#9b72b5",
     "phrase": "Uspořádat 'noční summit' pro ty, kteří se cítí jako básníci nebo ztracenci.",
@@ -181,7 +181,7 @@
   },
   {
     "id": 21,
-    "angle": "Pravda v nepravdě",
+    "nazev": "Pravda v nepravdě",
     "stupne": "300°",
     "barva": "#6080a0",
     "phrase": "Všechno bylo trochu nepravdivé – ale o dost pravdivější.",
