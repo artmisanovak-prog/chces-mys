@@ -1,6 +1,6 @@
 # chces-mys
 ##  slovnik-mezer
-### fyzika-jazyka_fyzika-linek
+### fyzika-jazyka_fyzika-kresby
 
 ---
 
