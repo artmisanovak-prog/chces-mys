@@ -1,4 +1,4 @@
-se# chces-mys
+# chces-mys
 ## slovnik mezer
 
 ---
