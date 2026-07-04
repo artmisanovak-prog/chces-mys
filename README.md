@@ -50,7 +50,7 @@
 - [meziTahy3](doma/nastroje/mezitahy3.html)
 - [meziTahy4](doma/nastroje/mezitahy4.html)
 - [meziTahy5](doma/nastroje/mezitahy5.html)
-- 
+- [mezitahy7](doma/nastroje/mezitahy7.html)
 - [meziTahy6](doma/nastroje/mezitahy6.html)
 
 ---
