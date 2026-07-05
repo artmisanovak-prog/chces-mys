@@ -1,0 +1,2473 @@
+{
+  "fenomen": "Myš",
+  "id": "mys",
+  "uhly": {
+    "analyticky": {
+      "intenzita": "nízká",
+      "pohyb": "Zkoumání a zapisování přehlédnutých detailů do ticha, pomalé, systematické otáčení hlavy.",
+      "zvuk": "Tiché vrzání, přepisování vzduchu špičkou ocasu, škrábání pera.",
+      "tělo": "Tělo jako zápisník, velké uši jako antény, které neustále vnímají frekvence světa.",
+      "funkce": "Zaznamenávat to, co ostatní přehlížejí, a vytvářet z toho přesnou databázi.",
+      "pole": ["detail", "záznam", "ticho", "data"],
+      "media": {
+        "partitura": {
+          "vstup": "Systematický rozklad zvuků na slabiky; tělo se nehýbe, jen uši. Každý zvuk je datový bod.",
+          "stret": "Kocour vstupuje a svým krkáním rozbíjí datový tok. Myš poprvé čelí 'chybě', která má tělo.",
+          "spojeni": "Myš přestává zapisovat. Položí otázku 'Chceš myš?' jako finální matematický výpočet, který zahrnuje i chaos."
+        },
+        "hra_pro_deti": {
+          "postavy": "Myš jako 'Sčítač chyb'.",
+          "prostredi": "Temný kout plný velkých obrázků, ve kterých jsou schované chyby.",
+          "pravidla": "Hledej a zapiš co nejvíc chyb; každá nalezená anomálie se počítá."
+        },
+        "hra_digitalni": {
+          "postava": "Detektor dat.",
+          "svet": "Mřížka čísel a textových polí, která se neustále mění.",
+          "mechanika": "Skenování a ukládání textových chyb za každé správné kliknutí."
+        },
+        "kreativni_ukol": {
+          "zadani": "Nakresli místnost a označ v ní 10 věcí, které normálně nikdo nevidí.",
+          "limit": "Používej pouze černou tužku.",
+          "cil": "Vytvoř dokumentární záznam neviditelného světa."
+        },
+        "instalacni_plan": {
+          "figura": "Pódium s obrovskýma ušima jako parabolami, zaměřenými na střed místnosti.",
+          "pozadi": "Stěny polepené přepisy akustických vln a tabulkami s čísly.",
+          "material": "Podlaha ze zvukově izolačních desek, všude rozházené lístky s poznámkami."
+        },
+        "scenar": {
+          "uvod": "Myš sedí v koutě s lupou a zapisuje do sešitu strukturu pavoučí sítě jako matematický vzorec.",
+          "zvrat": "Do sítě vstoupí Kocour a svým nevypočitatelným pohybem pavoučí síť roztrhne.",
+          "zaver": "Myš se podívá na roztrhanou síť, spočítá zlomky a položí chladnou otázku: 'Chceš myš?'"
+        },
+        "choreografie": {
+          "vstup": "Stroboskopické, izolované záškuby uší a očí jako reakce na neviditelné zvukové vlny.",
+          "stret": "Zvířata vstupují v chaotických intervalech; jejich pohyby jsou nečitelným šumem.",
+          "spojeni": "Všichni se na okamžik zastaví. Myš udělá jeden výpočetní krok vpřed a zastaví čas."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Detail na uši, které se napínají a natahují kamsi do tmy, kamera pomalu zaostřuje.",
+          "dej_zvrat": "Do záběru vstoupí Kocour; jeho pohyb a krkání je v datech zobrazen jako 'anomálie 99'.",
+          "zaverecne_tema": "Kamera se odtahuje a ukazuje Myš v koutě, která vzhlíží s matematickým výrazem v očích."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Akustická entropie je základem veškerého vnímání.",
+          "argument": "Rozklad řeči na substrát ukazuje, že svět je jen shluk frekvencí.",
+          "zaver": "Realita je pouhý soubor správně rozložených dat."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Pozorujte své okolí 10 minut a zapište všechno, co přehlížíte.",
+          "ukol": "Sdílejte své záznamy a najděte v nich společnou anomálii.",
+          "reflexe": "Která data vás překvapila? Jaký systém jste v chaosu objevili?"
+        },
+        "herni_prvky": {
+          "mechanika": "Body za odhalené detaily; hráč získává 'zvukové kredity' za každou správně identifikovanou frekvenci.",
+          "prostredi": "Digitální mřížka s pulzujícími body.",
+          "cil": "Odhalit skrytou chybu v systému dřív, než se rozpadne."
+        },
+        "performativni_predstaveni": {
+          "format": "Statická performance s jedním hercem a velkou lupou.",
+          "popis": "Čtení neexistujícího textu; herec skenuje každé písmeno vzduchem.",
+          "vyvrcholeni": "Herec se podívá do publika a nahlas přečte otázku jako vědecké zjištění."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Pravidelné pulzy bílého světla osvětlující kouty místnosti.",
+          "zvrat": "Při vstupu Kocoura se světlo rozkmitá v nepravidelných intervalech.",
+          "bod": "Na konci zůstane jen malý, bodový paprsek na uši Myši."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Tikající metronom, který se nepravidelně zrychluje.",
+          "melodie": "Vysoké, piercingové tóny jako ozvěna čtení a skenování.",
+          "harmonie": "Disonance ve chvíli, kdy je detekována chyba v datech."
+        },
+        "basen_pisen": {
+          "sloka": "Čísla plní tiché kouty, uši jako radar napnutý.",
+          "refren": "Kdo spočítá ticho dřív, než se v něm ztratí čas?",
+          "dozvuk": "Otazník jako tečka na konci věty."
+        },
+        "navrh_kostymu": {
+          "styl": "Tmavý, vědecký overal s celou řadou papírových kapes.",
+          "material": "Neprůzvučná, hustá vlna, která pohlcuje okolní hluk.",
+          "strih": "Těsně vypasovaný s výraznými, našitými kapsami na zápisky."
+        },
+        "soundscape": {
+          "zaklad": "Jemné šumění vzduchu a tikot pomyslného času.",
+          "narust": "Škrábání pera a šepot čísel, které se sčítají.",
+          "dozvuk": "Absolutní, kovové ticho po tom, co se pero zastaví."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Klinický systém dat vs. nečekaný chaos (Kocour).",
+          "motiv": "Potřeba katalogizovat svět, aby mu porozuměla.",
+          "pointa": "Systém je past. Otázka 'Chceš myš?' je past."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Uživatel zadá větu. Myš ji rozloží na písmena a frekvence.",
+          "rozhovor": "Systém opravuje gramatické a logické chyby.",
+          "zaver": "Analýza odpovědi a přesné matematické vyhodnocení."
+        },
+        "ritual": {
+          "priprava": "Čištění velkých uší a otevření prázdné knihy.",
+          "akt": "Rituální zápis prvního zvuku do knihy ticha.",
+          "ukonceni": "Kniha se zavírá. Ticho se vrací."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Zvětšené detaily uší a lupou zkreslené písmo.",
+          "tema": "Sběr dat a fyzika zvuku.",
+          "technika": "Body a čáry, které přecházejí v mikroskopické texty."
+        },
+        "pohybova_improvizace": {
+          "start": "Zírání do prázdna, uši se lehce pootáčejí.",
+          "vyvoj": "Skenování prostoru tělem; rukama opisuje neviditelné vlny.",
+          "zastaveni": "Tuhé, křečovité zastavení na první slyšené cvaknutí."
+        },
+        "socialni_sonda": {
+          "otazka": "Kolik zvuků sis dnes neslyšel, ale registroval?",
+          "pozorovani": "Zavři oči na 1 minutu a registruj jen detaily.",
+          "reflexe": "Jaký systém sis vytvořil pro svůj vlastní poslech?"
+        },
+        "motivace_postavy": {
+          "pud": "Potřeba roztřídit svět do škatulek, aby v něm neztratila přehled.",
+          "obava": "Strach z chaosu, který by mohl spolknout všechna její data.",
+          "touha": "Touha najít ten poslední, nepolapitelný zvuk."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Chrrr... to je frekvence 432 Hz. Špatná věta. Zapíšu si to.",
+          "mislenka2": "Už mám 99 záznamů. Potřebuji 100. Potřebuji vědět, kam ten zvuk patří.",
+          "mislenka3": "Pokud nenajdu 100, systém se zhroutí. Musím to spočítat."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Herectví jako bdělý monitoring. Oči v neustálém střihu.",
+          "hlasove": "Tělo v permanentní tenzi, připravené zachytit další signál.",
+          "emocne": "Vnitřní napětí z neúplnosti dat."
+        },
+        "obsazeni": {
+          "vek": "Křehká žena, 20–30 let.",
+          "typ": "Brýle, výrazné uši, nervózní, precizní pohyby rukou.",
+          "energie": "Vnitřně soustředěná, navenek neklidná."
+        },
+        "scenografie": {
+          "prostor": "Bíle osvětlené pódium s podlahou z bílého linolea.",
+          "materialy": "Všude po zemi rozházené lístky s čísly a grafy.",
+          "atmosfera": "Čistá, chirurgická, až neosobní laboratoř."
+        },
+        "rekvizity": {
+          "predmet1": "Lupa s kovovým okrajem.",
+          "predmet2": "Mikrometr a kovové pravítko.",
+          "predmet3": "Velký, starý sešit v kožené vazbě."
+        },
+        "masky_a_líčení": {
+          "barva": "Popelavá, bezbarvá tvář.",
+          "textura": "Suchá, bez lesku, jako by byla z jiné doby.",
+          "vyraz": "Výrazné, tmavé oči bez make-upu."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:10: Systematické zapisování zvuků.",
+          "faze2": "0:10–0:25: Analýza Kocoura a rozpad dat.",
+          "faze3": "0:25–0:35: Odhalení chyby a položení otázky."
+        },
+        "struktura_delky": {
+          "vstup": "Úvodní část: 10 minut.",
+          "jádro": "Hlavní část: 20 minut.",
+          "konec": "Závěrečná katarze: 5 minut."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci píšou na papír jednu větu, co se jim v životě zadrhla.",
+          "behem": "Během vystoupení si diváci tisknou papírky v dlaních.",
+          "po": "Na konci je vhodí do krabice jako součást databáze."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v hledišti po obvodu, jako součást experimentu.",
+          "role": "Jsou tiché pozadí, ale jejich přítomnost je registrovaná.",
+          "pohodli": "Pevná sedadla, ale bez možnosti pohybu."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš není zvíře. Je to detektor.",
+          "jádro": "A to, co zjistí, je čistá matematika ticha.",
+          "pointa": "Přijďte naslouchat datům, která jste ještě neslyšeli."
+        },
+        "nazev_alternative": {
+          "varianta1": "Auditivní rozklad.",
+          "varianta2": "Katalog chyb.",
+          "varianta3": "Frekvence 99."
+        },
+        "klicova_otazka": {
+          "otazka1": "Co se stane s tvou větou, když ji nikdo neuslyší?",
+          "otazka2": "Můžeš spočítat ticho?",
+          "otazka3": "Kdy se data stanou pastí?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Suchý, prašný pach starého papíru.",
+          "vedlejsi": "Čisté, sterilní bílé plochy.",
+          "dozvuk": "Chladný kov z měřicích přístrojů."
+        },
+        "materialy_a_textury": {
+          "povrch": "Chladné, hladké linoleum.",
+          "material": "Hladký, křídový papír.",
+          "pocit": "Drátěná, pevná vazba starého sešitu."
+        }
+      }
+    },
+    
+    "kulturni": {
+      "intenzita": "střední",
+      "pohyb": "Vstupování do kruhu podivných zvířat jako posvátného prostoru.",
+      "zvuk": "Tiché hlasy, které se hromadí jako šum staré kultury.",
+      "tělo": "Tělo jako středobod shromáždění a živoucí památník jejich příběhů.",
+      "funkce": "Skládat dohromady zlomky světa do jedné nepsané kroniky.",
+      "pole": ["shromáždění", "kruh", "příběh", "tradice"],
+      "media": {
+        "partitura": {
+          "vstup": "Tanec v kruhu, myš sedí uprostřed a nechává se obklopit.",
+          "stret": "Zvířata vstupují do kruhu s předměty, které jsou fragmenty jejich osudů.",
+          "spojeni": "Myš se nehýbe. Celé shromáždění se zastaví v momentě, kdy ona promluví."
+        },
+        "hra_pro_deti": {
+          "postavy": "Sběratel příběhů.",
+          "prostredi": "Kruh v lese obklopený mechem a listím.",
+          "pravidla": "Každé zvíře si přinese svůj předmět a vypráví o něm."
+        },
+        "hra_digitalni": {
+          "postava": "Zapisovatelka.",
+          "svet": "Kruh zvířat a jejich společná paměť.",
+          "mechanika": "Sběr a skládání karet, které reprezentují vyprávěné příběhy."
+        },
+        "kreativni_ukol": {
+          "zadani": "Vytvoř obřad pro sdílení tichých vzpomínek.",
+          "limit": "Pouze beze slov.",
+          "cil": "Kruh vzpomínek, který nikdo nerozmluví."
+        },
+        "instalacni_plan": {
+          "figura": "Kruh z předmětů všech zvířat; uprostřed prázdný prostor pro Myš.",
+          "pozadi": "Lesní scenérie s prosvítajícím šerem.",
+          "material": "Mech, suché listí, chladný kov z předmětů."
+        },
+        "scenar": {
+          "uvod": "Setkání v lese; myš naslouchá šepotu čápa, který zapomněl, koho má donést.",
+          "zvrat": "Zvířata, která se shromáždila, začínají mluvit sborově, ale příběhy se začnou míchat.",
+          "zaver": "Myš vstane a položí otázku, která zastaví jejich hlas."
+        },
+        "choreografie": {
+          "vstup": "Rituální, pomalé vstupování; každý krok je důležitý.",
+          "stret": "Kruh se uzavírá. Zvířata stojí zády k sobě.",
+          "spojeni": "Myš vystoupí ze středu a jejich pohyby se zastaví na jediné větě."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Stojící zvířata v kruhu, myš se na ně dívá z úrovně podlahy.",
+          "dej_zvrat": "V jednom momentě se všechna zvířata otočí směrem k ní, jako by čekala na signál.",
+          "zaverecne_tema": "Myš se postaví a její tichý hlas zní jako ozvěna lesa."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Příběhy a vyprávění utvářejí základ komunity.",
+          "argument": "Každé zvíře, které se sejde, má svůj vlastní symbol a osud.",
+          "zaver": "Myš je lepidlo, které tyto symboly spojuje do jednoho celku."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Sdílejte podivné příběhy, které se vám přihodily.",
+          "ukol": "Vytvořte společný kruh a věnujte předmět jeden druhému.",
+          "reflexe": "Jaká role vám ve společné skládačce připadla?"
+        },
+        "herni_prvky": {
+          "mechanika": "Akce 'Svolání' – hráč v kruhu aktivuje ostatní postavy.",
+          "prostredi": "Posvátný kruh, který se rozšiřuje s každým vyprávěním.",
+          "cil": "Spojit všechny narativy do jednoho plynulého kruhu."
+        },
+        "performativni_predstaveni": {
+          "format": "Kruhové divadlo bez scény.",
+          "popis": "Naslouchání šepotu; herci sedí v kruhu na zemi.",
+          "vyvrcholeni": "Myš se zeptá 'Chceš myš?' a publikum musí odpovědět šeptem."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Kruhové, soustředěné světlo dopadající na Myš.",
+          "zvrat": "Světlo se začne pomalým tempem stáčet do spirály.",
+          "bod": "Na konci osvětluje jen oči Myši."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Ambientní kruh, kde se různé hlasy snáší do společného ticha.",
+          "melodie": "Sólové hlasy, které se prolínají v jeden pomalý tón.",
+          "harmonie": "Všechny tóny se setkají v momentě, kdy otázka padne."
+        },
+        "basen_pisen": {
+          "sloka": "V kruhu ticha a šepotu zní příběhy zapomenutých tvorů.",
+          "refren": "Kde se zastavil čas, tam sedí Myš.",
+          "dozvuk": "A ty se ptáš..."
+        },
+        "navrh_kostymu": {
+          "styl": "Tradiční, historický plášť, ale potrhaný a znovu sešitý.",
+          "material": "Staré, vybledlé plátno s nádechem spáleniny.",
+          "strih": "Volný, vzdušný, aby připomínal šumění listí."
+        },
+        "soundscape": {
+          "zaklad": "Šepot zvířat a šustění lesa.",
+          "narust": "Přibližující se kroky a zmatené pískání.",
+          "dozvuk": "Úplné ticho před tím, než se les znovu zvedne."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Soubor zvláštních bytostí vs. snaha Myši je pochopit.",
+          "motiv": "Potřeba složit rozbitou skládačku světa.",
+          "pointa": "Myš je lepidlo a zároveň ten, kdo otázku položí."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Myš odpovídá na otázky o ostatních zvířatech.",
+          "rozhovor": "Vypráví jejich příběhy z pohledu zvířete, které je vidí.",
+          "zaver": "Snaží se zjistit, proč jsi se na ně začal ptát."
+        },
+        "ritual": {
+          "priprava": "Položení předmětů do kruhu.",
+          "akt": "Obřad shromáždění před položením otázky.",
+          "ukonceni": "Kruh se rozejde, ale otázka zůstává."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Kruh barev, každá barva patří jednomu zvířeti.",
+          "tema": "Shromáždění a vzájemné vztahy.",
+          "technika": "Barevné skvrny, které se navzájem prolínají."
+        },
+        "pohybova_improvizace": {
+          "start": "Přijmi předmět, který ti někdo dá.",
+          "vyvoj": "Najdi mu místo v pomyslném kruhu.",
+          "zastaveni": "Zastav se, když je kruh úplný."
+        },
+        "socialni_sonda": {
+          "otazka": "Čí příběh bys chtěl slyšet v kruhu ticha?",
+          "pozorovani": "Jaké předměty bys do kruhu přinesl ty?",
+          "reflexe": "Jaké zvíře v tomto kruhu jsi ty?"
+        },
+        "motivace_postavy": {
+          "pud": "Touha stát se součástí kolektivu.",
+          "obava": "Obava, že když se nepřipojí, zůstane jen v koutě.",
+          "touha": "Spojit fragmenty cizích osudů do smysluplného celku."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Zaječice voní kouřem. Páv počítá oči. Čáp zapomněl. Všichni přišli za mnou.",
+          "mislenka2": "Moje ticho je konečně plné hlasů. Jsem teď jejich příběh.",
+          "mislenka3": "Kdo jsem bez nich? A oni bez mě?"
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Ví, že je středem, ale tváří se, že je jen pozorovatelkou.",
+          "hlasove": "Lehce pootevřená ústa, naslouchání celým tělem.",
+          "emocne": "Vnitřní klid, který je narušen jen jejich hlasy."
+        },
+        "obsazeni": {
+          "vek": "Mladá, křehká žena (25–35 let).",
+          "typ": "Melancholické oči, tichý, ale pevný hlas.",
+          "energie": "Zvědavá, vnímavá a přítomná."
+        },
+        "scenografie": {
+          "prostor": "Jeviště jako zastavený les: mech, listí, kořeny.",
+          "materialy": "Přírodní textury, prosvětlené shora.",
+          "atmosfera": "Tajemná, vlhká, ale uzavřená."
+        },
+        "rekvizity": {
+          "predmet1": "Ohořelé ucho zaječice.",
+          "predmet2": "Ztracené peříčko páva.",
+          "predmet3": "Nedokončený lístek Čápa."
+        },
+        "masky_a_líčení": {
+          "barva": "Přirozené, ale s nádechem špíny z lesa.",
+          "textura": "Vypadá to, že jí příběhy lezou pod kůži.",
+          "vyraz": "Pootevřené rty, naslouchající výraz."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:05: Zjevují se zvířata.",
+          "faze2": "0:10–0:20: Myš naslouchá a zaznamenává.",
+          "faze3": "0:25–0:30: Prudká otázka a ticho."
+        },
+        "struktura_delky": {
+          "vstup": "Pomalé shromažďování (15 min).",
+          "jádro": "Setkání a šepot (20 min).",
+          "konec": "Exploze otázky (5 min)."
+        },
+        "participace_divaku": {
+          "pred_akci": "Divák dostane kartičku s jedním zvířetem a má ho 'ztvárnit' v davu.",
+          "behem": "Během vystoupení se mohou pohybovat podle hlasů.",
+          "po": "Na konci vrací kartičky do kruhu."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v kruhu kolem jeviště, obklopují les.",
+          "role": "Jsou součástí lesa, jeho šepotem.",
+          "pohodli": "Měkké polštáře na zemi, aby mohli sedět."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Kde se zastavil čas, tam se shromáždí zvířata.",
+          "jádro": "Jejich příběhy se setkávají, aby našly své lepidlo.",
+          "pointa": "A uprostřed kruhu sedí Myš a čeká na jedinou otázku."
+        },
+        "nazev_alternative": {
+          "varianta1": "Scházečka tvorů.",
+          "varianta2": "Kruh osudů.",
+          "varianta3": "Tiché shromáždění."
+        },
+        "klicova_otazka": {
+          "otazka1": "Jaký tvar má tvá křivá pohádka?",
+          "otazka2": "Kdo jsi v kruhu mého ticha?",
+          "otazka3": "Přijdeš zítra znovu?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Vlhký les a pach spáleniny.",
+          "vedlejsi": "Staré peří a vlhká hlína.",
+          "dozvuk": "Studený kov zapomenutých předmětů."
+        },
+        "materialy_a_textury": {
+          "povrch": "Mech a suché listí.",
+          "material": "Chladný, neokovaný kov.",
+          "pocit": "Drsná, mokrá příroda."
+        }
+      }
+    },
+
+    "filozoficky": {
+      "intenzita": "střední",
+      "pohyb": "Zastavení a vyslovení jediné, zásadní otázky do vesmíru.",
+      "zvuk": "Tichá, ale zásadní otázka: 'Chceš myš?'",
+      "tělo": "Tělo, které se stává nádobou na otázku.",
+      "funkce": "Položit otázku, která změní vnímání všeho okolí.",
+      "pole": ["otázka", "smysl", "bytí", "proměna"],
+      "media": {
+        "partitura": {
+          "vstup": "Myš stojí nehybně uprostřed jeviště. V místnosti je absolutní ticho, jaké předchází zásadní filozofické výpovědi.",
+          "stret": "Okolí na chvíli zareaguje – ticho se prohloubí, světlo zhasne. Je to moment napětí před vyslovením existence.",
+          "spojeni": "V tom tichu Myš promluví: 'Chceš myš?' Je to slovo, které spojí všechny do jedné neodpověditelné chvíle."
+        },
+        "hra_pro_deti": {
+          "postavy": "Myš jako 'Nositelka otázky'.",
+          "prostredi": "Velká, prázdná místnost s jedním křeslem uprostřed.",
+          "pravidla": "Ptej se malými, jednoduchými větami a pozoruj, jak se svět kolem tebe mění jen tím, že se ptáš."
+        },
+        "hra_digitalni": {
+          "postava": "Poutník za smyslem.",
+          "svet": "Svět, který se rozpadá, dokud nepadne ta správná otázka.",
+          "mechanika": "Generátor existenčních otázek; každá správná volba přibližuje konec hry."
+        },
+        "kreativni_ukol": {
+          "zadani": "Napiš otázku, která by mohla změnit tvůj život, kdyby ji někdo vyslovil nahlas.",
+          "limit": "Pouze 5 slov.",
+          "cil": "Aby ta otázka visela ve vzduchu i po dokončení úkolu."
+        },
+        "instalacni_plan": {
+          "figura": "Obrovský, promítnutý otazník, který pokrývá celou podlahu místnosti.",
+          "pozadi": "Temné, černé stěny bez jakýchkoliv vzorů, které pohlcují světlo.",
+          "material": "Čistá, chladná dřevěná podlaha, která pod nohama tiše vrže."
+        },
+        "scenar": {
+          "uvod": "Myš stojí uprostřed absolutně prázdného prostoru a čeká na správný okamžik.",
+          "zvrat": "Všechno se zastaví. Čas, vzduch, dech. Svět napíná uši.",
+          "zaver": "Myš promluví. Její otázka se rozletí a rozbije ticho na kusy."
+        },
+        "choreografie": {
+          "vstup": "Dokonalé, nehybné zastavení v prostoru. Tělo jako socha.",
+          "stret": "Pomalé, téměř neznatelné otočení hlavy směrem k publiku.",
+          "spojeni": "Jediný krok vpřed a vyslovení otázky jako vrcholný pohyb celé choreografie."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Tvář, která se v šeru pomalu vynořuje a dívá se přímo do kamery beze slova.",
+          "dej_zvrat": "Záběr se rozostří a kamera se přiblíží k jejím rtům.",
+          "zaverecne_tema": "Rty se otevřou, ale zvuk je tak tichý, že ho divák musí dočíst ze rtů samotných."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Jazyk a existence jsou neoddělitelně spojeny.",
+          "argument": "Položit otázku znamená potvrdit bytí tazatele.",
+          "zaver": "Otázka je aktem existence. Bez ní by svět byl jen šum."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Ptej se na smysl všeho kolem tebe; neboj se klást otázky bez odpovědí.",
+          "ukol": "Zkoumej hranice toho, co ještě můžeš říct.",
+          "reflexe": "Která otázka byla ta nejtěžší?"
+        },
+        "herni_prvky": {
+          "mechanika": "Karta klíčové otázky; hráč ji musí říct nahlas, aby posunul příběh dál.",
+          "prostredi": "Temný prostor bez hranic, který se definuje jen tím, co se v něm vysloví.",
+          "cil": "Najít jedinou otázku, která otevře dveře na konci úrovně."
+        },
+        "performativni_predstaveni": {
+          "format": "Filozofický akt vyslovení jednoho slova.",
+          "popis": "Herec sedí na židli, dívá se do prázdna a čeká, až publikum pochopí, že má promluvit.",
+          "vyvrcholeni": "Vyslovení otázky. Ticho. A potlesk, který přichází až po dlouhých vteřinách."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Světlo pomalu zhasne a zůstane jen jedno malé, ostré bodové světlo na tvář Myši.",
+          "zvrat": "Světlo se na okamžik roztřese, jako by se bálo toho, co přijde.",
+          "bod": "Po otázce světlo zhasne úplně. Jen tma a hlas."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Pomalé, táhlé tóny, které se ztrácejí do ticha.",
+          "melodie": "Jediný, dlouhý, táhlý tón, který se nese místností.",
+          "harmonie": "Absolutní ticho po tom, co tón dozní."
+        },
+        "basen_pisen": {
+          "sloka": "Proč jsi tady? Kdo se ptá? Kdo odpovídá?",
+          "refren": "Otázka je jen tichý hlas.",
+          "dozvuk": "...a odpověď je ticho."
+        },
+        "navrh_kostymu": {
+          "styl": "Čisté, jednoduché šaty bez jediné ozdoby nebo kapsy.",
+          "material": "Bavlněné, ale tak jemné, že splývají s tělem.",
+          "strih": "Volný, vzdušný, aby se v něm dala cítit každá vibrace ticha."
+        },
+        "soundscape": {
+          "zaklad": "Čistý, chladný vzduch bez šumu, jen s tichem.",
+          "narust": "Tiché, téměř neslyšitelné odfrknutí před otevřením úst.",
+          "dozvuk": "Ozvěna jediného slova, která se šíří a pomalu zaniká."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Potřeba položit otázku vs. strach z odpovědi.",
+          "motiv": "Hledání smyslu skrze absenci odpovědi.",
+          "pointa": "Otázka je důležitější než odpověď."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Myš se tě zeptá na existenci a čeká na tvou odpověď.",
+          "rozhovor": "Odpovídáš jen 'ano' nebo 'ne'. Každá odpověď ji posune dál.",
+          "zaver": "Na konci cyklu se tě zeptá, jestli to, co jsi prožil, byla realita."
+        },
+        "ritual": {
+          "priprava": "Očištění mysli a prázdného prostoru.",
+          "akt": "Obřad vyslovení jediné otázky směrem k nebi.",
+          "ukonceni": "Ztichnutí a naslouchání ozvěně."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Minimalistický symbol otazníku na obrovském čistém plátně.",
+          "tema": "Absence a tázání.",
+          "technika": "Čistá linie, tenká, jako by se mohla každou chvíli přetrhnout."
+        },
+        "pohybova_improvizace": {
+          "start": "Zastav se na místě a vnímej své tělo.",
+          "vyvoj": "Zeptej se svého těla, jestli chceš udělat krok.",
+          "zastaveni": "Ano, nebo ne? Zastav se podle odpovědi."
+        },
+        "socialni_sonda": {
+          "otazka": "Jaká otázka by změnila tvůj svět, kdyby na ni přišla odpověď?",
+          "pozorovani": "Co se stane, když se na něco zeptáš a nikdo neodpoví?",
+          "reflexe": "Jaké otázky sis dnes položil?"
+        },
+        "motivace_postavy": {
+          "pud": "Potřeba ověřit, zda realita existuje, když na ni někdo nezareaguje.",
+          "obava": "Strach z prázdnoty, která by mohla být odpovědí.",
+          "touha": "Touha slyšet, jak zní ticho po vyslovené otázce."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Už mi nic nezbývá. Jen tahle jediná věta.",
+          "mislenka2": "Za žádnou cenu ji nezkazím. Musí padnout na správné místo.",
+          "mislenka3": "Všechno ostatní je jen šum. Tohle je teď realita."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Hluboký, přímý oční kontakt s publikem. Bez mrknutí.",
+          "hlasove": "Krok jako by vážil tunu. Hlas tichý, ale jistý.",
+          "emocne": "Vnitřní napětí před vyslovením konečné pravdy."
+        },
+        "obsazeni": {
+          "vek": "Herec s přirozenou autoritou (30–45 let).",
+          "typ": "Schopnost mluvit tak, že ticho je slyšet.",
+          "energie": "Vnitřní klid, který vyzařuje navenek."
+        },
+        "scenografie": {
+          "prostor": "Absolutně prázdné jeviště. Jen bílá podlaha.",
+          "materialy": "Čistá dřevěná podlaha bez jakýchkoliv stop.",
+          "atmosfera": "Chirurgicky čisté, až mrazivé prázdno."
+        },
+        "rekvizity": {
+          "predmet1": "Jedna židle.",
+          "predmet2": "Jedna židle.",
+          "predmet3": "Jedna židle."
+        },
+        "masky_a_líčení": {
+          "barva": "Žádné líčení. Tvář jako čisté, nepopsané plátno.",
+          "textura": "Přirozená kůže, bez jakýchkoliv úprav.",
+          "vyraz": "Prázdný, ale plný očekávání."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:10: Čekání a ticho.",
+          "faze2": "0:10: Pronesení otázky.",
+          "faze3": "0:10–0:20: Absolutní ticho po ní."
+        },
+        "struktura_delky": {
+          "vstup": "Čekání.",
+          "jádro": "Otázka.",
+          "konec": "Dozvuk."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci jsou instruováni, aby se nehýbali.",
+          "behem": "Když padne otázka, musí zvednout ruku, pokud znají odpověď.",
+          "po": "Nikdo ruku nezvedne."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v hledišti v šeru.",
+          "role": "Jsou svědky, ne účastníky.",
+          "pohodli": "Pevná, nepohodlná sedadla, aby byli ve střehu."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Čarofyzika v krystalu.",
+          "jádro": "Tichá výpověď, která rozbíjí klid.",
+          "pointa": "Přijďte na jednou otázku."
+        },
+        "nazev_alternative": {
+          "varianta1": "Křišťálová výpověď.",
+          "varianta2": "Otázka.",
+          "varianta3": "Existence."
+        },
+        "klicova_otazka": {
+          "otazka1": "Co zmůžeš svým tichem, když položíš správnou otázku?",
+          "otazka2": "Kdo se ptá, ten existuje.",
+          "otazka3": "Je ticho odpovědí?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Čistý, chladný vzduch, bez jakéhokoliv zápachu.",
+          "vedlejsi": "Kovový pach ze židle a napětí v místnosti.",
+          "dozvuk": "Vůně prázdného papíru, který ještě nikdo nepopsal."
+        },
+        "materialy_a_textury": {
+          "povrch": "Hladká, studená dřevěná podlaha.",
+          "material": "Dřevo, kov, chladný vzduch.",
+          "pocit": "Suchý, chladný a prázdný prostor."
+        }
+      }
+    },
+    "naivni": {
+      "intenzita": "nízká",
+      "pohyb": "Přímé, neohrabané oslovení ostatních a kladení nejasných otázek.",
+      "zvuk": "Nejistý pískot, který se ptá na to nejjednodušší.",
+      "tělo": "Obyčejná, běžná myš s obrovskýma ušima jako křídly pochopení.",
+      "funkce": "Představit jednoduchost v komplexnosti, být čistým zrcadlem.",
+      "pole": ["jednoduchost", "otázka", "pochopení", "zrcadlo"],
+      "media": {
+        "partitura": {
+          "vstup": "Neohrabané kroky k ostatním, otevřená náruč, jako by chtěla obejmout celý svět.",
+          "stret": "Ostatní zvířata reagují zmateně, jejich pohyby jsou strnulé, nechápou, proč se k nim blíží tak jednoduše.",
+          "spojeni": "Myš se zastaví, otočí se a zeptá se: 'Kde se vzaly ty oči?' Všichni na chvíli ztratí řeč."
+        },
+        "hra_pro_deti": {
+          "postavy": "Myš jako 'Zvídavá duše'.",
+          "prostredi": "Měkká tráva a velké květiny, kde se dá schovat.",
+          "pravidla": "Zeptej se, jako bys nic nevěděl. Uvidíš, co se stane, když se budeš ptát."
+        },
+        "hra_digitalni": {
+          "postava": "Malá myška.",
+          "svet": "Barevný, hravý svět plný zvláštních předmětů.",
+          "mechanika": "Hra na naivní otázky; každá otázka odhalí novou část světa."
+        },
+        "kreativni_ukol": {
+          "zadani": "Nakresli jednoduchou, ale hlubokou věc svými prsty.",
+          "limit": "Používej jen pastelky.",
+          "cil": "Aby to vypadalo, jako by to kreslilo dítě, ale přitom to říkalo pravdu."
+        },
+        "instalacni_plan": {
+          "figura": "Bílá místnost s jedním velkým slovem na zdi: PROČ.",
+          "pozadi": "Čisté, bílé zdi, na kterých si každý může napsat svou odpověď.",
+          "material": "Měkký koberec, který se pod nohama trochu propadá."
+        },
+        "scenar": {
+          "uvod": "Myš se poprvé v životě setkává s jinými zvířaty a zírá na ně s otevřenou pusou.",
+          "zvrat": "Ostatní zvířata jí začnou vyprávět své složité příběhy, kterým ona nerozumí.",
+          "zaver": "Myš se nakloní a s naprosto čistým výrazem se zeptá: 'Kde se vzaly ty oči?'"
+        },
+        "choreografie": {
+          "vstup": "Nejistý krok vpřed a pak zase krok vzad, jako by si nebyla jistá.",
+          "stret": "Zvířata se kolem ní začnou chaoticky hýbat, ale ona se nezalekne.",
+          "spojeni": "Všichni ztuhnou, když se jich zeptá na tu nejjednodušší otázku."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Záběr na oči dokořán, plné nechápání a dětské zvědavosti.",
+          "dej_zvrat": "Všechna zvířata se na ni podívají, jako by nechápala, že se někdo umí takhle zeptat.",
+          "zaverecne_tema": "Její tvář se rozzáří, když konečně položí svou otázku."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Naivní realita je nejčistším zrcadlem světa.",
+          "argument": "Děti se ptají 'proč' a nepotřebují na to znát odpověď.",
+          "zaver": "Pravda se skrývá v jednoduchosti otázek."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Ptej se jako malé dítě. Neboj se být hloupý a naivní.",
+          "ukol": "Položte si navzájem ty nejjednodušší otázky.",
+          "reflexe": "Která otázka byla ta nejprostší?"
+        },
+        "herni_prvky": {
+          "mechanika": "Získej body za to, že se budeš ptát hloupě.",
+          "prostredi": "Pohádkový svět, kde se otázky stávají odpověďmi.",
+          "cil": "Zeptat se na to nejdůležitější."
+        },
+        "performativni_predstaveni": {
+          "format": "Dětská hra, kde se každý z publika může zeptat 'proč'.",
+          "popis": "Herec je myš, která chodí mezi lidmi a ptá se jich na věci, které oni považují za samozřejmé.",
+          "vyvrcholeni": "Myš se zastaví a zeptá se celého sálu: 'A proč vy to vlastně děláte?'"
+        },
+        "svetelne_efekty": {
+          "zaklad": "Jasné, bílé světlo bez stínů, jako na dětském hřišti.",
+          "zvrat": "Světlo se začne jemně houpat, jako by se svět divil.",
+          "bod": "Zůstane jen měkké, jemné osvětlení jejího obličeje."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Jednoduchá, neohrabaná melodie na xylofon.",
+          "melodie": "Veselé, roztrhané tóny, které se hledají.",
+          "harmonie": "Jednoduchá, dětinská harmonie, která se všemu vyhýbá."
+        },
+        "basen_pisen": {
+          "sloka": "Jsem jen myš, co chce vědět, proč je nebe tak modrý.",
+          "refren": "Proč, proč, proč?",
+          "dozvuk": "A odpověď? Neznám."
+        },
+        "navrh_kostymu": {
+          "styl": "Bílý, prostý kabátek s velkýma ušima z látky.",
+          "material": "Měkká, jemná bavlna, která se příjemně nosí.",
+          "strih": "Volný, neforemný, jako by jí byl trochu velký."
+        },
+        "soundscape": {
+          "zaklad": "Čisté ticho, které naruší jen jemný, nejistý krok.",
+          "narust": "Zmatené pískání a šustění listí.",
+          "dozvuk": "Čisté ticho po tom, co položí otázku."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Složitost světa vs. její prostá, nechápavá mysl.",
+          "motiv": "Čistá touha zjistit, kdo se schovává za všemi těmi jinými slovy.",
+          "pointa": "Někdy je naivní otázka ta nejsilnější."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Proč ten páv počítá oči?",
+          "rozhovor": "Dětský dialog, kde se ptá na barvu nebe a proč je tráva zelená.",
+          "zaver": "Na konci se zeptá: 'A proč ty jsi takový?'"
+        },
+        "ritual": {
+          "priprava": "Dětské protažení.",
+          "akt": "Křest jednou naivní otázkou.",
+          "ukonceni": "Všechno ticho, jako by se zastavil čas."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Pastelové barvy, jako malované pětiletým dítětem.",
+          "tema": "Radost ze světa.",
+          "technika": "Čmáranice a hravé skvrny."
+        },
+        "pohybova_improvizace": {
+          "start": "Udělej jeden malý, neohrabaný krok za pravdou.",
+          "vyvoj": "Zkoumej svět prsty, jako bys ho viděl poprvé.",
+          "zastaveni": "Zastav se a zeptej se: 'Proč?'"
+        },
+        "socialni_sonda": {
+          "otazka": "Jaká je ta nejjednodušší otázka, co znáš?",
+          "pozorovani": "Jak dlouho vydržíš být naivní?",
+          "reflexe": "Kdy jsi naposledy něco nepochopil?"
+        },
+        "motivace_postavy": {
+          "pud": "Čistá, nefalšovaná zvědavost.",
+          "obava": "Strach, že ji budou považovat za hloupou.",
+          "touha": "Touha dotknout se světa svou vlastní nevědomostí."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Proč ten páv počítá oči? Proč ten kozel vypadá tak divně?",
+          "mislenka2": "Já se jen chci zeptat. Je to tak špatné? Jsem jen malá.",
+          "mislenka3": "Možná kdybych se zeptala, tak by mi svět odpověděl."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Nesmělý, ale odhodlaný. Oči se široce otevírají a zavírají.",
+          "hlasove": "Jemný, pištivý hlas, který se snaží být slyšet.",
+          "emocne": "Vnitřní radost z každého nového objevu."
+        },
+        "obsazeni": {
+          "vek": "Mladá, křehká, s natočenýma ušima (20–30 let).",
+          "typ": "Dívka jako z pohádky, s něhou a nevinností.",
+          "energie": "Zvědavá, hravá a otevřená."
+        },
+        "scenografie": {
+          "prostor": "Podlaha z měkké, teplé hlíny, jako kdyby po ní kráčela poprvé v životě.",
+          "materialy": "Hlína, tráva, dřevo.",
+          "atmosfera": "Vlhká, přírodní, ale hřejivá."
+        },
+        "rekvizity": {
+          "predmet1": "Kousek křídy, co si kreslí na zem otazníky.",
+          "predmet2": "Obrovský, měkký otazník, který se dá vzít do ruky.",
+          "predmet3": "Kytice z lučního kvítí."
+        },
+        "masky_a_líčení": {
+          "barva": "Růžové, zdravé tváře. Bez jakýchkoliv masek.",
+          "textura": "Čistá, dětská pleť.",
+          "vyraz": "Pootevřená ústa, věčný úžas."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:10: Zkoumání světa.",
+          "faze2": "0:10–0:20: Kladení jednoduchých otázek.",
+          "faze3": "0:20–0:25: Nečekaná hluboká otázka."
+        },
+        "struktura_delky": {
+          "vstup": "Hravé objevování.",
+          "jádro": "Dialog s ostatními.",
+          "konec": "Nevinná pointa."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci dostanou malé kartičky, na které můžou napsat svou naivní otázku.",
+          "behem": "Herci je během představení sbírají a čtou je nahlas.",
+          "po": "Otázky se vystaví na nástěnce."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci sedí na podlaze, tvoří kruh kolem jeviště.",
+          "role": "Jsou jako další děti na pískovišti.",
+          "pohodli": "Polštáře na zemi, hrací kout."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Jedna malá myš, jedna velká otázka.",
+          "jádro": "Zbytek je jen tichá odpověď.",
+          "pointa": "Přijďte si zavzpomínat na to, jaké to bylo, být malým a zvědavým."
+        },
+        "nazev_alternative": {
+          "varianta1": "Malá s velkýma ušima.",
+          "varianta2": "Proč?",
+          "varianta3": "Otázky z pískoviště."
+        },
+        "klicova_otazka": {
+          "otazka1": "Kolik otázek se vejde do jedné malé myši?",
+          "otazka2": "Proč je nebe modrý?",
+          "otazka3": "Kde se vzaly ty oči?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Vůně čerstvé hlíny a jarní trávy.",
+          "vedlejsi": "Sladká vůně lučních květin.",
+          "dozvuk": "Čistý, svěží vzduch."
+        },
+        "materialy_a_textury": {
+          "povrch": "Měkká hlína a hladké kamínky.",
+          "material": "Dřevo, hlína, měkká látka uší.",
+          "pocit": "Teplý, příjemný a hravý."
+        }
+      }
+    },
+
+        "jazykovy": {
+      "intenzita": "střední",
+      "pohyb": "Zapisování do mezer mezi slovy, pohyb, jako by text obtiskávala do vzduchu.",
+      "zvuk": "Slova zadržená ve vzduchu, když je někdo nestihne dokončit.",
+      "tělo": "Tělo jako text, co čte jen ticho, posedlé jazykem.",
+      "funkce": "Vyplňovat mezery v řeči a skládat je do nových souvětí.",
+      "pole": ["slovo", "mezera", "jazyk", "text"],
+      "media": {
+        "partitura": {
+          "vstup": "Pohyb jako přepisování neexistujících slov do prázdna.",
+          "stret": "Gesta se zasekávají v mezerách mezi slovy, která nikdo neřekl.",
+          "spojeni": "Všechny mezery se najednou zaplní tichem, které je hlasitější než věta."
+        },
+        "hra_pro_deti": {
+          "postavy": "Písař mezer.",
+          "prostredi": "Místnost plná nápisů, kde mezi každým slovem zeje prázdné místo.",
+          "pravidla": "Najdi místo mezi slovy; tam se schovávají písmena, která nikdo neřekl."
+        },
+        "hra_digitalni": {
+          "postava": "Doplňovač mezer.",
+          "svet": "Textová hra na mezery, kde myš doplňuje chybějící slova.",
+          "mechanika": "Přesouvání písmen do mezer a skládání nových vět."
+        },
+        "kreativni_ukol": {
+          "zadani": "Piš do mezer, ať tvoří novou báseň.",
+          "limit": "Používej jen slova, která tam chybí.",
+          "cil": "Aby výsledná báseň mluvila o tom, co se ztratilo."
+        },
+        "instalacni_plan": {
+          "figura": "Slova rozházená po zemi, a mezi nimi prázdná místa, kam se dá vstoupit.",
+          "pozadi": "Stěny z textu, který se zastavuje uprostřed věty.",
+          "material": "Papír, písmo, prázdnota."
+        },
+        "scenar": {
+          "uvod": "Myš v tichu naslouchá, jak se věty v řeči zastavují, a zapisuje každou mezeru.",
+          "zvrat": "Někdo promluví a ona doplní tu mezeru za něj, dřív než to stihne on sám.",
+          "zaver": "Myš nechá svou vlastní nedokončenou větu viset ve vzduchu."
+        },
+        "choreografie": {
+          "vstup": "Trhavé pohyby mezi gesty, jako by opisovala neviditelný text do vzduchu.",
+          "stret": "Ostatní zvířata se zastaví v momentě, kdy se jich zeptá na mezeru v jejich pohybu.",
+          "spojeni": "Tanec se zastaví v úplné pauze, jako by všichni čekali na dokončení věty."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Střihy mezi slovy; kamera se zastavuje na místech, kde se věta ztrácí.",
+          "dej_zvrat": "Myš stojí před tabulí a píše jen mezeru; kamera si toho všimne.",
+          "zaverecne_tema": "Rozmazaný záběr na nedokončenou větu, která visí ve vzduchu."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Jazyk je prostor, kde písmena žijí a umírají.",
+          "argument": "Každá mezera je novou možností, novou nevyřčenou větou.",
+          "zaver": "Ticho není absence, je to nejbohatší jazyk."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Vytvořte společný text tak, že budete doplňovat cizí věty.",
+          "ukol": "Každý napíše větu a zanechá v ní mezeru pro dalšího.",
+          "reflexe": "Která mezera se zaplnila nejsilněji?"
+        },
+        "herni_prvky": {
+          "mechanika": "Sbírej slova, která visí v mezerách.",
+          "prostredi": "Vesmír plný visících písmen.",
+          "cil": "Sestavit z nich větu, která dá smysl."
+        },
+        "performativni_predstaveni": {
+          "format": "Řeč těla a mezery mezi ní.",
+          "popis": "Herec mluví, ale slova jsou slyšet jen v pauzách mezi jeho pohyby.",
+          "vyvrcholeni": "V závěru se zastaví a jeho ticho je nejdelší větou."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Slova promítaná do mezer mezi těly herců.",
+          "zvrat": "Světlo se zaměří na místo, kde mělo být slovo.",
+          "bod": "Zůstane jen malá mezera světla ve tmě."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Zvuky mezi tóny, jako by to byla píseň o pauzách.",
+          "melodie": "Vysoké tóny, které se zaseknou na poslední notě.",
+          "harmonie": "Absolutní ticho tam, kde měla být věta."
+        },
+        "basen_pisen": {
+          "sloka": "A... a... a... (tři tečky jako věta).",
+          "refren": "Mezera je slovo.",
+          "dozvuk": "A nic."
+        },
+        "navrh_kostymu": {
+          "styl": "Oblek potištěný písmeny, která se ztrácejí do šera.",
+          "material": "Průsvitný, látka, která se trhá na koncích.",
+          "strih": "Nedokončené švy, které nechávají vzduch procházet."
+        },
+        "soundscape": {
+          "zaklad": "Šepot v pauzách; ozvěny nedokončených slov.",
+          "narust": "Tiché pískání a vrzání, když se slovo láme.",
+          "dozvuk": "Absolutní ticho na konci věty."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Textura jazyka a jeho tajemné záhyby.",
+          "motiv": "Potřeba mluvit za ty, kteří neřekli poslední slovo.",
+          "pointa": "Každá věta je jenom mezera čekající na doplnění."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Hraj si s jazykem; doplňuj nesmyslné mezery.",
+          "rozhovor": "Snaží se najít klíč k mezerám ve tvé řeči.",
+          "zaver": "Na konci ti řekne, co jsi v té mezeře nechal."
+        },
+        "ritual": {
+          "priprava": "Čtení mezer v textu.",
+          "akt": "Obřad mezer a ticha.",
+          "ukonceni": "Zapsání prázdné stránky do knihy."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Kaligrafie, která se zastavuje na konci řádku.",
+          "tema": "Nedokončená písmena.",
+          "technika": "Rozlitý inkoust a prázdná místa."
+        },
+        "pohybova_improvizace": {
+          "start": "Pohybuj se mezi gesty; v pauzách se zastavuj.",
+          "vyvoj": "Nech své ruce mluvit tam, kde chybí slova.",
+          "zastaveni": "Zastav se na konci věty."
+        },
+        "socialni_sonda": {
+          "otazka": "Co se ztrácí mezi tvými slovy?",
+          "pozorovani": "Jakou mezeru bys zaplnil posledním slovem?",
+          "reflexe": "Která věta je tvou největší mezerou?"
+        },
+        "motivace_postavy": {
+          "pud": "Zvědavost, zda má konec věty sílu, když ho nikdo nedomluví.",
+          "obava": "Strach, že když mezeru nevyplní, navždy se ztratí.",
+          "touha": "Touha doplnit poslední slovo do všech nedokončených příběhů."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Zase ta věta. Nedokončená. 'Promiň, že...' Já to doplním.",
+          "mislenka2": "Napíšu to do té mezery. Ať to tam visí pro všechny.",
+          "mislenka3": "Možná když ji doplním, přestane bolet."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Neustálé psaní, i když v ruce nic nemá.",
+          "hlasove": "Prsty se hýbají, jako by vždycky psaly do vzduchu.",
+          "emocne": "Vnitřní spěch dokončit větu dřív, než zmizí."
+        },
+        "obsazeni": {
+          "vek": "Básník, neklidný, hledá skrytá slova (30–45 let).",
+          "typ": "Ruce v neustálém pohybu, oči hledající chybějící písmena.",
+          "energie": "Nervózní, ale soustředěná."
+        },
+        "scenografie": {
+          "prostor": "Stěny polepené útržky nedokončených novinových článků.",
+          "materialy": "Papír, lepidlo, starý text.",
+          "atmosfera": "Prach, inkoust, nedokončený chaos."
+        },
+        "rekvizity": {
+          "predmet1": "Pero bez inkoustu.",
+          "predmet2": "Pero, co píše jen pro oči.",
+          "predmet3": "Sešit s prázdnými stránkami."
+        },
+        "masky_a_líčení": {
+          "barva": "Ruce pokryté pruhy inkoustu.",
+          "textura": "Suché, popraskané rty.",
+          "vyraz": "Oči, které těkají mezi písmeny."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:10: Čtení mezer.",
+          "faze2": "0:10–0:25: Vyplňování chybějících slov.",
+          "faze3": "0:25–0:30: Odhalení poslední mezery."
+        },
+        "struktura_delky": {
+          "vstup": "Čtení prázdných míst.",
+          "jádro": "Doplňování a hledání.",
+          "konec": "Nedokončené ticho."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci vepisují svou vlastní 'mezeru' do malého sešitu.",
+          "behem": "Myš během vystoupení jejich mezery čte.",
+          "po": "Nechá je viset ve vzduchu beze slova."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci sedí v tmavé místnosti, každý s lístkem a tužkou.",
+          "role": "Jsou těmi, jejichž věty visí.",
+          "pohodli": "Pevné židle, ale bez možnosti psát."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš čte, co nikdo neřekl.",
+          "jádro": "Myš píše, co nikdo nechtěl dokončit.",
+          "pointa": "Přijďte zjistit, jaká slova se ztratila ve vašich mezerách."
+        },
+        "nazev_alternative": {
+          "varianta1": "Písař mezer.",
+          "varianta2": "Nedokončená.",
+          "varianta3": "Mlčenlivá."
+        },
+        "klicova_otazka": {
+          "otazka1": "Jakou větu jsi nikdy nedokončil?",
+          "otazka2": "Kde jsou tvá slova, když je nikdo neřekne?",
+          "otazka3": "Co se skrývá v tvé největší mezeře?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Silná vůně rozmazaného inkoustu.",
+          "vedlejsi": "Pach starého papíru a prachu.",
+          "dozvuk": "Kovová pachuť nedokončených vět."
+        },
+        "materialy_a_textury": {
+          "povrch": "Hrubý, drsný papír.",
+          "material": "Kovová špička pera.",
+          "pocit": "Pichlavý, jako by se písmena chtěla bránit."
+        }
+      }
+    },
+    "metaforicky": {
+      "intenzita": "střední",
+      "pohyb": "Proměna v předměty osudu v samotném pohybu.",
+      "zvuk": "Cinkání klíče, šplouchání pádla, sklapnutí pasti.",
+      "tělo": "Tělo měnící se na předměty, které určují osudy.",
+      "funkce": "Proměnit bytost v metaforu o možnosti a osudu.",
+      "pole": ["klíč", "pádlo", "past", "symbol"],
+      "media": {
+        "partitura": {
+          "vstup": "Myš v momentě proměny v klíč, jehož ozubené hrany se zarývají do ticha.",
+          "stret": "Proměna v pádlo, které se zaboří do neexistující vody a rozčeří vzduch.",
+          "spojeni": "Proměna v past, která se otevře a čeká na svou oběť."
+        },
+        "hra_pro_deti": {
+          "postavy": "Myš jako 'Proměnitel'.",
+          "prostredi": "Svět plný obrovských předmětů, mezi kterými se dá schovat.",
+          "pravidla": "Staň se klíčem a otevři dveře do další místnosti."
+        },
+        "hra_digitalni": {
+          "postava": "Proměnitel.",
+          "svet": "Předmětové karty, které mění tvou postavu na každém kroku.",
+          "mechanika": "V každé úrovni se měníš v jiný předmět a plníš jeho úkol."
+        },
+        "kreativni_ukol": {
+          "zadani": "Přeměň sám sebe v metaforu svého života.",
+          "limit": "Pouze jeden předmět.",
+          "cil": "Aby ten předmět mluvil za celý tvůj život."
+        },
+        "instalacni_plan": {
+          "figura": "Klíče, pádla a pasti pohozené po zemi v neuspořádaném kruhu.",
+          "pozadi": "Temné zdi s obrazy, které se proměňují podle světla.",
+          "material": "Kov, dřevo, kůže, rez."
+        },
+        "scenar": {
+          "uvod": "Myš se pomalu mění v pádlo a odráží se od neviditelných vln osudu.",
+          "zvrat": "Najednou se změní v past; její pohyby jsou ostré, připravené sklapnout.",
+          "zaver": "Promění se v klíč a vloží se do zámku světa."
+        },
+        "choreografie": {
+          "vstup": "Pohyb jako otevírání a zavírání; tělo se stává mechanickým nástrojem.",
+          "stret": "Tanec s neviditelnou vodou, kde je pádlo jejím prodlouženým tělem.",
+          "spojeni": "Všechny předměty se spojí v jeden úder, když sklapne past."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Klíč padající do vody a proměňující se v myš, která z něj vystupuje.",
+          "dej_zvrat": "Myš se změní v pádlo a rozrazí vodu na dvě poloviny.",
+          "zaverecne_tema": "Past se v poslední vteřině zaklapne, ale myš z ní vystoupí jako klíč."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Metafora jako realita; symbol je bytí.",
+          "argument": "Předmět se stává nositelem významu skrze proměnu.",
+          "zaver": "Bytí je jen neustálá výměna rolí mezi klíčem a pastí."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Staňte se předmětem, který vás charakterizuje.",
+          "ukol": "Vyměňte si předměty a zkuste se jimi stát na 5 minut.",
+          "reflexe": "Co jste cítili, když jste byli tím předmětem?"
+        },
+        "herni_prvky": {
+          "mechanika": "Karta proměny v předmět; každý předmět má jiné schopnosti.",
+          "prostredi": "Aréna plná symbolických předmětů.",
+          "cil": "Proměnit se ve správný předmět pro danou výzvu."
+        },
+        "performativni_predstaveni": {
+          "format": "Tanec předmětů a jejich proměn.",
+          "popis": "Herci se mění v předměty a publikum hádat, co je který.",
+          "vyvrcholeni": "Všechny předměty se spojí v jediný, velký klíč."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Odlesky na kovových předmětech; pomalé otáčení reflektorů.",
+          "zvrat": "Při proměně v pádlo se světlo rozkmitá jako vodní hladina.",
+          "bod": "Zaměřené světlo na klíč, který se leskne."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Cinkot a šplouchání jako doprovod k proměně.",
+          "melodie": "Kovové, zvonivé tóny, které se lámou.",
+          "harmonie": "Tóny přecházejí z cinkotu do tupého nárazu dřeva."
+        },
+        "basen_pisen": {
+          "sloka": "Klíč k tvému srdci (a past pro tvé sny).",
+          "refren": "Pádlo mě odnáší tam, kde nejsem.",
+          "dozvuk": "A já se znovu otevírám."
+        },
+        "navrh_kostymu": {
+          "styl": "Oděvy z kovových plátů a kožených řemínků.",
+          "material": "Leštěný kov, hladká kůže, rez.",
+          "strih": "Pevný, připomínající brnění, ale s mezerami pro pohyb."
+        },
+        "soundscape": {
+          "zaklad": "Cinkot klíčů, šplouchání vody, sklapnutí.",
+          "narust": "Vrzání pádla ve vodě a ostré zaklapnutí pasti.",
+          "dozvuk": "Dlouhý dozvuk klíče ve vzduchu."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Symbolismus a jeho krutá realita.",
+          "motiv": "Potřeba rozumět světu skrze jeho metafory.",
+          "pointa": "Myš není myš. Myš je klíč."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Ptej se na symboly, hraj si s metaforami.",
+          "rozhovor": "Myš se tě bude ptát, jaký předmět bys byl.",
+          "zaver": "Řekne ti, jaký předmět jsi v její metafoře."
+        },
+        "ritual": {
+          "priprava": "Položení klíče do středu.",
+          "akt": "Obřad klíče, pádla a pasti.",
+          "ukonceni": "Myš se stane klíčem."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Surrealistický předmět, který je tělem.",
+          "tema": "Proměna a symbol.",
+          "technika": "Kovové, ostře řezané linie a stíny."
+        },
+        "pohybova_improvizace": {
+          "start": "Staň se předmětem v prostoru.",
+          "vyvoj": "Zkoumej, jak se tvé tělo mění pod tíhou předmětu.",
+          "zastaveni": "Zastav se jako klíč v zámku."
+        },
+        "socialni_sonda": {
+          "otazka": "Čím bys chtěl být v pohádce?",
+          "pozorovani": "Jaký předmět tě v životě nejvíc ovlivnil?",
+          "reflexe": "Jsi klíč, pádlo, nebo past?"
+        },
+        "motivace_postavy": {
+          "pud": "Touha pochopit svou roli v osudech jiných.",
+          "obava": "Strach, že když se nestane předmětem, ztratí smysl.",
+          "touha": "Být tím, co otevírá nebo zavírá."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Budu klíčem. Otevřu ji. Nebo budu pádlem, abych ji dovedla k cíli.",
+          "mislenka2": "Nebo pastí. Aby věděla, že je tu svět, který čeká, až se do něj chytí.",
+          "mislenka3": "Jsem vším, čím potřebuji být."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Tělo jako socha, každá poloha je jeden z předmětů.",
+          "hlasove": "Kovový, rezonující hlas při proměně.",
+          "emocne": "Pocit tíhy a síly v každém předmětu."
+        },
+        "obsazeni": {
+          "vek": "Proměnlivý herec, schopný ztvárnit neživý předmět (30–45 let).",
+          "typ": "Silné ruce, pevné držení těla.",
+          "energie": "Pevná a proměnlivá."
+        },
+        "scenografie": {
+          "prostor": "Místnost plná obrovských předmětů, myš je malá jako jejich stín.",
+          "materialy": "Kov, dřevo, kůže a rezavé řetězy.",
+          "atmosfera": "Temná, průmyslová, ale symbolická."
+        },
+        "rekvizity": {
+          "predmet1": "Velký kovový klíč.",
+          "predmet2": "Dřevěné pádlo.",
+          "predmet3": "Sklapovací past."
+        },
+        "masky_a_líčení": {
+          "barva": "Kovový nátěr na těle nebo dřevěná textura.",
+          "textura": "Drsná, kovová kůže.",
+          "vyraz": "Přísný, pevný výraz."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:15: Změna v pádlo.",
+          "faze2": "0:15–0:30: Změna v klíč.",
+          "faze3": "0:30–0:45: Změna v past a závěrečná proměna zpět."
+        },
+        "struktura_delky": {
+          "vstup": "Pádlo a voda.",
+          "jádro": "Klíč a zámek.",
+          "konec": "Past a svoboda."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci symbolicky 'odemknou' a 'zavřou' svá srdce.",
+          "behem": "Myš na ně reaguje jako na pádlo, klíč nebo past.",
+          "po": "Diváci si odnesou předmět jako suvenýr."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci obklopení symbolickými předměty.",
+          "role": "Jsou svědky proměn.",
+          "pohodli": "Pevná sedadla ve tmě."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš je klíč, co neví, kam patří.",
+          "jádro": "Myš je past, co čeká na svou oběť.",
+          "pointa": "Myš je pádlo, co hledá řeku."
+        },
+        "nazev_alternative": {
+          "varianta1": "Tři osudy.",
+          "varianta2": "Pádlo, klíč, past.",
+          "varianta3": "Metafora."
+        },
+        "klicova_otazka": {
+          "otazka1": "Jsi ten, kdo otevírá, nebo ten, kdo chytá?",
+          "otazka2": "Který předmět jsi?",
+          "otazka3": "Co se stane, když proměna skončí?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Vůně kovu a starého dřeva.",
+          "vedlejsi": "Pach kůže a rezavého železa.",
+          "dozvuk": "Suchý prach ze sklapnutí."
+        },
+        "materialy_a_textury": {
+          "povrch": "Kov, kůže, dřevo.",
+          "material": "Chladný, hladký kov, drsné dřevo.",
+          "pocit": "Tvrdý a pevný, ale poddajný v pohybu."
+        }
+      }
+    },
+    "asociacni": {
+      "intenzita": "střední",
+      "pohyb": "Spojování zvířat, co se nehodí k sobě, v jeden obraz.",
+      "zvuk": "Prolínání zvuků zvířat, která se běžně nepotkávají.",
+      "tělo": "Tělo, co sbírá cizí příběhy a spojuje je do sítě.",
+      "funkce": "Spojit nespojitelné a vytvořit z toho nový celek.",
+      "pole": ["spojení", "zvířata", "nesourodost", "síť"],
+      "media": {
+        "partitura": {
+          "vstup": "Spojování nesourodých těl do jednoho gesta; myš stojí v síti provázků.",
+          "stret": "Zvířata se začnou hýbat proti sobě a ona je musí sjednotit.",
+          "spojeni": "Všechny provázky se napnou a vytvoří jeden obraz."
+        },
+        "hra_pro_deti": {
+          "postavy": "Spojovatelka.",
+          "prostredi": "Síť z provázků, ve které jsou všichni zamotaní.",
+          "pravidla": "Dej dohromady zvířata, co k sobě nepatří."
+        },
+        "hra_digitalni": {
+          "postava": "Síťařka.",
+          "svet": "Síť asociací; hra na spojování obrazů.",
+          "mechanika": "Prolínání karet zvířat do jednoho celku."
+        },
+        "kreativni_ukol": {
+          "zadani": "Spoj lemura a slona do jedné bytosti.",
+          "limit": "Pouze čáry a křivky.",
+          "cil": "Vytvoř novou bytost z nesourodých částí."
+        },
+        "instalacni_plan": {
+          "figura": "Provázky mezi sochami zvířat, které se táhnou přes celou místnost.",
+          "pozadi": "Černé zdi, na kterých se provázky ztrácejí.",
+          "material": "Tenké, pevné provázky, kovové háčky."
+        },
+        "scenar": {
+          "uvod": "Setkání v lese, kde je čas na spojování.",
+          "zvrat": "Myš se pokusí spojit slona a zajíc v jeden pohyb.",
+          "zaver": "Podaří se jí to a vytvoří novou bytost."
+        },
+        "choreografie": {
+          "vstup": "Tanec vzájemných vazeb; provázky se v rukou napínají.",
+          "stret": "Dva tanečníci se snaží spojit, ale neustále se rozpadají.",
+          "spojeni": "Všichni se protnou v jednom uzlu."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Střih na zvířata, která se v jeden okamžik promění v jeden tvar.",
+          "dej_zvrat": "Myš proplétá jejich osudy jako pavučinu.",
+          "zaverecne_tema": "Všechny střihy se spojí v jediný záběr."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Náhodné souvislosti jako základ nových realit.",
+          "argument": "Všechno se dá spojit, pokud najdeš správnou nit.",
+          "zaver": "Spojení je silnější než samotné bytosti."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Přiřazování k sobě nesourodých věcí.",
+          "ukol": "Propojte kancelářskou sponku a slona.",
+          "reflexe": "Které spojení bylo nejsilnější a proč?"
+        },
+        "herni_prvky": {
+          "mechanika": "Body za propojení protikladů.",
+          "prostredi": "Síťový svět.",
+          "cil": "Spojit všechny protiklady v jeden obraz."
+        },
+        "performativni_predstaveni": {
+          "format": "Živá asociace; kresba, která se mění.",
+          "popis": "Myš kreslí do vzduchu a propojuje postavy.",
+          "vyvrcholeni": "Všichni se spojí v jeden obraz."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Paprsky spojující různé herce.",
+          "zvrat": "Světelné vlny se setkávají v jednom bodě.",
+          "bod": "Uzel světla uprostřed."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Kontrapunkt chaosu.",
+          "melodie": "Dva nesourodé tóny, které se hledají.",
+          "harmonie": "Nakonec se setkají v jednom akordu."
+        },
+        "basen_pisen": {
+          "sloka": "Slon a třešně, kocour a tečky.",
+          "refren": "Co se k sobě nehodí, se spojí.",
+          "dozvuk": "A já jsem ta nit."
+        },
+        "navrh_kostymu": {
+          "styl": "Oblek s potiskem pavoučí sítě.",
+          "material": "Jemné, propletené vlákno.",
+          "strih": "Volný, jako by se látka rozplétala."
+        },
+        "soundscape": {
+          "zaklad": "Směs zvuků zvířat v jeden šum.",
+          "narust": "Provázky se napínají a skřípají.",
+          "dozvuk": "Ticho po propojení."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Síť vztahů, kde je každý protiváhou.",
+          "motiv": "Touha najít řád v chaosu.",
+          "pointa": "Myš je provázek, co to drží."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Hledej souvislosti v odpovědích.",
+          "rozhovor": "Myš propojuje tvé odpovědi s jinými bytostmi.",
+          "zaver": "Ukáže ti, jak jsi propojen."
+        },
+        "ritual": {
+          "priprava": "Spoutání protikladů provázkem.",
+          "akt": "Obřad propojení.",
+          "ukonceni": "Uzel je hotový."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Koláž zvířat.",
+          "tema": "Propojení.",
+          "technika": "Čáry a provázky v obraze."
+        },
+        "pohybova_improvizace": {
+          "start": "Propoj se s ostatními v síti.",
+          "vyvoj": "Najdi společné vlákno.",
+          "zastaveni": "Zastav se, když je síť hotová."
+        },
+        "socialni_sonda": {
+          "otazka": "Kdo by k sobě patřil a nepatří?",
+          "pozorovani": "Jaké nesourodé věci k sobě táhneš ty?",
+          "reflexe": "Které spojení je tvým nejsilnějším provázkem?"
+        },
+        "motivace_postavy": {
+          "pud": "Potřeba najít řád v chaosu.",
+          "obava": "Strach, že se síť může kdykoliv přetrhnout.",
+          "touha": "Touha vytvořit dokonalý celek."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Zaječice má popálené uši, kocour má tečky v krku.",
+          "mislenka2": "Slon má třešně. Co mají společného? Všechno.",
+          "mislenka3": "Všechno spojím. Já jsem ta nitka."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Pohyb jako vazba; rukama kreslí neviditelné čáry.",
+          "hlasove": "Jemný, propletený hlas.",
+          "emocne": "Soustředěné propojování."
+        },
+        "obsazeni": {
+          "vek": "Žena s tenkými, dlouhými prsty (25–35 let).",
+          "typ": "Pohyb jako pavoučí nohy.",
+          "energie": "Soustředěná a tichá."
+        },
+        "scenografie": {
+          "prostor": "Podlaha z provázků, jako obrovská pavučina.",
+          "materialy": "Provázek, kovové háčky.",
+          "atmosfera": "Temná, hustá a propletená."
+        },
+        "rekvizity": {
+          "predmet1": "Kus provázku.",
+          "predmet2": "Háčky na spojování.",
+          "predmet3": "Síť."
+        },
+        "masky_a_líčení": {
+          "barva": "Oči lemované černou barvou.",
+          "textura": "Tenká, dlouhá linie.",
+          "vyraz": "Zaměřený, propojený."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:20: Spojování prvků.",
+          "faze2": "0:20–0:30: Vznik celku.",
+          "faze3": "0:30–0:40: Napnutí sítě."
+        },
+        "struktura_delky": {
+          "vstup": "Pavučina.",
+          "jádro": "Spojování.",
+          "konec": "Uzel."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci jsou propojeni provázkem, který drží v ruce.",
+          "behem": "Myš na ně reaguje jako na součást sítě.",
+          "po": "Provázek zůstane propojený."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci tvoří živou síť kolem jeviště.",
+          "role": "Jsou součástí sítě.",
+          "pohodli": "Pevná sedadla, ale s provázkem v ruce."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Nespojitelné se spojuje.",
+          "jádro": "Myš je pavučina, co to drží.",
+          "pointa": "Přijďte se stát součástí sítě."
+        },
+        "nazev_alternative": {
+          "varianta1": "Síť protikladů.",
+          "varianta2": "Pavučina.",
+          "varianta3": "Propojená."
+        },
+        "klicova_otazka": {
+          "otazka1": "Co se stane, když se nespojitelné spojí?",
+          "otazka2": "Kdo je tvůj provázek?",
+          "otazka3": "Je síť pevná?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Vůně provázků a voskovaného plátna.",
+          "vedlejsi": "Pach kovových háčků.",
+          "dozvuk": "Suchý, napnutý vzduch."
+        },
+        "materialy_a_textury": {
+          "povrch": "Hrubý provázek.",
+          "material": "Kůže zvířat.",
+          "pocit": "Drsný, ale pevný."
+        }
+      }
+    },
+    "introspektivní": {
+      "intenzita": "vysoká",
+      "pohyb": "Schoulení do sebe, zaznamenání svých vlastních myšlenek.",
+      "zvuk": "Tiché vrzání, zapisování do koutů vlastní mysli.",
+      "tělo": "Tělo jako schránka na tiché poznámky o sobě.",
+      "funkce": "Vnímat sám sebe skrze reakce ostatních.",
+      "pole": ["vnitřek", "ticho", "záznam", "vědomí"],
+      "media": {
+        "partitura": {
+          "vstup": "Tiché zaznamenávání vlastní přítomnosti; myš se stáčí do klubíčka.",
+          "stret": "Ostatní zvířata se na ni dívají a ona cítí, jak ji jejich pohled mění.",
+          "spojeni": "Přestane zapisovat. Zůstane jen její tichá přítomnost."
+        },
+        "hra_pro_deti": {
+          "postavy": "Pozorovatelka sebe.",
+          "prostredi": "Tmavý kout, kde se dá schovat před světem.",
+          "pravidla": "Slyš své srdce a zapiš, co ti říká."
+        },
+        "hra_digitalni": {
+          "postava": "Vnitřní monolog.",
+          "svet": "Místnost plná zrcadel, která odrážejí myšlenky.",
+          "mechanika": "Hra na sebeuvědomění; každý krok je vnitřní rozhodnutí."
+        },
+        "kreativni_ukol": {
+          "zadani": "Zapiš svůj vnitřní hlas a nech ho vést.",
+          "limit": "Pouze pro sebe.",
+          "cil": "Aby ho nikdo nečetl."
+        },
+        "instalacni_plan": {
+          "figura": "Zrcadla v koutě místnosti, která se vzájemně odrážejí.",
+          "pozadi": "Tmavé, sametové stěny.",
+          "material": "Zrcadla, samet, tma."
+        },
+        "scenar": {
+          "uvod": "Myš sedí v koutě, píše sama sobě do svého deníku.",
+          "zvrat": "Zvířata kolem ní se hýbou, ale ona si uvědomuje, že píše jen o sobě.",
+          "zaver": "Zavře deník a nechá ho v koutě."
+        },
+        "choreografie": {
+          "vstup": "Stočený, vnitřní tanec.",
+          "stret": "Ostatní se hýbou, ale ona se stáčí do sebe.",
+          "spojeni": "Zpomalený pohyb, který se zastaví v koutě."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Detail na oči, které se dívají do svého nitra.",
+          "dej_zvrat": "Zrcadlo ukáže její odraz, který se na ni dívá zpět.",
+          "zaverecne_tema": "Pohled do jejích očí, které se zavřou."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Vnitřní svět jako nekonečný kout.",
+          "argument": "Sebepoznání přichází skrze tiché pozorování sebe.",
+          "zaver": "Neviditelné myšlenky jsou nejhlubší."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Zapiš pocity, které si nikdy neřekneš.",
+          "ukol": "Sdílej je s nikým.",
+          "reflexe": "Proč je těžké je sdílet?"
+        },
+        "herni_prvky": {
+          "mechanika": "Body za tiché, vnitřní uvědomění.",
+          "prostredi": "Vnitřní prostor hráče.",
+          "cil": "Porozumět sama sobě."
+        },
+        "performativni_predstaveni": {
+          "format": "Vnitřní cesta skrze ticho.",
+          "popis": "Herec sedí v koutě a publikum sleduje jeho vnitřní svět.",
+          "vyvrcholeni": "Vstane a jde do světla."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Světlo uzavřené v malém kruhu.",
+          "zvrat": "Světlo se začne stahovat do středu.",
+          "bod": "Bod světla na jejím srdci."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Drone, jakoby vycházel z nitra.",
+          "melodie": "Tiché, pulzující basy.",
+          "harmonie": "Samota a ticho."
+        },
+        "basen_pisen": {
+          "sloka": "Můj vnitřní svět.",
+          "refren": "Kdo mě vidí, když se schovám?",
+          "dozvuk": "Já."
+        },
+        "navrh_kostymu": {
+          "styl": "Tmavé, zavinuté, jako by se chtěla schovat.",
+          "material": "Samet, který pohlcuje světlo.",
+          "strih": "Volný, zavinutý do sebe."
+        },
+        "soundscape": {
+          "zaklad": "Vnitřní ticho.",
+          "narust": "Tlumené vrzání.",
+          "dozvuk": "Absolutní ticho."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Psychologický pohled do nitra.",
+          "motiv": "Potřeba porozumět sobě.",
+          "pointa": "Nejhlubší příběhy jsou ty, které si nikdo neřekne."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Ptej se na pocity, které jsou skryté.",
+          "rozhovor": "Myš tě vede k sobě.",
+          "zaver": "Zeptá se tě: 'Co jsi viděl?'"
+        },
+        "ritual": {
+          "priprava": "Vstup do ticha.",
+          "akt": "Meditace v koutě.",
+          "ukonceni": "Odchod ze sebe."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Tmavé barvy.",
+          "tema": "Vnitřní svět.",
+          "technika": "Rozmazané, hluboké stíny."
+        },
+        "pohybova_improvizace": {
+          "start": "Schoul se a naslouchej sobě.",
+          "vyvoj": "Pohybuj se jako bys byla uvnitř sebe.",
+          "zastaveni": "Zastav se v klidu."
+        },
+        "socialni_sonda": {
+          "otazka": "Co si píšeš v tichu?",
+          "pozorovani": "Kdy se cítíš nejvíc sám sebou?",
+          "reflexe": "Jaký je tvůj vnitřní prostor?"
+        },
+        "motivace_postavy": {
+          "pud": "Potřeba porozumět sobě skrze to, jak ji ostatní vnímají.",
+          "obava": "Strach z neviditelnosti.",
+          "touha": "Touha být viděna, i když se schovává."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Zapisuji je. Oni mě vidí.",
+          "mislenka2": "Ale kdo vidí mě, když já se schovávám?",
+          "mislenka3": "Zapisuji se do koutů své vlastní mysli."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Tělo zkroucené do sebe.",
+          "hlasove": "Tichý, koutový hlas.",
+          "emocne": "Hluboké, vnitřní napětí."
+        },
+        "obsazeni": {
+          "vek": "Introvertní žena (25–35 let).",
+          "typ": "Sklopená ramena, hluboký pohled.",
+          "energie": "Stažená, ale silná."
+        },
+        "scenografie": {
+          "prostor": "Jeviště plné krabic a zákoutí.",
+          "materialy": "Karton, dřevo, papír.",
+          "atmosfera": "Úzká, uzavřená, intimní."
+        },
+        "rekvizity": {
+          "predmet1": "Krabice na schování.",
+          "predmet2": "Zrcadlo obrácené ke zdi.",
+          "predmet3": "Deník."
+        },
+        "masky_a_líčení": {
+          "barva": "Bledá kůže.",
+          "textura": "Křehká, jakoby ponořená do sebe.",
+          "vyraz": "Hluboké, tiché oči."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:05: Vstup do kouta.",
+          "faze2": "0:15–0:30: Tichý rozhovor s koutem.",
+          "faze3": "0:30–0:40: Odchod."
+        },
+        "struktura_delky": {
+          "vstup": "Skrytí.",
+          "jádro": "Pobyt uvnitř.",
+          "konec": "Návrat."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci zavřou oči a ponoří se do sebe.",
+          "behem": "Myš na ně nemluví, jen je pozoruje.",
+          "po": "Diváci otevřou oči."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v šeru.",
+          "role": "Jsou svědky jejího nitra.",
+          "pohodli": "Pevná sedadla, ale ve tmě."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Neviditelná myš má nejhlasitější vnitřní svět.",
+          "jádro": "Poslouchejte ticho.",
+          "pointa": "Přijďte nahlédnout do koutů."
+        },
+        "nazev_alternative": {
+          "varianta1": "Kout.",
+          "varianta2": "Zrcadlo duše.",
+          "varianta3": "Vnitřní hlas."
+        },
+        "klicova_otazka": {
+          "otazka1": "Co se stane, když se schováš před světem?",
+          "otazka2": "Posloucháš své nitro?",
+          "otazka3": "Kde je tvůj kout?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Zatuchlý, uzavřený vzduch.",
+          "vedlejsi": "Pach kartonu.",
+          "dozvuk": "Temný, suchý vzduch."
+        },
+        "materialy_a_textury": {
+          "povrch": "Samet, dřevo.",
+          "material": "Uzavřené prostory.",
+          "pocit": "Tichý a temný."
+        }
+      }
+    },
+
+        "ironicky": {
+      "intenzita": "střední",
+      "pohyb": "Nevšímání si, přestože je vším; ironický klid.",
+      "zvuk": "Tichý, pobavený pískot nad absurditou světa.",
+      "tělo": "Tělo, které zůstává bez povšimnutí, ačkoli je ve středu.",
+      "funkce": "Ukázat, že to nejmenší mění všechno, i když to nikdo nechce přiznat.",
+      "pole": ["bezvýznamnost", "ironie", "proměna", "střed"],
+      "media": {
+        "partitura": {
+          "vstup": "Myš sedí nehybně uprostřed jeviště, zatímco ostatní se kolem ní vznášejí v jejím příběhu.",
+          "stret": "Zvířata se snaží na ni upozornit, ale ona je ignoruje s ledovým klidem.",
+          "spojeni": "Otázka 'Chceš myš?' padne jako chladný vtip, který nikdo nepochopí."
+        },
+        "hra_pro_deti": {
+          "postavy": "Neviditelný hráč.",
+          "prostredi": "Místnost, kde všichni hledají myš, ale nikdo ji nevidí.",
+          "pravidla": "Buď neviditelný, ale působ na ostatní, aniž by si toho všimli."
+        },
+        "hra_digitalni": {
+          "postava": "Skrytý vliv.",
+          "svet": "Svět, který si myslí, že je řízený, ale je ovládán z kouta.",
+          "mechanika": "Neviditelný hráč s obrovským vlivem na dění."
+        },
+        "kreativni_ukol": {
+          "zadani": "Nakresli neviditelnou bytost, která mění svět.",
+          "limit": "Používej pouze bílou barvu.",
+          "cil": "Aby kresba existovala jen v představě toho, kdo se na ni dívá."
+        },
+        "instalacni_plan": {
+          "figura": "Prázdné místo, které je ale všude; jakýsi stín bez těla.",
+          "pozadi": "Stěny plné prázdných rámů, jako by očekávaly obraz, který nikdy nepřijde.",
+          "material": "Prázdné plátno, sklo, neviditelnost."
+        },
+        "scenar": {
+          "uvod": "Obyčejná myš, která je ale vším; nikdo si jí nevšímá.",
+          "zvrat": "Všichni kolem ní se točí, ale ona zůstává v klidu jako by byla středem vesmíru.",
+          "zaver": "Zeptá se 'Chceš myš?' s úsměvem, který ví, že odpověď je ano."
+        },
+        "choreografie": {
+          "vstup": "Ignorovaný tanec, který hýbe jevištěm, aniž by na něj kdokoli ukazoval.",
+          "stret": "Ostatní se snaží chytit její stín, ale ona se vždy vyhne.",
+          "spojeni": "Všichni se zastaví, když se zeptá, jako by jim došlo, že je tu od začátku."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Myš v detailu, zatímco ostatní jí nevěnují pozornost.",
+          "dej_zvrat": "Kamera se na ni zaměří, ale ona se jen chladně usměje.",
+          "zaverecne_tema": "Záběr na ni, která zůstává stát, zatímco všichni kolem se rozprchnou."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Ironie osudu v malém.",
+          "argument": "To nejmenší má největší vliv, i když je přehlíženo.",
+          "zaver": "Neviditelnost je jen forma kontroly."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Ignorujte jednoho člena týmu a sledujte, co se stane.",
+          "ukol": "Zkuste, aby byl vidět jen díky své nepřítomnosti.",
+          "reflexe": "Kdo byl ten neviditelný hráč?"
+        },
+        "herni_prvky": {
+          "mechanika": "Body za to, když zůstaneš nepovšimnut, ale ovlivníš hru.",
+          "prostredi": "Místnost, kde je těžké se schovat.",
+          "cil": "Vyhrát bez toho, aby si někdo všiml, že hraješ."
+        },
+        "performativni_predstaveni": {
+          "format": "Skrytý význam uprostřed chaosu.",
+          "popis": "Herec stojí v rohu a publikum sleduje ostatní, ale on je tím, kdo celou dobu řídí děj.",
+          "vyvrcholeni": "Zvedne ruku a všichni se zastaví. On řekne: 'Chceš myš?'"
+        },
+        "svetelne_efekty": {
+          "zaklad": "Světlo, co nesvítí na myš, ale osvětluje její stín.",
+          "zvrat": "Stín se začne hýbat sám.",
+          "bod": "Světlo na prázdné místo, kde by měla být."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Hudba, která zní, jako by ji někdo přehrával z dálky.",
+          "melodie": "Zvuky, které jakoby přicházely odnikud.",
+          "harmonie": "Ironický podtón, který se vznáší nad vším."
+        },
+        "basen_pisen": {
+          "sloka": "Nikdo mě nevidí, ale já vím, že jsem.",
+          "refren": "Kdo je tu opravdu?",
+          "dozvuk": "Já."
+        },
+        "navrh_kostymu": {
+          "styl": "Průhledný, křehký oblek, který je skoro neviditelný.",
+          "material": "Průhledná fólie, která se leskne jen pod určitým úhlem.",
+          "strih": "Volný, splývavý, téměř nehmotný."
+        },
+        "soundscape": {
+          "zaklad": "Ticho uprostřed hluku.",
+          "narust": "Ozvěna smíchu z dálky.",
+          "dozvuk": "Absolutní klid."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Ironický podtext o neviditelnosti.",
+          "motiv": "Hra s očekáváním.",
+          "pointa": "Ona byla celou dobu tady."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Ironické odpovědi na tvé otázky.",
+          "rozhovor": "Myš se ptá, jestli jsi si jistý, že existuješ.",
+          "zaver": "Zeptá se: 'A co když jsem to já, kdo řídí tvůj život?'"
+        },
+        "ritual": {
+          "priprava": "Schování se do stínu.",
+          "akt": "Rituál přehlédnutí.",
+          "ukonceni": "Zjistíš, že jsi byl celou dobu sledován."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Prázdné plátno s malou tečkou uprostřed.",
+          "tema": "Absence a vliv.",
+          "technika": "Neviditelná kresba."
+        },
+        "pohybova_improvizace": {
+          "start": "Buď všude a nikde.",
+          "vyvoj": "Zkoušej být v centru dění, ale neviditelný.",
+          "zastaveni": "Zastav se v momentě, kdy si tě všimnou."
+        },
+        "socialni_sonda": {
+          "otazka": "Kdo zůstává ve tvém životě nepovšimnut?",
+          "pozorovani": "Kdo řídí tvůj den, aniž by sis toho všiml?",
+          "reflexe": "Jsi ty ten, kdo je neviditelný?"
+        },
+        "motivace_postavy": {
+          "pud": "Pobavené sledování světa, který si myslí, že je důležitý.",
+          "obava": "Strach z toho, že by si jí mohli všimnout.",
+          "touha": "Vědět, že bez ní by se svět zhroutil."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Páv počítá oči. Zaječice voní kouřem. A já?",
+          "mislenka2": "Já se ptám: Chceš myš? A oni si myslí, že je to hra.",
+          "mislenka3": "Hloupí. To je klíč."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Klidný, až povznesený výraz. Ví něco, co ostatní ne.",
+          "hlasove": "Chladný, odměřený hlas.",
+          "emocne": "Pocit nadřazenosti a pobavení."
+        },
+        "obsazeni": {
+          "vek": "Žena s lehce posměšným výrazem (30–40 let).",
+          "typ": "Chladný, pozorovatelský typ.",
+          "energie": "Uvolněná, ale ostrá."
+        },
+        "scenografie": {
+          "prostor": "Velké prázdné jeviště, myš jako malá tečka uprostřed.",
+          "materialy": "Sklo, čisté linie.",
+          "atmosfera": "Prázdnota plná napětí."
+        },
+        "rekvizity": {
+          "predmet1": "Nic.",
+          "predmet2": "Prázdná židle.",
+          "predmet3": "Stín."
+        },
+        "masky_a_líčení": {
+          "barva": "Bledá maska s výraznýma očima.",
+          "textura": "Suchá, téměř papírová kůže.",
+          "vyraz": "Lehce úsměvný, ale chladný."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:10: Čekání a pozorování.",
+          "faze2": "0:10: Ironický úsměv.",
+          "faze3": "0:10–0:20: Odhalení."
+        },
+        "struktura_delky": {
+          "vstup": "Ticho.",
+          "jádro": "Úsměv.",
+          "konec": "Otázka."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci jsou upozorněni, že možná sledují špatné místo.",
+          "behem": "Jsou vyzváni, aby se podívali do koutů.",
+          "po": "Zjistí, že tam byla celou dobu."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v roztroušených křeslech.",
+          "role": "Jsou ti, kteří ji přehlížejí.",
+          "pohodli": "Pevná sedadla, ale s výhledem do koutů."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Největší iluze je, že si myslíš, že ji vidíš.",
+          "jádro": "Myš je všude, kde ji nehledáš.",
+          "pointa": "Přijďte se podívat na to, co vám uniká."
+        },
+        "nazev_alternative": {
+          "varianta1": "Přehlédnutelná.",
+          "varianta2": "Stín.",
+          "varianta3": "Neviditelná."
+        },
+        "klicova_otazka": {
+          "otazka1": "Kdo je tu opravdu?",
+          "otazka2": "Co se stane, když si všimneš stínu?",
+          "otazka3": "Jsi jistý, že jsi ty?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Čistý, chladný vzduch.",
+          "vedlejsi": "Kovový pach prázdnoty.",
+          "dozvuk": "Absence."
+        },
+        "materialy_a_textury": {
+          "povrch": "Chladná, prázdná podlaha.",
+          "material": "Sklo a ocel.",
+          "pocit": "Chladný, ale tichý."
+        }
+      }
+    },
+    "groteskni": {
+      "intenzita": "vysoká",
+      "pohyb": "Trhavé sbírání popálených a zlomených bytostí kolem sebe.",
+      "zvuk": "Zmatené pískání a kuckání zvířat.",
+      "tělo": "Tělo, co shromažďuje groteskní zlomky světa.",
+      "funkce": "Skládat do sebe bizarní svět.",
+      "pole": ["bizarnost", "zlomek", "deformace", "sbírka"],
+      "media": {
+        "partitura": {
+          "vstup": "Groteskní nákup toho, co se rozpadá; myš sbírá popálené uši a zlomené ocasy.",
+          "stret": "Zvířata se snaží utéct, ale ona je chytá a skládá do svého kabinetu kuriozit.",
+          "spojeni": "Konečný obraz je bizarní koláž, která má ale svůj řád."
+        },
+        "hra_pro_deti": {
+          "postavy": "Sběratel kuriozit.",
+          "prostredi": "Muzeum podivných věcí.",
+          "pravidla": "Pohraj si s popálenýma ušima a tečkami v krku; každý zlomek je součástí hry."
+        },
+        "hra_digitalni": {
+          "postava": "Sběratel.",
+          "svet": "Bizarní avatar sestavený z chyb.",
+          "mechanika": "Sbírej podivné předměty a skládej z nich nové bytosti."
+        },
+        "kreativni_ukol": {
+          "zadani": "Vytvoř nejdivnější bytost ze snů.",
+          "limit": "Pouze zlomky a znetvořeniny.",
+          "cil": "Aby byla tak bizarní, až bude krásná."
+        },
+        "instalacni_plan": {
+          "figura": "Deformované sochy zvířat, které jsou složené z kusů jiných.",
+          "pozadi": "Zrcadlový sál, kde se obrazy deformují a rozpadají.",
+          "material": "Spálené dřevo, zmačkaný plech, rozbité sklo."
+        },
+        "scenar": {
+          "uvod": "Myš sbírá zvířecí kuriozity a ukládá je do velké krabice.",
+          "zvrat": "Zvířata se začnou hýbat, ale ona je znovu rozloží.",
+          "zaver": "Z jejich kusů složí novou, bizarní bytost."
+        },
+        "choreografie": {
+          "vstup": "Zkroucený, trhavý tanec, kde jsou pohyby lámavé a nečekané.",
+          "stret": "Dva tanečníci se střetnou a rozpadnou na kusy.",
+          "spojeni": "Z těch kusů se složí jeden bizarní tvar."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Záběr na zkroucené tlapy zaječice a rozbité peří páva.",
+          "dej_zvrat": "Myš je začne skládat dohromady jako bizarní skládačku.",
+          "zaverecne_tema": "Detail na hotový, znetvořený obraz."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Deformace reality do abstraktních tvarů.",
+          "argument": "Rozklad je jen jiný způsob skládání.",
+          "zaver": "Groteskno je estetika chyby."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Vytvořte bizarní tým z podivných postav.",
+          "ukol": "Složte tým z těch nejpodivnějších vlastností.",
+          "reflexe": "Která kombinace byla nejbizarnější?"
+        },
+        "herni_prvky": {
+          "mechanika": "Karta znetvoření, která změní postavu na několik tahů.",
+          "prostredi": "Svět plný rozbitých kusů.",
+          "cil": "Sestavit z nich co nejbizarnější bytost."
+        },
+        "performativni_predstaveni": {
+          "format": "Karneval groteskních postav.",
+          "popis": "Herci v maskách, které jsou složené z různých tváří.",
+          "vyvrcholeni": "Všechny masky se spojí v jednu, obrovskou karikaturu."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Zkreslené stíny a lámavé světlo.",
+          "zvrat": "Světlo se láme a vytváří nepřirozené tvary.",
+          "bod": "Bodové světlo na zkroucený předmět."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Zlomené rytmy a praskavé tóny.",
+          "melodie": "Dva nesourodé tóny, které se křečovitě drží.",
+          "harmonie": "Nesourodá, ale podivně funkční."
+        },
+        "basen_pisen": {
+          "sloka": "Popálené uši a tečky.",
+          "refren": "Kusy se skládají do nových tvarů.",
+          "dozvuk": "A já je sbírám."
+        },
+        "navrh_kostymu": {
+          "styl": "Potrhané, znetvořené hadry, které jakoby nafouknuté zevnitř.",
+          "material": "Spálená látka, zmačkaný papír.",
+          "strih": "Asymetrický, rozpadající se."
+        },
+        "soundscape": {
+          "zaklad": "Kuckání, praskání, syčení.",
+          "narust": "Praskání kostí při skládání.",
+          "dozvuk": "Tiché, spokojené pískání."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Groteskní estetika rozpadu.",
+          "motiv": "Sběratelská vášeň pro podivné.",
+          "pointa": "Rozklad je krásný."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Ptej se na deformace světa.",
+          "rozhovor": "Myš ti ukazuje ty nejpodivnější předměty.",
+          "zaver": "Zeptá se: 'Jakou zrůdu bys chtěl vytvořit?'"
+        },
+        "ritual": {
+          "priprava": "Hromadění zlomků.",
+          "akt": "Rituál zlomení a sestavení.",
+          "ukonceni": "Nový tvar je hotový."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Boschovy obrazy, ale s myší.",
+          "tema": "Bizar a deformace.",
+          "technika": "Zkreslené linie a barvy."
+        },
+        "pohybova_improvizace": {
+          "start": "Deformuj svůj pohyb podle zvířat.",
+          "vyvoj": "Skládej kusy svého těla do nových tvarů.",
+          "zastaveni": "Zastav se, když je obraz hotový."
+        },
+        "socialni_sonda": {
+          "otazka": "Co je na tobě nejbizarnější?",
+          "pozorovani": "Jaký zlomek světa bys chtěl sesbírat?",
+          "reflexe": "Co je tvou nejpodivnější sbírkou?"
+        },
+        "motivace_postavy": {
+          "pud": "Fascinace rozkladem jako formou nového tvaru.",
+          "obava": "Strach z dokonalosti.",
+          "touha": "Touha složit z rozbitého kusů dokonalý chaos."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Zaječice má popálené uši. Kocour krká tečky.",
+          "mislenka2": "Krásné! Tolik rozpadů. Tolik nových tvarů.",
+          "mislenka3": "Já je shromáždím. Já je udělám celistvými."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Výraz šíleného sběratele.",
+          "hlasove": "Hlasitý, nadšený hlas.",
+          "emocne": "Vnitřní nadšení z každého znetvoření."
+        },
+        "obsazeni": {
+          "vek": "Bláznivá, excentrická žena (30–50 let).",
+          "typ": "Rozcuchaná, s jiskrou v oku.",
+          "energie": "Neúnavná sběratelka."
+        },
+        "scenografie": {
+          "prostor": "Zrcadlový sál, kde se obrazy deformují.",
+          "materialy": "Zrcadla, sklo.",
+          "atmosfera": "Nejistá, narušená."
+        },
+        "rekvizity": {
+          "predmet1": "Krabice plná popálených předmětů.",
+          "predmet2": "Kusy rozbité sklenice.",
+          "predmet3": "Klec pro bizarní bytosti."
+        },
+        "masky_a_líčení": {
+          "barva": "Roztříštěný obraz tváře.",
+          "textura": "Jako by byla složená z kusů.",
+          "vyraz": "Neustálý údiv."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:20: Hromadění.",
+          "faze2": "0:20–0:30: Třídění a skládání.",
+          "faze3": "0:30–0:40: Odhalení výsledku."
+        },
+        "struktura_delky": {
+          "vstup": "Sběr.",
+          "jádro": "Skládání.",
+          "konec": "Prezentace."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci mohou přispět svým vlastním 'znetvořením'.",
+          "behem": "Myš jejich příspěvky sbírá.",
+          "po": "Vše vystaví."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v sále, který se sám deformuje.",
+          "role": "Jsou součástí sbírky.",
+          "pohodli": "Nepohodlné židle."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš sbírá, co svět znetvořil.",
+          "jádro": "Ona z toho dělá umění.",
+          "pointa": "Přijďte se podívat na to nejošklivější, co se dá milovat."
+        },
+        "nazev_alternative": {
+          "varianta1": "Kuriozita.",
+          "varianta2": "Kabinet.",
+          "varianta3": "Znetvořeniny."
+        },
+        "klicova_otazka": {
+          "otazka1": "Co je krásnější: celistvost, nebo rozpad?",
+          "otazka2": "Je v rozpadu krása?",
+          "otazka3": "Který zlomek je tvůj?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Spálený vzduch a kov.",
+          "vedlejsi": "Pach rozbitého skla.",
+          "dozvuk": "Zatuchlý kabinet."
+        },
+        "materialy_a_textury": {
+          "povrch": "Spálené ucho.",
+          "material": "Rozbité tečky a křehký sklo.",
+          "pocit": "Drsné, spálené a rozbité."
+        }
+      }
+    },
+    "absurdni": {
+      "intenzita": "nízká",
+      "pohyb": "Opakující se otázka 'Chceš myš?' bez zjevného důvodu.",
+      "zvuk": "Nesmyslné otázky a odpovědi, které se zacyklí.",
+      "tělo": "Tělo, co nese zprávu bez vysvětlení.",
+      "funkce": "Zpochybňovat smysl otázek.",
+      "pole": ["otázka", "absurdita", "význam", "smyčka"],
+      "media": {
+        "partitura": {
+          "vstup": "Absurdní opakování otázky v nekonečné smyčce.",
+          "stret": "Zvířata se snaží odpovědět, ale jejich odpovědi jsou stejně nesmyslné.",
+          "spojeni": "Otázka se stane jediným smyslem celého rituálu."
+        },
+        "hra_pro_deti": {
+          "postavy": "Opakovačka.",
+          "prostredi": "Místnost, kde se ozvěna vrací.",
+          "pravidla": "Ptej se stále stejně, bez vysvětlení; uvidíš, co se stane."
+        },
+        "hra_digitalni": {
+          "postava": "Smyčka.",
+          "svet": "Opakující se loop otázky.",
+          "mechanika": "Klikni na otázku; vždy se vrátíš na začátek."
+        },
+        "kreativni_ukol": {
+          "zadani": "Zopakuj jednu větu 100x.",
+          "limit": "Beze změny.",
+          "cil": "Aby přestala dávat smysl."
+        },
+        "instalacni_plan": {
+          "figura": "Místo s jedním nápisem, který se neustále opakuje.",
+          "pozadi": "Zdi pokryté tou samou otázkou.",
+          "material": "Papír, písmo, ozvěna."
+        },
+        "scenar": {
+          "uvod": "Myš v prázdné místnosti opakuje jednu a tu samou otázku.",
+          "zvrat": "Ozvěna se vrací a zdvojuje otázku.",
+          "zaver": "Otázka zaplní celý prostor."
+        },
+        "choreografie": {
+          "vstup": "Neustálé opakování gesta; tělo jako loop.",
+          "stret": "Druhý tanečník se snaží gesto narušit, ale je vtažen do smyčky.",
+          "spojeni": "Oba se zastaví v momentě, kdy otázka zní naposledy."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Nekonečný záběr na otázku, která se opakuje.",
+          "dej_zvrat": "Obraz se začne rozmazávat, až se ztratí ve svém vlastním opakování.",
+          "zaverecne_tema": "Otázka zůstane viset na obrazovce beze slova."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Absurdita bytí a ptání se.",
+          "argument": "Opakování zbavuje slovo významu.",
+          "zaver": "Smysl se ztrácí v nekonečném opakování."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Ptejte se bez důvodu.",
+          "ukol": "Po 10 minutách opakování zkoumejte, co se stalo.",
+          "reflexe": "Kdy přestala věta dávat smysl?"
+        },
+        "herni_prvky": {
+          "mechanika": "Body za opakování bez cíle.",
+          "prostredi": "Kolotoč, který se točí dokola.",
+          "cil": "Vyhrát tím, že se nepřestaneš ptát."
+        },
+        "performativni_predstaveni": {
+          "format": "Kruh zmatku a neustálá otázka.",
+          "popis": "Herec stojí v kruhu a opakuje větu.",
+          "vyvrcholeni": "Dav začne odpovídat stejnou otázkou."
+        },
+        "svetelne_efekty": {
+          "zaklad": "Pulzující světlo v rytmu otázky.",
+          "zvrat": "Světlo se zrychluje, až se rozplyne.",
+          "bod": "Bod světla, který se nezastaví."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Minimalistický loop otázky.",
+          "melodie": "Stále stejný tón.",
+          "harmonie": "Absolutní prázdnota."
+        },
+        "basen_pisen": {
+          "sloka": "Chceš myš? Chceš myš?",
+          "refren": "Odpověď?",
+          "dozvuk": "..."
+        },
+        "navrh_kostymu": {
+          "styl": "Nehotový šev, jako by se rozpadal na součástky.",
+          "material": "Rozpadající se nitě.",
+          "strih": "Nedokončený, jako by se stále rozpadal."
+        },
+        "soundscape": {
+          "zaklad": "Ozvěna opakující se otázky.",
+          "narust": "Stále se vracející ozvěna.",
+          "dozvuk": "Ticho, které je hlasitější než otázka."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Absurdita existence.",
+          "motiv": "Touha najít smysl v nesmyslu.",
+          "pointa": "Otázka je odpovědí."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Cyklus otázek a odpovědí.",
+          "rozhovor": "Myš se ptá dokola.",
+          "zaver": "Na konci se zeptá: 'Chceš myš?'"
+        },
+        "ritual": {
+          "priprava": "Prázdná místnost.",
+          "akt": "Obřad opakování stejné věty.",
+          "ukonceni": "Ticho."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Spirála opakování.",
+          "tema": "Absurdita.",
+          "technika": "Stále se vracející linie."
+        },
+        "pohybova_improvizace": {
+          "start": "Opakuj jeden pohyb.",
+          "vyvoj": "Přidej další, ale vždy se vrať k prvnímu.",
+          "zastaveni": "Zastav se, když pohyb přestane dávat smysl."
+        },
+        "socialni_sonda": {
+          "otazka": "Co děláš bez důvodu?",
+          "pozorovani": "Jak dlouho umíš opakovat jedno slovo?",
+          "reflexe": "Kdy ses naposled zeptal bez odpovědi?"
+        },
+        "motivace_postavy": {
+          "pud": "Touha najít smysl v něčem, co smysl nemá.",
+          "obava": "Strach z prázdných odpovědí.",
+          "touha": "Touha slyšet ozvěnu svého vlastního hlasu."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Chceš myš? Chceš myš? Chceš myš...",
+          "mislenka2": "Čím víc se ptám, tím míň to dává smysl.",
+          "mislenka3": "A právě v tom je odpověď."
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Mírně nervózní, tikavé opakování.",
+          "hlasove": "Stále stejný, monotónní tón.",
+          "emocne": "Pocit, že se ztrácíš v opakování."
+        },
+        "obsazeni": {
+          "vek": "Žena s lehce pomateným výrazem (30–45 let).",
+          "typ": "Neustále opakující.",
+          "energie": "Poháněná vlastní ozvěnou."
+        },
+        "scenografie": {
+          "prostor": "Místnost, kde se zdi neustále přibližují a vzdalují.",
+          "materialy": "Zrcadla, která se vzájemně odrážejí.",
+          "atmosfera": "Stlačující se, ale otevřená."
+        },
+        "rekvizity": {
+          "predmet1": "Pouze ústa.",
+          "predmet2": "Prázdné zrcadlo.",
+          "predmet3": "Ozvěna."
+        },
+        "masky_a_líčení": {
+          "barva": "Ústa zvýrazněná, jako by se nikdy nezavřela.",
+          "textura": "Suché, otevřené rty.",
+          "vyraz": "Ztracený a zároveň odhodlaný."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:15: První opakování.",
+          "faze2": "0:15–0:30: Desáté opakování.",
+          "faze3": "0:30–0:40: Stopadesáté opakování."
+        },
+        "struktura_delky": {
+          "vstup": "Otázka.",
+          "jádro": "Opakování.",
+          "konec": "Ticho."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci jsou instruováni, aby odpovídali na otázku každou minutu.",
+          "behem": "Myš je počítá.",
+          "po": "Přestane počítat."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v kruhu, jakoby na kolotoči.",
+          "role": "Jsou součástí smyčky.",
+          "pohodli": "Točící se židle."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš se ptá, ptá, ptá.",
+          "jádro": "Až do té doby, než se otázka stane odpovědí.",
+          "pointa": "Přijďte se nechat zacyklit."
+        },
+        "nazev_alternative": {
+          "varianta1": "Smyčka.",
+          "varianta2": "Opakování.",
+          "varianta3": "Absurdita."
+        },
+        "klicova_otazka": {
+          "otazka1": "Jak dlouho můžeš klást stejnou otázku, než se stane pravdou?",
+          "otazka2": "Kdy se opakování stane významem?",
+          "otazka3": "Je ticho odpovědí?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Zatuchlý vzduch bez kyslíku.",
+          "vedlejsi": "Pach opakování.",
+          "dozvuk": "Prázdnota."
+        },
+        "materialy_a_textury": {
+          "povrch": "Nekonečný papír s toutéž větou.",
+          "material": "Papír, který se opotřebovává.",
+          "pocit": "Hladký, ale nekonečný."
+        }
+      }
+    },
+    "surrealisticky": {
+      "intenzita": "vysoká",
+      "pohyb": "Plovoucí bytí v napůl snu, napůl realitě, kde je vším.",
+      "zvuk": "Koktání a zároveň jasnozřivost; jazyk jako sen.",
+      "tělo": "Tělo, které se stává snem i výkladem.",
+      "funkce": "Být napůl sen, napůl realita.",
+      "pole": ["sen", "realita", "výklad", "bytí"],
+      "media": {
+        "partitura": {
+          "vstup": "Snová existence; myš se pomalu mění ve stín, který se vznáší nad zemí.",
+          "stret": "Zvířata se vynořují z mlhy jako snové figury.",
+          "spojeni": "Myš sedí na rozhraní snu a reality a klade otázku, která obojí znejistí."
+        },
+        "hra_pro_deti": {
+          "postavy": "Snová myš.",
+          "prostredi": "Mlha a snové obrazy.",
+          "pravidla": "Pohybuj se jako ve snu; jsi myš i stín."
+        },
+        "hra_digitalni": {
+          "postava": "Sen.",
+          "svet": "Surrealistický svět, kde je myš všude.",
+          "mechanika": "Rozmazávání reality; každý krok mění svět."
+        },
+        "kreativni_ukol": {
+          "zadani": "Nakresli svůj sen o myši.",
+          "limit": "Používej jen neexistující barvy.",
+          "cil": "Aby to vypadalo, že se sen vtěluje do reality."
+        },
+        "instalacni_plan": {
+          "figura": "Zrcadlové bludiště, kde se myš ztrácí v nekonečných odrazech.",
+          "pozadi": "Mlha a plovoucí předměty.",
+          "material": "Zrcadla, mlha, rozostřené světlo."
+        },
+        "scenar": {
+          "uvod": "Myš ve snu, kde je realita rozmazaná a mění se každým okamžikem.",
+          "zvrat": "Vstoupí do místnosti a ta se začne měnit podle jejích myšlenek.",
+          "zaver": "Zeptá se: 'Jsem myš, nebo myš je jen má představa?'"
+        },
+        "choreografie": {
+          "vstup": "Surrealistický tanec beze stop; pohyby jsou plynulé a snové.",
+          "stret": "Dva tanečníci se střetnou a jejich těla se začnou prolínat.",
+          "spojeni": "Oba se rozplynou v jeden snový obraz."
+        },
+        "filmova_scena": {
+          "uvodni_zaber": "Myš mizí v mlze a vrací se jako stín.",
+          "dej_zvrat": "Realita se začne rozpadat a mísit se s jejím snem.",
+          "zaverecne_tema": "Myš stojí na hranici reality a dívá se do kamery."
+        },
+        "vedecka_teorie": {
+          "hypoteza": "Surrealismus bytí a nicoty.",
+          "argument": "Realita a sen jsou neoddělitelné.",
+          "zaver": "Bytí je jen snový výklad světa."
+        },
+        "workshop_pro_tymy": {
+          "uvod": "Vytvořte surrealistický sen.",
+          "ukol": "Prožijte ho v místnosti.",
+          "reflexe": "Kdy jste přestali vědět, co je sen a co realita?"
+        },
+        "herni_prvky": {
+          "mechanika": "Karta snu, která promění realitu.",
+          "prostredi": "Snový svět, který se mění podle tvých rozhodnutí.",
+          "cil": "Najít východ ze snu."
+        },
+        "performativni_predstaveni": {
+          "format": "Snové divadlo; realita se mění ve tvary.",
+          "popis": "Herci jsou ponořeni do mlhy a publikum sleduje, jak se ztrácejí.",
+          "vyvrcholeni": "Myš z mlhy vystoupí a zeptá se: 'Proč jsi tady?'"
+        },
+        "svetelne_efekty": {
+          "zaklad": "Rozostřené, mlhavé světlo, které se neustále mění.",
+          "zvrat": "Světlo se začne stáčet do spirály.",
+          "bod": "Bod světla, který se rozplyne do mlhy."
+        },
+        "hudebni_skladba": {
+          "rytmus": "Ambientní snění, jako by přišlo z dálky.",
+          "melodie": "Rozplynuté tóny, které se vznášejí.",
+          "harmonie": "Snová harmonie, která se těžko zachycuje."
+        },
+        "basen_pisen": {
+          "sloka": "Poloviční sen.",
+          "refren": "Kdo jsem v tom snu?",
+          "dozvuk": "Myš."
+        },
+        "navrh_kostymu": {
+          "styl": "Rozostřené linie, které splývají s pozadím.",
+          "material": "Průsvitná, snová látka.",
+          "strih": "Volný, splývavý jako sen."
+        },
+        "soundscape": {
+          "zaklad": "Šumění z jiné dimenze.",
+          "narust": "Hlasy, které přicházejí z dálky.",
+          "dozvuk": "Absolutní snové ticho."
+        },
+        "dramaturgicka_poznamka": {
+          "konflikt": "Nesmrtelný sen, kde každá myš je klíčem.",
+          "motiv": "Potřeba zjistit, zda existuje, nebo je jen výplodem snů.",
+          "pointa": "Realita je snová a sen je reálný."
+        },
+        "interaktivni_chatbot_scenar": {
+          "vstup": "Ptej se na sny.",
+          "rozhovor": "Myš tě provede svým snem.",
+          "zaver": "Zeptá se: 'Co je pro tebe realita?'"
+        },
+        "ritual": {
+          "priprava": "Vstup do snu.",
+          "akt": "Snová cesta, kde se myš ztrácí.",
+          "ukonceni": "Probuzení."
+        },
+        "malirske_graficke_zadani": {
+          "kompozice": "Dalího obrazy, ale s myší.",
+          "tema": "Sen a realita.",
+          "technika": "Roztavené, rozmazané barvy."
+        },
+        "pohybova_improvizace": {
+          "start": "Pohyb v pomalém, snovém kruhu.",
+          "vyvoj": "Nech svůj pohyb plynout jako sen.",
+          "zastaveni": "Zastav se v momentě, kdy si myslíš, že se probouzíš."
+        },
+        "socialni_sonda": {
+          "otazka": "Měl/a jsi někdy sen, kde jsi byl myší?",
+          "pozorovani": "Kdy se tvůj sen stal realitou?",
+          "reflexe": "Jsi myš v realitě, nebo sen v myši?"
+        },
+        "motivace_postavy": {
+          "pud": "Potřeba zjistit, zda existuje, nebo je jen snem.",
+          "obava": "Strach z toho, že se probudí a přestane existovat.",
+          "touha": "Touha zůstat navždy v tom snovém stavu."
+        },
+        "vnitrni_monolog": {
+          "mislenka1": "Jsem klíč. Jsem past. Jsem pádlo. Jsem myš.",
+          "mislenka2": "Jsem všechno. A nejsem nic.",
+          "mislenka3": "Která myš jsem teď? Ta, která se ptá, nebo ta, která odpovídá?"
+        },
+        "herecka_poznamka": {
+          "fyzicky": "Ztrácí se v prostoru a čase.",
+          "hlasove": "Snový, pomalý hlas.",
+          "emocne": "Pocit, že je součástí vlastního snu."
+        },
+        "obsazeni": {
+          "vek": "Herec se schopností snového, odtažitého výrazu.",
+          "typ": "Křehký, snový typ.",
+          "energie": "Pomalu plynoucí."
+        },
+        "scenografie": {
+          "prostor": "Místnost plná mlhy a odrazů.",
+          "materialy": "Zrcadla, mlha, průhledné látky.",
+          "atmosfera": "Nejistá, snová, plynulá."
+        },
+        "rekvizity": {
+          "predmet1": "Rozmazaná zrcadla.",
+          "predmet2": "Mlha.",
+          "predmet3": "Stín."
+        },
+        "masky_a_líčení": {
+          "barva": "Průsvitný nátěr.",
+          "textura": "Mění barvu podle světla.",
+          "vyraz": "Ztracený, ale přítomný."
+        },
+        "casovy_harmonogram": {
+          "faze1": "0:00–0:15: Ponoření do snu.",
+          "faze2": "0:15–0:30: Putování snem.",
+          "faze3": "0:30–0:45: Rozplynutí."
+        },
+        "struktura_delky": {
+          "vstup": "Sen.",
+          "jádro": "Snové putování.",
+          "konec": "Rozplynutí."
+        },
+        "participace_divaku": {
+          "pred_akci": "Diváci zavřou oči a 'vidí' myš ve svých představách.",
+          "behem": "Myš je čte jako součást svého snu.",
+          "po": "Diváci si je otevřou."
+        },
+        "prostor_pro_divaky": {
+          "rozmisteni": "Diváci v tmě, aby si mohli vytvořit svůj vlastní sen.",
+          "role": "Snící.",
+          "pohodli": "Polštáře na zemi."
+        },
+        "prohlaseni_pro_tisk": {
+          "uvod": "Myš není reálná. Myš je sen.",
+          "jádro": "A sen je klíčem k realitě.",
+          "pointa": "Přijďte se ponořit do snu."
+        },
+        "nazev_alternative": {
+          "varianta1": "Sen o myši.",
+          "varianta2": "Myš ve snu.",
+          "varianta3": "Snová realita."
+        },
+        "klicova_otazka": {
+          "otazka1": "Jsi myš, nebo myš je jen tvá představa?",
+          "otazka2": "Co se stane, když se sen rozhodne být skutečností?",
+          "otazka3": "Kde končí sen a začíná realita?"
+        },
+        "vune_prostoru": {
+          "hlavni": "Vůně nočního vzduchu.",
+          "vedlejsi": "Vůně rozkvetlých květin ze snu.",
+          "dozvuk": "Sladká, snová vůně."
+        },
+        "materialy_a_textury": {
+          "povrch": "Průsvitné látky.",
+          "material": "Mlha a zrcadla.",
+          "pocit": "Průsvitný, snový a pomíjivý."
+        }
+      }
+    },
+
+    
+    
+  }
+}
