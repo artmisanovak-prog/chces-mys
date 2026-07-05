@@ -10,8 +10,9 @@
 ---
 
 - [pruvodce](doma/nastroje/pruvodce.html)
+- [knihovna](doma/nastroje/knihovna.html)
 
-  ---
+---
 
 - [kriva_pohdka_1](doma/nastroje/kriva_pihadka_1_index16.html)
 
