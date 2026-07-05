@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chceš myš? · Knihovna fenoménů</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080b0f;
+  --s1:#0d1117;
+  --s2:#121820;
+  --cr:#ddeeff;
+  --dm:rgba(221,238,255,.38);
+  --d2:rgba(221,238,255,.12);
+  --ca:#00e5c8;   /* hlavní akcent — zářivý tyrkys */
+  --cb:#00b3fa;   /* sekundární — zářivá modrá */
+  --cc:#b8ff6a;   /* terciální — zářivá žlutozelená */
+  --cd:#ff6aaa;   /* čtvrtý — zářivá růžová */
+  --cag:rgba(0,229,200,.08);
+  --border:rgba(0,229,200,.15);
+  --border-hi:rgba(0,229,200,.38);
+  --fs:'Cormorant Garamond',Georgia,serif;
+  --fm:'DM Mono',monospace;
+}
+html{background:var(--bg);color:var(--cr);font-family:var(--fm);font-size:13px;-webkit-font-smoothing:antialiased}
+body{overflow:hidden;height:100dvh}
+
+/* ── HORIZONTÁLNÍ LAYOUT ── */
+.outer{width:100vw;height:100dvh;overflow:hidden}
+.wrap{display:flex;width:calc(3 * 100vw);height:100dvh;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.sec{width:100vw;height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sec::-webkit-scrollbar{width:2px}
+.sec::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── STICKY HEADER ── */
+.sh{position:sticky;top:0;z-index:20;background:rgba(8,11,15,.96);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);padding:.8rem 1.1rem .6rem;
+    display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.sh-brand{font-family:var(--fs);font-size:1.4rem;font-weight:300;line-height:1}
+.sh-brand em{color:var(--ca);font-style:italic}
+.sh-sub{font-size:.56rem;color:var(--dm);letter-spacing:.1em;margin-top:.15rem}
+.sh-nav{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+.nb{width:30px;height:30px;background:var(--s2);border:1px solid var(--border);color:var(--ca);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;
+    border-radius:2px;transition:all .14s;font-family:var(--fm)}
+.nb:hover:not(:disabled){background:var(--cag);border-color:var(--border-hi)}
+.nb:disabled{opacity:.22;cursor:default}
+.dots{display:flex;gap:3px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--d2);transition:all .2s}
+.dot.on{background:var(--ca);box-shadow:0 0 5px var(--ca)}
+
+/* ── CONTENT ── */
+.sb{padding:.9rem 1.1rem 3rem;max-width:800px}
+p.txt{font-size:.8rem;line-height:1.8;color:var(--dm);margin-bottom:.8rem;max-width:560px}
+h2{font-family:var(--fs);font-size:clamp(1.4rem,4vw,2.2rem);font-weight:300;margin-bottom:.6rem}
+h2 em{font-style:italic;color:var(--ca)}
+
+/* ── HERO TEXT ── */
+.hero-lead{font-family:var(--fs);font-style:italic;font-size:clamp(1rem,2.5vw,1.35rem);
+           color:var(--ca);line-height:1.5;margin-bottom:1rem;max-width:540px}
+.hero-glow{display:inline-block;color:var(--cc);text-shadow:0 0 18px rgba(184,255,106,.4)}
+
+/* ── AKORDEONY — nezávislé ── */
+.ac{border:1px solid var(--border);margin-bottom:.45rem;border-radius:2px;overflow:hidden}
+.ach{display:flex;justify-content:space-between;align-items:center;padding:.55rem .9rem;
+     cursor:pointer;background:var(--s1);font-size:.64rem;color:var(--dm);
+     text-transform:uppercase;letter-spacing:.09em;user-select:none;
+     transition:background .12s;border:none;width:100%;text-align:left;font-family:var(--fm)}
+.ach:hover{background:var(--s2);color:var(--cr)}
+.ac.open .ach{color:var(--ca)}
+.acarr{font-size:.5rem;transition:transform .26s;flex-shrink:0;margin-left:.5rem}
+.ac.open .acarr{transform:rotate(180deg)}
+.acb{max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1);background:var(--s1)}
+.ac.open .acb{max-height:2600px}
+.aci{padding:.7rem .9rem 1rem;font-size:.78rem;line-height:1.8;color:var(--dm)}
+.aci strong{color:var(--ca)}
+.aci p{margin-bottom:.5rem}
+
+/* ── TAGY / PILÍŘE ── */
+.pilire{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.1rem 0}
+.pilir{background:var(--s2);border:1px solid var(--border);border-radius:2px;padding:.5rem .85rem;
+       cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:2px}
+.pilir:hover{border-color:var(--ca)}
+.pilir.active{border-color:var(--ca);background:var(--cag)}
+.pilir-n{font-size:.68rem;color:var(--cr)}
+.pilir.active .pilir-n{color:var(--ca)}
+.pilir-d{font-size:.58rem;color:var(--dm);line-height:1.4}
+
+/* ── FENOMÉNY GRID ── */
+.fen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;margin-top:.8rem}
+.fen-card{background:var(--s1);border:1px solid var(--border);border-radius:2px;overflow:hidden;
+          cursor:pointer;transition:all .16s;position:relative}
+.fen-card:hover{border-color:var(--ca);transform:translateY(-1px)}
+.fen-card.sel{border-color:var(--ca);border-width:2px;box-shadow:0 0 10px rgba(0,229,200,.18)}
+.fen-card img{width:100%;aspect-ratio:1;object-fit:cover;filter:grayscale(50%) brightness(.85);display:block;transition:filter .2s}
+.fen-card:hover img,.fen-card.sel img{filter:grayscale(20%) brightness(1)}
+.fen-card-n{font-size:.54rem;color:var(--dm);text-align:center;padding:4px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fen-card.sel .fen-card-n{color:var(--ca)}
+.fen-glow{position:absolute;top:3px;left:3px;width:8px;height:8px;border-radius:50%;
+          background:var(--ca);box-shadow:0 0 6px var(--ca);display:none}
+.fen-card.sel .fen-glow{display:block}
+
+/* ── FENOMÉN DETAIL ── */
+.fen-detail{background:var(--s1);border:1px solid var(--ca);border-radius:2px;
+            padding:.85rem 1rem;margin-bottom:.7rem;display:none}
+.fen-detail.open{display:block}
+.fen-detail-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.5rem}
+.fen-detail-img{width:50px;height:50px;object-fit:cover;filter:grayscale(30%);border-radius:2px;flex-shrink:0}
+.fen-detail-n{font-family:var(--fs);font-size:1.1rem;color:var(--ca)}
+.fen-detail-popis{font-size:.76rem;color:var(--dm);line-height:1.75;margin-bottom:.5rem}
+.fen-detail-close{float:right;background:none;border:1px solid var(--border);color:var(--dm);
+                  font-family:var(--fm);font-size:.56rem;padding:2px 7px;cursor:pointer;
+                  transition:all .12s;border-radius:2px}
+.fen-detail-close:hover{border-color:var(--ca);color:var(--ca)}
+
+/* ── OBJEDNÁVKA ── */
+.pouziti-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin:1rem 0}
+.pouziti-card{background:var(--s1);border:1px solid var(--border);border-radius:2px;padding:.7rem .9rem;
+              cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.pouziti-card:hover{border-color:var(--ca)}
+.pouziti-card.sel{border-left-color:var(--ca);background:var(--cag)}
+.pouziti-card-n{font-size:.74rem;color:var(--cr);margin-bottom:3px}
+.pouziti-card.sel .pouziti-card-n{color:var(--ca)}
+.pouziti-card-d{font-size:.62rem;color:var(--dm);line-height:1.45}
+.pouziti-dot{width:7px;height:7px;border-radius:50%;background:transparent;border:1px solid var(--border);
+             display:inline-block;margin-right:5px;transition:all .14s;vertical-align:middle}
+.pouziti-card.sel .pouziti-dot{background:var(--ca);border-color:var(--ca);box-shadow:0 0 5px var(--ca)}
+
+.form-box{background:var(--s2);border:1px solid var(--border);border-radius:2px;padding:.9rem 1rem;margin-top:.8rem}
+.form-lbl{font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ca);margin-bottom:.3rem;display:block;margin-top:.7rem}
+.form-lbl:first-child{margin-top:0}
+.form-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:2px;color:var(--cr);
+          font-family:var(--fm);font-size:.76rem;padding:.5rem .7rem;outline:none;transition:border-color .14s}
+.form-inp:focus{border-color:var(--ca)}
+.form-inp::placeholder{color:var(--dm);font-style:italic}
+.form-ta{min-height:72px;resize:vertical}
+
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;font-family:var(--fm);
+     font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;background:var(--ca);color:var(--bg);
+     border:none;cursor:pointer;border-radius:2px;transition:all .15s;font-weight:500}
+.btn:hover{background:#00ffd9;box-shadow:0 0 14px rgba(0,229,200,.4)}
+.btn.o{background:transparent;color:var(--ca);border:1px solid var(--ca)}
+.btn.o:hover{background:var(--cag)}
+.btn:disabled{opacity:.3;cursor:default}
+
+.warn{background:rgba(255,106,170,.07);border:1px solid rgba(255,106,170,.25);
+      color:rgba(255,180,220,.7);padding:.65rem .85rem;font-size:.72rem;line-height:1.65;
+      border-radius:2px;margin-top:.6rem}
+.success{background:rgba(0,229,200,.07);border:1px solid var(--border-hi);color:var(--ca);
+         padding:.65rem .85rem;font-size:.72rem;line-height:1.65;border-radius:2px;margin-top:.6rem}
+
+/* ── ČÍSLA / SEKCE LABEL ── */
+.zona-lbl{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ca);
+          margin-bottom:.55rem;display:block}
+.divider{border:none;border-top:1px solid var(--border);margin:1.2rem 0}
+
+/* ── GLOW BOX ── */
+.glow-box{background:var(--cag);border:1px solid var(--ca);border-radius:2px;
+          padding:.75rem 1rem;font-size:.76rem;color:var(--cr);line-height:1.75;margin:1rem 0}
+.glow-box strong{color:var(--ca)}
+</style>
+</head>
+<body>
+<div class="outer">
+<div class="wrap" id="W">
+
+<!-- ══════════════════════════════════════════
+     SEC 0 — ÚVOD
+══════════════════════════════════════════ -->
+<section class="sec" id="s0">
+  <div class="sh">
+    <div>
+      <div class="sh-brand">chceš <em>myš?</em></div>
+      <div class="sh-sub">Slovník mezer · Knihovna fenoménů</div>
+    </div>
+    <div class="sh-nav">
+      <button class="nb" disabled>←</button>
+      <div class="dots" id="D0"></div>
+      <button class="nb" onclick="go(1)">→</button>
+    </div>
+  </div>
+
+  <div class="sb">
+    <p class="hero-lead">Systém pro čtení struktury —<br>v jazyce, <span class="hero-glow">kresbě</span>, myšlení.</p>
+
+    <p class="txt">Pohádky jako vstupní bod. Dvanáct úhlů pohledu jako nástroj. Fyzika čáry a slova jako záznam toho, co se jinak říct nedá.</p>
+    <p class="txt">65 ručně ilustrovaných zvířecích karet — každá nese jeden fenomén. Vzorec který se opakuje v jazyce, v kresbě, v týmech. Jmenuje se jinak u každého zvířete, ale dá se číst stejným klíčem.</p>
+
+    <hr class="divider">
+    <span class="zona-lbl">Co tady je</span>
+
+    <div class="ac open" id="ac0">
+      <button class="ach" onclick="tog('ac0')"><span>12 úhlů pohledu</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Každý fenomén má dvanáct různých čtení — Analytický, Kulturní, Filozofický, Naivní, Jazykový, Metaforický, Asociační, Introspektivní, Ironický, Groteskní, Absurdní, Surrealistický. Jsou rozmístěné na kružnici v protilehlých párech.</p>
+        <p>Úhel pohledu není hodnocení. Je to fyzika — různé úhly vidí různé struktury téhož fenoménu.</p>
+      </div></div>
+    </div>
+
+    <div class="ac" id="ac1">
+      <button class="ach" onclick="tog('ac1')"><span>Fyzika jazyka a kresby</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Chyba v textu, tah tužky, způsob jak někdo mluví — nejsou náhody. Jsou to záznamy s vlastní strukturou. Systém je čte, pojmenovává a dává jim tělo.</p>
+        <p><strong>Fyzika jazyka</strong> — jazykové figury jako fyzikální vlastnosti. Každá figura nese jiný úhel.</p>
+        <p><strong>Fyzika kresby</strong> — tlak, rytmus, hustota, kontinuita. Stejný jev se dá číst v textu i v čáře.</p>
+      </div></div>
+    </div>
+
+    <div class="ac" id="ac2">
+      <button class="ach" onclick="tog('ac2')"><span>Pohádky jako metalanguage</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Pohádky v tomto systému nejsou ilustrace metody — jsou záznamy fenoménů psané jako partitury. Čtenář si nemusí nic vysvětlovat. Stačí přečíst.</p>
+        <p>Každá pohádka se dá pustit bez kontextu. Zvíře mluví, protože říká to, co lidé nemohou vyslovit přímo.</p>
+      </div></div>
+    </div>
+
+    <div class="ac" id="ac3">
+      <button class="ach" onclick="tog('ac3')"><span>Workshopy</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Pohádka z reproduktoru. Jedna otázka. Každý pracuje od vlastního úhlu. Výsledky se čtou společně.</p>
+        <p>Bez předchozích znalostí systému. Pro festivaly, školy, kreativní skupiny, týmy. Vstupem je pohádka, ne manuál.</p>
+      </div></div>
+    </div>
+
+    <hr class="divider">
+    <div class="glow-box">
+      <strong>Offline first.</strong> Všechny nástroje fungují bez serveru, bez databáze, bez účtu. Data zůstávají v prohlížeči. URL jako stav — výsledek se dá sdílet jedním odkazem.
+    </div>
+
+    <div style="margin-top:1.1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn" onclick="go(1)">Knihovna fenoménů →</button>
+      <button class="btn o" onclick="go(2)">Objednat workshop</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SEC 1 — KNIHOVNA FENOMÉNŮ
+══════════════════════════════════════════ -->
+<section class="sec" id="s1">
+  <div class="sh">
+    <div>
+      <div class="sh-brand">chceš <em>myš?</em></div>
+      <div class="sh-sub">1 · knihovna fenoménů</div>
+    </div>
+    <div class="sh-nav">
+      <button class="nb" onclick="go(0)">←</button>
+      <div class="dots" id="D1"></div>
+      <button class="nb" onclick="go(2)">→</button>
+    </div>
+  </div>
+
+  <div class="sb" style="max-width:880px">
+    <p class="txt">35 fenoménů — každý ve zvířeti, každý se čte dvanácti úhly. Klikni na fenomén pro detail. Vyber jeden a přejdi na objednávku workshopu.</p>
+
+    <div id="fenDetailZone"></div>
+
+    <span class="zona-lbl">Všechny fenomény</span>
+    <div class="fen-grid" id="fenGrid"></div>
+
+    <div style="margin-top:1.1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn" onclick="go(2)">Objednat workshop →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SEC 2 — OBJEDNÁVKA WORKSHOPU
+══════════════════════════════════════════ -->
+<section class="sec" id="s2">
+  <div class="sh">
+    <div>
+      <div class="sh-brand">chceš <em>myš?</em></div>
+      <div class="sh-sub">2 · objednat workshop</div>
+    </div>
+    <div class="sh-nav">
+      <button class="nb" onclick="go(1)">←</button>
+      <div class="dots" id="D2"></div>
+      <button class="nb" disabled>→</button>
+    </div>
+  </div>
+
+  <div class="sb">
+    <h2>Připravit <em>workshop</em></h2>
+    <p class="txt">Řekni mi, co chceš připravit. Napíše mi email přímo z tvého zařízení — žádný server, žádná databáze, jen zpráva mně.</p>
+
+    <hr class="divider">
+    <span class="zona-lbl">Téma a použití</span>
+
+    <div class="pouziti-grid" id="pouzitiGrid"></div>
+
+    <hr class="divider">
+    <span class="zona-lbl">Vybraný fenomén (volitelné)</span>
+    <div id="vybraneFen" class="glow-box" style="display:none"></div>
+    <p class="txt" id="fenHint">Žádný fenomén nevybran — lze vybrat v Knihovně.</p>
+
+    <hr class="divider">
+    <span class="zona-lbl">O tobě a akci</span>
+
+    <div class="form-box">
+      <span class="form-lbl">Jméno / organizace</span>
+      <input class="form-inp" id="fJmeno" type="text" placeholder="Jana Nováková / Škola XY">
+      <span class="form-lbl">Email pro odpověď</span>
+      <input class="form-inp" id="fEmail" type="email" placeholder="jana@priklad.cz">
+      <span class="form-lbl">Počet lidí</span>
+      <input class="form-inp" id="fPocet" type="text" placeholder="10–15 lidí">
+      <span class="form-lbl">Termín nebo rámcové datum</span>
+      <input class="form-inp" id="fTermin" type="text" placeholder="říjen 2026, pátek odpoledne...">
+      <span class="form-lbl">Kontext a co bys potřeboval/a</span>
+      <textarea class="form-inp form-ta" id="fKontext" placeholder="Jaká je skupina? Co se děje? Co byste potřebovali otevřít nebo změnit?"></textarea>
+    </div>
+
+    <button class="btn" id="sendBtn" onclick="odeslatObjednavku()" style="margin-top:.8rem">Odeslat →</button>
+    <div id="formResult"></div>
+
+    <p class="txt" style="margin-top:.9rem;font-size:.68rem">
+      Email se otevře ve tvém emailovém klientu předvyplněný. Žádná data nejdou přes server.
+    </p>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script>
+// ── DATA FENOMÉNŮ ──────────────────────────────────────────────
+const FENOMENY = [
+  {id:'mys',        n:'Myš',         popis:'Pozorovatelka, která zapisuje do mezer mezi slovy. Všímá si toho, co ostatní přehlíží. Klade otázky, které se ptají na všechno.'},
+  {id:'kocour',     n:'Kocour',      popis:'Přesnost bez zbytečného pohybu. Čeká, dokud nepřijde správný okamžik. Tečky a rytmus.'},
+  {id:'ryba',       n:'Ryba',        popis:'Rap, který mění vodu. Ticho jako nejsilnější nota. Každý druh má svůj styl, všechny ovlivňují vlastnosti prostředí.'},
+  {id:'zajic',      n:'Zajíc',       popis:'Rychlé rozhodování bez úplné informace. Popálené uši. Útěk jako metoda poznání.'},
+  {id:'netopyr',    n:'Netopýr',     popis:'Orientace v tmě echolokací. Vidí to, co ostatní nevnímají. Noční způsob myšlení.'},
+  {id:'krokodyl',   n:'Krokodýl',    popis:'Velmi stará trpělivost. Nehybnost jako strategie. Čelisti, které se jednou zavřou, drží.'},
+  {id:'jednorozec', n:'Jednorožec',  popis:'Existence věcí, které nikdo nepotvrdil. Víra jako způsob vidění. Co zmizí, když se na to podíváme přímo.'},
+  {id:'plamenak',   n:'Plameňák',    popis:'Rovnováha na jedné noze. Barva jako signál. Skupinová choreografie bez dirigenta.'},
+  {id:'lemur',      n:'Lemur',       popis:'Hledí do prázdna, kde nic není. Nebo tam něco je a my to nevidíme.'},
+  {id:'motyl',      n:'Motýl',       popis:'Metamorfóza jako záměr, ne náhoda. Váha křídel. Přitahování k světlu.'},
+  {id:'pav',        n:'Páv',         popis:'Přepočítává svá oka, když se nikdo nedívá. Okrasa jako komunikace. Komu se vlastně ukazujeme.'},
+  {id:'cap',        n:'Čáp',         popis:'Přistane na komíně a zapomene, koho měl donést. Migrace a návrat. Co přinášíme a co ztrácíme na cestě.'},
+  {id:'slon',       n:'Slon',        popis:'Nese v chobotu třešně, co nikdy nedozrají. Paměť jako tíha. Skupinové truchlení.'},
+  {id:'parohy',     n:'Parohy',      popis:'Nárůst jako záznam času. Co neseme na hlavě. Odložení a opětovný výrůst.'},
+  {id:'panda',      n:'Panda',       popis:'Existuje na hranici vymření a ikoničnosti. Specializace jako riziko. Bambus.'},
+  {id:'vlk',        n:'Vlk',         popis:'Smečka bez vůdce, který by ji musel řídit. Komunikace v pohybu. Teritorium a přechod.'},
+  {id:'opice',      n:'Opice',       popis:'Napodobuje, aby se naučila. Nebo aby se pobavila. Nebo aby vyzkoušela, co se stane.'},
+  {id:'psi_smecka', n:'Psí smečka',  popis:'Dynamika skupiny bez slov. Hierarchie, která se nemusí jmenovat. Loajalita jako fyzika.'},
+  {id:'veverka',    n:'Veverka',     popis:'Ukládá zásoby a zapomíná kde. Přesto přežívá. Záměr a náhoda v rovnováze.'},
+  {id:'hvezdice',   n:'Hvězdice',    popis:'Regeneruje to, co ztratila. Pohyb ze středu. Pět ramen jako různé směry.'},
+  {id:'beran',      n:'Beran',       popis:'Jde rovně. Vždy rovně. I když to není nejkratší cesta.'},
+  {id:'drak',       n:'Drak',        popis:'Existuje ve všech kulturách jinak. Dech jako zbraň nebo dar. Strážce nebo nepřítel.'},
+  {id:'tygr',       n:'Tygr',        popis:'Sólo lovec. Pruhování jako rozpad siluety. Přesnost skoku.'},
+  {id:'had',        n:'Had',         popis:'Svléká kůži a pokračuje. Jedovatost jako sebeochrana. Pohyb bez končetin.'},
+  {id:'vrabec',     n:'Vrabec',      popis:'Všude přítomný, málokdy viděný. Přizpůsobení bez ztráty identity.'},
+  {id:'kravy',      n:'Krávy',       popis:'Skupinové stání. Dívají se všechny stejným směrem — proč? Přežvykování jako zpracování.'},
+  {id:'husy',       n:'Husy',        popis:'Létají ve tvaru, který šetří energii celé skupině. Vedoucí se střídají. Hluk jako komunikace.'},
+  {id:'hyeny',      n:'Hyeny',       popis:'Špatná pověst, složitá sociální struktura. Smích jako signál. Co se čistí po ostatních.'},
+  {id:'tucnak',     n:'Tučňák',      popis:'Nepohyblivý ve vodě je bezmocný, ve vodě je dokonalý. Prostředí mění schopnosti.'},
+  {id:'zralok',     n:'Žralok',      popis:'Musí se pohybovat, jinak se udusí. Pohyb jako podmínka existence.'},
+  {id:'zelva',      n:'Želva',       popis:'Nosí dům s sebou. Pomalost jako strategie. Pevnost, do které se lze schovat.'},
+  {id:'zizala',     n:'Žížala',      popis:'Zúrodňuje to, čím prochází. Neviditelná práce, viditelné výsledky. Pod povrchem.'},
+  {id:'pavouk',     n:'Pavouk',      popis:'Tká síť a čeká. Struktura jako past nebo jako dílo. Střed a okraje.'},
+  {id:'prase',      n:'Prase',       popis:'Inteligentní, špinavé, posvátné nebo zakázané podle kontextu. Stejné zvíře, různé čtení.'},
+  {id:'osel',       n:'Osel',        popis:'Tvrdohlavost nebo vytrvalost — záleží na tom, kdo to pojmenovává.'},
+];
+
+const POUZITI = [
+  {id:'vyhoreni', n:'Prevence vyhoření', d:'Pro týmy nebo jednotlivce, kteří se opakují ve stejném vzorci.', barva:'var(--ca)'},
+  {id:'kreativni', n:'Kreativní blok', d:'Když se nedaří začít nebo pokračovat. Pohádka jako jiný vstup.', barva:'var(--cc)'},
+  {id:'parova', n:'Párová hra', d:'Křížová výměna úhlů mezi dvěma lidmi. Protilehlý úhel bez vysvětlení proč.', barva:'var(--cb)'},
+  {id:'workshopy', n:'Workshopy pro týmy', d:'Skupinová diagnostika, čtení výsledků společně, kognitivní mapa skupiny.', barva:'var(--cd)'},
+  {id:'festival', n:'Festivaly a kulturní akce', d:'Jednorázový workshop s pohádkou z reproduktoru.', barva:'var(--ca)'},
+  {id:'skola', n:'Školy a pedagogika', d:'Pro třídy, pedagogické skupiny, kreativní psaní, výtvarná výchova.', barva:'var(--cc)'},
+];
+
+// ── STAV ────────────────────────────────────────────────────────
+let SEC = 0;
+let selectedFen = null;
+let selectedPouziti = [];
+
+// ── NAVIGACE ────────────────────────────────────────────────────
+function go(n){
+  SEC = Math.max(0, Math.min(2, n));
+  document.getElementById('W').style.transform = `translateX(calc(-${SEC}*100vw))`;
+  updDots();
+  updUrl();
+}
+function updDots(){
+  ['D0','D1','D2'].forEach((id, i) => {
+    const el = document.getElementById(id); if(!el) return;
+    el.innerHTML = '';
+    for(let j=0;j<3;j++){
+      const d = document.createElement('div');
+      d.className = 'dot' + (j===SEC?' on':'');
+      el.appendChild(d);
+    }
+  });
+}
+
+// ── URL STAV ────────────────────────────────────────────────────
+function updUrl(){
+  const p = new URLSearchParams();
+  p.set('sec', SEC);
+  if(selectedFen) p.set('fen', selectedFen);
+  if(selectedPouziti.length) p.set('pouziti', selectedPouziti.join(','));
+  history.replaceState(null, '', '?'+p.toString());
+}
+function readUrl(){
+  const p = new URLSearchParams(location.search);
+  return { sec: p.get('sec'), fen: p.get('fen'), pouziti: p.get('pouziti') };
+}
+
+// ── AKORDEONY — nezávislé ────────────────────────────────────────
+function tog(id){
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ── FENOMÉNY GRID ────────────────────────────────────────────────
+function renderFenGrid(){
+  const g = document.getElementById('fenGrid');
+  g.innerHTML = FENOMENY.map(f => `
+    <div class="fen-card${selectedFen===f.id?' sel':''}" id="fc-${f.id}" onclick="toggleFen('${f.id}')">
+      <div class="fen-glow"></div>
+      <img src="doma/ilustrace/${f.id}.jpg" alt="${f.n}"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect fill=%22%230d1117%22 width=%2280%22 height=%2280%22/%3E%3Ctext x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%2300e5c822%22 font-size=%2222%22%3E◆%3C/text%3E%3C/svg%3E'">
+      <div class="fen-card-n">${f.n}</div>
+    </div>`).join('');
+}
+
+function toggleFen(id){
+  const zone = document.getElementById('fenDetailZone');
+  if(selectedFen === id){
+    selectedFen = null;
+    zone.innerHTML = '';
+    document.querySelectorAll('.fen-card').forEach(c=>c.classList.remove('sel'));
+    syncVybraneFen();
+    updUrl();
+    return;
+  }
+  selectedFen = id;
+  document.querySelectorAll('.fen-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('fc-'+id)?.classList.add('sel');
+  const f = FENOMENY.find(x=>x.id===id);
+  zone.innerHTML = `
+    <div class="fen-detail open">
+      <button class="fen-detail-close" onclick="toggleFen('${id}')">✕ zavřít</button>
+      <div class="fen-detail-head">
+        <img class="fen-detail-img" src="doma/ilustrace/${id}.jpg" alt="${f.n}"
+             onerror="this.style.display='none'">
+        <div class="fen-detail-n">${f.n}</div>
+      </div>
+      <div class="fen-detail-popis">${f.popis}</div>
+      <button class="btn" onclick="go(2)">Chci workshop s touto kartou →</button>
+    </div>`;
+  // scroll do viditelnosti
+  setTimeout(()=>zone.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+  syncVybraneFen();
+  updUrl();
+}
+
+function syncVybraneFen(){
+  const box = document.getElementById('vybraneFen');
+  const hint = document.getElementById('fenHint');
+  if(!selectedFen){
+    box.style.display = 'none';
+    hint.style.display = 'block';
+    return;
+  }
+  const f = FENOMENY.find(x=>x.id===selectedFen);
+  box.style.display = 'block';
+  hint.style.display = 'none';
+  box.innerHTML = `<strong>${f.n}</strong> — ${f.popis}`;
+}
+
+// ── POUŽITÍ GRID ─────────────────────────────────────────────────
+function renderPouzitiGrid(){
+  const g = document.getElementById('pouzitiGrid');
+  g.innerHTML = POUZITI.map(p => `
+    <div class="pouziti-card${selectedPouziti.includes(p.id)?' sel':''}" id="pc-${p.id}" onclick="togglePouziti('${p.id}')">
+      <div class="pouziti-card-n"><span class="pouziti-dot" style="${selectedPouziti.includes(p.id)?`background:${p.barva};border-color:${p.barva};box-shadow:0 0 5px ${p.barva}`:``}"></span>${p.n}</div>
+      <div class="pouziti-card-d">${p.d}</div>
+    </div>`).join('');
+}
+
+function togglePouziti(id){
+  const i = selectedPouziti.indexOf(id);
+  if(i>=0) selectedPouziti.splice(i,1); else selectedPouziti.push(id);
+  renderPouzitiGrid();
+  updUrl();
+}
+
+// ── ODESLÁNÍ ─────────────────────────────────────────────────────
+function odeslatObjednavku(){
+  const jmeno   = document.getElementById('fJmeno').value.trim();
+  const email   = document.getElementById('fEmail').value.trim();
+  const pocet   = document.getElementById('fPocet').value.trim();
+  const termin  = document.getElementById('fTermin').value.trim();
+  const kontext = document.getElementById('fKontext').value.trim();
+  const res     = document.getElementById('formResult');
+
+  if(!email){
+    res.innerHTML = '<div class="warn">Prosím vyplň svůj email pro odpověď.</div>';
+    return;
+  }
+
+  const fen = selectedFen ? FENOMENY.find(x=>x.id===selectedFen)?.n : null;
+  const pouziti = selectedPouziti.map(id=>POUZITI.find(x=>x.id===id)?.n).filter(Boolean);
+
+  const subject = `Workshop Chceš myš? — ${jmeno||'bez jména'}`;
+  let body = `Dobrý den,\n\nmám zájem o workshop.\n\n`;
+  body += `Jméno / organizace: ${jmeno||'—'}\n`;
+  body += `Email: ${email}\n`;
+  body += `Počet lidí: ${pocet||'—'}\n`;
+  body += `Termín: ${termin||'—'}\n`;
+  if(fen)       body += `Vybraný fenomén: ${fen}\n`;
+  if(pouziti.length) body += `Téma / použití: ${pouziti.join(', ')}\n`;
+  if(kontext)   body += `\nKontext:\n${kontext}\n`;
+  body += `\nDěkuji.`;
+
+  const mailto = `mailto:chcesmys@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+
+  res.innerHTML = '<div class="success">Email se otevřel v tvém klientu. Pokud se nic nestalo, napiš přímo na chcesmys@gmail.com</div>';
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+function init(){
+  renderFenGrid();
+  renderPouzitiGrid();
+
+  const url = readUrl();
+  if(url.fen) toggleFen(url.fen);
+  if(url.pouziti) url.pouziti.split(',').forEach(id=>{ if(!selectedPouziti.includes(id)) selectedPouziti.push(id); });
+
+  const sec = parseInt(url.sec)||0;
+  go(sec);
+  renderPouzitiGrid();
+}
+
+init();
+</script>
+</body>
+</html>
