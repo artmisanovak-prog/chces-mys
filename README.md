@@ -14,9 +14,9 @@
 
 ---
 
-- [kriva_pohdka_1](doma/nastroje/kriva_pihadka_1_index16.html)
+- [kriva_pohdka_1](doma/nastroje/kriva_pohadka_1_index16.html)
 
-  ---
+---
 
 - [fyzika_kresby_v4.1](doma/nastroje/fyzika_kresby_v4_1.html)
 - [fyzika_kresby_v4](doma/nastroje/fyzika_kresby_v4.html)
@@ -28,12 +28,24 @@
 - [carofyzika1](doma/nastroje/carofyzika1.html)
 - [carofyzika2](doma/nastroje/carofyzika2.html)
 - [carofyzika3](doma/nastroje/carofyzika3.html)
+
+
+  - [carofyzika](doma/nastroje/carofyzika.html)
+- [carofyzika1](doma/nastroje/carofyzika1.html)
+- [carofyzika2](doma/nastroje/carofyzika2.html)
+- [carofyzika3](doma/nastroje/carofyzika3.html)
+- [carofyzika4](doma/nastroje/carofyzika4.html)
+  
+- [multigenerator](doma/nastroje/multigenerator.html)
+
   
 ---
 
 - [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
+
+---
 
 - [fyzika jazyka](doma/nastroje/fyzika_jazyka.html)
 
@@ -53,16 +65,10 @@
 - [meziTahy5](doma/nastroje/mezitahy5.html)
 - [mezitahy7](doma/nastroje/mezitahy7.html)
 - [meziTahy6](doma/nastroje/mezitahy6.html)
+- [meziTahy8](doma/nastroje/mezitahy8.html)
 
 ---
 
-- [carofyzika](doma/nastroje/carofyzika.html)
-- [carofyzika1](doma/nastroje/carofyzika1.html)
-- [carofyzika2](doma/nastroje/carofyzika2.html)
-- [carofyzika3](doma/nastroje/carofyzika3.html)
-- [carofyzika4](doma/nastroje/carofyzika4.html)
-  
-- [multigenerator](doma/nastroje/multigenerator.html)
 
 - [anotator_poznamky](doma/funkce/anotator_poznamky.html)
 - [mezernik](doma/nastroje/mezernik.html)
