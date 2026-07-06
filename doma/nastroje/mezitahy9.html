@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chceš myš? — meziTahy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+/* ── JEDNA proměnná pro akcent — pošli hex a přebarvím ── */
+:root{
+  --bg:#0c0c0e; --bg-el:#161619; --bg-el2:#1c1c20;
+  --text:#eeeeec; --dim:#55555c; --mid:#8a8a90;
+  --border:#232326;
+  --accent:#ff9900;
+  --accent-dim:#402000;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:300;}
+body{height:100vh;overflow:hidden;}
+
+.nav-arrows{position:fixed;top:1.2rem;right:1.2rem;display:flex;gap:0.25rem;z-index:500;}
+.nav-arrow-mini{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:1rem;
+  padding:0.3rem 0.6rem;cursor:pointer;transition:all .3s;}
+.nav-arrow-mini:hover{color:var(--accent);border-color:var(--accent);}
+
+.scroll-track{display:flex;width:100%;height:100vh;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;scrollbar-width:none;}
+.scroll-track::-webkit-scrollbar{display:none;}
+.panel{flex:0 0 100vw;height:100vh;scroll-snap-align:start;overflow-y:auto;overflow-x:hidden;position:relative;}
+.panel::-webkit-scrollbar{width:3px;}
+.panel::-webkit-scrollbar-thumb{background:var(--border);}
+
+.verze-toggle{display:flex;gap:0.5rem;margin-bottom:1.5rem;}
+.verze-btn{flex:1;padding:0.9rem;border:1px solid var(--border);background:var(--bg-el);color:var(--mid);
+  font-family:'Space Grotesk',sans-serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;}
+.verze-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.verze-panel{display:none;}
+.verze-panel.active{display:block;}
+h1,h2,h3{font-family:'Spectral',serif;font-weight:400;}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:900;opacity:.02;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+.wrap{max-width:760px;margin:0 auto;padding:2.5rem 1.2rem 6rem;}
+.eyebrow{font-size:0.62rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;}
+h2.title{font-size:clamp(1.3rem,5vw,1.9rem);letter-spacing:0.08em;margin-bottom:0.4rem;}
+.sub{color:var(--mid);font-size:0.85rem;line-height:1.6;margin-bottom:2rem;font-family:'Spectral',serif;font-style:italic;}
+
+/* ==== carousel ==== */
+.carousel-wrap{position:relative;padding:1rem 0;text-align:center;}
+.carousel-track{display:flex;gap:0.7rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:0.5rem 2.6rem;
+  -webkit-overflow-scrolling:touch;}
+.carousel-track::-webkit-scrollbar{display:none;}
+.car-item{flex:0 0 84px;scroll-snap-align:center;border:1px solid var(--border);padding:0.4rem;cursor:pointer;
+  transition:all .2s;background:var(--bg-el);}
+.car-item.picked{border-color:var(--accent);box-shadow:0 0 14px rgba(201,138,75,0.18);}
+.car-item img{width:100%;aspect-ratio:1;object-fit:contain;background:#000;margin-bottom:0.3rem;filter:grayscale(70%);}
+.car-item.picked img{filter:grayscale(0%);}
+.car-item .cn{font-size:0.6rem;color:var(--mid);text-transform:uppercase;letter-spacing:0.04em;}
+.car-arrow{position:absolute;top:50%;transform:translateY(-50%);background:var(--bg);border:1px solid var(--border);
+  color:var(--accent);width:2.1rem;height:2.1rem;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;}
+.car-arrow.left{left:-4px;}.car-arrow.right{right:-4px;}
+.shuffle-row{text-align:center;margin-top:0.8rem;}
+.shuffle-btn.spinning{color:var(--accent);border-color:var(--accent);animation:pulse .6s infinite alternate;}
+@keyframes pulse{from{opacity:.6;}to{opacity:1;}}
+
+/* ==== buttons / inputs ==== */
+.btn{padding:0.6rem 1.2rem;border:1px solid var(--dim);background:transparent;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--text);}
+.btn-accent{border-color:var(--accent);color:var(--accent);}
+.btn-accent:hover{background:var(--accent);color:#160f06;}
+.input{width:100%;padding:0.6rem;background:var(--bg-el);border:1px solid var(--border);color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:0.82rem;margin:0.5rem 0;}
+.chip{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;border:1px solid var(--border);
+  font-size:0.72rem;color:var(--mid);cursor:pointer;transition:all .2s;user-select:none;}
+.chip.checked{border-color:var(--accent);color:var(--accent);}
+
+/* ==== stav hry / karta výsledku ==== */
+.state-box{border:1px solid var(--border);background:var(--bg-el);padding:1.2rem;margin:1.2rem 0;}
+.state-box .sb-title{font-family:'Spectral',serif;color:var(--accent);font-size:1.05rem;margin-bottom:0.4rem;}
+.state-box .sb-sub{font-size:0.78rem;color:var(--mid);}
+.url-box{background:var(--bg-el2);padding:0.8rem;border:1px solid var(--border);word-break:break-all;
+  font-size:0.7rem;color:var(--mid);margin:0.6rem 0;}
+.task-card{border:1px solid var(--accent-dim);background:var(--bg-el);padding:1.3rem;margin-top:0.8rem;}
+.task-tool{display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.9rem;border:1px solid var(--accent);
+  color:var(--accent);font-size:0.72rem;letter-spacing:0.04em;text-transform:uppercase;margin-top:0.7rem;}
+
+/* ==== accordions ==== */
+.acc{border-top:1px solid var(--border);margin-top:1rem;}
+.acc:last-child{border-bottom:1px solid var(--border);}
+.acc-trigger{width:100%;background:transparent;border:none;display:flex;justify-content:space-between;
+  align-items:center;padding:1.1rem 0;cursor:pointer;color:var(--mid);font-size:0.82rem;
+  letter-spacing:0.1em;text-transform:uppercase;text-align:left;font-family:'Space Grotesk',sans-serif;transition:color .2s;}
+.acc-trigger .num{color:var(--dim);font-size:0.7rem;margin-right:0.6rem;font-family:'Spectral',serif;}
+.acc-trigger:hover,.acc-trigger.open{color:var(--accent);}
+.acc-arrow{transition:transform .3s;font-size:0.65rem;}
+.acc-trigger.open .acc-arrow{transform:rotate(180deg);}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .5s ease;}
+.acc-body.open{max-height:8000px;}
+.acc-inner{padding:0 0 2rem;font-size:0.86rem;line-height:1.8;color:#c3cbd8;}
+.acc-inner p{margin-bottom:0.8rem;}
+.acc-inner strong{color:var(--text);font-weight:500;}
+
+table.klic{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.76rem;}
+table.klic th,table.klic td{border:1px solid var(--border);padding:0.5rem 0.6rem;text-align:left;}
+table.klic th{color:var(--accent);font-weight:400;letter-spacing:0.05em;text-transform:uppercase;font-size:0.64rem;}
+
+.klice-grid{display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem;}
+.klic-card{border-left:4px solid var(--dim);background:var(--bg-el);padding:0.8rem 1rem;cursor:pointer;transition:all .2s;}
+.klic-card .kc-name{font-family:'Spectral',serif;font-size:1rem;margin-bottom:0.3rem;}
+.klic-card .kc-jadro{font-size:0.8rem;color:#c3cbd8;margin-bottom:0.3rem;}
+.klic-card .kc-stopa{font-size:0.72rem;color:var(--mid);margin-bottom:0.3rem;}
+.klic-card .kc-poznamka{font-size:0.72rem;color:var(--dim);font-style:italic;}
+.klic-card.dim{opacity:0.35;}
+.wheel-holder{text-align:center;margin:1rem 0;}
+
+.wheel-radial-wrap{position:relative;width:100%;min-height:640px;margin:1rem auto;overflow-x:auto;}
+.wheel-radial-wrap canvas{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.radial-slot{
+  position:absolute; width:150px; padding:0.6rem 0.7rem; background:var(--bg-el);
+  border:1px solid var(--border); border-left-width:4px; font-size:0.68rem; line-height:1.5;
+  color:#c3cbd8; display:none; z-index:5; text-align:left;
+}
+.radial-slot.open{display:block;}
+.radial-slot .rs-name{font-family:'Spectral',serif;font-size:0.85rem;margin-bottom:0.3rem;}
+.radial-slot .rs-stopa{color:var(--mid);margin-top:0.3rem;}
+.radial-slot .rs-poznamka{color:var(--dim);font-style:italic;margin-top:0.3rem;}
+
+/* ==== knihovna / výběr k tisku ==== */
+.select-all-row{display:flex;gap:0.5rem;margin-bottom:0.8rem;}
+.select-all-row .btn{font-size:0.65rem;padding:0.4rem 0.8rem;}
+.size-picker{display:flex;gap:0.5rem;margin-bottom:0.4rem;flex-wrap:wrap;}
+.size-opt{padding:0.6rem 0.9rem;border:1px solid var(--border);cursor:pointer;text-align:center;transition:all .2s;flex:1;min-width:80px;}
+.size-opt.active{border-color:var(--accent);background:var(--accent-dim);}
+.size-opt .sz-name{font-family:'Spectral',serif;font-size:0.95rem;color:var(--text);}
+.size-opt .sz-count{font-size:0.62rem;color:var(--dim);margin-top:0.15rem;}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:0.6rem;margin:1rem 0;}
+.pick-card{border:1px solid var(--border);padding:0.4rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg-el);position:relative;}
+.pick-card.sel{border-color:var(--accent);background:var(--accent-dim);}
+.pick-card img{width:100%;aspect-ratio:1;object-fit:contain;filter:grayscale(60%);margin-bottom:0.3rem;background:#000;}
+.pick-card.sel img{filter:grayscale(0%);}
+.pick-card .pn{font-size:0.58rem;color:var(--mid);text-transform:uppercase;letter-spacing:0.03em;}
+.pick-card .diag-link{display:block;margin-top:0.25rem;font-size:0.55rem;color:var(--accent);text-decoration:none;}
+
+/* karta k tisku — skutečné A7 (74×105mm), bez oříznutí ilustrace */
+.print-card{
+  width:74mm; aspect-ratio: 74/105; border:1px solid var(--border); background:var(--bg-el);
+  padding:0.4rem; margin:0 auto; text-align:center; display:flex; flex-direction:column;
+}
+.print-card.landscape{ width:105mm; aspect-ratio: 105/74; }
+.print-card img{width:100%; flex:1; object-fit:contain; margin-bottom:0.3rem;}
+.print-card .pc-title{font-family:'Spectral',serif;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);padding:0.2rem 0;}
+.print-card .pc-footer{
+  min-height:18mm; /* ~1.5–2cm navíc dole pro QR + popis */
+  padding-top:0.4rem; border-top:1px dashed var(--border);
+  display:flex; align-items:center; gap:0.5rem; text-align:left;
+}
+.print-card .pc-qr{width:16mm;height:16mm;background:#fff;flex-shrink:0;}
+.print-card .pc-qr canvas,.print-card .pc-qr img{width:100%!important;height:100%!important;}
+.print-card .pc-desc{font-size:0.58rem;color:var(--dim);line-height:1.35;}
+
+.hint{font-size:0.68rem;color:var(--dim);margin-top:0.4rem;}
+
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{position:absolute;top:0;left:0;width:100%;}
+  .print-sheet{display:grid;gap:4mm;page-break-after:always;}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-arrows">
+  <button class="nav-arrow-mini" onclick="scrollToPanel(-1)">‹</button>
+  <button class="nav-arrow-mini" onclick="scrollToPanel(1)">›</button>
+</div>
+
+<div class="scroll-track" id="track">
+
+  <!-- ============================= PANEL 1: ÚVOD / PRAVIDLA ============================= -->
+  <section class="panel" id="panel1">
+    <div class="wrap">
+      <div class="eyebrow">Chceš myš? — meziTahy</div>
+      <h2 class="title">Co to je a jak se to hraje</h2>
+      <p class="sub">Párová nebo skupinová kreativní hra. Přejdi šipkou vpravo na Verzi, kde si vybereš digitální nebo fyzické provedení.</p>
+
+      <div class="acc">
+        <button class="acc-trigger open" onclick="toggleAcc(this)"><span>Co to je</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body open"><div class="acc-inner">
+          <p><strong>Pro dva nebo pro skupinu.</strong> Každý hráč si vylosuje fenomén (kartu) a projde <strong>diagnostikou #1</strong> — z pohádky se odvodí jeho úhel pohledu. Tahle diagnostika neoznačuje člověka — je to vstup do kreativity, ne nálepka.</p>
+        </div></div>
+      </div>
+
+      <div class="acc">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>Jak se to hraje</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body"><div class="acc-inner">
+          <p>Hráči si vymění <strong>jen úhel</strong> (ne fenomén). Každý pak kreslí <strong>svůj vlastní</strong> fenomén, ale <strong>partnerovým úhlem pohledu</strong> — přiděleným nástrojem pro daný úhel. Úkol je kreslený obraz nebo text.</p>
+          <p>Nemusí se nic fotit ani nahrávat — klidně si vše vytiskni a hraj čistě na papíře. Pravidla jsou volná — přizpůsob si je, jak chceš.</p>
+        </div></div>
+      </div>
+
+      <div class="acc">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>Dvě diagnostiky</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body"><div class="acc-inner">
+          <p><strong>Diagnostika #1</strong> (pohádka → úhel) — digitálně automaticky, nebo fyzicky ručně přes myší klíče.</p>
+          <p><strong>Diagnostika #2</strong> (kresba → hodnocení) — po výměně kreseb, spíš protihráčem, škála málo/středně/hodně převedená na hrubá procenta. K tomu slouží skicák ve Verzi → Fyzická.</p>
+        </div></div>
+      </div>
+
+      <div class="acc">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>Úhly, nástroje a figury</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body"><div class="acc-inner">
+          <p style="color:var(--accent);">Zástupný text — nemám obsah tvých dat Fyzika kresby / Fyzika jazyka, tak jsem to napsala jen v obecné rovině. Klidně přepiš nebo mi pošli, jak přesně úhel pracuje s figurami, ať to doplním přesně.</p>
+          <p>Každý ze 12 úhlů má přiřazený konkrétní kreslicí nástroj (viz Myší klíče / Kolo nástrojů) — nástroj sám o sobě ovlivňuje, jak figura na papíře dopadne. Stejný princip (úhel → nástroj → způsob práce s figurou) se používá i v dalších nástrojích systému (Fyzika kresby, Fyzika jazyka), jen s jinými pravidly nad stejnými 12 úhly.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 2: VERZE (digitální / fyzická) ============================= -->
+  <section class="panel" id="panel2">
+    <div class="wrap">
+      <div class="eyebrow">Verze</div>
+      <h2 class="title">Digitální, nebo fyzická?</h2>
+      <div class="verze-toggle">
+        <button class="verze-btn active" data-v="dig" onclick="switchVerze('dig')">Digitální</button>
+        <button class="verze-btn" data-v="fyz" onclick="switchVerze('fyz')">Fyzická</button>
+      </div>
+
+      <!-- DIGITÁLNÍ -->
+      <div class="verze-panel active" id="verzeDig">
+        <p class="sub">Šipky, nebo zamíchej a zastav stejným tlačítkem. Klikni na kartu a vyber ji.</p>
+        <div class="carousel-wrap">
+          <button class="car-arrow left" onclick="carScroll(-1)">‹</button>
+          <div class="carousel-track" id="carTrack"></div>
+          <button class="car-arrow right" onclick="carScroll(1)">›</button>
+        </div>
+        <div class="shuffle-row">
+          <button class="btn btn-accent shuffle-btn" id="shuffleBtn" onclick="toggleShuffle()">🎲 Zamíchat / zastavit</button>
+        </div>
+
+        <div class="state-box" id="pickedBox" style="display:none;">
+          <div class="sb-title" id="pickedTitle"></div>
+          <a href="#" id="diagLink" target="_blank" class="btn btn-accent" style="display:inline-block;margin-top:0.4rem;">📖 Otevřít pohádku a diagnostiku</a>
+
+          <p class="sb-sub" style="margin-top:1rem;">Napiš svůj úhel (z diagnostiky, nebo si klidně vyber jiný — je to hra):</p>
+          <input class="input" id="mujUhelInput" placeholder="např. Filozofický">
+          <p class="sb-sub">Napiš partnerův úhel:</p>
+          <input class="input" id="partnerUhelInput" placeholder="např. Groteskní">
+          <button class="btn btn-accent" onclick="potvrditUhly()">Potvrdit</button>
+
+          <div id="modeRow" style="display:none; margin-top:1.2rem;">
+            <p class="sb-sub" style="margin-bottom:0.5rem;">Číst, nebo kreativní úkol?</p>
+            <span class="chip checked" data-mode="cist" onclick="setMode(this)">Číst pohádku</span>
+            <span class="chip" data-mode="ukol" onclick="setMode(this)">Kreativní úkol</span>
+            <div id="taskArea"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FYZICKÁ -->
+      <div class="verze-panel" id="verzeFyz">
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span><span class="num">I</span>Skicák</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p><strong>Skicák</strong> — jeden list: nahoře fenomén/úhel/nástroj, prostor na kresbu, dole 12 parametrů se škálou k ručnímu vybarvení. Skóruje spíš partner než autor kresby, ale je to volné. Vytištěné listy se dají sbírat a zakládat.</p>
+            <p class="hint" style="color:var(--accent);">Čekám na tvůj upřesněný layout (poslala jsi skicu s parametry kolem kola a 3 čtverečky na řádek) — tohle je zatím prozatímní verze, přepíšu ji, až mi popíšeš přesně, jak má vypadat ta přendávací šablona.</p>
+            <p class="hint" style="color:var(--accent);">Dva parametry z fotky se mi nepovedlo jistě rozluštit (řádky 11 a 12) — dopsala jsem odhad, oprav prosím, pokud je to špatně.</p>
+            <div class="print-card" id="skicakPreview" style="width:260px;">
+              <div style="text-align:left; font-size:0.62rem; color:var(--mid); border-bottom:1px dashed var(--border); padding-bottom:0.4rem; margin-bottom:0.4rem;">
+                Fenomén: __________ &nbsp; Úhel: __________
+              </div>
+              <div style="height:70px; border:1px dashed var(--border); margin-bottom:0.6rem;"></div>
+              <div style="text-align:left;" id="skicakParams"></div>
+            </div>
+            <div class="row" style="margin-top:1rem;">
+              <label style="font-size:0.78rem;color:var(--mid);">Počet kopií:</label>
+              <select id="skicakCopies"><option value="1">1</option><option value="4">4</option><option value="8" selected>8</option><option value="16">16</option></select>
+              <button class="btn btn-accent" onclick="printSection('skicak')">🖨 Tisknout skórovací skicák</button>
+            </div>
+          </div></div>
+        </div>
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span><span class="num">II</span>Myší klíče</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p>Diagnostický klíč pro ruční použití bez telefonu — nahrazuje digitální diagnostiku úhlu. Klikni na segment kola — otevře se klíč přímo u něj. Další klikací segment zůstane otevřený vedle, zavírá se opětovným kliknutím na stejný segment.</p>
+            <div class="wheel-radial-wrap" id="wheelRadialWrap">
+              <canvas id="nastrojeWheel" width="280" height="280"></canvas>
+            </div>
+            <button class="btn btn-accent" onclick="printSection('mysiklic')" style="margin-top:1rem;">🖨 Tisknout myší klíče (celé)</button>
+            <button class="btn" onclick="printSection('klic')">🖨 Tisknout kolo/tabulku nástrojů</button>
+          </div></div>
+        </div>
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span><span class="num">III</span>Knihovna karet</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p>Všechny fenomény k tisku. Klikni na kartu pro výběr, nebo použij "Vybrat vše".</p>
+
+            <p style="margin-top:1rem; font-size:0.78rem; color:var(--mid);">Velikost karty (počet na A4 se počítá automaticky z plochy):</p>
+            <div class="size-picker" id="sizePicker"></div>
+            <p class="hint" id="sizeInfo"></p>
+
+            <div class="select-all-row" style="margin-top:1rem;">
+              <button class="btn" onclick="selectAllCards(true)">Vybrat vše</button>
+              <button class="btn" onclick="selectAllCards(false)">Zrušit výběr</button>
+            </div>
+            <div class="card-grid" id="cardGrid"></div>
+
+            <p style="margin-top:1.2rem; font-size:0.78rem; color:var(--mid);">Náhled tiskové karty:</p>
+            <div class="print-card" id="cardPreview">
+              <div class="pc-title">—</div>
+              <img id="pcImg" src="" alt="">
+              <div class="pc-footer">
+                <div class="pc-qr" id="pcQr"></div>
+                <div class="pc-desc" id="pcDesc">Naskenuj pro online diagnostiku úhlu, nebo použij myší klíče.</div>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:1.2rem;">
+              <button class="btn btn-accent" onclick="printSection('karty')">🖨 Tisknout vybrané karty</button>
+              <span class="hint" id="printCountHint"></span>
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 3: LICENCE & KONTAKT ============================= -->
+  <section class="panel" id="panel3">
+    <div class="wrap">
+      <div class="eyebrow">Licence &amp; kontakt</div>
+      <h2 class="title">O systému</h2>
+      <p class="sub" style="color:var(--warn, var(--mid));">Toto je zástupný text — doplň si vlastní licenční podmínky a kontakt, nevymýšlím to za tebe.</p>
+      <p>meziTahy je součástí systému <strong>Chceš myš? — Slovník mezer</strong>.</p>
+      <p>Autorka: Michaela Nováková</p>
+      <p>Kontakt: __________</p>
+      <p>Licence / podmínky použití: __________</p>
+    </div>
+  </section>
+
+</div>
+<div id="printArea"></div>
+
+<script>
+/* ====================================================================
+   KANONICKÁ DATA
+   ==================================================================== */
+const UHLY_MASTER = [
+  {numb:1,  nazev:"Analytický",     stupne:0,   nastroj:"Liner 0.1–0.3",       barva:"#ffffff"},
+  {numb:2,  nazev:"Kulturní",       stupne:30,  nastroj:"Inkoustové pero",     barva:"#a8d5a2"},
+  {numb:3,  nazev:"Filozofický",    stupne:60,  nastroj:"Tužka H",             barva:"#b3d4ff"},
+  {numb:4,  nazev:"Naivní",         stupne:90,  nastroj:"Voskovka",            barva:"#40e0d0"},
+  {numb:5,  nazev:"Jazykový",       stupne:120, nastroj:"Gelové pero",         barva:"#c8a2c8"},
+  {numb:6,  nazev:"Metaforický",    stupne:150, nastroj:"Měkká tužka 4B–6B",   barva:"#2e8b57"},
+  {numb:7,  nazev:"Asociační",      stupne:180, nastroj:"Pigment + prsty",     barva:"#d2b48c"},
+  {numb:8,  nazev:"Introspektivní", stupne:210, nastroj:"Propiska",            barva:"#ffd700"},
+  {numb:9,  nazev:"Ironický",       stupne:240, nastroj:"Zkosený fix",         barva:"#ffa500"},
+  {numb:10, nazev:"Groteskní",      stupne:270, nastroj:"Akrylový tlustý fix", barva:"#dc143c"},
+  {numb:11, nazev:"Absurdní",       stupne:300, nastroj:"Tuš",                 barva:"#c71585"},
+  {numb:12, nazev:"Surrealistický", stupne:330, nastroj:"Foukací fix",         barva:"#8b4513"}
+];
+function uhelByName(name){ return UHLY_MASTER.find(u=>u.nazev.toLowerCase()===String(name).toLowerCase()); }
+
+const FENOM_IDS = ["mys","kocour","ryba","zajic","pavouk","motyl","pav","krokodyl","netopyr","cap",
+  "lemur","kozel","jednorozec","kliste","tygr","hvezdice","vrabec","veverka",
+  "kravy","parohy","plamenak","beran","drak","liska","hyena","husy","opice","panda",
+  "vlk","psi_smecka","morsky_konik","zralok","zelva","prase","snek","zizala",
+  "slon","had","moucha"]; // poslední 3 jsou A7 naležato
+const LANDSCAPE_IDS = new Set(["slon","had","moucha"]);
+function nadpis(id){ return id.charAt(0).toUpperCase()+id.slice(1).replace(/_/g," "); }
+const FENOMENY = FENOM_IDS.map(id=>({id, name: nadpis(id), img:`doma/ilustrace/${id}.jpg`}));
+function uhlyPageUrl(id){ return `doma/data/uhly/${id}_uhly.html`; }
+
+const MYSI_KLICE = [
+ {nazev:"Všeobecný (Konkrétní)", alias:"Analytický", stupne:0, barva:"#ffffff",
+  jadro:"Drží se faktů. Děj je děj. Není třeba hledat skryté významy.",
+  stopa:"Převyprávění děje, konstatování faktů, odpor k interpretaci.",
+  poznamka:"Zde někdo důvěřuje tomu, co je napsáno. Ne proto, že by byl naivní. Protože ví, že pod povrchem často nic není."},
+ {nazev:"Analogický (Kulturní)", alias:"Kulturní", stupne:30, barva:"#a8d5a2",
+  jadro:"Hledá vzorce. Přirovnává k něčemu, co už zná.",
+  stopa:"Odkaz na jiný příběh, mýtus, archetyp, historickou paralelu.",
+  poznamka:"Zde někdo věří, že nic není nové pod sluncem. Každý příběh už byl vyprávěn – jen v jiném převleku."},
+ {nazev:"Filozofický", stupne:60, barva:"#b3d4ff",
+  jadro:"Hledá univerzální pravdu, podstatu bytí, smysl za smyslem.",
+  stopa:"Obecná pravda, metafyzický tón, důraz na podstatu, ne na děj.",
+  poznamka:"Zde někdo neodpovídá na otázku. Odpovídá na otázku, která je za otázkou. A možná ani to ne."},
+ {nazev:"Naivní", stupne:90, barva:"#40e0d0",
+  jadro:"Ptá se jednoduše. Odpovídá přímo. Nepřidává.",
+  stopa:"Přímočará morálka, jednoduchá emoce, čistý dojem bez racionalizace.",
+  poznamka:"Zde někdo nepotřebuje být chytrý. Potřebuje být pravdivý. A to je mnohem těžší."},
+ {nazev:"Jazykový", stupne:120, barva:"#c8a2c8",
+  jadro:"Slyší slovo, větu, rytmus. Forma je obsah.",
+  stopa:"Citace konkrétní formulace, analýza rytmu, hříčka, zvukomalba.",
+  poznamka:"Zde někdo nerozlišuje mezi tím, co se říká, a jak se to říká. Pro něj je způsob vyjádření tím nejvyšším sdělením."},
+ {nazev:"Metaforický (Symbolický)", alias:"Metaforický", stupne:150, barva:"#2e8b57",
+  jadro:"Vše je symbolem něčeho většího. Nic není jen to, co je.",
+  stopa:"Dekódování symbolů, hledání skrytého významu, převod obrazu do abstrakce.",
+  poznamka:"Zde někdo čte pohádku jako šifru. Každé zvíře, každý předmět, každý pohyb je klíčem k něčemu, co není vysloveno."},
+ {nazev:"Asociační", stupne:180, barva:"#d2b48c",
+  jadro:"Myšlení skrz osobní asociace, nečekané souvislosti.",
+  stopa:"Řetěz asociací, odbočky, osobní příhody, skokové myšlení.",
+  poznamka:"Zde někdo nemyslí lineárně. Myslí síťově. Každé slovo je uzel, každá věta spouští deset dalších."},
+ {nazev:"Intro (Introspektivní)", alias:"Introspektivní", stupne:210, barva:"#ffd700",
+  jadro:"Projekce vlastního prožitku. Příběh je záminka k sebepoznání.",
+  stopa:"Osobní zkušenost, emoce, vzpomínka. „Cítím…“, „Dotklo se mě…“, „Připomnělo mi to…“",
+  poznamka:"Zde někdo nereflektuje pohádku. Reflektuje sebe skrze pohádku. A je ochoten to přiznat."},
+ {nazev:"Ironický", stupne:240, barva:"#ffa500",
+  jadro:"Vidí propast mezi záměrem a výsledkem, mezi pózou a skutečností.",
+  stopa:"Odhalení pokrytectví, trapnosti, sebeklamu. Lehký sarkasmus, hořký úsměv.",
+  poznamka:"Zde někdo ví, že věci nejsou tím, čím se zdají. A dělá mu dobře, že to ví dřív než ostatní."},
+ {nazev:"Groteskní", stupne:270, barva:"#dc143c",
+  jadro:"Vidí přehnané, karikující, temně komické. Smích, který škrábe.",
+  stopa:"Důraz na přehnanost, trapnost, černý humor, karikaturu.",
+  poznamka:"Zde někdo ví, že tragédie a komedie jsou sestry. A že nejlepší způsob, jak mluvit o bolesti, je udělat z ní cirkus."},
+ {nazev:"Absurdní", stupne:300, barva:"#c71585",
+  jadro:"Hledá rozpor, paradox, místo, kde svět přestal dávat smysl.",
+  stopa:"Důraz na nesmysl, na zhroucení pravidel, na absurditu systému.",
+  poznamka:"Zde se někdo nespokojil s vysvětlením. Zde někdo potřeboval, aby svět byl důsledně nedůsledný."},
+ {nazev:"Surrealistický", stupne:330, barva:"#8b4513",
+  jadro:"Spojuje nespojitelné. Myslí v obrazech, ne v argumentech.",
+  stopa:"Bizarní spojení, snová logika, obraz bez vysvětlení. Krása, která se nehodí.",
+  poznamka:"Zde někdo neinterpretuje. Zde někdo nechá příběh, aby se v něm rozléval. A pak zapíše, co vyplavalo."}
+];
+
+/* ====================================================================
+   AKORDEONY
+   ==================================================================== */
+function toggleAcc(btn){ btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('open'); }
+
+/* Horizontální panely se šipkami (Úvod / Verze / Licence) */
+const track = document.getElementById('track');
+const panely = document.querySelectorAll('.panel');
+let aktualniPanel = 0;
+function scrollToPanel(dir){
+  aktualniPanel = Math.min(Math.max(aktualniPanel+dir,0), panely.length-1);
+  panely[aktualniPanel].scrollIntoView({behavior:'smooth', inline:'start'});
+}
+track.addEventListener('scroll', ()=>{ aktualniPanel = Math.round(track.scrollLeft/window.innerWidth); });
+
+/* Přepínač Digitální / Fyzická uvnitř panelu Verze */
+function switchVerze(v){
+  document.querySelectorAll('.verze-btn').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  document.getElementById('verzeDig').classList.toggle('active', v==='dig');
+  document.getElementById('verzeFyz').classList.toggle('active', v==='fyz');
+}
+
+/* ====================================================================
+   CAROUSEL + VÝBĚR FENOMÉNU
+   ==================================================================== */
+let pickedFenomen = null;
+let shuffling = false, shuffleTimer = null;
+let mujUhel = '', partnerUhel = '';
+
+function buildCarousel(){
+  const track = document.getElementById('carTrack');
+  track.innerHTML='';
+  FENOMENY.forEach(f=>{
+    const d = document.createElement('div');
+    d.className='car-item'; d.dataset.id=f.id;
+    d.innerHTML=`<img src="${f.img}" onerror="this.style.opacity=0.15" alt=""><div class="cn">${f.name}</div>`;
+    d.onclick=()=>{ if(!shuffling) selectFenomen(f); };
+    track.appendChild(d);
+  });
+}
+function carScroll(dir){ document.getElementById('carTrack').scrollBy({left: dir*100, behavior:'smooth'}); }
+
+function toggleShuffle(){
+  const btn = document.getElementById('shuffleBtn');
+  if(!shuffling){
+    shuffling = true; btn.classList.add('spinning'); btn.textContent = '⏹ Zastavit';
+    const track = document.getElementById('carTrack');
+    shuffleTimer = setInterval(()=>{
+      const items=[...track.children]; items.forEach(i=>i.classList.remove('picked'));
+      const r = items[Math.floor(Math.random()*items.length)];
+      r.classList.add('picked'); r.scrollIntoView({behavior:'smooth', inline:'center'});
+    }, 130);
+  } else {
+    shuffling = false; clearInterval(shuffleTimer);
+    btn.classList.remove('spinning'); btn.textContent = '🎲 Zamíchat / zastavit';
+    const picked = document.querySelector('.car-item.picked');
+    const f = FENOMENY.find(x=>x.id===picked?.dataset.id) || FENOMENY[0];
+    selectFenomen(f);
+  }
+}
+function selectFenomen(f){
+  pickedFenomen = f;
+  document.querySelectorAll('.car-item').forEach(c=>c.classList.toggle('picked', c.dataset.id===f.id));
+  document.getElementById('pickedBox').style.display='block';
+  document.getElementById('pickedTitle').textContent = f.name;
+  document.getElementById('diagLink').href = uhlyPageUrl(f.id);
+  document.getElementById('modeRow').style.display='none';
+  document.getElementById('mujUhelInput').value = '';
+  document.getElementById('partnerUhelInput').value = '';
+  mujUhel = ''; partnerUhel = '';
+}
+
+/* ====================================================================
+   RUČNÍ ZADÁNÍ ÚHLU — žádné URL, prostě napíšeš slovo (je to hra, jde upravit)
+   ==================================================================== */
+function potvrditUhly(){
+  mujUhel = document.getElementById('mujUhelInput').value.trim();
+  partnerUhel = document.getElementById('partnerUhelInput').value.trim();
+  if(!partnerUhel && !mujUhel){ alert('Napiš aspoň jeden úhel.'); return; }
+  document.getElementById('modeRow').style.display='block';
+  const active = document.querySelector('#modeRow .chip.checked')?.dataset.mode || 'cist';
+  renderMode(active);
+}
+
+/* ====================================================================
+   ČÍST / KREATIVNÍ ÚKOL
+   ==================================================================== */
+function setMode(el){
+  document.querySelectorAll('#modeRow .chip').forEach(c=>c.classList.remove('checked'));
+  el.classList.add('checked');
+  renderMode(el.dataset.mode);
+}
+function renderMode(mode){
+  const area = document.getElementById('taskArea');
+  const uhel = partnerUhel || mujUhel;
+  if(!uhel || !pickedFenomen){ area.innerHTML=''; return; }
+  if(mode==='cist'){
+    area.innerHTML = `<div class="task-card"><p>Otevři a přečti si pohádku svého fenoménu <strong style="color:var(--accent)">${pickedFenomen.name}</strong>, tentokrát z úhlu <strong style="color:var(--accent)">${uhel}</strong>.</p>
+      <a href="${uhlyPageUrl(pickedFenomen.id)}" target="_blank" class="btn btn-accent" style="margin-top:0.6rem;">📖 Otevřít</a></div>`;
+  } else {
+    const master = uhelByName(uhel);
+    area.innerHTML = `<div class="task-card">
+      <p style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);">Kreativní úkol</p>
+      <h3 style="margin:0.4rem 0;color:var(--accent);">${pickedFenomen.name} — očima úhlu „${uhel}“</h3>
+      <p style="font-size:0.85rem;color:var(--mid);">Nakresli / napiš svůj fenomén tak, jak by ho viděl někdo s tímto úhlem pohledu.</p>
+      ${master ? `<div class="task-tool">✎ doporučený nástroj: ${master.nastroj}</div>` : `<p class="hint" style="color:var(--accent);">Úhel "${uhel}" nesedí přesně na žádný z 12 — zkontroluj přesný název, nebo to prostě nevadí, je to hra.</p>`}
+    </div>`;
+  }
+}
+
+/* ====================================================================
+   MYŠÍ KLÍČE — úhloměr s obrysy, klik otevře/zavře slot s klíčem u kola
+   ==================================================================== */
+function najdiKlic(nazev){
+  return MYSI_KLICE.find(k=>k.nazev===nazev || k.alias===nazev);
+}
+
+/* Kolo/úhloměr — jen barevné OBRYSY (tisk je černobílý, plná výplň by tam nebyla vidět), stupně uvnitř */
+function drawNastrojeWheel(){
+  const c = document.getElementById('nastrojeWheel');
+  const ctx = c.getContext('2d');
+  const CX=140, CY=140, R=112;
+  ctx.clearRect(0,0,280,280);
+  UHLY_MASTER.forEach((u,i)=>{
+    const a0 = -Math.PI/2 + i*(Math.PI*2/12);
+    const a1 = a0 + Math.PI*2/12 - 0.04;
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,R,a0,a1); ctx.closePath();
+    ctx.strokeStyle = u.barva; ctx.lineWidth = 2.5; ctx.stroke();
+    const mid = a0 + (Math.PI*2/12 - 0.04)/2;
+    const lx = CX + Math.cos(mid)*(R+18);
+    const ly = CY + Math.sin(mid)*(R+18);
+    ctx.fillStyle = u.barva; ctx.font = '300 8px "Space Grotesk"';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(u.nazev, lx, ly);
+    const dx = CX + Math.cos(mid)*(R*0.6);
+    const dy = CY + Math.sin(mid)*(R*0.6);
+    ctx.fillStyle = '#c3cbd8'; ctx.font = '400 9px "Space Grotesk"';
+    ctx.fillText(`${u.stupne}°`, dx, dy);
+  });
+}
+
+/* Radiální sloty — jeden na úhel, umístěné kolem kola, klik nezávisle otevře/zavře */
+function buildRadialSlots(){
+  const wrap = document.getElementById('wheelRadialWrap');
+  const R = 112, SLOT_R = R + 130; // vzdálenost slotu od středu
+  const CX = wrap.clientWidth/2, CY = 320;
+  UHLY_MASTER.forEach((u,i)=>{
+    const mid = -Math.PI/2 + i*(Math.PI*2/12) + (Math.PI*2/12)/2 - 0.02;
+    const x = CX + Math.cos(mid)*SLOT_R;
+    const y = CY + Math.sin(mid)*SLOT_R;
+    const k = najdiKlic(u.nazev);
+    const slot = document.createElement('div');
+    slot.className = 'radial-slot';
+    slot.id = 'slot_' + i;
+    slot.style.left = x + 'px';
+    slot.style.top = y + 'px';
+    slot.style.transform = 'translate(-50%,-50%)';
+    slot.style.borderLeftColor = u.barva;
+    slot.innerHTML = `
+      <div class="rs-name" style="color:${u.barva};">${u.numb}. ${u.stupne}° — ${u.nazev}</div>
+      <div><strong>Nástroj:</strong> ${u.nastroj}</div>
+      ${k ? `<div>${k.jadro}</div><div class="rs-stopa"><strong>Stopa:</strong> ${k.stopa}</div><div class="rs-poznamka">${k.poznamka}</div>` : ''}
+    `;
+    wrap.appendChild(slot);
+  });
+}
+document.getElementById('nastrojeWheel')?.addEventListener('click', (e)=>{
+  const c = e.target;
+  const rect = c.getBoundingClientRect();
+  const scaleX = c.width / rect.width, scaleY = c.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX - 140;
+  const y = (e.clientY - rect.top) * scaleY - 140;
+  let ang = Math.atan2(y, x) + Math.PI/2;
+  if(ang < 0) ang += Math.PI*2;
+  const idx = Math.floor(ang / (Math.PI*2/12)) % 12;
+  document.getElementById('slot_'+idx)?.classList.toggle('open');
+});
+
+/* ====================================================================
+   KNIHOVNA KARET — výběr, náhled, tisk (s QR + popis dole)
+   ==================================================================== */
+let selectedCards = new Set();
+const SIZES = [
+  {id:"a6", label:"A6", perA4:4},
+  {id:"a7", label:"A7", perA4:8},
+  {id:"a8", label:"A8", perA4:16}
+];
+let activeSize = "a7";
+function buildSizePicker(){
+  const el = document.getElementById('sizePicker');
+  el.innerHTML='';
+  SIZES.forEach(s=>{
+    const d = document.createElement('div');
+    d.className = 'size-opt'+(s.id===activeSize?' active':'');
+    d.innerHTML = `<div class="sz-name">${s.label}</div><div class="sz-count">${s.perA4}× na A4</div>`;
+    d.onclick=()=>{ activeSize=s.id; buildSizePicker(); updateSizeInfo(); };
+    el.appendChild(d);
+  });
+  updateSizeInfo();
+}
+function updateSizeInfo(){
+  const n = selectedCards.size || FENOMENY.length;
+  const s = SIZES.find(x=>x.id===activeSize);
+  const pages = Math.ceil(n / s.perA4);
+  document.getElementById('sizeInfo').textContent = `${n} karet × ${s.label} → ${s.perA4} na stránku A4 → ${pages} stránek k tisku.`;
+}
+function buildCardGrid(){
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML='';
+  FENOMENY.forEach(f=>{
+    const d = document.createElement('div');
+    d.className='pick-card'; d.dataset.id=f.id;
+    d.innerHTML = `<img src="${f.img}" onerror="this.style.opacity=0.15" alt=""><div class="pn">${f.name}</div>`;
+    d.onclick=()=>{
+      d.classList.toggle('sel');
+      d.classList.contains('sel') ? selectedCards.add(f.id) : selectedCards.delete(f.id);
+      updatePrintHint(); showCardPreview(f);
+    };
+    grid.appendChild(d);
+  });
+}
+function selectAllCards(all){
+  selectedCards = new Set(all ? FENOM_IDS : []);
+  document.querySelectorAll('#cardGrid .pick-card').forEach(c=>c.classList.toggle('sel', all));
+  updatePrintHint();
+}
+function updatePrintHint(){ document.getElementById('printCountHint').textContent = `${selectedCards.size} vybráno`; updateSizeInfo(); }
+function showCardPreview(f){
+  const box = document.getElementById('cardPreview');
+  box.classList.toggle('landscape', LANDSCAPE_IDS.has(f.id));
+  document.querySelector('#cardPreview .pc-title').textContent = f.name;
+  document.getElementById('pcImg').src = f.img;
+  document.getElementById('pcDesc').textContent = 'Naskenuj pro online diagnostiku úhlu, nebo použij myší klíče.';
+  const qrBox = document.getElementById('pcQr'); qrBox.innerHTML='';
+  if(window.QRCode){
+    new QRCode(qrBox, { text: `${location.origin}${location.pathname.replace(/[^/]*$/,'')}${uhlyPageUrl(f.id)}`, width:60, height:60, correctLevel: QRCode.CorrectLevel.M });
+  }
+}
+
+/* ====================================================================
+   TISK
+   ==================================================================== */
+function setPrintArea(html){ document.getElementById('printArea').innerHTML = html; }
+function printSection(which){
+  if(which==='karty'){
+    const ids = selectedCards.size ? [...selectedCards] : FENOM_IDS;
+    const s = SIZES.find(x=>x.id===activeSize);
+    const cols = Math.round(Math.sqrt(s.perA4)); // a6→2, a7→~3, a8→4
+    let html = `<div class="print-sheet" style="grid-template-columns:repeat(${cols},1fr);">`;
+    ids.forEach(id=>{
+      const f = FENOMENY.find(x=>x.id===id);
+      html += `<div class="print-card${LANDSCAPE_IDS.has(id)?' landscape':''}">
+        <div class="pc-title">${f.name}</div>
+        <img src="${f.img}">
+        <div class="pc-footer"><div class="pc-qr" id="pq_${id}"></div><div class="pc-desc">Naskenuj pro diagnostiku úhlu, nebo použij myší klíče.</div></div>
+      </div>`;
+    });
+    html += '</div>';
+    setPrintArea(html);
+    if(window.QRCode){
+      ids.forEach(id=>{
+        const el = document.getElementById(`pq_${id}`);
+        if(el) new QRCode(el, { text: `${location.origin}${location.pathname.replace(/[^/]*$/,'')}${uhlyPageUrl(id)}`, width:60, height:60, correctLevel: QRCode.CorrectLevel.M });
+      });
+    }
+  } else if(which==='klic'){
+    let html = '<h2>Kolo nástrojů — 12 úhlů</h2><table class="klic"><tr><th>#</th><th>Úhel</th><th>Stupně</th><th>Barva</th><th>Nástroj</th></tr>';
+    UHLY_MASTER.forEach(u=>{ html += `<tr><td>${u.numb}</td><td>${u.nazev}</td><td>${u.stupne}°</td><td style="background:${u.barva};width:1.5rem;"></td><td>${u.nastroj}</td></tr>`; });
+    html += '</table>';
+    setPrintArea(html);
+  } else if(which==='mysiklic'){
+    let html = '<h2>Myší klíče</h2>';
+    MYSI_KLICE.forEach(k=>{
+      html += `<div style="page-break-after:always; padding:8mm 0; border-left:6px solid ${k.barva}; padding-left:6mm;">
+        <h3>${k.nazev}${k.alias?` <span style="font-size:0.7em;color:#888;">(${k.alias})</span>`:''}</h3>
+        <p><strong>Jádro:</strong> ${k.jadro}</p>
+        <p><strong>Stopa:</strong> ${k.stopa}</p>
+        <p><em>${k.poznamka}</em></p>
+      </div>`;
+    });
+    setPrintArea(html);
+  }
+  setTimeout(()=>window.print(), 200);
+}
+
+/* ====================================================================
+   INIT
+   ==================================================================== */
+window.onload = ()=>{
+  buildCarousel();
+  drawNastrojeWheel();
+  buildRadialSlots();
+  buildSizePicker();
+  buildCardGrid();
+};
+</script>
+</body>
+</html>
