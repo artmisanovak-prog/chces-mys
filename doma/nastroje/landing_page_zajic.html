@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop · Chceš myš?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080604;
+  --s1:#100c08;
+  --s2:#181008;
+  --s3:#201408;
+  --cr:#f0e8dc;
+  --dm:rgba(240,232,220,.38);
+  --d2:rgba(240,232,220,.13);
+  --ca:#ff6b2b;
+  --cb:#ff9a1a;
+  --cc:#ffcc44;
+  --cag:rgba(255,107,43,.07);
+  --border:rgba(255,107,43,.16);
+  --border-hi:rgba(255,107,43,.38);
+  --fs:'Cormorant Garamond',Georgia,serif;
+  --fm:'DM Mono',monospace;
+}
+html{background:var(--bg);color:var(--cr);font-family:var(--fm);font-size:13px;line-height:1.8;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:50;background:rgba(8,6,4,.95);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);padding:.75rem 1.4rem;
+    display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav-brand{font-family:var(--fs);font-size:.95rem;font-weight:300;color:var(--ca);letter-spacing:.06em}
+.nav-links{display:flex;gap:3px}
+.nav-lnk{font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dm);
+          padding:4px 9px;border:1px solid transparent;cursor:pointer;transition:all .12s;background:none;font-family:var(--fm)}
+.nav-lnk:hover{color:var(--cr);border-color:var(--border)}
+
+/* ── WRAP ── */
+.wrap{max-width:660px;margin:0 auto;padding:0 22px 100px}
+
+/* ── HERO ── */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:3.5rem;position:relative}
+.hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-bg::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 40% at 50% 70%, rgba(255,107,43,.12) 0%, transparent 70%)}
+.hero-tag{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ca);
+          margin-bottom:.9rem;display:block}
+.hero h1{font-family:var(--fs);font-size:clamp(2.6rem,9vw,5rem);font-weight:300;line-height:1;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:var(--ca)}
+.hero-lead{font-family:var(--fs);font-style:italic;font-size:clamp(.95rem,2.4vw,1.25rem);
+           color:var(--dm);line-height:1.6;max-width:460px;margin-bottom:1.8rem}
+.hero-scroll{display:inline-flex;align-items:center;gap:.5rem;font-size:.56rem;
+             letter-spacing:.2em;text-transform:uppercase;color:var(--dm);cursor:pointer;transition:color .12s}
+.hero-scroll:hover{color:var(--ca)}
+.hero-scroll::after{content:'↓';font-size:.8rem}
+
+/* ── SEKCE ── */
+.sekce{padding:52px 0;border-top:1px solid var(--border)}
+.sekce-lbl{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ca);
+           margin-bottom:.55rem;display:block}
+h2{font-family:var(--fs);font-size:clamp(1.4rem,3.8vw,2.1rem);font-weight:300;margin-bottom:.9rem;line-height:1.1}
+h2 em{font-style:italic;color:var(--ca)}
+.txt{font-size:.8rem;color:var(--dm);line-height:1.9;max-width:540px;margin-bottom:.75rem}
+
+/* ── OHEŇ ODDĚLOVAČ ── */
+.fire-sep{display:flex;align-items:center;gap:.7rem;margin:1.4rem 0}
+.fire-line{flex:1;height:1px;background:linear-gradient(to right, transparent, var(--ca), transparent)}
+.fire-dot{font-size:.7rem;color:var(--ca)}
+
+/* ── QUOTE ── */
+.quote{font-family:var(--fs);font-style:italic;font-size:clamp(1rem,2.5vw,1.3rem);
+       color:var(--cr);line-height:1.6;border-left:2px solid var(--ca);
+       padding:.6rem 0 .6rem 1.1rem;margin:1.2rem 0;max-width:500px}
+.quote-src{font-size:.58rem;letter-spacing:.1em;color:var(--ca);margin-top:.4rem;font-style:normal}
+
+/* ── AKORDEONY ── */
+.ac{border:1px solid var(--border);margin-bottom:.45rem;overflow:hidden}
+.ach{display:flex;justify-content:space-between;align-items:center;padding:.6rem .95rem;
+     cursor:pointer;background:var(--s1);font-size:.62rem;color:var(--dm);
+     text-transform:uppercase;letter-spacing:.09em;user-select:none;
+     transition:background .12s;border:none;width:100%;text-align:left;font-family:var(--fm)}
+.ach:hover{background:var(--s2);color:var(--cr)}
+.ac.open .ach{color:var(--ca)}
+.acarr{font-size:.5rem;transition:transform .26s;flex-shrink:0;margin-left:.5rem}
+.ac.open .acarr{transform:rotate(180deg)}
+.acb{max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1);background:var(--s1)}
+.ac.open .acb{max-height:2200px}
+.aci{padding:.75rem .95rem 1.1rem;font-size:.78rem;line-height:1.85;color:var(--dm)}
+.aci p{margin-bottom:.6rem}
+.aci p:last-child{margin-bottom:0}
+.aci strong{color:var(--cr);font-weight:400}
+.aci em{color:var(--ca);font-style:italic}
+
+/* ── PRO KOHO — KARTY ── */
+.pro-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.8rem}
+@media(max-width:480px){.pro-grid{grid-template-columns:1fr}}
+.pro-card{background:var(--s1);border:1px solid var(--border);border-left:2px solid var(--ca);
+          padding:.75rem .9rem}
+.pro-card-n{font-size:.68rem;color:var(--ca);margin-bottom:.3rem;letter-spacing:.04em}
+.pro-card-d{font-size:.72rem;color:var(--dm);line-height:1.6}
+
+/* ── CO TO NENÍ ── */
+.neni-list{margin-top:.6rem;display:flex;flex-direction:column;gap:.3rem}
+.neni-item{display:flex;gap:.6rem;align-items:baseline;font-size:.76rem;color:var(--dm)}
+.neni-item::before{content:'×';color:rgba(255,107,43,.4);flex-shrink:0}
+.je-item::before{content:'·';color:var(--ca);flex-shrink:0}
+
+/* ── VĚDA ── */
+.veda-note{background:var(--cag);border:1px solid var(--border);padding:.75rem .95rem;
+           margin-bottom:.45rem;font-size:.74rem;color:var(--dm);line-height:1.8}
+.veda-note strong{color:var(--cc);font-weight:400}
+.veda-note em{color:var(--dm);font-style:italic}
+
+/* ── CTA ── */
+.cta-box{background:var(--s2);border:1px solid var(--border-hi);padding:1.4rem 1.4rem;margin-top:1.2rem}
+.cta-box p{font-size:.78rem;color:var(--dm);margin-bottom:.8rem;line-height:1.75}
+.cta-link{color:var(--ca);text-decoration:none;font-size:.78rem;letter-spacing:.04em;
+          border-bottom:1px solid var(--border-hi);padding-bottom:1px;transition:border-color .12s}
+.cta-link:hover{border-color:var(--ca)}
+.cta-note{font-size:.62rem;color:var(--d2);margin-top:.6rem;font-style:italic}
+
+.btn{display:inline-block;padding:.6rem 1.3rem;font-family:var(--fm);font-size:.64rem;
+     letter-spacing:.1em;text-transform:uppercase;background:var(--ca);color:var(--bg);
+     border:none;cursor:pointer;text-decoration:none;transition:all .15s;margin-top:.7rem}
+.btn:hover{background:var(--cb);box-shadow:0 0 16px rgba(255,107,43,.3)}
+.btn.o{background:transparent;color:var(--ca);border:1px solid var(--ca)}
+.btn.o:hover{background:var(--cag)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:1.4rem 22px;text-align:center;
+       font-size:.6rem;color:var(--dm);letter-spacing:.06em;max-width:660px;margin:0 auto}
+footer a{color:var(--ca);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Chceš myš? · Workshopy</span>
+  <div class="nav-links">
+    <button class="nav-lnk" onclick="scrollSec('co')">Co to je</button>
+    <button class="nav-lnk" onclick="scrollSec('pro-koho')">Pro koho</button>
+    <button class="nav-lnk" onclick="scrollSec('veda')">Kontext</button>
+    <button class="nav-lnk" onclick="scrollSec('kontakt')">Kontakt</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <span class="hero-tag">Workshop · Chceš myš? · Slovník mezer</span>
+    <h1>Jiný <em>úhel</em><br>pohledu.</h1>
+    <p class="hero-lead">Fyzika jazyka. Čarofyzika - Fyzika čar. A způsob, jak se podívat na věci, ve kterých jsi uvízl.</p>
+    <span class="hero-scroll" onclick="scrollSec('co')">co to je</span>
+  </section>
+
+  <!-- CO TO JE -->
+  <section class="sekce" id="co">
+    <span class="sekce-lbl">Co to je</span>
+    <h2>Ne terapie.<br><em>Jiný jazyk.</em></h2>
+    <p class="txt">Workshop pracuje s pohádkou jako vstupním bodem. Ne jako s bajkou nebo podobenstvím — jako s partiturou. Čte se nahlas, poslouchá se, a pak se pracuje rukama.</p>
+    <p class="txt">Systém Chceš myš? vychází z předpokladu, že způsob jak myslíme se dá číst ve struktuře věty, v tahu tužky, v tom co nás zaujme v příběhu. A že stejnou strukturu lze — na chvíli — narušit. Otevřít jiný úhel pohledu.</p>
+
+    <div class="fire-sep"><div class="fire-line"></div><span class="fire-dot">·</span><div class="fire-line"></div></div>
+
+    <div class="ac open" id="ac0">
+      <button class="ach" onclick="tog('ac0')"><span>Jak to probíhá</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Nejdřív pohádka — pustí se nebo čte nahlas. Nic se nevysvětluje předem.</p>
+        <p>Pak jedna otázka. Co tě zaujalo nejvíc? Konkrétně — věta, obraz, moment.</p>
+        <p>Pak úkol. Papír, tužka nebo pero. Nakreslíš nebo napíšeš — to, co ti pohádka otevřela. Bez hodnocení, bez správné odpovědi.</p>
+        <p>Na konci se výsledky čtou společně. Ne jako psychologická analýza. Jako záznam toho, co se stalo.</p>
+      </div></div>
+    </div>
+
+    <div class="ac" id="ac1">
+      <button class="ach" onclick="tog('ac1')"><span>Co je to Chceš myš?</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Systém pro čtení struktury — v jazyce, kresbě, myšlení. 65 ručně ilustrovaných zvířecích karet, každá nese jeden kognitivní fenomén. Dvanáct úhlů pohledu jako nástroj — ne hodnocení, ale fyzika.</p>
+        <p>Vznikal od roku 2022 jako solo práce — bez týmu, bez databáze, bez backendu. Nástroje fungují offline, data zůstávají v prohlížeči. <em>Metodika a obsah © Michaela Nováková.</em></p>
+      </div></div>
+    </div>
+
+    <div class="ac" id="ac2">
+      <button class="ach" onclick="tog('ac2')"><span>Co to není</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <div class="neni-list">
+          <div class="neni-item">Terapie ani náhrada terapie.</div>
+          <div class="neni-item">Kariérní poradenství nebo koučink.</div>
+          <div class="neni-item">Pohádky s morálním poučením.</div>
+          <div class="neni-item">Diagnóza. Výsledek není hodnocení.</div>
+          <div class="neni-item">Závazek k ničemu dalšímu.</div>
+        </div>
+        <div class="fire-sep" style="margin:.8rem 0 .6rem"><div class="fire-line"></div><span class="fire-dot">·</span><div class="fire-line"></div></div>
+        <div class="neni-list">
+          <div class="neni-item je-item">Kreativní nástroj s vědomou strukturou.</div>
+          <div class="neni-item je-item">Prostor bez hodnocení.</div>
+          <div class="neni-item je-item">Dvě hodiny jinak než obvykle.</div>
+          <div class="neni-item je-item">Pohled na věc z místa, kam tě sám nenapadne jít.</div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- PRO KOHO -->
+  <section class="sekce" id="pro-koho">
+    <span class="sekce-lbl">Pro koho</span>
+    <h2>Pro toho, kdo <em>uvízl.</em></h2>
+    <p class="txt">Ne nutně ve velké krizi. Někdy stačí, že se věci opakují. Že se nedaří začít, nebo přestat. Že člověk ví, co má dělat, ale nejde to.</p>
+
+    <div class="pro-grid">
+      <div class="pro-card">
+        <div class="pro-card-n">Prevence vyhoření</div>
+        <div class="pro-card-d">Pro toho, kdo cítí, že jede naprázdno — ještě ne vyčerpaný, ale blízko.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-n">Kreativní blok</div>
+        <div class="pro-card-d">Když se nedaří začít nebo pokračovat. Pohádka jako jiný vstupní bod.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-n">Uvíznutí ve vzorci</div>
+        <div class="pro-card-d">Stejné rozhodnutí, stejný výsledek. Jiný úhel pohledu nemění situaci — ale mění, co v ní vidíš.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-n">Skupiny a týmy</div>
+        <div class="pro-card-d">Skupinová diagnostika, čtení výsledků dohromady. Kognitivní mapa skupiny.</div>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top:1.4rem">
+      Nevíš přesně proč, ale cítíš, že jsi jiný úhel pohledu potřeboval.
+    </div>
+  </section>
+
+  <!-- VĚDA / KONTEXT -->
+  <section class="sekce" id="veda">
+    <span class="sekce-lbl">Kontext</span>
+    <h2>Co za tím <em>stojí.</em></h2>
+    <p class="txt">Systém nevychází z jedné teorie — ale několik zdokumentovaných přístupů mu dává smysl zpětně. Tady jsou čtyři z nich.</p>
+
+    <div class="veda-note">
+      <strong>Naučená bezmoc</strong> (Martin Seligman) — člověk v prostředí, kde jeho činy nemění výsledek, přestane se pokoušet i když změna je možná. Workshop nepomáhá situaci změnit. Pomáhá vidět, že možnosti existují — i když je zvyk přestal hledat.
+    </div>
+
+    <div class="veda-note">
+      <strong>Posttraumatický růst</strong> (Tedeschi, Calhoun) — po silné negativní zkušenosti lidé někdy reportují větší pocit smyslu a změněné priority. Ne jako přímý důsledek bolesti, ale jako výsledek toho, co s ní udělali. <em>Spáleniště jako půda pro legendu.</em>
+    </div>
+
+    <div class="veda-note">
+      <strong>Broaden-and-build</strong> (Barbara Fredrickson) — chronický stres zužuje vnímání možností. Pohádka a kreativní práce rozšiřují repertoár myšlení — ne řešením problému, ale dočasným otevřením jiného pole vnímání.
+    </div>
+
+    <div class="veda-note">
+      <strong>Narativní identita</strong> (Dan McAdams) — lidé konstruují identitu jako příběh. <em>"Jsem ten, co dělá co se říká a nikdy to nevyjde"</em> je narativ. Pohádka nabízí jiný narativ o stejné struktuře — ne jako instrukce, ale jako zrcadlo.
+    </div>
+
+    <div class="ac" style="margin-top:.8rem" id="ac3">
+      <button class="ach" onclick="tog('ac3')"><span>Co věda nepotvrzuje</span><span class="acarr">▾</span></button>
+      <div class="acb"><div class="aci">
+        <p>Pohádka říká — strach tě může hodit tam, kde je cesta. Věda říká — strach zužuje, ne rozšiřuje. Fredrickson by řekla, že strach omezuje akční repertoár.</p>
+        <p>Pohádka je v tomto optimisticky subverzivní. Tvrdí, že nekontrolovaná reakce může být správná i když vznikla ze špatného místa. Věda to přímo nepotvrzuje — ale nepotvrzuje ani opak. Je to mimo rámec standardního měření.</p>
+        <p>Workshop se neprezentuje jako klinická metoda. Je to kreativní nástroj s vědomou strukturou.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section class="sekce" id="kontakt">
+    <span class="sekce-lbl">Kontakt</span>
+    <h2><em>Michaela</em> Nováková</h2>
+    <p class="txt">Česká výtvarnice, autorka a designérka systémů. Projekt vyvíjí od roku 2022 jako solo práci — bez týmu, bez investorů.</p>
+    <p class="txt">Workshopy pro jednotlivce, páry, skupiny, festivaly, školy. Formát vždy na míru — jiná pohádka, jiný úhel, jiný výstup.</p>
+
+    <div class="cta-box">
+      <p>Napiš mi — co se děje, kolik vás bude, kdy si představuješ. Napíšu zpátky a domluvíme se.</p>
+      <a href="mailto:chcesmys@gmail.com?subject=Workshop — zájem" class="cta-link">chcesmys@gmail.com</a>
+      <div class="cta-note">Odpovídám do 48 hodin. Žádný formulář, žádný server — jen email.</div>
+    </div>
+
+    <a href="mailto:chcesmys@gmail.com?subject=Workshop — zájem" class="btn">Napsat →</a>
+  </section>
+
+</div>
+
+<footer>
+  Chceš myš? · Slovník mezer · © 2026 Michaela Nováková ·
+  <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a>
+</footer>
+
+<script>
+function scrollSec(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function tog(id){
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
+</body>
+</html>
