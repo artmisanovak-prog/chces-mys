@@ -30,7 +30,7 @@
 - [carofyzika3](doma/nastroje/carofyzika3.html)
 
 
-  - [carofyzika](doma/nastroje/carofyzika.html)
+- [carofyzika](doma/nastroje/carofyzika.html)
 - [carofyzika1](doma/nastroje/carofyzika1.html)
 - [carofyzika2](doma/nastroje/carofyzika2.html)
 - [carofyzika3](doma/nastroje/carofyzika3.html)
@@ -42,6 +42,9 @@
 ---
 
 - [kriva pohadka ebook](doma/nastroje/kriva_pohadka.html)
+
+---
+
 - [kognitivni_mapa](doma/nastroje/kognitivni_mapa.html)
 - [kognitivni_mapa1](doma/nastroje/kognitivni_mapa1.html)
 
@@ -50,6 +53,8 @@
 - [fyzika jazyka](doma/nastroje/fyzika_jazyka.html)
 
 --- 
+
+[landing_page_zajic](doma/nastroje/landing_page_zajic.html)
 
 ---
 
