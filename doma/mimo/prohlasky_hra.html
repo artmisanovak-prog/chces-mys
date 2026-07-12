@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Příběhy z hlásek ✨</title>
+    <style>
+        :root {
+            --bg: #fdf6f0;
+            --card: #fffefb;
+            --text: #3e2f1c;
+            --text-light: #6b5d4f;
+            --accent1: #e8875b;
+            --accent2: #5b9ecf;
+            --accent1-light: #fef0e9;
+            --accent2-light: #eaf4fb;
+            --border: #e5d9cc;
+            --shadow: 0 2px 12px rgba(60, 30, 10, 0.07);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-story: 'Georgia', 'Times New Roman', serif;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(ellipse at 20% 20%, #fef7f0 0%, #f8efe4 60%, #f0e6d8 100%);
+            font-family: var(--font);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 860px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding-bottom: 40px;
+        }
+
+        /* ---- HEADER ---- */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+        .title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #5c3d2e;
+        }
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        /* ---- USER SWITCHER ---- */
+        .user-switcher {
+            display: flex;
+            gap: 4px;
+            background: #f5ede4;
+            border-radius: 30px;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .user-btn {
+            padding: 8px 16px;
+            border-radius: 26px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--text-light);
+            white-space: nowrap;
+            font-family: var(--font);
+        }
+        .user-btn.active-user1 {
+            background: var(--accent1);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(232, 135, 91, 0.3);
+        }
+        .user-btn.active-user2 {
+            background: var(--accent2);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(91, 158, 207, 0.3);
+        }
+        .user-btn:hover:not(.active-user1):not(.active-user2) {
+            background: #ede0d3;
+        }
+
+        /* ---- MAIN CARD ---- */
+        .main-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .main-card.user1-border {
+            border-left: 4px solid var(--accent1);
+        }
+        .main-card.user2-border {
+            border-left: 4px solid var(--accent2);
+        }
+        .card-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-label .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot.dot1 {
+            background: var(--accent1);
+        }
+        .dot.dot2 {
+            background: var(--accent2);
+        }
+
+        /* ---- TEXTAREA ---- */
+        .story-textarea {
+            width: 100%;
+            min-height: 200px;
+            border: 2px solid #e8ddd0;
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            font-family: var(--font-story);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            resize: vertical;
+            background: #fffef9;
+            color: var(--text);
+            transition: var(--transition);
+            letter-spacing: 0.2px;
+        }
+        .story-textarea:focus {
+            outline: none;
+            border-color: #c9a87c;
+            box-shadow: 0 0 0 3px rgba(180, 130, 80, 0.1);
+            background: #fff;
+        }
+        .story-textarea::placeholder {
+            color: #c4b8a8;
+            font-style: italic;
+        }
+        .story-textarea.user1-focus:focus {
+            border-color: var(--accent1);
+            box-shadow: 0 0 0 3px rgba(232, 135, 91, 0.12);
+        }
+        .story-textarea.user2-focus:focus {
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 3px rgba(91, 158, 207, 0.12);
+        }
+
+        /* ---- INFO BAR ---- */
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+        .info-pill {
+            background: #f5ede4;
+            border-radius: 20px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+        .info-pill.warning {
+            background: #fff3e0;
+            color: #c77800;
+        }
+
+        /* ---- BUTTONS ---- */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 26px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            font-family: var(--font);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+        .btn-share {
+            background: #4a3724;
+            color: #fff;
+        }
+        .btn-share:hover {
+            background: #5c4530;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(60, 30, 10, 0.2);
+        }
+        .btn-copy {
+            background: #e8ddd0;
+            color: #3e2f1c;
+        }
+        .btn-copy:hover {
+            background: #dbcdbc;
+        }
+        .btn-clear {
+            background: transparent;
+            color: #a08070;
+            border: 1.5px solid #d5c8b8;
+        }
+        .btn-clear:hover {
+            background: #fef5f0;
+            border-color: #c9a08a;
+            color: #8b5e3c;
+        }
+        .btn-undo {
+            background: transparent;
+            color: #7a8a9a;
+            border: 1.5px solid #cdd5dc;
+        }
+        .btn-undo:hover {
+            background: #f5f8fb;
+            border-color: #a0b8cc;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ---- TOAST ---- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #3e2f1c;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 999;
+            transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+            pointer-events: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ---- PHONEME PALETTE ---- */
+        .phoneme-section {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .phoneme-section summary {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            user-select: none;
+            padding: 2px 0;
+            letter-spacing: 0.3px;
+        }
+        .phoneme-section summary:hover {
+            color: #5c3d2e;
+        }
+        .phoneme-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .phoneme-chip {
+            padding: 5px 10px;
+            border-radius: 16px;
+            border: 1.5px solid #e5d9cc;
+            background: #fffef9;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            font-family: var(--font);
+            color: #5c3d2e;
+            user-select: none;
+        }
+        .phoneme-chip:hover {
+            background: #fef5ec;
+            border-color: #c9a87c;
+            transform: translateY(-1px);
+        }
+        .phoneme-chip:active {
+            background: #fce8d5;
+            transform: scale(0.95);
+        }
+        .phoneme-chip.vowel {
+            background: #fef9f3;
+            border-color: #f0dcc8;
+            font-weight: 600;
+        }
+        .phoneme-chip.vowel-long {
+            background: #fff8ee;
+            border-color: #eccca0;
+            font-weight: 700;
+            color: #a06020;
+        }
+        .phoneme-category {
+            font-size: 0.7rem;
+            color: #a09080;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 6px;
+            width: 100%;
+            margin-bottom: -2px;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .user-switcher {
+                width: 100%;
+                justify-content: stretch;
+            }
+            .user-btn {
+                flex: 1;
+                text-align: center;
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+            .story-textarea {
+                min-height: 150px;
+                font-size: 1rem;
+                padding: 12px 14px;
+            }
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+            .phoneme-chip {
+                padding: 4px 8px;
+                font-size: 0.78rem;
+            }
+            .title {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <span class="logo-icon">📖</span>
+                <div>
+                    <div class="title">Příběhy z hlásek</div>
+                    <div class="subtitle">Pište společně • Sdílejte odkazem</div>
+                </div>
+            </div>
+            <div class="user-switcher" id="userSwitcher">
+                <button class="user-btn active-user1" data-user="1" id="btnUser1">🧒 Uživatel 1</button>
+                <button class="user-btn" data-user="2" id="btnUser2">👧 Uživatel 2</button>
+            </div>
+        </div>
+
+        <!-- MAIN EDITOR CARD -->
+        <div class="main-card user1-border" id="mainCard">
+            <div class="card-label">
+                <span class="dot dot1" id="activeDot"></span>
+                <span id="activeLabel">Píše Uživatel 1</span>
+                <span style="font-size:0.7rem;opacity:0.6;" id="turnHint"></span>
+            </div>
+            <textarea
+            class="story-textarea user1-focus"
+            id="storyTextarea"
+            placeholder="Začni psát svůj příběh z hlásek... ✍️&#10;&#10;Např.: Má-ma me-le ma-so. Tá-ta se-je o-bilí.&#10;Nebo klidně celé věty – fantazii se meze nekladou!"
+        ></textarea>
+        <div class="info-bar" id="infoBar">
+            <span class="info-pill" id="charCount">📝 0 znaků</span>
+            <span class="info-pill" id="urlLength">🔗 Odkaz: 0 zn.</span>
+            <span class="info-pill" id="lastEditor">🕐 Zatím neuloženo</span>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-share" id="btnShare" title="Aktualizovat odkaz se současným příběhem">🔗 Sdílet stav</button>
+            <button class="btn btn-copy" id="btnCopy" title="Zkopírovat odkaz do schránky">📋 Kopírovat odkaz</button>
+            <button class="btn btn-undo" id="btnUndo" title="Vrátit poslední načtený stav z URL">↩ Vrátit zpět</button>
+            <button class="btn btn-clear" id="btnClear" title="Vyčistit editor (odkaz zůstane)">🗑 Vyčistit</button>
+        </div>
+    </div>
+
+    <!-- PHONEME PALETTE -->
+    <details class="phoneme-section" id="phonemePalette">
+        <summary>🎵 Paleta hlásek – klikni pro rozbalení</summary>
+        <div class="phoneme-category">Krátké samohlásky</div>
+        <div class="phoneme-grid" data-insert="a,e,i,o,u,y"></div>
+        <div class="phoneme-category">Dlouhé samohlásky</div>
+        <div class="phoneme-grid" data-insert="á,é,í,ó,ú,ů,ý"></div>
+        <div class="phoneme-category">Dvojhlásky</div>
+        <div class="phoneme-grid" data-insert="au,ou,eu"></div>
+        <div class="phoneme-category">Souhlásky – tvrdé a obojetné</div>
+        <div class="phoneme-grid" data-insert="b,c,č,d,ď,f,g,h,ch,j,k,l,m,n,ň,p,r,ř,s,š,t,ť,v,z,ž"></div>
+        <div class="phoneme-category">Měkké slabiky</div>
+        <div class="phoneme-grid" data-insert="di,ti,ni,dě,tě,ně,bě,pě,vě,mě"></div>
+    </details>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+</div>
+
+<script>
+    (function() {
+        // ---- DOM refs ----
+        const storyTextarea = document.getElementById('storyTextarea');
+        const btnShare = document.getElementById('btnShare');
+        const btnCopy = document.getElementById('btnCopy');
+        const btnUndo = document.getElementById('btnUndo');
+        const btnClear = document.getElementById('btnClear');
+        const btnUser1 = document.getElementById('btnUser1');
+        const btnUser2 = document.getElementById('btnUser2');
+        const mainCard = document.getElementById('mainCard');
+        const activeDot = document.getElementById('activeDot');
+        const activeLabel = document.getElementById('activeLabel');
+        const turnHint = document.getElementById('turnHint');
+        const charCount = document.getElementById('charCount');
+        const urlLength = document.getElementById('urlLength');
+        const lastEditor = document.getElementById('lastEditor');
+        const toast = document.getElementById('toast');
+        const phonemePalette = document.getElementById('phonemePalette');
+
+        // ---- STATE ----
+        let currentUser = 1; // 1 or 2
+        let lastLoadedFromUrl = ''; // the text we last loaded from URL (for undo)
+        let lastSavedText = ''; // what we last pushed to URL
+        let toastTimer = null;
+
+        // ---- ENCODING / DECODING for URL hash ----
+        function encodeForUrl(text) {
+            try {
+                // Handle Unicode (Czech diacritics) properly
+                return btoa(unescape(encodeURIComponent(text)));
+            } catch (e) {
+                // Fallback for very long or problematic texts
+                return btoa(encodeURIComponent(text));
+            }
+        }
+
+        function decodeFromUrl(encoded) {
+            try {
+                return decodeURIComponent(escape(atob(encoded)));
+            } catch (e) {
+                try {
+                    return decodeURIComponent(atob(encoded));
+                } catch (e2) {
+                    return '';
+                }
+            }
+        }
+
+        // ---- READ STATE FROM URL ----
+        function readStateFromUrl() {
+            const hash = window.location.hash;
+            if (!hash || hash === '#') return null;
+
+            let hashContent = hash.startsWith('#') ? hash.slice(1) : hash;
+            let user = 1;
+            let text = '';
+
+            // Format: user~base64encodedtext
+            // or just base64encodedtext (legacy, default user 1)
+            if (hashContent.includes('~')) {
+                const parts = hashContent.split('~');
+                user = parseInt(parts[0]) || 1;
+                text = decodeFromUrl(parts.slice(1).join('~'));
+            } else {
+                text = decodeFromUrl(hashContent);
+                user = 1;
+            }
+
+            if (user !== 1 && user !== 2) user = 1;
+            return { user, text };
+        }
+
+        // ---- WRITE STATE TO URL (using replaceState to avoid history clutter) ----
+        function writeStateToUrl(text, user) {
+            const encoded = encodeForUrl(text);
+            const hashContent = user + '~' + encoded;
+            const newUrl = window.location.pathname + window.location.search + '#' + hashContent;
+            try {
+                window.history.replaceState(null, '', newUrl);
+                lastSavedText = text;
+                updateInfoBar(text, encoded);
+                return true;
+            } catch (e) {
+                // URL might be too long
+                showToast('⚠️ Příběh je příliš dlouhý pro URL. Zkraťte ho prosím.', 3000);
+                return false;
+            }
+        }
+
+        // ---- UPDATE INFO BAR ----
+        function updateInfoBar(text, encodedOverride) {
+            const len = text.length;
+            const encoded = encodedOverride || encodeForUrl(text);
+            const urlLen = (currentUser + '~' + encoded).length;
+            charCount.textContent = '📝 ' + len + ' znaků';
+            urlLength.textContent = '🔗 Odkaz: ' + urlLen + ' zn.';
+            if (urlLen > 1800) {
+                urlLength.classList.add('warning');
+            } else {
+                urlLength.classList.remove('warning');
+            }
+        }
+
+        // ---- UPDATE LAST EDITOR INFO ----
+        function updateLastEditorInfo(user) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+            const userName = user === 1 ? 'Uživatel 1' : 'Uživatel 2';
+            lastEditor.textContent = '🕐 ' + userName + ' • ' + timeStr;
+        }
+
+        // ---- LOAD STATE INTO EDITOR ----
+        function loadStateIntoEditor(state) {
+            if (!state) {
+                storyTextarea.value = '';
+                lastLoadedFromUrl = '';
+                lastSavedText = '';
+                currentUser = 1;
+                updateUIForUser(1);
+                updateInfoBar('', '');
+                lastEditor.textContent = '🕐 Zatím neuloženo';
+                turnHint.textContent = '';
+                return;
+            }
+
+            storyTextarea.value = state.text;
+            lastLoadedFromUrl = state.text;
+            lastSavedText = state.text;
+            currentUser = state.user;
+            updateUIForUser(state.user);
+            updateInfoBar(state.text);
+            updateLastEditorInfo(state.user);
+            // Hint: the OTHER user should edit now
+            const otherUser = state.user === 1 ? 2 : 1;
+            turnHint.textContent = '• Na řadě je Uživatel ' + otherUser;
+        }
+
+        // ---- UPDATE UI FOR USER ----
+        function updateUIForUser(user) {
+            currentUser = user;
+
+            // Buttons
+            btnUser1.className = 'user-btn' + (user === 1 ? ' active-user1' : '');
+            btnUser2.className = 'user-btn' + (user === 2 ? ' active-user2' : '');
+
+            // Card border
+            mainCard.classList.remove('user1-border', 'user2-border');
+            mainCard.classList.add(user === 1 ? 'user1-border' : 'user2-border');
+
+            // Textarea focus style
+            storyTextarea.classList.remove('user1-focus', 'user2-focus');
+            storyTextarea.classList.add(user === 1 ? 'user1-focus' : 'user2-focus');
+
+            // Dot and label
+            activeDot.className = 'dot ' + (user === 1 ? 'dot1' : 'dot2');
+            activeLabel.textContent = 'Píše Uživatel ' + user;
+
+            const otherUser = user === 1 ? 2 : 1;
+            turnHint.textContent = '• Na řadě je Uživatel ' + otherUser;
+        }
+
+        // ---- SWITCH USER ----
+        function switchUser(user) {
+            updateUIForUser(user);
+            updateInfoBar(storyTextarea.value);
+            const state = readStateFromUrl();
+            if (state && state.user !== user) {
+                updateLastEditorInfo(state.user);
+            }
+            // Auto-save to URL with new user
+            const text = storyTextarea.value;
+            if (text.trim()) {
+                writeStateToUrl(text, user);
+                updateLastEditorInfo(user);
+            }
+            showToast('Přepnuto na Uživatele ' + user, 1500);
+        }
+
+        // ---- SHARE (update URL) ----
+        function shareState() {
+            const text = storyTextarea.value;
+            if (!text.trim()) {
+                showToast('📝 Napište nejdřív nějaký text...', 2000);
+                return;
+            }
+            const success = writeStateToUrl(text, currentUser);
+            if (success) {
+                lastLoadedFromUrl = text;
+                updateLastEditorInfo(currentUser);
+                turnHint.textContent = '• Na řadě je Uživatel ' + (currentUser === 1 ? 2 : 1);
+                showToast('✅ Odkaz aktualizován! Pošlete ho druhému autorovi.', 2500);
+            }
+        }
+
+        // ---- COPY LINK ----
+        function copyLink() {
+            const text = storyTextarea.value;
+            // Always save current state before copying
+            if (text.trim()) {
+                writeStateToUrl(text, currentUser);
+            }
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('📋 Odkaz zkopírován do schránky! Odešlete ho.', 2500);
+            }).catch(() => {
+                // Fallback
+                storyTextarea.select();
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                showToast('📋 Odkaz zkopírován (alternativní metodou).', 2500);
+            });
+        }
+
+        // ---- UNDO (revert to last loaded URL state) ----
+        function undoToLastLoaded() {
+            if (lastLoadedFromUrl === storyTextarea.value) {
+                showToast('ℹ️ Žádné změny k vrácení.', 1500);
+                return;
+            }
+            storyTextarea.value = lastLoadedFromUrl;
+            updateInfoBar(lastLoadedFromUrl);
+            showToast('↩ Vráceno k poslednímu načtenému stavu z odkazu.', 2000);
+        }
+
+        // ---- CLEAR ----
+        function clearEditor() {
+            if (storyTextarea.value.trim() && !confirm('Opravdu vyčistit editor? Text v odkazu zůstane nezměněn.')) {
+                return;
+            }
+            storyTextarea.value = '';
+            updateInfoBar('', '');
+            storyTextarea.focus();
+            showToast('🗑 Editor vyčištěn. Odkaz zůstal nezměněn.', 2000);
+        }
+
+        // ---- TOAST ----
+        function showToast(message, duration = 2000) {
+            if (toastTimer) clearTimeout(toastTimer);
+            toast.textContent = message;
+            toast.classList.add('show');
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+                toastTimer = null;
+            }, duration);
+        }
+
+        // ---- PHONEME CHIP CLICK ----
+        function insertPhoneme(phoneme) {
+            const textarea = storyTextarea;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end);
+
+            // Add space before if needed (not at beginning and previous char not space/hyphen)
+            const needsSpaceBefore = before.length > 0 && !before.endsWith(' ') && !before.endsWith('-') &&
+                !before.endsWith('\n');
+            const prefix = needsSpaceBefore ? ' ' : '';
+
+            const insertion = prefix + phoneme;
+            textarea.value = before + insertion + after;
+            const newCursorPos = start + insertion.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+            textarea.focus();
+
+            // Auto-update URL after short delay
+            updateInfoBar(textarea.value);
+        }
+
+        // ---- BUILD PHONEME CHIPS ----
+        function buildPhonemeChips() {
+            const grids = phonemePalette.querySelectorAll('.phoneme-grid[data-insert]');
+            grids.forEach(grid => {
+                const items = grid.getAttribute('data-insert').split(',');
+                grid.innerHTML = '';
+                items.forEach(item => {
+                    const chip = document.createElement('span');
+                    chip.className = 'phoneme-chip';
+                    chip.textContent = item;
+                    chip.title = 'Klikni pro vložení: ' + item;
+                    chip.addEventListener('click', () => insertPhoneme(item));
+
+                    // Add extra classes for vowels
+                    const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
+                    const vowelsLong = ['á', 'é', 'í', 'ó', 'ú', 'ů', 'ý'];
+                    if (vowels.includes(item)) chip.classList.add('vowel');
+                    if (vowelsLong.includes(item)) chip.classList.add('vowel-long');
+
+                    grid.appendChild(chip);
+                });
+            });
+        }
+
+        // ---- AUTO-SAVE ON INPUT (debounced) ----
+        let autoSaveTimeout;
+        storyTextarea.addEventListener('input', () => {
+            updateInfoBar(storyTextarea.value);
+            // Auto-save to URL after 1.5s of inactivity
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const text = storyTextarea.value;
+                if (text.trim() && text !== lastSavedText) {
+                    writeStateToUrl(text, currentUser);
+                    lastLoadedFromUrl = text;
+                    updateLastEditorInfo(currentUser);
+                }
+            }, 1500);
+        });
+
+        // ---- BUTTON EVENTS ----
+        btnShare.addEventListener('click', shareState);
+        btnCopy.addEventListener('click', copyLink);
+        btnUndo.addEventListener('click', undoToLastLoaded);
+        btnClear.addEventListener('click', clearEditor);
+        btnUser1.addEventListener('click', () => switchUser(1));
+        btnUser2.addEventListener('click', () => switchUser(2));
+
+        // ---- KEYBOARD SHORTCUTS ----
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                shareState();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey) {
+                // Ctrl+Shift+Z = undo to URL state
+                e.preventDefault();
+                undoToLastLoaded();
+            }
+        });
+
+        // ---- INITIALIZE ----
+        function init() {
+            buildPhonemeChips();
+
+            const state = readStateFromUrl();
+            if (state && state.text.trim()) {
+                loadStateIntoEditor(state);
+                // If there's a state, the other user should be editing now
+                const otherUser = state.user === 1 ? 2 : 1;
+                turnHint.textContent = '• Na řadě je Uživatel ' + otherUser;
+            } else {
+                // Fresh start
+                updateUIForUser(1);
+                updateInfoBar('', '');
+                lastEditor.textContent = '🕐 Zatím neuloženo';
+                turnHint.textContent = '• Začněte psát a sdílejte odkaz';
+                lastLoadedFromUrl = '';
+                lastSavedText = '';
+                storyTextarea.value = '';
+                // Clean URL if it has junk
+                if (window.location.hash && !state) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+            }
+
+            storyTextarea.focus();
+        }
+
+        // ---- HANDLE HASH CHANGES (when user navigates back/forward) ----
+        window.addEventListener('hashchange', () => {
+            const state = readStateFromUrl();
+            if (state && state.text !== storyTextarea.value) {
+                loadStateIntoEditor(state);
+                showToast('📥 Stav načten z odkazu (změna URL).', 2000);
+            }
+        });
+
+        // ---- HANDLE PAGE UNLOAD - auto-save ----
+        window.addEventListener('beforeunload', () => {
+            const text = storyTextarea.value;
+            if (text.trim() && text !== lastSavedText) {
+                writeStateToUrl(text, currentUser);
+            }
+        });
+
+        // ---- START ----
+        init();
+
+        console.log('📖 Příběhy z hlásek – připraveno!');
+        console.log('👥 Dva uživatelé si mohou předávat příběh přes URL odkaz.');
+        console.log('💡 Tip: Ctrl+S pro uložení do odkazu, Ctrl+Shift+Z pro vrácení.');
+        console.log('🎵 Rozbalte paletu hlásek pro rychlé vkládání.');
+    })();
+</script>
+</body>
+</html>
