@@ -67,6 +67,7 @@
 - [meziTahy kreslici](doma/nastroje/mezitahy.html)
 - [meziTahy1 kreslici](doma/nastroje/mezitahy1.html)
 - [meziTahy2foto](doma/nastroje/mezitahy2.html)
+- [mezitahy](doma/nastroje/mezitahy.html)
 - [meziTahy1](doma/nastroje/mezitahy1.html)
 - [meziTahy2](doma/nastroje/mezitahy2.html)
 - [meziTahy3](doma/nastroje/mezitahy3.html)
