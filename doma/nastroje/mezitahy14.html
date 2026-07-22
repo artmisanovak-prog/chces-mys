@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chceš myš? — meziTahy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+:root{
+  --bg:#0c0c0e; --bg-el:#161619; --bg-el2:#1c1c20;
+  --text:#eeeeec; --dim:#55555c; --mid:#8a8a90;
+  --border:#232326;
+  --accent:#ff9900;
+  --accent-dim:#402000;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:300;}
+body{height:100vh;overflow:hidden;}
+
+.nav-arrows{position:fixed;top:1.2rem;right:1.2rem;display:flex;gap:0.25rem;z-index:500;}
+.nav-arrow-mini{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:1rem;
+  padding:0.3rem 0.6rem;cursor:pointer;transition:all .3s;}
+.nav-arrow-mini:hover{color:var(--accent);border-color:var(--accent);}
+
+.scroll-track{display:flex;width:100%;height:100vh;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;scrollbar-width:none;}
+.scroll-track::-webkit-scrollbar{display:none;}
+.panel{flex:0 0 100vw;height:100vh;scroll-snap-align:start;overflow-y:auto;overflow-x:hidden;position:relative;}
+.panel::-webkit-scrollbar{width:3px;}
+.panel::-webkit-scrollbar-thumb{background:var(--border);}
+
+.verze-toggle{display:flex;gap:0.5rem;margin-bottom:1.5rem;}
+.verze-btn{flex:1;padding:0.9rem;border:1px solid var(--border);background:var(--bg-el);color:var(--mid);
+  font-family:'Space Grotesk',sans-serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;}
+.verze-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.verze-panel{display:none;}
+.verze-panel.active{display:block;}
+h1,h2,h3{font-family:'Spectral',serif;font-weight:400;}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:900;opacity:.02;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+.wrap{max-width:760px;margin:0 auto;padding:2.5rem 1.2rem 6rem;}
+.eyebrow{font-size:0.62rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;}
+h2.title{font-size:clamp(1.3rem,5vw,1.9rem);letter-spacing:0.08em;margin-bottom:0.4rem;}
+.sub{color:var(--mid);font-size:0.85rem;line-height:1.6;margin-bottom:2rem;font-family:'Spectral',serif;font-style:italic;}
+.step-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin:1.8rem 0 0.5rem;}
+.section-title{font-family:'Spectral',serif;font-size:1.15rem;color:var(--accent);margin:2.2rem 0 0.3rem;}
+.section-note{font-size:0.78rem;color:var(--mid);margin-bottom:0.8rem;}
+hr.sep{border:none;border-top:1px solid var(--border);margin:2rem 0;}
+
+/* ==== carousel — bigger tiles, no frame chrome, correct A7 ratio, no crop ==== */
+.carousel-wrap{position:relative;padding:1rem 0;text-align:center;}
+.carousel-track{display:flex;gap:0.7rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:0.5rem 2.8rem;
+  -webkit-overflow-scrolling:touch;}
+.carousel-track::-webkit-scrollbar{display:none;}
+.car-item{flex:0 0 108px;scroll-snap-align:center;cursor:pointer;transition:all .2s;
+  background:#000;position:relative;overflow:hidden;aspect-ratio:74/105;border:1px solid var(--border);}
+.car-item.landscape{aspect-ratio:105/74;flex-basis:150px;}
+.car-item.picked{border-color:var(--accent);box-shadow:0 0 14px rgba(201,138,75,0.25);}
+.car-item img{width:100%;height:100%;object-fit:contain;display:block;filter:grayscale(70%) brightness(0.85);}
+.car-item.picked img{filter:grayscale(0%) brightness(1);}
+.car-item .cn{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));
+  color:var(--mid);font-size:0.58rem;text-transform:uppercase;letter-spacing:0.04em;padding:0.8rem 0.3rem 0.25rem;text-align:center;}
+.car-item.picked .cn{color:var(--accent);}
+.car-arrow{position:absolute;top:50%;transform:translateY(-50%);background:var(--bg);border:1px solid var(--border);
+  color:var(--accent);width:2.1rem;height:2.1rem;border-radius:50%;cursor:pointer;font-size:1rem;z-index:10;}
+.car-arrow.left{left:-4px;}.car-arrow.right{right:-4px;}
+.shuffle-row{text-align:center;margin-top:0.8rem;}
+.pulse{animation:pulseScale .18s ease;}
+@keyframes pulseScale{0%{transform:scale(1);}50%{transform:scale(1.06);}100%{transform:scale(1);}}
+
+/* ==== buttons / inputs ==== */
+.btn{padding:0.6rem 1.2rem;border:1px solid var(--dim);background:transparent;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--text);}
+.btn-accent{border-color:var(--accent);color:var(--accent);}
+.btn-accent:hover{background:var(--accent);color:#160f06;}
+.btn-small{font-size:0.62rem;padding:0.35rem 0.7rem;}
+.input{width:100%;padding:0.6rem;background:var(--bg-el);border:1px solid var(--border);color:var(--text);
+  font-family:'Space Grotesk',sans-serif;font-size:0.82rem;margin:0.5rem 0;}
+
+/* ==== stav hry / karta výsledku ==== */
+.state-box{border:1px solid var(--border);background:var(--bg-el);padding:1.2rem;margin:1.2rem 0;}
+.state-box .sb-title{font-family:'Spectral',serif;color:var(--accent);font-size:1.05rem;margin-bottom:0.4rem;}
+.state-box .sb-sub{font-size:0.78rem;color:var(--mid);}
+.url-box{background:var(--bg-el2);padding:0.8rem;border:1px solid var(--border);word-break:break-all;
+  font-size:0.7rem;color:var(--mid);margin:0.6rem 0;}
+.task-card{border:1px solid var(--accent-dim);background:var(--bg-el);padding:1.3rem;margin-top:0.8rem;}
+.task-eyebrow{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);}
+.task-tool{display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.9rem;border:1px solid var(--accent);
+  color:var(--accent);font-size:0.72rem;letter-spacing:0.04em;text-transform:uppercase;margin-top:0.7rem;}
+
+/* ==== obecné akordeony (návod, licence) ==== */
+.acc{border-top:1px solid var(--border);margin-top:0.6rem;}
+.acc:last-child{border-bottom:1px solid var(--border);}
+.acc-trigger{width:100%;background:transparent;border:none;display:flex;justify-content:space-between;
+  align-items:center;padding:1rem 0;cursor:pointer;color:var(--mid);font-size:0.8rem;
+  letter-spacing:0.08em;text-transform:uppercase;text-align:left;font-family:'Space Grotesk',sans-serif;transition:color .2s;}
+.acc-trigger:hover,.acc-trigger.open{color:var(--accent);}
+.acc-arrow{transition:transform .3s;font-size:0.65rem;}
+.acc-trigger.open .acc-arrow{transform:rotate(180deg);}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.acc-body.open{max-height:2000px;}
+.acc-inner{padding:0 0 1.4rem;font-size:0.82rem;line-height:1.75;color:#c3cbd8;}
+.acc-inner p{margin-bottom:0.6rem;}
+.acc-inner strong{color:var(--text);font-weight:500;}
+
+table.klic{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.76rem;}
+table.klic th,table.klic td{border:1px solid var(--border);padding:0.5rem 0.6rem;text-align:left;}
+table.klic th{color:var(--accent);font-weight:400;letter-spacing:0.05em;text-transform:uppercase;font-size:0.64rem;}
+
+/* ==== ÚHLOMĚR — jen kolo + JEDNO vyskakovací okénko, žádná trvalá tabulka ==== */
+.wheel-block{text-align:center;margin:1rem 0 0.5rem;}
+.wheel-block canvas{max-width:280px;height:auto;cursor:pointer;}
+.wheel-hint{font-size:0.68rem;color:var(--dim);margin-top:0.4rem;}
+.wheel-popup{display:none;border:1px solid var(--border);border-left-width:4px;background:var(--bg-el);
+  padding:0.9rem 1rem;margin-top:0.8rem;text-align:left;font-size:0.78rem;line-height:1.7;color:#c3cbd8;}
+.wheel-popup.open{display:block;}
+.wheel-popup .wp-name{font-family:'Spectral',serif;font-size:1.05rem;margin-bottom:0.4rem;}
+.wheel-popup strong{color:var(--text);}
+.wheel-popup .wp-close{float:right;background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:0.9rem;}
+
+/* časová osa — barevný proužek uložených hodnocení */
+.timeline-wrap{margin:1rem 0;}
+.timeline-lbl{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:0.4rem;}
+.timeline-strip{display:flex;gap:2px;height:22px;overflow-x:auto;border:1px solid var(--border);padding:2px;background:var(--bg-el2);}
+.timeline-strip::-webkit-scrollbar{display:none;}
+.tl-seg{flex:0 0 10px;height:100%;cursor:pointer;transition:transform .15s;}
+.tl-seg:hover{transform:scaleY(1.15);}
+.timeline-empty{font-size:0.68rem;color:var(--dim);font-style:italic;}
+
+/* ==== knihovna / výběr k tisku ==== */
+.select-all-row{display:flex;gap:0.5rem;margin-bottom:0.8rem;}
+.select-all-row .btn{font-size:0.65rem;padding:0.4rem 0.8rem;}
+.size-picker{display:flex;gap:0.5rem;margin-bottom:0.4rem;flex-wrap:wrap;}
+.size-opt{padding:0.6rem 0.9rem;border:1px solid var(--border);cursor:pointer;text-align:center;transition:all .2s;flex:1;min-width:80px;}
+.size-opt.active{border-color:var(--accent);background:var(--accent-dim);}
+.size-opt .sz-name{font-family:'Spectral',serif;font-size:0.95rem;color:var(--text);}
+.size-opt .sz-count{font-size:0.62rem;color:var(--dim);margin-top:0.15rem;}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.6rem;margin:1rem 0;}
+.pick-card{cursor:pointer;transition:all .2s;background:#000;position:relative;overflow:hidden;
+  aspect-ratio:74/105;border:1px solid var(--border);}
+.pick-card.landscape{aspect-ratio:105/74;}
+.pick-card.sel{border-color:var(--accent);}
+.pick-card img{width:100%;height:100%;object-fit:contain;display:block;filter:grayscale(60%) brightness(0.85);}
+.pick-card.sel img{filter:grayscale(0%) brightness(1);}
+.pick-card .pn{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));
+  font-size:0.56rem;color:var(--mid);text-transform:uppercase;letter-spacing:0.03em;padding:0.7rem 0.25rem 0.2rem;text-align:center;}
+.pick-card.sel .pn{color:var(--accent);}
+
+.print-card{
+  width:74mm; aspect-ratio: 74/105; border:1px solid var(--border); background:#000;
+  margin:0 auto; text-align:center; display:flex; flex-direction:column; overflow:hidden;
+}
+.print-card.landscape{ width:105mm; aspect-ratio: 105/74; }
+.print-card img{width:100%; flex:1; object-fit:contain; display:block;}
+.print-card .pc-title{font-family:'Spectral',serif;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);padding:0.3rem 0;background:var(--bg-el);}
+.print-card .pc-footer{
+  min-height:18mm; padding:0.4rem; border-top:1px dashed var(--border);background:var(--bg-el);
+  display:flex; align-items:center; gap:0.5rem; text-align:left;
+}
+.print-card .pc-qr{width:16mm;height:16mm;background:#fff;flex-shrink:0;}
+.print-card .pc-qr canvas,.print-card .pc-qr img{width:100%!important;height:100%!important;}
+.print-card .pc-desc{font-size:0.58rem;color:var(--dim);line-height:1.35;}
+
+.hint{font-size:0.68rem;color:var(--dim);margin-top:0.4rem;}
+
+/* ==== skicák (fyzická) ==== */
+.skicak-head{text-align:left;font-size:0.62rem;color:var(--mid);border-bottom:1px dashed var(--border);padding:0.4rem;}
+.skicak-draw{border:1px dashed var(--border);margin:0.4rem;}
+.skicak-params-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.1rem 0.6rem;padding:0 0.4rem 0.4rem;}
+.skicak-params-grid div{display:flex;justify-content:space-between;font-size:0.5rem;color:var(--mid);}
+
+/* ==== upload / kresba / písmo / nástěnka ==== */
+.upload-box{border:2px dashed var(--border);padding:1.6rem;text-align:center;margin:0.8rem 0;transition:border-color .3s;}
+.upload-box:hover{border-color:var(--accent);}
+.preview-img{max-width:100%;max-height:34vh;display:block;margin:0.8rem auto;border:1px solid var(--border);}
+
+.k-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem;margin:1rem 0;}
+.k-card{background:var(--bg-el);border:1px solid var(--border);padding:0.5rem;transition:border-color .2s;}
+.k-card.set{border-color:var(--accent);background:var(--accent-dim);}
+.k-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:0.3rem;margin-bottom:0.3rem;}
+.k-card-name{font-size:0.62rem;color:var(--mid);line-height:1.3;flex:1;}
+.k-card.set .k-card-name{color:var(--accent);}
+.k-status{font-size:0.6rem;color:var(--dim);}
+.k-card.set .k-status{color:var(--accent);}
+.k-x{background:transparent;border:none;color:var(--dim);font-size:0.7rem;cursor:pointer;padding:0;}
+.k-x:hover{color:#e05050;}
+.k-range{width:100%;accent-color:var(--accent);}
+.k-val{font-size:0.6rem;color:var(--dim);text-align:center;margin-top:0.2rem;}
+.k-card.set .k-val{color:var(--accent);}
+
+.p-list{display:flex;flex-direction:column;gap:0.5rem;margin:1rem 0;}
+.p-row{background:var(--bg-el);border:1px solid var(--border);padding:0.5rem 0.7rem;transition:border-color .2s;}
+.p-row.set{border-color:var(--accent);background:var(--accent-dim);}
+.p-top{display:flex;justify-content:space-between;align-items:center;font-size:0.6rem;color:var(--mid);margin-bottom:0.3rem;}
+.p-row.set .p-top{color:var(--text);}
+.p-name{font-size:0.58rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--dim);text-align:center;flex-shrink:0;margin:0 0.4rem;}
+.p-row.set .p-name{color:var(--accent);}
+.p-controls{display:flex;align-items:center;gap:0.5rem;}
+.p-bipolar{flex:1;accent-color:var(--text);}
+.p-val{font-size:0.6rem;color:var(--dim);min-width:1.6rem;text-align:center;}
+.p-row.set .p-val{color:var(--accent);}
+
+.bar-wrap{height:18px;display:flex;border-radius:2px;overflow:hidden;border:1px solid var(--border);margin:0.8rem 0;}
+.bar-seg{height:100%;}
+
+.nastenka-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.8rem;margin-top:1rem;}
+.nast-item{border:1px solid var(--border);background:var(--bg-el);font-size:0.65rem;color:var(--mid);overflow:hidden;}
+.nast-item .ni-img{aspect-ratio:1;overflow:hidden;background:#000;}
+.nast-item img{width:100%;height:100%;object-fit:cover;display:block;}
+.nast-item .ni-body{padding:0.5rem;}
+.nast-item .ni-fen{color:var(--accent);font-family:'Spectral',serif;font-size:0.85rem;}
+.nast-item .ni-del{margin-top:0.3rem;color:var(--dim);cursor:pointer;text-decoration:underline;font-size:0.62rem;}
+.nast-empty{color:var(--dim);font-size:0.78rem;font-style:italic;}
+
+@media print{
+  body *{visibility:hidden;}
+  #printArea, #printArea *{visibility:visible;}
+  #printArea{position:absolute;top:0;left:0;width:100%;}
+  .print-sheet{display:grid;gap:4mm;page-break-after:always;}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="nav-arrows">
+  <button class="nav-arrow-mini" onclick="scrollToPanel(-1)">‹</button>
+  <button class="nav-arrow-mini" onclick="scrollToPanel(1)">›</button>
+</div>
+
+<div class="scroll-track" id="track">
+
+  <!-- ============================= PANEL 1: ÚVOD / PRAVIDLA ============================= -->
+  <section class="panel" id="panel1">
+    <div class="wrap">
+      <div class="eyebrow">Chceš myš? — meziTahy</div>
+      <h2 class="title">Co to je a jak se to hraje</h2>
+      <p class="sub">Kreativní hra — ve dvou i sama. Šipkou vpravo na Verzi, pak na Kresbu a písmo, pak na Nástěnku.</p>
+
+      <div class="acc">
+        <button class="acc-trigger open" onclick="toggleAcc(this)"><span>Ve dvou</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body open"><div class="acc-inner">
+          <p><strong>1.</strong> Vyber si fenomén (kartu). Otevři jeho pohádku a diagnostiku — tam si zvolíš svůj úhel pohledu.</p>
+          <p><strong>2.</strong> Odkaz, co diagnostika vygeneruje (nebo si ho jen zkopíruj z adresního řádku), vlož zpátky sem — tím se ti tvůj fenomén a úhel uloží.</p>
+          <p><strong>3.</strong> Pošli partnerovi odkaz na tvůj fenomén, ať si udělá vlastní diagnostiku. On zase pošle tobě.</p>
+          <p><strong>4.</strong> Vložte si navzájem odkazy — vyměníte si tím úhly, ne fenomény.</p>
+          <p><strong>5.</strong> Ke každému úhlu patří konkrétní nástroj. Tím nástrojem, co ti připadl po partnerovi, napiš nebo nakresli na svůj fenomén pár slov, větu, cokoli tě napadne.</p>
+          <p><strong>6.</strong> Výsledek vyfoť a ohodnoť na stránce Kresba a písmo. Dá se uložit na Nástěnku.</p>
+        </div></div>
+      </div>
+
+      <div class="acc">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>Sama</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body"><div class="acc-inner">
+          <p>Nepotřebuješ partnera. Vyber fenomén, udělej diagnostiku, vlož odkaz zpátky — dostaneš svůj úhel a nástroj.</p>
+          <p>Pak vyber, jak dál: nech si úhel tak, jak vyšel (prohlubuješ jeden způsob vidění), nebo si nech nabídnout <strong>protilehlý úhel</strong> — tlačítko ho hned dosadí a úkol se přepočítá. To je cvičení na rozšíření, ne na potvrzení.</p>
+        </div></div>
+      </div>
+
+      <div class="acc">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>Úhly a nástroje</span><span class="acc-arrow">▼</span></button>
+        <div class="acc-body"><div class="acc-inner">
+          <p>Na stránce Verze je klikací úhloměr. Klikni na segment — objeví se okénko s jádrem úhlu a přiřazeným nástrojem. Klikni znovu na stejný segment, okénko zmizí.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 2: VERZE ============================= -->
+  <section class="panel" id="panel2">
+    <div class="wrap">
+      <div class="eyebrow">Verze</div>
+      <h2 class="title">Digitální, nebo fyzická?</h2>
+      <div class="verze-toggle">
+        <button class="verze-btn active" data-v="dig" onclick="switchVerze('dig')">Digitální</button>
+        <button class="verze-btn" data-v="fyz" onclick="switchVerze('fyz')">Fyzická</button>
+      </div>
+
+      <!-- ======================= SDÍLENÝ ÚHLOMĚR ======================= -->
+      <div class="section-title">Úhloměr</div>
+      <p class="section-note">Klikni na segment — objeví se okénko s úhlem a nástrojem. Klikni znovu, zmizí.</p>
+      <div class="wheel-block">
+        <canvas id="wheelShared" width="280" height="280"></canvas>
+      </div>
+      <div class="wheel-popup" id="wheelPopup">
+        <button class="wp-close" onclick="closeWheelPopup()">✕</button>
+        <div class="wp-name" id="wpName"></div>
+        <div id="wpBody"></div>
+      </div>
+
+      <div class="timeline-wrap">
+        <div class="timeline-lbl">Časová osa uložených hodnocení</div>
+        <div class="timeline-strip" id="timelineStrip"></div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- ======================= DIGITÁLNÍ ======================= -->
+      <div class="verze-panel active" id="verzeDig">
+
+        <div class="step-label">Tvůj fenomén</div>
+        <div class="carousel-wrap">
+          <button class="car-arrow left" onclick="carScroll(-1)">‹</button>
+          <div class="carousel-track" id="carTrack"></div>
+          <button class="car-arrow right" onclick="carScroll(1)">›</button>
+        </div>
+        <div class="shuffle-row">
+          <button class="btn btn-accent" onclick="losujFenomen()">🎲 Losovat</button>
+        </div>
+
+        <div class="state-box" id="pickedBox" style="display:none;">
+          <div class="sb-title" id="pickedTitle"></div>
+          <a href="#" id="diagLink" target="_blank" class="btn btn-accent" style="display:inline-block;margin-top:0.4rem;">📖 Otevřít pohádku a zvolit úhel</a>
+
+          <div class="step-label">Úhel</div>
+          <p class="sb-sub">Zkopíruj odkaz z generátoru na diagnostické stránce (nebo prostě adresu prohlížeče) a vlož ho sem:</p>
+          <input class="input" id="vlozOdkazInput" placeholder="Vlož odkaz s tvým úhlem…">
+          <button class="btn btn-small" onclick="nactiZOdkazu(document.getElementById('vlozOdkazInput').value)">Načíst</button>
+
+          <div class="state-box" id="mujUhelBox" style="display:none;">
+            <div class="sb-sub">Tvůj úhel:</div>
+            <div class="sb-title" id="mujUhelNazev"></div>
+            <button class="btn btn-small" style="margin-top:0.5rem;" onclick="pouzitProtilehly()">↺ Použít protilehlý úhel</button>
+          </div>
+
+          <div class="step-label">Vyměňte si úhly (nepovinné, pro hru ve dvou)</div>
+          <button class="btn btn-small" onclick="vytvorOdkazProPartnera()">Vytvořit odkaz pro partnera</button>
+          <div class="url-box" id="mujOdkazBox" style="display:none;"></div>
+          <p class="sb-sub" style="margin-top:0.8rem;">Partnerův odkaz nebo úhel vlož sem:</p>
+          <input class="input" id="partnerUhelInput" list="uhlyList" placeholder="Partnerův úhel nebo vlož odkaz výše">
+          <datalist id="uhlyList"></datalist>
+          <button class="btn btn-accent" style="margin-top:0.6rem;" onclick="potvrdit()">Potvrdit výměnu s partnerem</button>
+
+          <div id="taskArea"></div>
+        </div>
+      </div>
+
+      <!-- ======================= FYZICKÁ ======================= -->
+      <div class="verze-panel" id="verzeFyz">
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span>Skicák</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p><strong>Skicák</strong> — jeden list: nahoře fenomén a úhel k dopsání, velký prostor na kresbu, dole stejných 12 parametrů jako jezdci u kresby v digitální verzi.</p>
+            <div class="print-card" id="skicakPreview" style="width:300px;aspect-ratio:auto;">
+              <div class="skicak-head">Fenomén: __________ &nbsp; Úhel: __________</div>
+              <div class="skicak-draw" style="height:150px;"></div>
+              <div class="skicak-params-grid" id="skicakParams"></div>
+            </div>
+            <div class="row" style="margin-top:1rem;">
+              <label style="font-size:0.78rem;color:var(--mid);">Počet kopií:</label>
+              <select id="skicakCopies"><option value="1">1</option><option value="4">4</option><option value="8" selected>8</option><option value="16">16</option></select>
+              <button class="btn btn-accent" onclick="printSection('skicak')">🖨 Tisknout skicák</button>
+            </div>
+          </div></div>
+        </div>
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span>Myší klíče (tisk)</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p>Nástroje a popisy úhlů jsou v úhloměru nahoře. Tady si je vytiskneš na papír.</p>
+            <button class="btn btn-accent" onclick="printSection('mysiklic')">🖨 Tisknout myší klíče (celé)</button>
+            <button class="btn" onclick="printSection('klic')">🖨 Tisknout kolo/tabulku nástrojů</button>
+          </div></div>
+        </div>
+
+        <div class="acc">
+          <button class="acc-trigger" onclick="toggleAcc(this)"><span>Knihovna karet</span><span class="acc-arrow">▼</span></button>
+          <div class="acc-body"><div class="acc-inner">
+            <p>Všechny fenomény k tisku.</p>
+            <div class="size-picker" id="sizePicker"></div>
+            <p class="hint" id="sizeInfo"></p>
+            <div class="select-all-row" style="margin-top:1rem;">
+              <button class="btn" onclick="selectAllCards(true)">Vybrat vše</button>
+              <button class="btn" onclick="selectAllCards(false)">Zrušit výběr</button>
+            </div>
+            <div class="card-grid" id="cardGrid"></div>
+            <p style="margin-top:1.2rem; font-size:0.78rem; color:var(--mid);">Náhled tiskové karty:</p>
+            <div class="print-card" id="cardPreview">
+              <div class="pc-title">—</div>
+              <img id="pcImg" src="" alt="">
+              <div class="pc-footer">
+                <div class="pc-qr" id="pcQr"></div>
+                <div class="pc-desc" id="pcDesc">Naskenuj pro pohádku a výběr úhlu.</div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:1.2rem;">
+              <button class="btn btn-accent" onclick="printSection('karty')">🖨 Tisknout vybrané karty</button>
+              <span class="hint" id="printCountHint"></span>
+            </div>
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 3: KRESBA A PÍSMO ============================= -->
+  <section class="panel" id="panel3">
+    <div class="wrap">
+      <div class="eyebrow">Kresba a písmo</div>
+      <h2 class="title">Ohodnocení</h2>
+      <p class="sub">Funguje samostatně — klidně nahraj rovnou. Po vyhodnocení se vybarví úhloměr a přidá se záznam na časovou osu.</p>
+
+      <div class="upload-box" id="uploadBox">
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Nahrát foto</button>
+        <button class="btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()">📷 Vyfotit</button>
+      </div>
+      <img id="previewImg" class="preview-img" style="display:none;">
+
+      <input class="input" id="nastFenomen" placeholder="Fenomén (nepovinné)">
+      <input class="input" id="nastUhel" placeholder="Úhel / nástroj, kterým je to pojaté (nepovinné)">
+
+      <div style="margin-top:0.8rem;">
+        <span class="chip" data-em="kresba" onclick="setEvalMode(this)">Kresba</span>
+        <span class="chip" data-em="pismo" onclick="setEvalMode(this)">Písmo</span>
+      </div>
+      <p class="hint" id="evalModeHint"></p>
+
+      <div id="kEvalWrap"><div class="k-grid" id="kGrid"></div></div>
+      <div id="pEvalWrap" style="display:none;"><div class="p-list" id="pList"></div></div>
+
+      <button class="btn btn-accent" onclick="vyhodnotitKresbu()">Vyhodnotit</button>
+      <div id="vysledekWheelHolder" style="display:none;">
+        <div class="bar-wrap" id="barWrap"></div>
+      </div>
+
+      <button class="btn btn-accent" style="margin-top:1rem;" onclick="ulozitNaNastenku()">📌 Uložit na nástěnku</button>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 4: NÁSTĚNKA ============================= -->
+  <section class="panel" id="panel4">
+    <div class="wrap">
+      <div class="eyebrow">Nástěnka</div>
+      <h2 class="title">Uložené výsledky</h2>
+      <p class="sub">Vše, co jsi kdy uložila na stránce Kresba a písmo.</p>
+      <div class="nastenka-grid" id="nastenkaGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============================= PANEL 5: LICENCE & KONTAKT ============================= -->
+  <section class="panel" id="panel5">
+    <div class="wrap">
+      <div class="eyebrow">Licence &amp; kontakt</div>
+      <h2 class="title">O systému</h2>
+      <p class="sub" style="color:var(--mid);">Zástupný text — doplň si vlastní licenční podmínky a kontakt.</p>
+      <p>meziTahy je součástí systému <strong>Chceš myš? — Slovník mezer</strong>.</p>
+      <p>Autorka: Michaela Nováková</p>
+      <p>Kontakt: __________</p>
+      <p>Licence / podmínky použití: __________</p>
+    </div>
+  </section>
+
+</div>
+<div id="printArea"></div>
+
+<script>
+/* ====================================================================
+   RELATIVNÍ CESTY
+   ==================================================================== */
+function imgPath(id){ return `../ilustrace/${id}.jpg`; }
+function uhlyPageUrl(id){ return `../data/uhly/${id}_uhly.html`; }
+
+/* ====================================================================
+   KANONICKÁ DATA
+   ==================================================================== */
+const UHLY_MASTER = [
+  {numb:1,  nazev:"Analytický",     stupne:0,   nastroj:"Tenký liner 0.3",       barva:"#ffffff"},
+  {numb:2,  nazev:"Kulturní",       stupne:30,  nastroj:"Tužka HB",              barva:"#a8d5a2"},
+  {numb:3,  nazev:"Filozofický",    stupne:60,  nastroj:"Redispero (namáčecí pero)", barva:"#b3d4ff"},
+  {numb:4,  nazev:"Naivní",         stupne:90,  nastroj:"Obyčejný fix",          barva:"#40e0d0"},
+  {numb:5,  nazev:"Jazykový",       stupne:120, nastroj:"Gelové pero",           barva:"#c8a2c8"},
+  {numb:6,  nazev:"Metaforický",    stupne:150, nastroj:"Tužka 4B–6B",           barva:"#2e8b57"},
+  {numb:7,  nazev:"Asociační",      stupne:180, nastroj:"Voskovka",              barva:"#d2b48c"},
+  {numb:8,  nazev:"Introspektivní", stupne:210, nastroj:"Propiska",              barva:"#ffd700"},
+  {numb:9,  nazev:"Ironický",       stupne:240, nastroj:"Zkosený fix",           barva:"#ffa500"},
+  {numb:10, nazev:"Groteskní",      stupne:270, nastroj:"Akrylový fix",          barva:"#dc143c"},
+  {numb:11, nazev:"Absurdní",       stupne:300, nastroj:"Štětcový fix",          barva:"#c71585"},
+  {numb:12, nazev:"Surrealistický", stupne:330, nastroj:"Akvarelová pastelka (s vodou)", barva:"#8b4513"}
+];
+function uhelByName(name){ return UHLY_MASTER.find(u=>u.nazev.toLowerCase()===String(name).toLowerCase()); }
+function uhelOpposite(name){
+  const u = uhelByName(name);
+  if(!u) return null;
+  const idx = UHLY_MASTER.indexOf(u);
+  return UHLY_MASTER[(idx+6)%12];
+}
+
+const FENOM_IDS = ["mys","kocour","ryba","zajic","pavouk","motyl","pav","krokodyl","netopyr","cap",
+  "lemur","kozel","jednorozec","kliste","tygr","hvezdice","vrabec","veverka",
+  "kravy","parohy","plamenak","beran","drak","liska","hyena","husy","opice","panda",
+  "vlk","psi_smecka","morsky_konik","zralok","zelva","prase","snek","zizala",
+  "slon","had","moucha"];
+const LANDSCAPE_IDS = new Set(["slon","had","moucha"]);
+function nadpis(id){ return id.charAt(0).toUpperCase()+id.slice(1).replace(/_/g," "); }
+const FENOMENY = FENOM_IDS.map(id=>({id, name: nadpis(id), img: imgPath(id)}));
+
+const MYSI_KLICE = [
+ {nazev:"Analytický", jadro:"Drží se faktů. Není třeba hledat skryté významy.", stopa:"Převyprávění děje, odpor k interpretaci."},
+ {nazev:"Kulturní", jadro:"Hledá vzorce. Přirovnává k něčemu, co už zná.", stopa:"Odkaz na jiný příběh, archetyp, paralelu."},
+ {nazev:"Filozofický", jadro:"Hledá podstatu za podstatou, smysl za smyslem.", stopa:"Obecná pravda, metafyzický tón."},
+ {nazev:"Naivní", jadro:"Ptá se jednoduše, odpovídá přímo.", stopa:"Přímočará morálka, čistý dojem."},
+ {nazev:"Jazykový", jadro:"Slyší slovo, větu, rytmus. Forma je obsah.", stopa:"Rým, hříčka, zvukomalba."},
+ {nazev:"Metaforický", jadro:"Vše je symbolem něčeho většího.", stopa:"Dekódování symbolů, přenos do abstrakce."},
+ {nazev:"Asociační", jadro:"Myšlení skrz osobní asociace.", stopa:"Řetěz asociací, skokové myšlení."},
+ {nazev:"Introspektivní", jadro:"Příběh jako záminka k sebepoznání.", stopa:"Osobní zkušenost, vzpomínka."},
+ {nazev:"Ironický", jadro:"Vidí propast mezi záměrem a výsledkem.", stopa:"Odhalení sebeklamu, lehký sarkasmus."},
+ {nazev:"Groteskní", jadro:"Vidí přehnané, karikující, temně komické.", stopa:"Přehnanost, černý humor."},
+ {nazev:"Absurdní", jadro:"Hledá paradox, místo, kde svět přestal dávat smysl.", stopa:"Zhroucení pravidel, absurdita."},
+ {nazev:"Surrealistický", jadro:"Spojuje nespojitelné. Myslí v obrazech.", stopa:"Bizarní spojení, snová logika."}
+];
+function najdiKlic(nazev){ return MYSI_KLICE.find(k=>k.nazev===nazev); }
+
+const PARAMS_K = [
+  {n:'Rovné dlouhé čáry',       ai:0},
+  {n:'Stínování, reálnost',     ai:1},
+  {n:'Perspektiva, 3D',         ai:2},
+  {n:'Jedním tahem',            ai:3},
+  {n:'Pravidelnost',            ai:4},
+  {n:'Písmo a text',            ai:5},
+  {n:'Šrafování',               ai:6},
+  {n:'Detaily',                 ai:7},
+  {n:'Sklon doprava',           ai:8},
+  {n:'Obtahování, přetahování', ai:9},
+  {n:'Vybarvování',             ai:10},
+  {n:'Nedokončené, prolínání',  ai:11},
+];
+const PARAMS_P = [
+  {n:'Tvary',        lbl:'Ostré',      lbr:'Kulaté',       al:1, ar:7},
+  {n:'Velikosti',    lbl:'Pravidelné', lbr:'Nepravidelné', al:2, ar:8},
+  {n:'Mezery',       lbl:'Pravidelné', lbr:'Nepravidelné', al:4, ar:10},
+  {n:'Řádkování',    lbl:'Přímé',      lbr:'Deformované',  al:5, ar:11},
+  {n:'Typ písma',    lbl:'Tiskací',    lbr:'Psací',        al:5, ar:11},
+  {n:'Poměr',        lbl:'Písmo',      lbr:'Kresba',       al:6, ar:0},
+  {n:'Dekorace',     lbl:'Serif',      lbr:'Strohé',       al:9, ar:3},
+  {n:'Obsah',        lbl:'Význam',     lbr:'Estetika',     al:2, ar:8},
+  {n:'Písmo/kresba', lbl:'Písmo',      lbr:'Kresba',       al:4, ar:10},
+  {n:'Prvky',        lbl:'Přehnané',   lbr:'Zjedn.',       al:9, ar:3},
+  {n:'Počet slov',   lbl:'Mnoho',      lbr:'Málo',         al:0, ar:6},
+  {n:'Kompozice',    lbl:'Vyvážená',   lbr:'Tíhnoucí',     al:1, ar:7},
+];
+
+/* ====================================================================
+   AKORDEONY (obecné)
+   ==================================================================== */
+function toggleAcc(btn){ btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('open'); }
+
+const track = document.getElementById('track');
+const panely = document.querySelectorAll('.panel');
+let aktualniPanel = 0;
+function scrollToPanel(dir){
+  aktualniPanel = Math.min(Math.max(aktualniPanel+dir,0), panely.length-1);
+  panely[aktualniPanel].scrollIntoView({behavior:'smooth', inline:'start'});
+}
+track.addEventListener('scroll', ()=>{ aktualniPanel = Math.round(track.scrollLeft/window.innerWidth); });
+
+function switchVerze(v){
+  document.querySelectorAll('.verze-btn').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  document.getElementById('verzeDig').classList.toggle('active', v==='dig');
+  document.getElementById('verzeFyz').classList.toggle('active', v==='fyz');
+}
+
+/* ====================================================================
+   ÚHLOMĚR — kolo s popisky, JEDNO vyskakovací okénko
+   ==================================================================== */
+let openWheelIdx = null;
+
+function drawWheel(profile){
+  const c = document.getElementById('wheelShared');
+  const ctx = c.getContext('2d');
+  const CX=140, CY=140, RMAX=112, RMIN=40;
+  ctx.clearRect(0,0,280,280);
+  const sa = (Math.PI*2)/12;
+  UHLY_MASTER.forEach((u,i)=>{
+    const a0 = -Math.PI/2 + i*sa + 0.03;
+    const a1 = a0 + sa - 0.06;
+
+    if(profile){
+      const pct = profile[i]?.pct || 0;
+      if(pct>0){
+        const r = RMIN + (RMAX-RMIN)*(pct/100);
+        ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,r,a0,a1); ctx.closePath();
+        ctx.fillStyle = u.barva + 'aa';
+        ctx.fill();
+      }
+    }
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,RMAX,a0,a1); ctx.closePath();
+    ctx.strokeStyle = u.barva; ctx.lineWidth = 1.5; ctx.stroke();
+
+    const mid = a0 + (a1-a0)/2;
+    const lx = CX + Math.cos(mid)*(RMAX+16);
+    const ly = CY + Math.sin(mid)*(RMAX+16);
+    ctx.fillStyle = u.barva; ctx.font = '300 8px "Space Grotesk"';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(u.nazev, lx, ly);
+  });
+  ctx.beginPath(); ctx.arc(CX,CY,RMIN,0,Math.PI*2);
+  ctx.fillStyle = '#0c0c0e'; ctx.fill();
+  ctx.strokeStyle = 'rgba(200,180,200,.2)'; ctx.lineWidth=1; ctx.stroke();
+}
+function handleWheelClick(e){
+  const c = e.target;
+  const rect = c.getBoundingClientRect();
+  const scaleX = c.width/rect.width, scaleY = c.height/rect.height;
+  const x = (e.clientX-rect.left)*scaleX - 140;
+  const y = (e.clientY-rect.top)*scaleY - 140;
+  let ang = Math.atan2(y,x) + Math.PI/2;
+  if(ang<0) ang += Math.PI*2;
+  const idx = Math.floor(ang/(Math.PI*2/12)) % 12;
+  if(openWheelIdx === idx){ closeWheelPopup(); return; }
+  openWheelPopup(idx);
+}
+function openWheelPopup(idx){
+  openWheelIdx = idx;
+  const u = UHLY_MASTER[idx];
+  const k = najdiKlic(u.nazev);
+  const box = document.getElementById('wheelPopup');
+  box.style.borderLeftColor = u.barva;
+  document.getElementById('wpName').style.color = u.barva;
+  document.getElementById('wpName').textContent = `${u.numb}. ${u.nazev}`;
+  document.getElementById('wpBody').innerHTML = `
+    <div><strong>Nástroj:</strong> ${u.nastroj}</div>
+    ${k?`<div style="margin-top:0.3rem;">${k.jadro}</div><div style="margin-top:0.3rem;"><strong>Stopa:</strong> ${k.stopa}</div>`:''}`;
+  box.classList.add('open');
+}
+function closeWheelPopup(){
+  openWheelIdx = null;
+  document.getElementById('wheelPopup').classList.remove('open');
+}
+document.getElementById('wheelShared').addEventListener('click', handleWheelClick);
+
+/* ====================================================================
+   ČASOVÁ OSA — barevný proužek uložených hodnocení
+   ==================================================================== */
+function renderTimeline(){
+  const strip = document.getElementById('timelineStrip');
+  const arr = nactiNastenku().slice().sort((a,b)=>a.id-b.id);
+  if(!arr.length){ strip.innerHTML = '<span class="timeline-empty">Zatím žádná uložená hodnocení.</span>'; return; }
+  strip.innerHTML = arr.map(e=>{
+    const top = e.profil && e.profil.length ? e.profil.reduce((a,b)=>b.pct>a.pct?b:a) : null;
+    const color = top ? top.uhel.barva : '#333';
+    return `<div class="tl-seg" style="background:${color}" title="${e.fenomen||'?'} · ${top?top.uhel.nazev:'?'} · ${e.ts}"></div>`;
+  }).join('');
+}
+
+/* ====================================================================
+   FENOMÉN — carousel, losování
+   ==================================================================== */
+let pickedFenomen = null;
+let mujUhel = '', partnerUhel = '';
+
+function buildCarousel(){
+  const trackEl = document.getElementById('carTrack');
+  trackEl.innerHTML='';
+  FENOMENY.forEach(f=>{
+    const d = document.createElement('div');
+    d.className='car-item'+(LANDSCAPE_IDS.has(f.id)?' landscape':''); d.dataset.id=f.id;
+    d.innerHTML=`<img src="${f.img}" onerror="this.style.opacity=0.15" alt=""><div class="cn">${f.name}</div>`;
+    d.onclick=()=>selectFenomen(f);
+    trackEl.appendChild(d);
+  });
+}
+function carScroll(dir){ document.getElementById('carTrack').scrollBy({left: dir*130, behavior:'smooth'}); }
+
+function losujFenomen(){
+  const f = FENOMENY[Math.floor(Math.random()*FENOMENY.length)];
+  selectFenomen(f);
+  const el = document.querySelector(`.car-item[data-id="${f.id}"]`);
+  if(el){
+    el.scrollIntoView({behavior:'smooth', inline:'center'});
+    el.classList.add('pulse');
+    setTimeout(()=>el.classList.remove('pulse'), 200);
+  }
+}
+function selectFenomen(f){
+  pickedFenomen = f;
+  document.querySelectorAll('.car-item').forEach(c=>c.classList.toggle('picked', c.dataset.id===f.id));
+  document.getElementById('pickedBox').style.display='block';
+  document.getElementById('pickedTitle').textContent = f.name;
+  document.getElementById('diagLink').href = uhlyPageUrl(f.id);
+  mujUhel = '';
+  document.getElementById('mujUhelBox').style.display='none';
+  document.getElementById('taskArea').innerHTML = '';
+}
+
+/* ====================================================================
+   ÚHEL Z ODKAZU + protilehlý úhel + výměna s partnerem
+   ==================================================================== */
+function setMujUhel(name){
+  if(!name) return;
+  mujUhel = name;
+  document.getElementById('mujUhelBox').style.display='block';
+  document.getElementById('mujUhelNazev').textContent = name;
+}
+function nactiZOdkazu(text){
+  if(!text) return;
+  try{
+    const url = new URL(text, location.href);
+    const f = url.searchParams.get('fenomen');
+    const u = url.searchParams.get('uhel');
+    if(f && !pickedFenomen){
+      const found = FENOMENY.find(x=>x.id===f);
+      if(found) selectFenomen(found);
+    }
+    if(u) setMujUhel(u);
+  }catch(e){ alert('Nepodařilo se přečíst odkaz.'); }
+}
+function pouzitProtilehly(){
+  if(!mujUhel) return;
+  const opp = uhelOpposite(mujUhel);
+  if(opp) setMujUhel(opp.nazev);
+  if(partnerUhel) renderUkol(); // pokud už byl úkol vygenerovaný jako sólo, přepočítá se
+}
+function vytvorOdkazProPartnera(){
+  if(!pickedFenomen){ alert('Nejdřív vyber fenomén.'); return; }
+  const url = `${location.origin}${location.pathname.replace(/[^/]*$/,'')}${uhlyPageUrl(pickedFenomen.id)}`;
+  const box = document.getElementById('mujOdkazBox');
+  box.textContent = url; box.style.display='block';
+}
+function potvrdit(){
+  const manual = document.getElementById('partnerUhelInput').value.trim();
+  if(manual){
+    try{
+      const url = new URL(manual, location.href);
+      const u = url.searchParams.get('uhel');
+      partnerUhel = u || manual;
+    }catch(e){ partnerUhel = manual; }
+  }
+  if(!partnerUhel){ alert('Zadej nebo vlož partnerův úhel.'); return; }
+  renderUkol();
+}
+function renderUkol(){
+  const uhel = partnerUhel || mujUhel;
+  if(!pickedFenomen || !uhel) return;
+  const area = document.getElementById('taskArea');
+  const master = uhelByName(uhel);
+  area.innerHTML = `<div class="task-card">
+    <p class="task-eyebrow">Kreativní úkol</p>
+    <h3 style="margin:0.4rem 0;color:var(--accent);">${pickedFenomen.name} — nástrojem úhlu „${uhel}"</h3>
+    ${master ? `<div class="task-tool">✎ ${master.nastroj}</div>` : `<p class="hint">Úhel „${uhel}" nesedí přesně na žádný z 12 — je to hra, vyber si nástroj sama.</p>`}
+    <p style="font-size:0.85rem;color:var(--mid);margin-top:0.8rem;">Tímhle nástrojem napiš nebo nakresli pár slov, větu nebo název — cokoli tě k fenoménu <strong style="color:var(--text);">${pickedFenomen.name}</strong> napadne. Nechej nástroj, ať vede ruku — nesnaž se ho obejít.</p>
+    <p class="hint" style="margin-top:0.6rem;">Hotový výsledek vyfoť a ohodnoť na stránce „Kresba a písmo".</p>
+  </div>`;
+  document.getElementById('nastFenomen').value = pickedFenomen.name;
+  document.getElementById('nastUhel').value = (master ? master.nastroj+' — ' : '') + uhel;
+}
+
+/* ====================================================================
+   OHODNOCENÍ KRESBY / PÍSMA
+   ==================================================================== */
+let evalMode = 'kresba';
+let aktualniObrazek = null;
+let posledniProfil = null;
+let valsK = new Array(PARAMS_K.length).fill(null);
+let valsP = new Array(PARAMS_P.length).fill(null);
+
+document.getElementById('fileInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  resizeImageDataUrl(file, 700, (dataUrl)=>{
+    aktualniObrazek = dataUrl;
+    const img = document.getElementById('previewImg');
+    img.src = dataUrl; img.style.display='block';
+  });
+});
+function resizeImageDataUrl(file, maxW, cb){
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, maxW/img.width);
+      const c = document.createElement('canvas');
+      c.width = img.width*scale; c.height = img.height*scale;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      cb(c.toDataURL('image/jpeg',0.75));
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setEvalMode(el){
+  document.querySelectorAll('[data-em]').forEach(c=>c.classList.remove('checked'));
+  el.classList.add('checked');
+  evalMode = el.dataset.em;
+  document.getElementById('kEvalWrap').style.display = evalMode==='kresba' ? 'block':'none';
+  document.getElementById('pEvalWrap').style.display = evalMode==='pismo' ? 'block':'none';
+}
+document.querySelector('[data-em="kresba"]').classList.add('checked');
+
+function buildKGrid(){
+  const grid = document.getElementById('kGrid');
+  grid.innerHTML='';
+  PARAMS_K.forEach((p, pi)=>{
+    const v = valsK[pi], isSet = v!==null;
+    const card = document.createElement('div');
+    card.className = 'k-card'+(isSet?' set':'');
+    card.id = 'k-'+pi;
+    card.innerHTML = `
+      <div class="k-card-top">
+        <span class="k-card-name">${p.n}</span>
+        <span class="k-status" id="kst-${pi}">${isSet?'✓':'·'}</span>
+      </div>
+      <input type="range" class="k-range" min="1" max="3" step="1" value="${isSet?v:2}" oninput="setK(${pi},+this.value)">
+      <div class="k-val" id="kv-${pi}">${isSet?v:'—'}</div>`;
+    grid.appendChild(card);
+  });
+}
+function setK(pi,v){
+  valsK[pi] = v;
+  document.getElementById('k-'+pi).classList.add('set');
+  document.getElementById('kv-'+pi).textContent = v;
+  document.getElementById('kst-'+pi).textContent = '✓';
+}
+function buildPList(){
+  const list = document.getElementById('pList');
+  list.innerHTML='';
+  PARAMS_P.forEach((p, pi)=>{
+    const v = valsP[pi], isSet = v!==null;
+    const lU = UHLY_MASTER[p.al], rU = UHLY_MASTER[p.ar];
+    const row = document.createElement('div');
+    row.className = 'p-row'+(isSet?' set':'');
+    row.id = 'p-'+pi;
+    row.innerHTML = `
+      <div class="p-top">
+        <span title="${lU.nazev}">${p.lbl}</span>
+        <span class="p-name">${p.n}</span>
+        <span title="${rU.nazev}">${p.lbr}</span>
+      </div>
+      <div class="p-controls">
+        <input type="range" class="p-bipolar" min="-3" max="3" step="1" value="${isSet?v:0}" oninput="setP(${pi},+this.value)">
+        <span class="p-val" id="pv-${pi}">${isSet?(v>0?'+'+v:v):'—'}</span>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+function setP(pi,v){
+  valsP[pi] = v;
+  document.getElementById('p-'+pi).classList.add('set');
+  document.getElementById('pv-'+pi).textContent = v===0?'0':(v>0?'+'+v:v);
+}
+
+function calcScores(){
+  const scores = new Array(12).fill(0);
+  if(evalMode==='kresba'){
+    valsK.forEach((v,pi)=>{ if(v!==null) scores[PARAMS_K[pi].ai] += v; });
+  } else {
+    valsP.forEach((v,pi)=>{
+      if(v===null) return;
+      const p = PARAMS_P[pi];
+      if(v<0) scores[p.al] += Math.abs(v);
+      else if(v>0) scores[p.ar] += v;
+    });
+  }
+  return scores;
+}
+function vyhodnotitKresbu(){
+  const scores = calcScores();
+  const max = Math.max(...scores, 1);
+  posledniProfil = scores.map((s,i)=>({ uhel: UHLY_MASTER[i], pct: Math.round((s/max)*100) }));
+  document.getElementById('vysledekWheelHolder').style.display='block';
+  drawWheel(posledniProfil);
+  kresliBar(posledniProfil);
+}
+function kresliBar(profil){
+  const wrap = document.getElementById('barWrap');
+  wrap.innerHTML='';
+  profil.filter(p=>p.pct>0).forEach(p=>{
+    const seg = document.createElement('div');
+    seg.className='bar-seg'; seg.style.width=p.pct+'%'; seg.style.backgroundColor=p.uhel.barva;
+    seg.title = p.uhel.nazev+': '+p.pct+'%';
+    wrap.appendChild(seg);
+  });
+}
+
+/* ====================================================================
+   NÁSTĚNKA — localStorage
+   ==================================================================== */
+const NAST_KEY = 'mezitahy_nastenka';
+function nactiNastenku(){ try{ return JSON.parse(localStorage.getItem(NAST_KEY))||[]; }catch(e){ return []; } }
+function ulozNastenku(arr){ localStorage.setItem(NAST_KEY, JSON.stringify(arr)); }
+
+function ulozitNaNastenku(){
+  if(!aktualniObrazek){ alert('Nejdřív nahraj foto kresby nebo písma.'); return; }
+  if(!posledniProfil){ alert('Nejdřív klikni na Vyhodnotit.'); return; }
+  const entry = {
+    id: Date.now(),
+    ts: new Date().toLocaleString('cs-CZ'),
+    fenomen: document.getElementById('nastFenomen').value,
+    uhel: document.getElementById('nastUhel').value,
+    mode: evalMode,
+    img: aktualniObrazek,
+    profil: posledniProfil
+  };
+  const arr = nactiNastenku();
+  arr.unshift(entry);
+  ulozNastenku(arr);
+  aktualniObrazek = null; posledniProfil = null;
+  valsK = new Array(PARAMS_K.length).fill(null);
+  valsP = new Array(PARAMS_P.length).fill(null);
+  buildKGrid(); buildPList();
+  document.getElementById('previewImg').style.display='none';
+  document.getElementById('fileInput').value='';
+  document.getElementById('vysledekWheelHolder').style.display='none';
+  renderNastenka();
+  renderTimeline();
+}
+function smazNastenku(id){
+  ulozNastenku(nactiNastenku().filter(e=>e.id!==id));
+  renderNastenka();
+  renderTimeline();
+}
+function renderNastenka(){
+  const grid = document.getElementById('nastenkaGrid');
+  const arr = nactiNastenku();
+  if(!arr.length){ grid.innerHTML = '<p class="nast-empty">Zatím nic uloženo.</p>'; return; }
+  grid.innerHTML='';
+  arr.forEach(e=>{
+    const d = document.createElement('div');
+    d.className='nast-item';
+    d.innerHTML = `<div class="ni-img"><img src="${e.img}" alt=""></div>
+      <div class="ni-body">
+        <div class="ni-fen">${e.fenomen||'—'}</div>
+        <div>${e.uhel||'—'} <span style="color:var(--dim);">(${e.mode==='pismo'?'písmo':'kresba'})</span></div>
+        <div>${e.ts}</div>
+        <div class="ni-del" onclick="smazNastenku(${e.id})">smazat</div>
+      </div>`;
+    grid.appendChild(d);
+  });
+}
+
+function buildSkicakParams(){
+  const box = document.getElementById('skicakParams');
+  box.innerHTML = PARAMS_K.map(p=>
+    `<div><span>${p.n}</span><span style="letter-spacing:0.1em;">○○○</span></div>`).join('');
+}
+
+/* ====================================================================
+   KNIHOVNA KARET
+   ==================================================================== */
+let selectedCards = new Set();
+const SIZES = [
+  {id:"a6", label:"A6", perA4:4},
+  {id:"a7", label:"A7", perA4:8},
+  {id:"a8", label:"A8", perA4:16}
+];
+let activeSize = "a7";
+function buildSizePicker(){
+  const el = document.getElementById('sizePicker');
+  el.innerHTML='';
+  SIZES.forEach(s=>{
+    const d = document.createElement('div');
+    d.className = 'size-opt'+(s.id===activeSize?' active':'');
+    d.innerHTML = `<div class="sz-name">${s.label}</div><div class="sz-count">${s.perA4}× na A4</div>`;
+    d.onclick=()=>{ activeSize=s.id; buildSizePicker(); updateSizeInfo(); };
+    el.appendChild(d);
+  });
+  updateSizeInfo();
+}
+function updateSizeInfo(){
+  const n = selectedCards.size || FENOMENY.length;
+  const s = SIZES.find(x=>x.id===activeSize);
+  const pages = Math.ceil(n / s.perA4);
+  document.getElementById('sizeInfo').textContent = `${n} karet × ${s.label} → ${s.perA4} na stránku A4 → ${pages} stránek k tisku.`;
+}
+function buildCardGrid(){
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML='';
+  FENOMENY.forEach(f=>{
+    const d = document.createElement('div');
+    d.className='pick-card'+(LANDSCAPE_IDS.has(f.id)?' landscape':''); d.dataset.id=f.id;
+    d.innerHTML = `<img src="${f.img}" onerror="this.style.opacity=0.15" alt=""><div class="pn">${f.name}</div>`;
+    d.onclick=()=>{
+      d.classList.toggle('sel');
+      d.classList.contains('sel') ? selectedCards.add(f.id) : selectedCards.delete(f.id);
+      updatePrintHint(); showCardPreview(f);
+    };
+    grid.appendChild(d);
+  });
+}
+function selectAllCards(all){
+  selectedCards = new Set(all ? FENOM_IDS : []);
+  document.querySelectorAll('#cardGrid .pick-card').forEach(c=>c.classList.toggle('sel', all));
+  updatePrintHint();
+}
+function updatePrintHint(){ document.getElementById('printCountHint').textContent = `${selectedCards.size} vybráno`; updateSizeInfo(); }
+function showCardPreview(f){
+  const box = document.getElementById('cardPreview');
+  box.classList.toggle('landscape', LANDSCAPE_IDS.has(f.id));
+  document.querySelector('#cardPreview .pc-title').textContent = f.name;
+  document.getElementById('pcImg').src = f.img;
+  const qrBox = document.getElementById('pcQr'); qrBox.innerHTML='';
+  if(window.QRCode){
+    new QRCode(qrBox, { text: `${location.origin}${location.pathname.replace(/[^/]*$/,'')}${uhlyPageUrl(f.id)}`, width:60, height:60, correctLevel: QRCode.CorrectLevel.M });
+  }
+}
+
+/* ====================================================================
+   TISK
+   ==================================================================== */
+function setPrintArea(html){ document.getElementById('printArea').innerHTML = html; }
+function printSection(which){
+  if(which==='karty'){
+    const ids = selectedCards.size ? [...selectedCards] : FENOM_IDS;
+    const s = SIZES.find(x=>x.id===activeSize);
+    const cols = Math.round(Math.sqrt(s.perA4));
+    let html = `<div class="print-sheet" style="grid-template-columns:repeat(${cols},1fr);">`;
+    ids.forEach(id=>{
+      const f = FENOMENY.find(x=>x.id===id);
+      html += `<div class="print-card${LANDSCAPE_IDS.has(id)?' landscape':''}">
+        <div class="pc-title">${f.name}</div>
+        <img src="${f.img}">
+        <div class="pc-footer"><div class="pc-qr" id="pq_${id}"></div><div class="pc-desc">Naskenuj pro pohádku a výběr úhlu.</div></div>
+      </div>`;
+    });
+    html += '</div>';
+    setPrintArea(html);
+    if(window.QRCode){
+      ids.forEach(id=>{
+        const el = document.getElementById(`pq_${id}`);
+        if(el) new QRCode(el, { text: `${location.origin}${location.pathname.replace(/[^/]*$/,'')}${uhlyPageUrl(id)}`, width:60, height:60, correctLevel: QRCode.CorrectLevel.M });
+      });
+    }
+  } else if(which==='klic'){
+    let html = '<h2>Kolo nástrojů — 12 úhlů</h2><table class="klic"><tr><th>#</th><th>Úhel</th><th>Stupně</th><th>Barva</th><th>Nástroj</th></tr>';
+    UHLY_MASTER.forEach(u=>{ html += `<tr><td>${u.numb}</td><td>${u.nazev}</td><td>${u.stupne}°</td><td style="background:${u.barva};width:1.5rem;"></td><td>${u.nastroj}</td></tr>`; });
+    html += '</table>';
+    setPrintArea(html);
+  } else if(which==='mysiklic'){
+    let html = '<h2>Myší klíče</h2>';
+    MYSI_KLICE.forEach((k,i)=>{
+      const u = UHLY_MASTER[i];
+      html += `<div style="page-break-after:always; padding:8mm 0; border-left:6px solid ${u.barva}; padding-left:6mm;">
+        <h3>${k.nazev}</h3>
+        <p><strong>Nástroj:</strong> ${u.nastroj}</p>
+        <p><strong>Jádro:</strong> ${k.jadro}</p>
+        <p><strong>Stopa:</strong> ${k.stopa}</p>
+      </div>`;
+    });
+    setPrintArea(html);
+  } else if(which==='skicak'){
+    const n = parseInt(document.getElementById('skicakCopies').value);
+    let html = `<div class="print-sheet" style="grid-template-columns:repeat(2,1fr);">`;
+    for(let i=0;i<n;i++){
+      html += `<div class="print-card" style="width:74mm;aspect-ratio:auto;">
+        <div style="text-align:left; font-size:8px; color:#555; border-bottom:1px dashed #999; padding:3px;">
+          Fenomén: __________  Úhel: __________
+        </div>
+        <div style="height:65mm; border:1px dashed #999; margin:3px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 6px; font-size:6px; padding:0 3px 3px;">
+          ${PARAMS_K.map(p=>`<div style="display:flex;justify-content:space-between;"><span>${p.n}</span><span>○○○</span></div>`).join('')}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+    setPrintArea(html);
+  }
+  setTimeout(()=>window.print(), 200);
+}
+
+/* ====================================================================
+   INIT
+   ==================================================================== */
+window.onload = ()=>{
+  drawWheel(null);
+  buildCarousel();
+  UHLY_MASTER.forEach(u=>{
+    const o = document.createElement('option'); o.value = u.nazev;
+    document.getElementById('uhlyList').appendChild(o);
+  });
+  buildKGrid();
+  buildPList();
+  buildSkicakParams();
+  buildSizePicker();
+  buildCardGrid();
+  renderNastenka();
+  renderTimeline();
+
+  if(location.search){ nactiZOdkazu(location.href); }
+};
+</script>
+</body>
+</html>
