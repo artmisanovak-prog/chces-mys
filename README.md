@@ -78,6 +78,13 @@
 - [meziTahy8](doma/nastroje/mezitahy8.html)
 - [meziTahy9](doma/nastroje/mezitahy9.html)
 - [mezitahy10](doma/nastroje/mezitahy10.html)
+- [meziTahy11](doma/nastroje/mezitahy11.html)
+- [meziTahy12](doma/nastroje/mezitahy12.html)
+- [mezitahy13](doma/nastroje/mezitahy13.html)
+- [meziTahy14](doma/nastroje/mezitahy14.html)
+- [meziTahy15](doma/nastroje/mezitahy15.html)
+- [mezitahy16](doma/nastroje/mezitahy16.html)
+
 
 ---
 
