@@ -83,6 +83,7 @@
 - [meziTahy14](doma/nastroje/mezitahy14.html)
 - [meziTahy15](doma/nastroje/mezitahy15.html)
 - [mezitahy16](doma/nastroje/mezitahy16.html)
+- [mezitahy17](doma/nastroje/mezitahy17.html)
 
 
 ---
