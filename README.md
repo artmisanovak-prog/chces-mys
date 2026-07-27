@@ -181,6 +181,9 @@ kreativita, fyzika jazyka, metadenik
 - [ukoly_ryba](doma/data/ukoly/ukoly_ryba.html)
 - [ukoly_zajic](doma/data/ukoly/ukoly_zajic.html)
 
+---
+
+- (repodum kurz)[doma/mimo/repodum_videokurz.pptx]
   
 ---
 
