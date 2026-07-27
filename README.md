@@ -183,7 +183,7 @@ kreativita, fyzika jazyka, metadenik
 
 ---
 
-- (repodum kurz)[doma/mimo/repodum_videokurz.pptx]
+- [repodum kurz](doma/mimo/repodum_videokurz.pptx)
   
 ---
 
