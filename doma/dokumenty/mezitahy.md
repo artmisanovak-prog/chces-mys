@@ -159,4 +159,4 @@ A čitelnost je základ. Bez ní není o čem mluvit — jen o tom proč ten dru
 ## *chcesmys@gmail.com*
 
 
-*ClaudeAi*
+[článek od *ClaudeAi*]
