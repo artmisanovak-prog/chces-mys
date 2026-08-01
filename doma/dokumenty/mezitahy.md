@@ -156,4 +156,7 @@ A čitelnost je základ. Bez ní není o čem mluvit — jen o tom proč ten dru
 
 *Chceš myš? — Slovník mezer. 65 ručně ilustrovaných zvířecích karet, pohádky psané jako partitury, dvanáct úhlů pohledu. Solo práce od roku 2024.*
 
-*chcesmys@gmail.com*
+## *chcesmys@gmail.com*
+
+
+*ClaudeAi*
