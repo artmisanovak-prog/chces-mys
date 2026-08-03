@@ -1,0 +1,106 @@
+# The Model Calculates Without Units
+
+## A Structural Prior for Abstraction in Large Language Models
+
+*Michaela Nováková, August 2026*
+
+---
+
+## Abstract
+
+Large language models demonstrate remarkable abilities in language generation, pattern recognition, reasoning, and knowledge retrieval. Yet they continue to struggle with tasks requiring abstraction from few examples, as highlighted by benchmarks such as ARC-AGI.
+
+This paper proposes a hypothesis: the limitation may not originate primarily from model architecture or insufficient data volume, but from the absence of a foundational structural layer within the training environment itself.
+
+Current models learn from enormous collections of text in which different types of information exist on the same undifferentiated representational level. The model can later discover categories, describe categories, and classify categories, but categories are not necessarily part of the environment in which its internal representations are formed.
+
+The proposal is not to give the model correct categories or a human-designed ontology. Instead, it is to embed a minimal structural layer into the training corpus before continuing training. This layer does not need to be perfect or human-created. Its purpose is simply to introduce persistent distinctions – the existence that one thing is not another.
+
+The title "The Model Calculates Without Units" refers to the possibility that current models perform complex operations over information without possessing a foundational system of distinctions that gives those operations stable structural meaning. Just as numerical calculations require units to define what a quantity represents, abstract reasoning may require basic distinctions that define what different representations are.
+
+---
+
+## Introduction
+
+Recent advances in large language models have brought remarkable capabilities in language understanding, reasoning, programming, and knowledge retrieval. Despite this progress, these systems continue to struggle with tasks requiring systematic abstraction from only a few examples, as demonstrated by benchmarks such as ARC-AGI.
+
+Most current research attempts to address this limitation through architectural innovations, larger datasets, longer context windows, or more sophisticated reasoning algorithms. This paper proposes a different hypothesis: the bottleneck may not lie in the architecture of the model, nor in the amount of information it receives. Instead, it may lie in the absence of an explicit structural prior within the training data itself.
+
+The central claim is simple: the model learns in a world where everything exists on the same representational level. It can later discover categories, describe categories, and classify categories, but categories are not part of the environment in which its representations are formed. This distinction may matter more than the categories themselves.
+
+---
+
+## Knowing a Category Versus Living Within a Category
+
+Modern language models already know what genres are. They know what languages are. They know the difference between fiction and documentation. They can classify text with impressive accuracy.
+
+However, this classification exists only as a task performed during inference. When prompted, the model constructs categories. When the inference ends, those categories disappear. Nothing about the internal organization of the training corpus has changed. The model repeatedly recreates distinctions that never become part of the world from which it learns.
+
+The model can answer the question "What is the difference between poetry and a technical manual?" It can describe tone, purpose, vocabulary, and structure. However, this knowledge functions only as information retrieved during a task. The distinction does not act as a permanent organizing principle. The model can create categories when asked. But after completing the task, the created structure disappears.
+
+This suggests a distinction between *knowing about categories* and *developing within categories*. Artificial systems do not automatically possess an environment where differentiation is built in from the start. Whatever structural assumptions they receive must be intentionally introduced – they do not emerge automatically from text volume alone.
+
+---
+
+## A Minimal Structural Intervention
+
+The proposal is intentionally conservative. It does not require a new neural architecture. It does not replace transformers. It does not require symbolic reasoning. It does not require manually annotated datasets. Instead, it uses a capability that current models already possess: a sufficiently capable language model can classify its own training corpus. Not perfectly. Not exhaustively. Only approximately.
+
+The intervention consists of four steps:
+
+1. The model is used to process its own training corpus.
+2. The model creates a coarse structural organization of the data – language, genre, document type, dialogue versus narrative, code versus natural language.
+3. The organization does not need to be perfectly accurate.
+4. The reorganized corpus, including the introduced structural distinctions, is then used for continued training.
+
+The exact taxonomy is not the important part. Accuracy is not the important part. What matters is that some persistent structural differentiation now exists – as part of the corpus itself, not merely as information described within it.
+
+---
+
+## Why Imperfect Categories May Be Enough
+
+Most machine learning pipelines assume that labels must be highly accurate. This proposal makes a different prediction: the first organizational layer does not need to be correct. It only needs to exist.
+
+A rough boundary is not the same as no boundary. A misplaced distinction still performs the one function that matters: making one thing different from another. Accuracy can be improved later through refinement, correction, and retraining. But refinement itself requires something to refine – an initial separation from which finer separations can be made.
+
+Without an initial structure, every new distinction must be created directly from an undifferentiated space, without anything to support it. With at least a minimal structural layer, later refinements occur within an already differentiated environment – as adjustments of existing boundaries, not as the creation of the first boundary from nothing.
+
+The proposal therefore does not depend on finding the right categories. It depends only on introducing the existence of categories.
+
+---
+
+## A Different View of Abstraction
+
+Current approaches often define abstraction as the ability to compress information or recognize shared patterns. This proposal suggests an additional requirement: abstraction may require an environment in which differences have persistent existence.
+
+A concept is not merely a cluster of similar examples. It is also separated from neighboring concepts. Without boundaries, similarity alone may be insufficient. The distinction itself becomes a computational object. From this perspective, abstraction is not only discovering relationships. It is discovering relationships within an organized representational space.
+
+---
+
+## Experimental Prediction
+
+The hypothesis can be tested straightforwardly. Two otherwise identical models would be trained, both on the same original corpus, with the same architecture and optimization procedure.
+
+In the first step, both models receive the same task: to create a coarse categorization of their own training data. Both can do this – classification as a one-time inference task is a capability that current models already handle well. Both models create an approximate division by language, genre, and text type. Neither does it perfectly, but that is not the point.
+
+The difference arises after this task is completed.
+
+For the first model, the categorization remains what it was – a completed task. The model performed it, answered, and that is all. The training data itself remains unchanged. If the same question is asked again in a week, the model will answer again and again, each time from the same undifferentiated environment.
+
+For the second model, the result of the classification – the metadata the model itself created – is loaded back into the training data. It becomes part of the structure of the corpus. Only then does training continue. The model keeps learning from the same texts, but this time those texts exist in an environment where distinctions already exist. Where there is a different shelf for poetry and a different shelf for technical documentation.
+
+Only after this step do both models begin to receive the same questions. Both are tested on tasks requiring abstraction, concept formation from few examples, and systematic reasoning – including benchmarks such as ARC-AGI.
+
+If the hypothesis is correct, the second model should demonstrate better performance. Not because it is smarter. Not because it can classify better. But because in its case, the categories became part of the environment in which it developed. They are no longer just answers to questions. They are the walls, the floor, the shelves. They are the world in which it lives.
+
+The goal of the experiment is not to prove that one particular categorization system is correct. The goal is to test whether the existence of any persistent structural layer affects the development of abstraction.
+
+---
+
+## Conclusion
+
+Large language models already possess the ability to create categories. This proposal does not argue that we need to teach them categorization. It suggests that categorization should become part of the world in which they develop.
+
+It is a subtle distinction. Instead of asking models to repeatedly reconstruct organization during inference, we allow them to inherit an initial organization during development.
+
+This hypothesis may prove incorrect. But if correct, it suggests that one of the missing ingredients for abstraction is neither larger models nor more data. It is a simple structural prior – not the correct categories, not perfect labels, only the existence of persistent distinctions from which increasingly sophisticated representations can emerge.
