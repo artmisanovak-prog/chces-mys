@@ -5,6 +5,9 @@
 
 # 🔸🔸◀️ chces mys: obsah ▶️🔻🔺🔻
 
+---
+
+[ai chatboti_konzultace_web](doma/mimo/chatbot_konzultace.html)
 
 ---
 
