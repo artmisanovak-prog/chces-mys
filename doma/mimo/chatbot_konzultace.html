@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Michaela Nováková — Repo dům</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0f0d0a;
+    --bg-alt: #161209;
+    --card: #1b160e;
+    --card-hover: #221b11;
+    --text: #ede6d8;
+    --text-dim: #a89a80;
+    --text-faint: #6f6653;
+    --accent: #d4a574;
+    --accent-soft: rgba(212,165,116,0.14);
+    --accent-line: rgba(212,165,116,0.28);
+    --border: #2a2316;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --mono: 'DM Mono', 'Courier New', monospace;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      radial-gradient(ellipse at 20% -10%, rgba(212,165,116,0.06), transparent 55%),
+      radial-gradient(ellipse at 90% 110%, rgba(212,165,116,0.04), transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .frame{
+    position:relative;
+    z-index:1;
+    max-width:960px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; text-underline-offset:3px; }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+  }
+
+  h1,h2,h3{ font-family:var(--serif); font-weight:500; color:var(--text); }
+
+  /* ---------- Top navigation ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(15,13,10,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    max-width:960px; margin:0 auto; padding:18px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:12px;
+  }
+  .nav-mark{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.1em;
+    color:var(--text); text-transform:uppercase;
+  }
+  .nav-mark span{ color:var(--accent); }
+  .nav-links{ display:flex; gap:24px; flex-wrap:wrap; }
+  .nav-links a{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.06em;
+    color:var(--text-dim); text-transform:uppercase;
+  }
+  .nav-links a:hover{ color:var(--accent); text-decoration:none; }
+
+  @media (max-width:680px){ .nav-links{ font-size:11px; gap:16px; } }
+
+  /* ---------- Hero ---------- */
+  section.hero{ padding:80px 0 64px; }
+  .hero-grid{
+    display:grid; grid-template-columns:240px 1fr; gap:40px; align-items:start;
+  }
+  .portrait-frame{
+    border:1px solid var(--border);
+    outline:1px solid var(--accent-line);
+    outline-offset:6px;
+  }
+  .portrait-frame img{
+    width:100%; height:300px; object-fit:cover; display:block;
+    filter:sepia(0.55) saturate(1.1) hue-rotate(-8deg) brightness(0.9) contrast(1.08);
+    background: var(--card);
+  }
+  h1.title{ font-size:42px; font-weight:500; line-height:1.15; letter-spacing:-0.01em; }
+  h1.title em{ font-style:italic; color:var(--accent); font-weight:400; }
+  .hero-role{ margin-top:10px; font-family:var(--mono); font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); }
+  .hero-text{ margin-top:18px; max-width:56ch; color:var(--text-dim); font-size:18px; }
+  .hero-cta{ margin-top:26px; display:flex; gap:14px; flex-wrap:wrap; }
+
+  @media (max-width:720px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .portrait-frame{ max-width:220px; }
+  }
+
+  .btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:12px 22px; display:inline-block; cursor:pointer;
+    border:1px solid var(--accent); transition:all .2s;
+  }
+  .btn-primary{ background:var(--accent); color:#14110a; }
+  .btn-primary:hover{ background:transparent; color:var(--accent); text-decoration:none; }
+  .btn-ghost{ border:1px solid var(--border); color:var(--text-dim); }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); text-decoration:none; }
+
+  /* ---------- Pro firmy box ---------- */
+  .biz-box{
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:28px 32px;
+    margin: 40px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .biz-box h2 { font-size: 24px; max-width: 24ch; }
+  .biz-box p { color: var(--text-dim); max-width: 36ch; font-size: 17px; }
+
+  /* ---------- Section shell ---------- */
+  section.block{ padding:60px 0; border-top:1px solid var(--border); }
+  .block-head{ margin-bottom:36px; }
+  .block-head h2{ font-size:29px; margin-top:6px; }
+  .block-lede{ max-width:62ch; color:var(--text-dim); margin-bottom:32px; font-size:18px; }
+
+  .scroll-box{
+    max-height:260px; overflow-y:auto;
+    border:1px solid var(--border);
+    padding:18px 20px;
+    background:var(--card);
+    color:var(--text-dim);
+    font-size:17px;
+  }
+  .scroll-box p + p{ margin-top:14px; }
+  .scroll-box::-webkit-scrollbar{ width:8px; }
+  .scroll-box::-webkit-scrollbar-track{ background:var(--bg); }
+  .scroll-box::-webkit-scrollbar-thumb{ background:var(--border); }
+  .scroll-box::-webkit-scrollbar-thumb:hover{ background:var(--accent-line); }
+
+  /* ---------- Accordion ---------- */
+  .acc-list{ border-top:1px solid var(--border); }
+  .acc-item{ border-bottom:1px solid var(--border); }
+  .acc-trigger{
+    width:100%; background:none; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 2px; text-align:left; color:var(--text); gap:16px;
+    font-family:var(--serif);
+  }
+  .acc-trigger:hover{ background:var(--card); }
+  .acc-trigger .left{ display:flex; align-items:baseline; gap:16px; min-width:0; }
+  .acc-trigger .num{ font-family:var(--mono); font-size:12px; color:var(--accent); flex-shrink:0; }
+  .acc-trigger h3{ font-size:20px; font-weight:500; }
+  .acc-trigger .plus{ font-family:var(--mono); color:var(--text-faint); font-size:18px; flex-shrink:0; transition:transform .2s; }
+  .acc-item.open .plus{ transform:rotate(45deg); color:var(--accent); }
+  .acc-panel{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .acc-panel-inner{ padding:0 2px 22px 40px; color:var(--text-dim); font-size:17px; max-width:64ch; }
+  .acc-panel-inner .tag{ display:inline-block; margin-top:2px; margin-bottom:12px; font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint); border:1px solid var(--border); padding:3px 8px; }
+  .acc-panel-inner .go{ display:inline-block; margin-top:14px; font-family:var(--mono); font-size:12px; letter-spacing:0.04em; border:1px solid var(--accent); padding:8px 16px; color:var(--accent); }
+  .acc-panel-inner .go:hover{ background:var(--accent); color:#14110a; text-decoration:none; }
+
+  /* ---------- Pricing ---------- */
+  .price-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  @media (max-width:820px){ .price-grid{ grid-template-columns:1fr; } }
+  .price-card{ background:var(--card); padding:26px 24px; display:flex; flex-direction:column; }
+  .price-card.featured{ background:var(--card-hover); }
+  .price-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); }
+  .price-eyebrow.on{ color:var(--accent); }
+  .price-card h3{ font-size:22px; margin-top:8px; }
+  .price-amount{ font-family:var(--serif); font-size:30px; color:var(--accent); margin-top:12px; }
+  .price-amount small{ font-family:var(--mono); font-size:12px; color:var(--text-faint); display:block; margin-top:4px; text-transform:none; letter-spacing:0; }
+  .price-desc{ color:var(--text-dim); font-size:15.5px; margin-top:12px; flex-grow:1; }
+  .price-card .btn{ margin-top:18px; text-align:center; }
+
+  /* ---------- Footer / contact ---------- */
+  footer{ padding:64px 0 56px; border-top:1px solid var(--border); }
+  .contact-grid{ display:flex; justify-content:space-between; align-items:flex-end; gap:30px; flex-wrap:wrap; }
+  footer h2{ font-size:30px; max-width:16ch; }
+  .contact-list{ font-family:var(--mono); font-size:14px; color:var(--text-dim); display:flex; flex-direction:column; gap:8px; }
+  .contact-list a{ color:var(--text); }
+  .contact-list a:hover{ color:var(--accent); }
+  .footnote{ margin-top:52px; padding-top:22px; border-top:1px solid var(--border); font-family:var(--mono); font-size:11.5px; color:var(--text-faint); letter-spacing:0.02em; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+
+  ::selection{ background:var(--accent-soft); color:var(--accent); }
+  @media (prefers-reduced-motion: reduce){ *{ scroll-behavior:auto !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-mark">Repo<span>dům</span> / Michaela Nováková</div>
+    <nav class="nav-links">
+      <a href="#o-mne">O mně</a>
+      <a href="#co-je-repodum">Co je Repo dům</a>
+      <a href="#vyzkum">Výzkum</a>
+      <a href="#nastroje">Nástroje</a>
+      <a href="#konzultace">Konzultace</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+  </div>
+</header>
+
+<main class="frame">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="hero-grid">
+      <div class="portrait-frame">
+        <img src="doma/ilustrace/michaela.jpg" alt="Portrét Michaely Novákové">
+      </div>
+      <div>
+        <h1 class="title">Michaela<br><em>Nováková</em></h1>
+        <div class="hero-role">Výzkum · nástroje · Repo dům</div>
+        <p class="hero-text">
+          Nezávislá tvůrkyně a výzkumnice na pomezí kreativní metodologie, webového vývoje
+          a teorie umělé inteligence. Stavím vlastní nástroje bez backendu, bez týmu
+          a bez institucí — a zkoumám, proč jazykové modely ztrácí hranici mezi tím,
+          co vědí, a tím, co si domýšlí.
+        </p>
+        <div class="hero-cta">
+          <a href="#konzultace" class="btn btn-primary">Konzultace</a>
+          <a href="#vyzkum" class="btn btn-ghost">Výzkum na Zenodo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRO FIRMY ===================== -->
+  <div class="biz-box">
+    <div>
+      <h2>Pro firmy a vývojáře</h2>
+      <p>Firemní chatboty často nechybují proto, že by neznaly odpověď — ale protože ji použijí ve špatném kontextu. Pomůžu vám pochopit proč a ukážu, jak tomu předcházet.</p>
+    </div>
+    <a href="#konzultace" class="btn btn-primary">Chci to vyřešit</a>
+  </div>
+
+  <!-- ===================== O MNĚ ===================== -->
+  <section class="block" id="o-mne">
+    <div class="block-head">
+      <div class="eyebrow">01 / Autorka</div>
+      <h2>O mně</h2>
+    </div>
+    <div class="scroll-box">
+      <p>
+        Jsem nezávislá tvůrkyně, výzkumnice a vizuální umělkyně pracující na pomezí
+        kreativní metodologie, webového vývoje a teorie umělé inteligence. Vše, co
+        publikuji — nástroje, eseje, workshopy i výzkum — stavím a vydávám sama, bez
+        technického týmu, investorů nebo institucionální podpory.
+      </p>
+      <p>
+        Mým hlavním publikačním prostředím je Repo dům: bezserverová, na infrastruktuře
+        nezávislá filozofie, kterou uplatňuji ve všech svých nástrojích — stav žije
+        v prohlížeči, ne v cizí databázi.
+      </p>
+      <p>
+        Přemýšlím spirálovitě, ne lineárně, a často pracuji metodou bricolage — nejdřív
+        tvořím, teprve pak formuluji, proč to funguje. Z toho vzešla i teoretická práce
+        o strukturálních předpokladech abstrakce ve velkých jazykových modelech,
+        kterou publikuji jako sérii preprintů na Zenodo, souběžně s praktickými nástroji
+        a workshopy postavenými na stejném podkladu.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== CO JE REPO DŮM ===================== -->
+  <section class="block" id="co-je-repodum">
+    <div class="block-head">
+      <div class="eyebrow">02 / Filozofie</div>
+      <h2>Co je Repo dům</h2>
+    </div>
+    <p class="block-lede">
+      Repo dům je architektura i způsob přemýšlení zároveň. Rozklikněte jednotlivé body.
+    </p>
+
+    <div class="acc-list">
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">01</span><h3>Žádný server, žádná databáze</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          Nástroje běží čistě v prohlížeči. Nic neposílám na vzdálený server, nic
+          neukládám do cizí databáze. To znamená nulové provozní náklady, žádnou
+          závislost na tom, jestli nějaká služba zítra zdraží nebo zanikne, a plnou
+          kontrolu nad tím, co se s daty děje.
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">02</span><h3>URL jako stav, prohlížeč jako paměť</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          Kde to dává smysl, stav nástroje žije přímo v adrese stránky nebo
+          v lokálním úložišti prohlížeče (localStorage). Žádný účet, žádné
+          přihlašování, žádná ztráta dat kvůli výpadku služby třetí strany.
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">03</span><h3>Plně přenositelné a vlastnitelné</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          Jeden HTML soubor lze stáhnout, otevřít offline, poslat e-mailem nebo
+          nahrát kamkoliv jinam — nikdy není uzamčený v proprietární platformě.
+          To platí pro mě jako autorku i pro každého, kdo nástroj používá.
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">04</span><h3>Bricolage: nejdřív tvořit, pak vysvětlovat</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          Metodologie vzniká zpětně, z hotové práce, ne jako plán předem. Nástroj
+          nebo esej se nejdřív postaví, a teprve při stavbě se ukáže, jaký princip
+          za ním vlastně stojí — to je i důvod, proč se výzkum a praktické nástroje
+          na téhle stránce prolínají.
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VÝZKUM ===================== -->
+  <section class="block" id="vyzkum">
+    <div class="block-head">
+      <div class="eyebrow">03 / Publikace</div>
+      <h2>Výzkum</h2>
+    </div>
+    <p class="block-lede">
+      Čtyřdílná série preprintů na Zenodo o tom, proč velkým jazykovým modelům chybí
+      trvalá strukturální hranice mezi kategoriemi — a proč to může být totéž,
+      co stojí za jejich sklonem k halucinaci.
+    </p>
+
+    <div class="acc-list">
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">I.</span><h3>Model počítá bez jednotek</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">Hlavní teze</span><br>
+          Rozdíl jako první podmínka abstrakce ve velkých jazykových modelech — proč
+          kategorie nemohou vzniknout, pokud jim nepředchází stabilní rozlišení.<br>
+          <a class="go" href="https://doi.org/10.5281/zenodo.21825890" target="_blank" rel="noopener">Číst na Zenodo →</a>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">II.</span><h3>Simultaneita a firemní pilot</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">Addendum</span><br>
+          Proč musí být kategorie přítomné najednou, ne sekvenčně — a návrh minimálního,
+          levného testu na firemním jazykovém modelu.<br>
+          <a class="go" href="https://doi.org/10.5281/zenodo.21827845" target="_blank" rel="noopener">Číst na Zenodo →</a>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">III.</span><h3>Modalita jako formální, ne ontologická</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">Addendum</span><br>
+          Proč rozdíl mezi textem a obrazem nevyžaduje samostatný důkaz — a jak se
+          návrh vymezuje vůči RAG a doménovému převažování dat.<br>
+          <a class="go" href="https://doi.org/10.5281/zenodo.21828627" target="_blank" rel="noopener">Číst na Zenodo →</a>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">IV.</span><h3>Řád vyžaduje chaos, který mu předchází</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">Addendum</span><br>
+          Proč práce s nediferencovanými korpusy nebyla omyl, ale nutná podmínka
+          k tomu, aby se tahle mezera vůbec dala pojmenovat.<br>
+          <a class="go" href="https://doi.org/10.5281/zenodo.21828770" target="_blank" rel="noopener">Číst na Zenodo →</a>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== NÁSTROJE ===================== -->
+  <section class="block" id="nastroje">
+    <div class="block-head">
+      <div class="eyebrow">04 / Portfolio</div>
+      <h2>Nástroje a projekty</h2>
+    </div>
+    <p class="block-lede">
+      Vybraná část ekosystému Chceš myš? a přidružených prací.
+    </p>
+
+    <div class="acc-list">
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">01</span><h3>meziTahy</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">chcesmys.html</span><br>
+          Párová i sólo kreativní hra se zvířecími ilustračními kartami (fenomény),
+          pohádkovou diagnostikou a kanonickým systémem 12 úhlů. Fyzická verze
+          jako výchozí, s nástěnkou pro poznámky uloženou lokálně v prohlížeči.<br>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger">
+          <span class="left"><span class="num">02</span><h3>Čarofyzika</h3></span>
+          <span class="plus">+</span>
+        </button>
+        <div class="acc-panel"><div class="acc-panel-inner">
+          <span class="tag">nástroj</span><br>
+          Generativní kombinátor propojující fyziku, jazyk a obraz — nástroj pro
+          hravé skládání neočekávaných spojení jako metoda tvůrčí práce.<br>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== KONZULTACE / CENÍK ===================== -->
+  <section class="block" id="konzultace">
+    <div class="block-head">
+      <div class="eyebrow">05 / Spolupráce</div>
+      <h2>Konzultace</h2>
+    </div>
+    <p class="block-lede">
+      Jasné ceny za jasně definované služby. Každá spolupráce začíná krátkou úvodní konzultací zdarma, kde si ujasníme, jestli si rozumíme.
+    </p>
+
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-eyebrow">Jednorázově</div>
+        <h3>Analýza problému</h3>
+        <div class="price-amount">5 000 Kč
+          <small>jednorázová platba</small>
+        </div>
+        <p class="price-desc">
+          Popíšete mi svůj problém s chatbotem nebo jazykovým modelem. Já ho analyzuji a pošlu vám zpět písemnou zprávu s diagnózou a konkrétními kroky k nápravě.
+        </p>
+        <a href="mailto:chcesmys@gmail.com" class="btn btn-ghost">Objednat</a>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-eyebrow on">Nejčastější</div>
+        <h3>Implementační balíček</h3>
+        <div class="price-amount">15 000 Kč
+          <small>jednorázová platba</small>
+        </div>
+        <p class="price-desc">
+          Dostanete kompletní sadu: analýzu problému, podrobný implementační protokol na míru vaší firmě, a 60minutový online workshop pro váš tým.
+        </p>
+        <a href="mailto:chcesmys@gmail.com" class="btn btn-primary">Objednat</a>
+      </div>
+
+      <div class="price-card">
+        <div class="price-eyebrow">Dlouhodobě</div>
+        <h3>Konzultační podpora</h3>
+        <div class="price-amount">8 000 Kč
+          <small>měsíčně</small>
+        </div>
+        <p class="price-desc">
+          Pravidelné měsíční konzultace, průběžná kontrola vašich dat a okamžitá pomoc, když se něco pokazí. Jsem váš externí parťák pro AI.
+        </p>
+        <a href="mailto:chcesmys@gmail.com" class="btn btn-ghost">Objednat</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== KONTAKT ===================== -->
+  <footer id="kontakt">
+    <div class="contact-grid">
+      <h2>Ozvěte se, pokud vás zajímá spolupráce nebo máte otázku k výzkumu.</h2>
+      <div class="contact-list">
+        <a href="mailto:chcesmys@gmail.com">chcesmys@gmail.com</a>
+        <a href="#vyzkum">Výzkum na Zenodo</a>
+        <a href="#nastroje">Portfolio nástrojů</a>
+      </div>
+    </div>
+    <div class="footnote">
+      <span>© 2026 Michaela Nováková — Repo dům</span>
+      <span>Obsah a nástroje na této stránce jsou autorská práce; texty a kód jsou volně k nahlédnutí, ne k přebírání bez domluvy.</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  document.querySelectorAll('.acc-item').forEach(function(item){
+    var trigger = item.querySelector('.acc-trigger');
+    var panel = item.querySelector('.acc-panel');
+    trigger.addEventListener('click', function(){
+      var isOpen = item.classList.contains('open');
+      if(isOpen){
+        item.classList.remove('open');
+        panel.style.maxHeight = null;
+      } else {
+        item.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
