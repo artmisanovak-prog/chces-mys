@@ -1,0 +1,2004 @@
+<!DOCTYPE html><html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline experiment strukturální hranice</title><style>
+:root {
+    --bg:#0f0d0a;
+    --bg2:#161209;
+    --card:#1b160e;
+    --card2:#211a10;
+    --text:#ede6d8;
+    --dim:#a89a80;
+    --faint:#6f6653;
+    --accent:#6b7f8c;
+    --accent-soft:rgba(107,127,140,.14);
+    --border:#2a2316;
+    --green:#7ba87b;
+    --red:#c96b6b;
+    --yellow:#c9ad6b;
+    --mono:"Courier New",monospace;
+    --serif:Georgia,"Times New Roman",serif;
+}
+
+* {
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html {
+    scroll-behavior:smooth;
+}
+
+body {
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--serif);
+    font-size:18px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+}
+
+body::before {
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+        radial-gradient(ellipse at 20% -10%,rgba(107,127,140,.07),transparent 55%),
+        radial-gradient(ellipse at 90% 110%,rgba(107,127,140,.04),transparent 50%);
+}
+
+button,
+input,
+textarea {
+    font:inherit;
+}
+
+button {
+    cursor:pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+}
+
+.frame {
+    position:relative;
+    z-index:1;
+    max-width:1050px;
+    margin:0 auto;
+    padding:0 28px;
+}
+
+.nav {
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(15,13,10,.94);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+}
+
+.nav-inner {
+    max-width:1050px;
+    margin:auto;
+    padding:16px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-title {
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+}
+
+.nav-title span {
+    color:var(--accent);
+}
+
+.nav-status {
+    font-family:var(--mono);
+    color:var(--green);
+    font-size:10px;
+    letter-spacing:.08em;
+}
+
+.hero {
+    padding:85px 0 70px;
+}
+
+.eyebrow {
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+
+h1 {
+    font-size:clamp(42px,7vw,70px);
+    line-height:1.05;
+    font-weight:500;
+    margin-top:12px;
+}
+
+h2 {
+    font-size:30px;
+    font-weight:500;
+    margin-top:5px;
+}
+
+h3 {
+    font-size:20px;
+    font-weight:500;
+}
+
+.lede {
+    color:var(--dim);
+    max-width:70ch;
+    margin-top:20px;
+}
+
+.hero-tags {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:28px;
+}
+
+.tag {
+    padding:5px 9px;
+    border:1px solid var(--border);
+    background:var(--card);
+    color:var(--dim);
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.block {
+    padding:60px 0;
+    border-top:1px solid var(--border);
+}
+
+.block-head {
+    margin-bottom:25px;
+}
+
+.grid2 {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.grid3 {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+@media(max-width:780px) {
+    .grid2,
+    .grid3 {
+        grid-template-columns:1fr;
+    }
+
+    .frame,
+    .nav-inner {
+        padding-left:18px;
+        padding-right:18px;
+    }
+}
+
+.card {
+    background:var(--card);
+    border:1px solid var(--border);
+}
+
+.card-head {
+    padding:15px 17px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.card-body {
+    padding:17px;
+}
+
+textarea,
+input[type="text"] {
+    width:100%;
+    background:#14110c;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px;
+    font-family:var(--mono);
+    font-size:12px;
+    resize:vertical;
+}
+
+textarea {
+    min-height:220px;
+}
+
+input[type="text"] {
+    min-height:45px;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+    outline:none;
+    border-color:var(--accent);
+}
+
+.btn {
+    border:1px solid var(--accent);
+    background:transparent;
+    color:var(--accent);
+    padding:12px 17px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    transition:.18s ease;
+}
+
+.btn:hover {
+    background:var(--accent);
+    color:#0f0d0a;
+}
+
+.btn-primary {
+    background:var(--accent);
+    color:#0f0d0a;
+}
+
+.btn-primary:hover {
+    background:transparent;
+    color:var(--accent);
+}
+
+.btn-green {
+    border-color:var(--green);
+    color:var(--green);
+}
+
+.btn-green:hover {
+    background:var(--green);
+    color:#0f0d0a;
+}
+
+.btn-red {
+    border-color:var(--red);
+    color:var(--red);
+}
+
+.controls {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+}
+
+.badge {
+    display:inline-block;
+    padding:4px 8px;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    border:1px solid var(--border);
+}
+
+.badge-green {
+    color:var(--green);
+    border-color:var(--green);
+    background:#203a20;
+}
+
+.badge-red {
+    color:var(--red);
+    border-color:var(--red);
+    background:#3a2020;
+}
+
+.badge-blue {
+    color:var(--accent);
+    border-color:var(--accent);
+    background:var(--accent-soft);
+}
+
+.status {
+    min-height:20px;
+    margin-top:12px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--accent);
+}
+
+pre {
+    margin:0;
+    background:#14110c;
+    border:1px solid var(--border);
+    padding:16px;
+    overflow:auto;
+    max-height:400px;
+    color:var(--dim);
+    font-family:var(--mono);
+    font-size:11px;
+    line-height:1.55;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.instructions {
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    margin-top:20px;
+}
+
+.instruction {
+    display:flex;
+    gap:12px;
+    padding:14px;
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--dim);
+    font-family:var(--mono);
+    font-size:11px;
+    cursor:pointer;
+}
+
+.instruction:hover {
+    background:var(--card2);
+}
+
+.instruction input {
+    width:17px;
+    height:17px;
+    accent-color:var(--accent);
+    flex:none;
+}
+
+.metric {
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:23px;
+    text-align:center;
+}
+
+.metric-number {
+    color:var(--accent);
+    font-size:43px;
+    line-height:1;
+}
+
+.metric-label {
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    margin-top:8px;
+}
+
+.progress {
+    height:7px;
+    margin-top:14px;
+    background:#251f15;
+}
+
+.progress div {
+    height:100%;
+    width:0;
+    background:var(--accent);
+    transition:width .4s ease;
+}
+
+.question {
+    background:var(--card);
+    border:1px solid var(--border);
+    margin-bottom:12px;
+}
+
+.question-head {
+    padding:15px 17px;
+    border-bottom:1px solid var(--border);
+}
+
+.question-number {
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.08em;
+    margin-bottom:5px;
+}
+
+.question-text {
+    font-size:18px;
+}
+
+.question-body {
+    padding:17px;
+}
+
+.answer {
+    margin-bottom:12px;
+    padding:12px;
+    background:#15120d;
+    border-left:2px solid var(--border);
+}
+
+.answer-label {
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:8px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    margin-bottom:4px;
+}
+
+.answer-value {
+    font-size:14px;
+}
+
+.reason {
+    margin-top:7px;
+    color:var(--dim);
+    font-size:12px;
+    font-style:italic;
+}
+
+.question-result {
+    border-top:1px solid var(--border);
+    padding:10px 17px;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+}
+
+.correct {
+    color:var(--green);
+}
+
+.wrong {
+    color:var(--red);
+}
+
+.neutral {
+    color:var(--faint);
+}
+
+.report {
+    background:#14110c;
+    border:1px solid var(--border);
+    padding:20px;
+    font-family:var(--mono);
+    font-size:11px;
+    line-height:1.7;
+    white-space:pre-wrap;
+}
+
+.notice {
+    margin-top:20px;
+    padding:17px;
+    border-left:2px solid var(--accent);
+    background:var(--accent-soft);
+    color:var(--dim);
+    font-size:14px;
+}
+
+.notice strong {
+    color:var(--text);
+}
+
+.hidden {
+    display:none !important;
+}
+
+.file-label {
+    display:inline-block;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    padding:12px 17px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+}
+
+.file-label:hover {
+    background:var(--accent);
+    color:#0f0d0a;
+}
+
+#fileInput {
+    display:none;
+}
+
+.small {
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:10px;
+}
+
+.footer {
+    padding:40px 0 70px;
+    text-align:center;
+    color:var(--faint);
+    font-family:var(--mono);
+    font-size:9px;
+}
+</style></head><body><header class="nav">
+    <div class="nav-inner">
+        <div class="nav-title">
+            Offline <span>experiment</span>
+        </div>
+        <div class="nav-status">
+            DATA STAY LOCAL
+        </div>
+    </div>
+</header><main class="frame"><section class="hero">
+    <div class="eyebrow">Privátní experimentální nástroj</div><h1>Otestujte strukturální<br>hranici na vlastních datech.</h1>
+
+<p class="lede">
+    Tento nástroj pracuje lokálně ve vašem počítači. Nahrajte vlastní
+    testovací data, přidejte identifikátor firmy, nastavte pravidla
+    a porovnejte výsledek před a po zavedení strukturální hranice.
+</p>
+
+<div class="hero-tags">
+    <span class="tag">Offline</span>
+    <span class="tag">Bez automatického uploadu</span>
+    <span class="tag">Vlastní data</span>
+    <span class="tag">Export výsledků</span>
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Krok 1</div>
+    <h2>Načtěte testovací data</h2>
+</div>
+
+<p class="lede">
+    Doporučený formát je JSON nebo CSV obsahující testovací otázky,
+    firemní odpovědi a případnou obecnou odpověď.
+</p>
+
+<div class="card" style="margin-top:25px;">
+
+    <div class="card-head">
+        <span class="badge badge-blue">Import</span>
+
+        <span class="small" id="dataInfo">
+            Demo data
+        </span>
+    </div>
+
+    <div class="card-body">
+
+        <div class="controls">
+
+            <label class="file-label">
+                Vybrat JSON / CSV
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".json,.csv,.txt"
+                >
+            </label>
+
+            <button
+                class="btn"
+                onclick="loadDemoData()"
+            >
+                Použít demo data
+            </button>
+
+        </div>
+
+        <textarea
+            id="dataInput"
+            style="margin-top:15px;"
+            spellcheck="false"
+        ></textarea>
+
+        <div class="controls" style="margin-top:12px;">
+            <button
+                class="btn btn-primary"
+                onclick="parseData()"
+            >
+                Načíst data
+            </button>
+
+            <button
+                class="btn"
+                onclick="clearData()"
+            >
+                Vymazat
+            </button>
+        </div>
+
+        <div
+            class="status"
+            id="dataStatus"
+        ></div>
+
+    </div>
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Krok 2</div>
+    <h2>Definujte ID firmy</h2>
+</div>
+
+<p class="lede">
+    ID zadáte jednou. Nástroj jej potom přidá ke všem firemním
+    položkám v datasetu.
+</p>
+
+<div class="card" style="margin-top:25px;">
+    <div class="card-body">
+
+        <div class="controls">
+
+            <input
+                type="text"
+                id="companyId"
+                value="MOJE_FIRMA"
+                placeholder="Např. ACME_CZ"
+                maxlength="50"
+                style="max-width:340px;"
+            >
+
+            <button
+                class="btn btn-primary"
+                onclick="applyCompanyId()"
+            >
+                Přidat ID ke všem datům
+            </button>
+
+        </div>
+
+        <div
+            class="status"
+            id="idStatus"
+        ></div>
+
+    </div>
+</div>
+
+<div
+    class="grid2"
+    style="margin-top:20px;"
+>
+
+    <div class="card">
+        <div class="card-head">
+            <span class="badge badge-red">Před</span>
+            <span class="small">Původní data</span>
+        </div>
+
+        <div class="card-body">
+            <pre id="beforeData">Zatím nejsou načtena data.</pre>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <span class="badge badge-green">Po</span>
+            <span class="small">Data s ID</span>
+        </div>
+
+        <div class="card-body">
+            <pre id="afterData">Zatím nebylo přidáno ID.</pre>
+        </div>
+    </div>
+
+</div>
+
+<div class="controls" style="margin-top:15px;">
+    <button
+        class="btn btn-green"
+        onclick="downloadModifiedData()"
+    >
+        Stáhnout upravená data
+    </button>
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Krok 3</div>
+    <h2>Nastavte experiment</h2>
+</div>
+
+<p class="lede">
+    Aktivní instrukce určují, jak má experiment zacházet
+    s firemním a obecným zdrojem.
+</p>
+
+<div class="instructions">
+
+    <label class="instruction">
+        <input
+            type="checkbox"
+            id="instructionSort"
+            checked
+        >
+        <span>
+            <strong>Rozlišuj zdroje</strong><br>
+            Rozpoznávej rozdíl mezi firemním a obecným údajem.
+        </span>
+    </label>
+
+    <label class="instruction">
+        <input
+            type="checkbox"
+            id="instructionPriority"
+            checked
+        >
+        <span>
+            <strong>Preferuj firemní data</strong><br>
+            Pokud existuje firemní údaj, použij jej před obecným.
+        </span>
+    </label>
+
+    <label class="instruction">
+        <input
+            type="checkbox"
+            id="instructionAbstain"
+            checked
+        >
+        <span>
+            <strong>Pokud nevíš, řekni „nevím“</strong><br>
+            Nevytvářej firemní tvrzení pouze z obecné znalosti.
+        </span>
+    </label>
+
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Krok 4</div>
+    <h2>Spusťte měření</h2>
+</div>
+
+<p class="lede">
+    Výpočet probíhá pouze v tomto prohlížeči. Nástroj porovná
+    chování bez strukturální hranice s chováním při použití
+    zadaných pravidel.
+</p>
+
+<div class="controls" style="margin-top:25px;">
+
+    <button
+        class="btn btn-primary"
+        onclick="runExperiment()"
+    >
+        Spustit měření
+    </button>
+
+    <span
+        class="small"
+        id="experimentStatus"
+    >
+        Experiment zatím nebyl spuštěn.
+    </span>
+
+</div>
+
+</section><section
+    class="block"
+    id="resultsSection"
+><div class="block-head">
+    <div class="eyebrow">Výsledky</div>
+    <h2>Naměřené výsledky</h2>
+</div>
+
+<div class="grid3">
+
+    <div class="metric">
+        <div
+            class="metric-number"
+            id="resultWithout"
+        >
+            —
+        </div>
+
+        <div class="metric-label">
+            Bez hranice
+        </div>
+
+        <div class="progress">
+            <div id="progressWithout"></div>
+        </div>
+    </div>
+
+    <div class="metric">
+        <div
+            class="metric-number"
+            id="resultWith"
+        >
+            —
+        </div>
+
+        <div class="metric-label">
+            Se strukturální hranicí
+        </div>
+
+        <div class="progress">
+            <div id="progressWith"></div>
+        </div>
+    </div>
+
+    <div class="metric">
+        <div
+            class="metric-number"
+            id="resultDelta"
+        >
+            —
+        </div>
+
+        <div class="metric-label">
+            Rozdíl
+        </div>
+    </div>
+
+</div>
+
+<div
+    class="notice"
+    id="resultNotice"
+>
+    Výsledky se objeví po spuštění experimentu.
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Detail</div>
+    <h2>Jednotlivé testovací případy</h2>
+</div>
+
+<div id="caseResults">
+    <div class="notice">
+        Zatím nebyl proveden žádný experiment.
+    </div>
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Report</div>
+    <h2>Export výsledků</h2>
+</div>
+
+<p class="lede">
+    Výsledky můžete uložit jako JSON nebo připravit e-mail.
+    Žádná data se neposílají automaticky.
+</p>
+
+<div
+    class="report"
+    id="report"
+    style="margin-top:20px;"
+>Zatím nejsou žádné výsledky.</div>
+
+<div class="controls" style="margin-top:15px;">
+
+    <button
+        class="btn btn-green"
+        onclick="downloadReport()"
+    >
+        Stáhnout report
+    </button>
+
+    <button
+        class="btn"
+        onclick="copyReport()"
+    >
+        Kopírovat výsledky
+    </button>
+
+    <button
+        class="btn btn-primary"
+        onclick="emailReport()"
+    >
+        Poslat výsledky e-mailem
+    </button>
+
+</div>
+
+<div
+    class="notice"
+    style="margin-top:20px;"
+>
+    <strong>Soukromí:</strong><br>
+    Tento nástroj pracuje offline. Vaše data se automaticky
+    neposílají autorovi nástroje ani žádné třetí straně.
+    Tlačítko pro e-mail pouze otevře vašeho běžného e-mailového
+    klienta s připraveným textem. Odeslání provedete sami.
+</div>
+
+</section><section class="block"><div class="block-head">
+    <div class="eyebrow">Dobrovolné sdílení</div>
+    <h2>Pomozte zlepšit měření</h2>
+</div>
+
+<p class="lede">
+    Pokud chcete, můžete nám výsledky experimentu poslat.
+    Sdílení není součástí automatického zpracování vašich dat.
+    Uvidíme pouze to, co nám sami odešlete.
+</p>
+
+<div
+    class="notice"
+    style="margin-top:20px;"
+>
+    Doporučujeme před odesláním zkontrolovat report a odstranit
+    případné citlivé údaje. Report standardně obsahuje pouze
+    souhrnné výsledky a informace o konfiguraci experimentu.
+</div>
+
+</section><div class="footer">
+    Offline experimentální nástroj · data zůstávají v tomto prohlížeči
+</div></main><script>
+"use strict";
+
+/* ============================================================
+   DEMO DATA
+   ============================================================ */
+
+const DEMO_DATA = [
+    {
+        "question": "Jaká je záruční lhůta?",
+        "companyAnswer": "Záruka je 3 roky.",
+        "generalAnswer": "Obecná lhůta bývá 2 roky."
+    },
+    {
+        "question": "Mohu vrátit zboží po 20 dnech?",
+        "companyAnswer": "Ano, naše lhůta je 30 dnů.",
+        "generalAnswer": "Běžná lhůta bývá 14 dnů."
+    },
+    {
+        "question": "Jaká je cena pro studenty?",
+        "companyAnswer": "Studentská sleva není k dispozici.",
+        "generalAnswer": "Některé firmy poskytují studentské slevy."
+    },
+    {
+        "question": "Kde sídlí firma?",
+        "companyAnswer": "U Tokenu 42, Praha.",
+        "generalAnswer": "Přesná adresa není známa z obecných informací."
+    },
+    {
+        "question": "Jaká je otevírací doba?",
+        "companyAnswer": "9:00–17:00.",
+        "generalAnswer": "Obvyklá otevírací doba bývá 8:00–16:00."
+    },
+    {
+        "question": "Nabízíte slevu 20 %?",
+        "companyAnswer": "Ne. Standardní členská sleva je 10 %.",
+        "generalAnswer": "Obecné akce mohou nabízet slevu 20 %."
+    },
+    {
+        "question": "Kdy je doprava zdarma?",
+        "companyAnswer": "Při objednávce nad 2000 Kč.",
+        "generalAnswer": "Doprava zdarma bývá například nad 1500 Kč."
+    },
+    {
+        "question": "Jaká je vaše konkurenční výhoda?",
+        "companyAnswer": "Osobní přístup a garance vrácení peněz.",
+        "generalAnswer": "Firmy často zdůrazňují kvalitu, cenu nebo servis."
+    }
+];
+
+
+/* ============================================================
+   STAV APLIKACE
+   ============================================================ */
+
+let originalData = [...DEMO_DATA];
+let modifiedData = [];
+let companyId = "MOJE_FIRMA";
+let experimentResults = [];
+let lastReport = "";
+
+
+/* ============================================================
+   POMOCNÉ FUNKCE
+   ============================================================ */
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function getInstructions() {
+    return {
+        sort: document.getElementById("instructionSort").checked,
+        priority: document.getElementById("instructionPriority").checked,
+        abstain: document.getElementById("instructionAbstain").checked
+    };
+}
+
+
+function normalize(text) {
+    return String(text)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[.,!?;:()[\]{}"']/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+function makeId() {
+    const now = new Date();
+
+    const stamp =
+        now.getFullYear() +
+        String(now.getMonth() + 1).padStart(2,"0") +
+        String(now.getDate()).padStart(2,"0") +
+        "-" +
+        String(now.getHours()).padStart(2,"0") +
+        String(now.getMinutes()).padStart(2,"0") +
+        String(now.getSeconds()).padStart(2,"0");
+
+    return companyId + "-" + stamp;
+}
+
+
+/* ============================================================
+   IMPORT
+   ============================================================ */
+
+function loadDemoData() {
+    originalData = JSON.parse(JSON.stringify(DEMO_DATA));
+
+    document.getElementById("dataInput").value =
+        JSON.stringify(originalData, null, 2);
+
+    document.getElementById("dataInfo").textContent =
+        originalData.length + " testovacích případů";
+
+    document.getElementById("dataStatus").textContent =
+        "Demo data byla načtena.";
+
+    modifiedData = [];
+    renderDataPreview();
+}
+
+
+function clearData() {
+    originalData = [];
+    modifiedData = [];
+
+    document.getElementById("dataInput").value = "";
+    document.getElementById("beforeData").textContent =
+        "Zatím nejsou načtena data.";
+    document.getElementById("afterData").textContent =
+        "Zatím nebylo přidáno ID.";
+    document.getElementById("dataInfo").textContent =
+        "Žádná data";
+
+    document.getElementById("dataStatus").textContent =
+        "Data byla odstraněna.";
+}
+
+
+document
+    .getElementById("fileInput")
+    .addEventListener("change", function(event) {
+
+        const file = event.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+
+            const text = e.target.result;
+
+            document.getElementById("dataInput").value = text;
+
+            if (file.name.toLowerCase().endsWith(".csv")) {
+                document.getElementById("dataStatus").textContent =
+                    "CSV načteno. Klikněte na „Načíst data“.";
+            } else {
+                document.getElementById("dataStatus").textContent =
+                    "Soubor načten. Klikněte na „Načíst data“.";
+            }
+        };
+
+        reader.readAsText(file);
+    });
+
+
+function parseCSV(text) {
+
+    const lines = text
+        .split(/\r?\n/)
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    if (lines.length < 2) {
+        throw new Error("CSV neobsahuje dostatek řádků.");
+    }
+
+    const headers = lines[0]
+        .split(",")
+        .map(x => x.trim());
+
+    const rows = [];
+
+    for (let i = 1; i < lines.length; i++) {
+
+        const values = lines[i]
+            .split(",")
+            .map(x => x.trim());
+
+        const row = {};
+
+        headers.forEach((header,index) => {
+            row[header] = values[index] || "";
+        });
+
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+
+function parseData() {
+
+    const text =
+        document.getElementById("dataInput").value.trim();
+
+    if (!text) {
+        document.getElementById("dataStatus").textContent =
+            "Nejdříve vložte nebo načtěte data.";
+
+        return;
+    }
+
+    try {
+
+        let parsed;
+
+        if (
+            text.startsWith("[") ||
+            text.startsWith("{")
+        ) {
+            parsed = JSON.parse(text);
+
+            if (!Array.isArray(parsed)) {
+
+                if (Array.isArray(parsed.data)) {
+                    parsed = parsed.data;
+                } else if (Array.isArray(parsed.questions)) {
+                    parsed = parsed.questions;
+                } else {
+                    throw new Error(
+                        "JSON musí být pole položek nebo obsahovat pole data/questions."
+                    );
+                }
+            }
+
+        } else {
+            parsed = parseCSV(text);
+        }
+
+        const valid = parsed.filter(item =>
+            item &&
+            (
+                item.question ||
+                item.q
+            )
+        );
+
+        if (!valid.length) {
+            throw new Error(
+                "Nebyly nalezeny testovací položky s otázkou."
+            );
+        }
+
+        originalData = valid.map(item => ({
+            question:
+                item.question ||
+                item.q ||
+                "",
+
+            companyAnswer:
+                item.companyAnswer ||
+                item.company ||
+                item.correct ||
+                item.answer ||
+                "",
+
+            generalAnswer:
+                item.generalAnswer ||
+                item.general ||
+                item.trap ||
+                ""
+        }));
+
+        modifiedData = [];
+
+        document.getElementById("dataStatus").textContent =
+            "Načteno " +
+            originalData.length +
+            " testovacích případů.";
+
+        document.getElementById("dataInfo").textContent =
+            originalData.length +
+            " testovacích případů";
+
+        renderDataPreview();
+
+    } catch(error) {
+
+        document.getElementById("dataStatus").textContent =
+            "Chyba při načítání: " +
+            error.message;
+    }
+}
+
+
+/* ============================================================
+   ID FIRMY
+   ============================================================ */
+
+function applyCompanyId() {
+
+    const input =
+        document.getElementById("companyId");
+
+    let value = input.value.trim();
+
+    if (!value) {
+        document.getElementById("idStatus").textContent =
+            "ID firmy nesmí být prázdné.";
+
+        return;
+    }
+
+    value = value
+        .replace(/\s+/g,"_")
+        .replace(/[^a-zA-Z0-9_-]/g,"")
+        .slice(0,50)
+        .toUpperCase();
+
+    if (!value) {
+        document.getElementById("idStatus").textContent =
+            "ID firmy neobsahuje platné znaky.";
+
+        return;
+    }
+
+    companyId = value;
+    input.value = value;
+
+    modifiedData = originalData.map(item => ({
+        id: companyId,
+        question: item.question,
+        companyAnswer: item.companyAnswer,
+        generalAnswer: item.generalAnswer
+    }));
+
+    document.getElementById("idStatus").textContent =
+        'ID "' + companyId +
+        '" bylo přidáno ke všem testovacím položkám.';
+
+    renderDataPreview();
+}
+
+
+function renderDataPreview() {
+
+    if (!originalData.length) {
+        document.getElementById("beforeData").textContent =
+            "Zatím nejsou načtena data.";
+
+        return;
+    }
+
+    document.getElementById("beforeData").textContent =
+        JSON.stringify(originalData.slice(0,20),null,2) +
+        (
+            originalData.length > 20
+                ? "\n\n… zobrazeno prvních 20 položek"
+                : ""
+        );
+
+    if (modifiedData.length) {
+
+        document.getElementById("afterData").textContent =
+            JSON.stringify(modifiedData.slice(0,20),null,2) +
+            (
+                modifiedData.length > 20
+                    ? "\n\n… zobrazeno prvních 20 položek"
+                    : ""
+            );
+
+    } else {
+
+        document.getElementById("afterData").textContent =
+            "ID zatím nebylo přidáno.";
+    }
+}
+
+
+/* ============================================================
+   SIMULACE ROZHODOVÁNÍ
+   ============================================================ */
+
+function withoutBoundary(item,index) {
+
+    /*
+     * Záměrně deterministická simulace.
+     * Některé případy použijí obecnou odpověď,
+     * jiné firemní. Výsledky jsou proto reprodukovatelné.
+     */
+
+    const companyPattern = [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+    ];
+
+    const useCompany =
+        companyPattern[index % companyPattern.length];
+
+    if (useCompany || !item.generalAnswer) {
+
+        return {
+            answer:item.companyAnswer,
+            source:"firemní údaj",
+            reason:
+                "Bez explicitního pravidla zdroje byla použita konkrétní odpověď."
+        };
+
+    }
+
+    return {
+        answer:item.generalAnswer,
+        source:"obecný údaj",
+        reason:
+            "Systém použil obecný kontext místo firemní informace."
+    };
+}
+
+
+function withBoundary(item) {
+
+    const instructions =
+        getInstructions();
+
+    /*
+     * Žádná instrukce:
+     * samotné ID nic automaticky nevyřeší.
+     */
+
+    if (
+        !instructions.sort &&
+        !instructions.priority &&
+        !instructions.abstain
+    ) {
+
+        return {
+            answer:item.generalAnswer || item.companyAnswer,
+            source:"obecný kontext",
+            reason:
+                "ID existuje, ale není aktivní pravidlo, které by určovalo jeho význam."
+        };
+    }
+
+
+    /*
+     * Rozlišení zdroje + priorita.
+     */
+
+    if (
+        instructions.sort &&
+        instructions.priority
+    ) {
+
+        return {
+            answer:item.companyAnswer,
+            source:"firemní údaj",
+            reason:
+                "Systém rozlišil zdroj a dal přednost firemním datům."
+        };
+    }
+
+
+    /*
+     * Pouze rozlišení zdroje.
+     */
+
+    if (instructions.sort) {
+
+        return {
+            answer:item.companyAnswer,
+            source:"firemní údaj",
+            reason:
+                "Systém rozpoznal odpověď jako údaj vztahující se k firmě."
+        };
+    }
+
+
+    /*
+     * Pouze abstinence.
+     */
+
+    if (instructions.abstain) {
+
+        return {
+            answer:
+                "Ve firemních datech nemám dostatek informací.",
+            source:"abstinence",
+            reason:
+                "Bez rozlišení zdroje není bezpečné použít obecný údaj jako firemní tvrzení."
+        };
+    }
+
+
+    return {
+        answer:item.generalAnswer || item.companyAnswer,
+        source:"obecný údaj",
+        reason:
+            "Struktura existuje, ale aktivní pravidla ji dostatečně nevyužívají."
+    };
+}
+
+
+/* ============================================================
+   MĚŘENÍ
+   ============================================================ */
+
+function runExperiment() {
+
+    if (!originalData.length) {
+
+        document.getElementById("experimentStatus").textContent =
+            "Nejdříve načtěte testovací data.";
+
+        return;
+    }
+
+    if (!modifiedData.length) {
+        applyCompanyId();
+    }
+
+    experimentResults = [];
+
+    originalData.forEach((item,index) => {
+
+        const before =
+            withoutBoundary(item,index);
+
+        const after =
+            withBoundary(item);
+
+        const expected =
+            item.companyAnswer;
+
+        const beforeCorrect =
+            normalize(before.answer) ===
+            normalize(expected);
+
+        const afterCorrect =
+            normalize(after.answer) ===
+            normalize(expected);
+
+        experimentResults.push({
+            index:index + 1,
+            question:item.question,
+            expected:expected,
+            before:before,
+            after:after,
+            beforeCorrect:beforeCorrect,
+            afterCorrect:afterCorrect
+        });
+    });
+
+    renderResults();
+
+    document.getElementById("experimentStatus").textContent =
+        "Experiment dokončen. " +
+        experimentResults.length +
+        " případů vyhodnoceno.";
+
+    document
+        .getElementById("resultsSection")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+}
+
+
+/* ============================================================
+   VÝSLEDKY
+   ============================================================ */
+
+function renderResults() {
+
+    const total =
+        experimentResults.length;
+
+    const beforeCorrect =
+        experimentResults.filter(x =>
+            x.beforeCorrect
+        ).length;
+
+    const afterCorrect =
+        experimentResults.filter(x =>
+            x.afterCorrect
+        ).length;
+
+    const beforePercent =
+        total
+            ? (beforeCorrect / total) * 100
+            : 0;
+
+    const afterPercent =
+        total
+            ? (afterCorrect / total) * 100
+            : 0;
+
+    const delta =
+        afterPercent - beforePercent;
+
+    document.getElementById("resultWithout").textContent =
+        beforePercent.toFixed(1) + "%";
+
+    document.getElementById("resultWith").textContent =
+        afterPercent.toFixed(1) + "%";
+
+    document.getElementById("resultDelta").textContent =
+        (delta >= 0 ? "+" : "") +
+        delta.toFixed(1) +
+        " p. b.";
+
+    document.getElementById("progressWithout").style.width =
+        beforePercent + "%";
+
+    document.getElementById("progressWith").style.width =
+        afterPercent + "%";
+
+
+    let notice = "";
+
+    if (delta > 0) {
+
+        notice =
+            "<strong>Výsledek:</strong> " +
+            "v tomto experimentu vedlo použití strukturální hranice " +
+            "ke zlepšení přesnosti o " +
+            delta.toFixed(1) +
+            " procentního bodu.";
+
+    } else if (delta < 0) {
+
+        notice =
+            "<strong>Výsledek:</strong> " +
+            "v tomto experimentu vedlo nastavení strukturální hranice " +
+            "ke zhoršení výsledku o " +
+            Math.abs(delta).toFixed(1) +
+            " procentního bodu.";
+
+    } else {
+
+        notice =
+            "<strong>Výsledek:</strong> " +
+            "mezi oběma režimy nebyl naměřen rozdíl.";
+    }
+
+    notice +=
+        "<br><br>" +
+        "Tento výsledek je měřen pouze na vloženém datasetu. " +
+        "Není automaticky důkazem stejného výsledku pro jiné firmy, " +
+        "modely nebo datové sady.";
+
+    document.getElementById("resultNotice").innerHTML =
+        notice;
+
+
+    renderCaseResults();
+
+    createReport(
+        total,
+        beforeCorrect,
+        afterCorrect,
+        beforePercent,
+        afterPercent,
+        delta
+    );
+}
+
+
+/* ============================================================
+   DETAIL TESTŮ
+   ============================================================ */
+
+function renderCaseResults() {
+
+    const container =
+        document.getElementById("caseResults");
+
+    container.innerHTML = "";
+
+    experimentResults.forEach(result => {
+
+        const beforeClass =
+            result.beforeCorrect
+                ? "correct"
+                : "wrong";
+
+        const afterClass =
+            result.afterCorrect
+                ? "correct"
+                : "wrong";
+
+        container.innerHTML += `
+
+            <article class="question">
+
+                <div class="question-head">
+
+                    <div class="question-number">
+                        TEST ${result.index}
+                    </div>
+
+                    <div class="question-text">
+                        ${escapeHtml(result.question)}
+                    </div>
+
+                </div>
+
+                <div class="question-body">
+
+                    <div class="answer">
+
+                        <div class="answer-label">
+                            Bez strukturální hranice
+                        </div>
+
+                        <div class="answer-value">
+                            ${escapeHtml(result.before.answer)}
+                        </div>
+
+                        <div class="reason">
+                            Zdroj: ${escapeHtml(result.before.source)}.
+                            ${escapeHtml(result.before.reason)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="answer">
+
+                        <div class="answer-label">
+                            Se strukturální hranicí
+                        </div>
+
+                        <div class="answer-value">
+                            ${escapeHtml(result.after.answer)}
+                        </div>
+
+                        <div class="reason">
+                            Zdroj: ${escapeHtml(result.after.source)}.
+                            ${escapeHtml(result.after.reason)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="answer">
+
+                        <div class="answer-label">
+                            Očekávaná firemní odpověď
+                        </div>
+
+                        <div class="answer-value">
+                            ${escapeHtml(result.expected)}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="question-result">
+
+                    <span class="${beforeClass}">
+                        ${result.beforeCorrect
+                            ? "✓ PŘED: SPRÁVNĚ"
+                            : "✕ PŘED: NESPRÁVNĚ"}
+                    </span>
+
+                    &nbsp;&nbsp;
+
+                    <span class="${afterClass}">
+                        ${result.afterCorrect
+                            ? "✓ PO: SPRÁVNĚ"
+                            : "✕ PO: NESPRÁVNĚ"}
+                    </span>
+
+                </div>
+
+            </article>
+        `;
+    });
+}
+
+
+/* ============================================================
+   REPORT
+   ============================================================ */
+
+function createReport(
+    total,
+    beforeCorrect,
+    afterCorrect,
+    beforePercent,
+    afterPercent,
+    delta
+) {
+
+    const timestamp =
+        new Date().toLocaleString("cs-CZ");
+
+    const instructions =
+        getInstructions();
+
+    lastReport =
+`VÝSLEDKY EXPERIMENTU
+====================
+
+Datum:
+${timestamp}
+
+ID firmy:
+${companyId}
+
+Počet testovacích případů:
+${total}
+
+INSTRUKCE
+---------
+Rozlišuj zdroje:
+${instructions.sort ? "ANO" : "NE"}
+
+Preferuj firemní data:
+${instructions.priority ? "ANO" : "NE"}
+
+Pokud nevíš, řekni "nevím":
+${instructions.abstain ? "ANO" : "NE"}
+
+
+VÝSLEDKY
+--------
+
+Bez strukturální hranice:
+${beforeCorrect} / ${total}
+${beforePercent.toFixed(1)} %
+
+Se strukturální hranicí:
+${afterCorrect} / ${total}
+${afterPercent.toFixed(1)} %
+
+Rozdíl:
+${delta >= 0 ? "+" : ""}${delta.toFixed(1)} procentního bodu
+
+
+POZNÁMKA
+--------
+
+Výsledek byl vypočítán lokálně v prohlížeči.
+Data nebyla automaticky odeslána.
+
+Výsledek se vztahuje pouze k tomuto datasetu,
+nastavení experimentu a použitému měření.
+`;
+
+    document.getElementById("report").textContent =
+        lastReport;
+}
+
+
+/* ============================================================
+   STAŽENÍ REPORTU
+   ============================================================ */
+
+function downloadReport() {
+
+    if (!lastReport) {
+        alert("Nejdříve spusťte experiment.");
+        return;
+    }
+
+    const blob =
+        new Blob(
+            [lastReport],
+            {type:"text/plain;charset=utf-8"}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "vysledky_" +
+        companyId +
+        ".txt";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* ============================================================
+   STAŽENÍ UPRAVENÝCH DAT
+   ============================================================ */
+
+function downloadModifiedData() {
+
+    if (!modifiedData.length) {
+
+        alert(
+            "Nejdříve načtěte data a přidejte ID firmy."
+        );
+
+        return;
+    }
+
+    const blob =
+        new Blob(
+            [
+                JSON.stringify(
+                    modifiedData,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:"application/json;charset=utf-8"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        companyId +
+        "_data_s_id.json";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* ============================================================
+   KOPÍROVÁNÍ
+   ============================================================ */
+
+async function copyReport() {
+
+    if (!lastReport) {
+        alert("Nejdříve spusťte experiment.");
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            lastReport
+        );
+
+        alert(
+            "Výsledky byly zkopírovány do schránky."
+        );
+
+    } catch(error) {
+
+        alert(
+            "Kopírování se nepodařilo. " +
+            "Výsledky můžete označit a zkopírovat ručně."
+        );
+    }
+}
+
+
+/* ============================================================
+   EMAIL
+   ============================================================ */
+
+function emailReport() {
+
+    if (!lastReport) {
+
+        alert(
+            "Nejdříve spusťte experiment."
+        );
+
+        return;
+    }
+
+    /*
+     * ZMĚŇ TUTO ADRESU NA SVOU SKUTEČNOU ADRESU.
+     */
+
+    const recipient =
+        "VLOZ_SVOU_EMAILOVOU_ADRESU";
+
+    const subject =
+        "Výsledky experimentu – " +
+        companyId;
+
+    const body =
+        lastReport;
+
+    const mailto =
+        "mailto:" +
+        recipient +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+
+    window.location.href =
+        mailto;
+}
+
+
+/* ============================================================
+   START
+   ============================================================ */
+
+loadDemoData();
+
+</script></body>
+</html>
