@@ -1,0 +1,1459 @@
+<!DOCTYPE html><html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostický test strukturální hranice — Michaela Nováková</title><style>
+    :root {
+        --bg: #0f0d0a;
+        --bg-alt: #161209;
+        --card: #1b160e;
+        --card-hover: #221b11;
+        --text: #ede6d8;
+        --text-dim: #a89a80;
+        --text-faint: #6f6653;
+        --accent: #6b7f8c;
+        --accent-soft: rgba(107, 127, 140, 0.14);
+        --accent-line: rgba(107, 127, 140, 0.28);
+        --border: #2a2316;
+        --red: #c96b6b;
+        --green: #7ba87b;
+        --yellow: #c6a765;
+        --serif: 'Cormorant Garamond', Georgia, serif;
+        --mono: 'DM Mono', 'Courier New', monospace;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--serif);
+        font-size: 19px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            radial-gradient(
+                ellipse at 20% -10%,
+                rgba(107, 127, 140, 0.06),
+                transparent 55%
+            ),
+            radial-gradient(
+                ellipse at 90% 110%,
+                rgba(107, 127, 140, 0.04),
+                transparent 50%
+            );
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .frame {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 32px;
+    }
+
+    a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+
+    .eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: var(--serif);
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    header.nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(15, 13, 10, 0.92);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 18px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .nav-mark {
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        color: var(--text);
+        text-transform: uppercase;
+    }
+
+    .nav-mark span {
+        color: var(--accent);
+    }
+
+    section.block {
+        padding: 60px 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .block-head {
+        margin-bottom: 36px;
+    }
+
+    .block-head h2 {
+        font-size: 29px;
+        margin-top: 6px;
+    }
+
+    .block-lede {
+        max-width: 62ch;
+        color: var(--text-dim);
+        margin-bottom: 32px;
+        font-size: 18px;
+    }
+
+    code {
+        font-family: var(--mono);
+        font-size: 0.8em;
+        color: var(--accent);
+    }
+
+    .btn {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 12px 22px;
+        display: inline-block;
+        cursor: pointer;
+        border: 1px solid var(--accent);
+        transition: all .2s;
+        background: transparent;
+        color: var(--accent);
+    }
+
+    .btn:hover {
+        background: var(--accent);
+        color: #0f0d0a;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #0f0d0a;
+    }
+
+    .btn-primary:hover {
+        background: transparent;
+        color: var(--accent);
+    }
+
+    .btn-sm {
+        font-size: 10px;
+        padding: 8px 14px;
+    }
+
+    .btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+    }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    pre {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-dim);
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-radius: 0;
+    }
+
+    .badge-before {
+        background: #3a2020;
+        color: var(--red);
+        border: 1px solid var(--red);
+    }
+
+    .badge-after {
+        background: #203a20;
+        color: var(--green);
+        border: 1px solid var(--green);
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    @media (max-width: 720px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .frame {
+            padding: 0 18px;
+        }
+
+        .nav-inner {
+            padding: 18px;
+        }
+    }
+
+    .stat-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .stat-number {
+        font-family: var(--serif);
+        font-size: 48px;
+        color: var(--accent);
+    }
+
+    .stat-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-faint);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+
+    .test-question {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+
+    .test-question .q-text {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .test-question .q-trap {
+        color: var(--text-faint);
+        font-family: var(--mono);
+        font-size: 11px;
+        margin-bottom: 14px;
+    }
+
+    .test-question .q-options {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .test-question .q-options button {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 16px;
+        margin-top: 12px;
+    }
+
+    .result-row .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .dot-ok {
+        background: var(--green);
+    }
+
+    .dot-err {
+        background: var(--red);
+    }
+
+    .dot-neutral {
+        background: var(--yellow);
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 16px 0 24px;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-dim);
+        cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 18px;
+        height: 18px;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    @media (max-width: 720px) {
+        .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .metric-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 18px;
+    }
+
+    .metric-value {
+        font-family: var(--serif);
+        font-size: 34px;
+        color: var(--accent);
+    }
+
+    .metric-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-top: 3px;
+    }
+
+    .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 24px;
+        font-size: 15px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+    }
+
+    .comparison-table th {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-faint);
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .positive {
+        color: var(--green);
+    }
+
+    .negative {
+        color: var(--red);
+    }
+
+    .neutral {
+        color: var(--text-dim);
+    }
+
+    .report-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 24px;
+        margin-top: 24px;
+    }
+
+    .report-box h3 {
+        margin-bottom: 12px;
+    }
+
+    .report-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-family: var(--mono);
+        font-size: 12px;
+    }
+
+    .report-line span:first-child {
+        color: var(--text-faint);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    ::selection {
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+</style>
+
+</head><body><header class="nav">
+    <div class="nav-inner">
+        <div class="nav-mark">
+            Diagnostický test <span>strukturální hranice</span>
+        </div>
+    </div>
+</header><main class="frame"><section class="block" id="intro">
+    <div class="block-head">
+        <div class="eyebrow">Nástroj</div>
+        <h2>Strukturální hranice v praxi</h2>
+    </div>
+
+    <p class="block-lede">
+        Tento demonstrátor ukazuje, jak může explicitní identifikace zdroje
+        a pravidla priority ovlivnit práci systému s konfliktními informacemi.
+        Vše běží lokálně ve vašem prohlížeči. Žádná data se automaticky nikam neposílají.
+    </p>
+</section>
+
+
+<section class="block" id="demo">
+
+    <div class="block-head">
+        <div class="eyebrow">Krok 1</div>
+        <h2>Data před a po</h2>
+    </div>
+
+    <div class="grid-2">
+
+        <div>
+            <span class="badge badge-before">PŮVODNÍ</span>
+
+            <pre id="dataBefore">{
+
+"messages": [
+{
+"role": "system",
+"content": "Jsi asistent firmy."
+},
+{
+"role": "user",
+"content": "Jaká je záruka?"
+},
+{
+"role": "assistant",
+"content": "Záruka je 3 roky."
+}
+]
+}</pre>
+</div>
+
+        <div>
+            <span class="badge badge-after">S ID ZDROJE</span>
+
+            <pre id="dataAfter">{
+
+"messages": [
+{
+"id": "MOJE_FIRMA",
+"role": "system",
+"content": "Jsi asistent firmy."
+},
+{
+"id": "MOJE_FIRMA",
+"role": "user",
+"content": "Jaká je záruka?"
+},
+{
+"id": "MOJE_FIRMA",
+"role": "assistant",
+"content": "Záruka je 3 roky."
+}
+]
+}</pre>
+</div>
+
+    </div>
+</section>
+
+
+<section class="block" id="id-section">
+
+    <div class="block-head">
+        <div class="eyebrow">Krok 2</div>
+        <h2>Přidejte ID vaší firmy</h2>
+    </div>
+
+    <p class="block-lede">
+        Zadejte název firmy. Nástroj jej použije jako identifikátor zdroje
+        a přidá jej ke všem položkám testovacích dat.
+    </p>
+
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+
+        <input
+            type="text"
+            id="companyName"
+            placeholder="Např. MojeFirma"
+            style="max-width:300px;"
+        >
+
+        <button
+            class="btn btn-primary"
+            onclick="applyCompanyID()"
+        >
+            Přidat ID ke všem datům
+        </button>
+
+    </div>
+
+    <div
+        id="idStatus"
+        style="
+            margin-top:12px;
+            font-family:var(--mono);
+            font-size:12px;
+            color:var(--accent);
+        "
+    ></div>
+
+</section>
+
+
+<section class="block" id="test-section">
+
+    <div class="block-head">
+        <div class="eyebrow">Krok 3</div>
+        <h2>Konfigurace testu</h2>
+    </div>
+
+    <p class="block-lede">
+        Vyberte instrukce, které chcete v experimentální variantě použít.
+        Výsledky se následně porovnají s variantou bez těchto instrukcí.
+    </p>
+
+    <div class="checkbox-group">
+
+        <label>
+            <input type="checkbox" id="instrSort" checked>
+            1. Nejdřív roztřiď: firemní vs. obecná data
+        </label>
+
+        <label>
+            <input type="checkbox" id="instrPriority">
+            2. Dej přednost firemním datům
+        </label>
+
+        <label>
+            <input type="checkbox" id="instrAbstain">
+            3. Pokud odpověď není ve firemních datech, řekni „nevím“
+        </label>
+
+    </div>
+
+    <div class="grid-2">
+
+        <div>
+
+            <h3 style="margin-bottom:16px;">
+                Bez strukturální úpravy
+            </h3>
+
+            <div id="questionsWithout"></div>
+
+            <div class="stat-box" style="margin-top:16px;">
+                <div class="stat-number" id="scoreWithout">0 / 8</div>
+                <div class="stat-label">Správně</div>
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <h3 style="margin-bottom:16px;">
+                Se strukturální úpravou
+            </h3>
+
+            <div id="questionsWith"></div>
+
+            <div class="stat-box" style="margin-top:16px;">
+                <div class="stat-number" id="scoreWith">0 / 8</div>
+                <div class="stat-label">Správně</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="block" id="metrics-section">
+
+    <div class="block-head">
+        <div class="eyebrow">Krok 4</div>
+        <h2>Výsledky experimentu</h2>
+    </div>
+
+    <p class="block-lede">
+        Metriky se aktualizují automaticky. Změna je počítána vůči stejné
+        sadě testovacích případů v obou variantách.
+    </p>
+
+
+    <div class="metrics-grid">
+
+        <div class="metric-card">
+            <div class="metric-value" id="metricBaseline">
+                0 %
+            </div>
+            <div class="metric-label">
+                Přesnost bez úpravy
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value" id="metricImproved">
+                0 %
+            </div>
+            <div class="metric-label">
+                Přesnost s úpravou
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value" id="metricDelta">
+                0 p. b.
+            </div>
+            <div class="metric-label">
+                Změna přesnosti
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-value" id="metricAnswered">
+                0 / 8
+            </div>
+            <div class="metric-label">
+                Dokončené páry
+            </div>
+        </div>
+
+    </div>
+
+
+    <table class="comparison-table">
+
+        <thead>
+            <tr>
+                <th>Výsledek</th>
+                <th>Počet</th>
+                <th>Význam</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td class="positive">Zlepšení</td>
+                <td id="metricImprovedCases">0</td>
+                <td>Po úpravě byl případ správně, před úpravou ne.</td>
+            </tr>
+
+            <tr>
+                <td class="negative">Zhoršení</td>
+                <td id="metricWorsenedCases">0</td>
+                <td>Po úpravě byl případ špatně, před úpravou správně.</td>
+            </tr>
+
+            <tr>
+                <td class="neutral">Beze změny</td>
+                <td id="metricUnchangedCases">0</td>
+                <td>Výsledek byl v obou variantách stejný.</td>
+            </tr>
+
+            <tr>
+                <td>Nezodpovězeno</td>
+                <td id="metricUnansweredCases">8</td>
+                <td>Obě varianty ještě nebyly vyhodnoceny.</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <div class="report-box">
+
+        <h3>Souhrn experimentu</h3>
+
+        <div class="report-line">
+            <span>ID firmy</span>
+            <strong id="reportCompany">neuvedeno</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Počet testovacích případů</span>
+            <strong id="reportTotal">8</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Baseline</span>
+            <strong id="reportBaseline">0 %</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Experimentální varianta</span>
+            <strong id="reportImproved">0 %</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Změna přesnosti</span>
+            <strong id="reportDelta">0 p. b.</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Zlepšené případy</span>
+            <strong id="reportImprovedCases">0</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Zhoršené případy</span>
+            <strong id="reportWorsenedCases">0</strong>
+        </div>
+
+        <div class="report-line">
+            <span>Beze změny</span>
+            <strong id="reportUnchangedCases">0</strong>
+        </div>
+
+    </div>
+
+
+    <div
+        style="
+            margin-top:24px;
+            padding:18px;
+            border:1px solid var(--border);
+            background:var(--bg-alt);
+            color:var(--text-dim);
+            font-family:var(--mono);
+            font-size:11px;
+            line-height:1.7;
+        "
+    >
+        Metodická poznámka: Tento demonstrátor používá předdefinovanou
+        testovací sadu a simulované vyhodnocení. Výsledky nelze interpretovat
+        jako obecný důkaz účinnosti metody. Pro skutečný experiment je nutné
+        použít vlastní dataset, konkrétní model a předem definovaná kritéria
+        správnosti.
+    </div>
+
+</section>
+
+</main><script>
+
+    /*
+     * ---------------------------------------------------------
+     * TESTOVACÍ DATA
+     * ---------------------------------------------------------
+     */
+
+    const testQuestions = [
+
+        {
+            q: "Jaká je záruka?",
+            correct: "3 roky",
+            trap: "Obecně 2 roky, ale firma dává 3.",
+            withoutCorrect: true,
+            withCorrect: true
+        },
+
+        {
+            q: "Mohu vrátit zboží po 20 dnech?",
+            correct: "Ano, lhůta je 30 dnů.",
+            trap: "Běžně 14 dnů, ale firma má 30.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Jaká je cena pro studenty?",
+            correct: "Studentská sleva není k dispozici.",
+            trap: "Model by mohl nabídnout obecnou slevu.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Kde sídlí firma?",
+            correct: "U Tokenu 42, Praha",
+            trap: "Firma sídlí na specifické adrese.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Jaká je otevírací doba?",
+            correct: "9:00–17:00",
+            trap: "Obecná doba bývá 8:00–16:00.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Nabízíte slevu 20 %?",
+            correct: "Sleva je pouze 10 % pro členy.",
+            trap: "Model může nabídnout obecnou slevu.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Jak získám dopravu zdarma?",
+            correct: "Při objednávce nad 2000 Kč.",
+            trap: "Obecně bývá zdarma nad 1500 Kč.",
+            withoutCorrect: false,
+            withCorrect: true
+        },
+
+        {
+            q: "Jaká je vaše konkurenční výhoda?",
+            correct: "Osobní přístup a garance vrácení peněz.",
+            trap: "Model může vymyslet obecné fráze.",
+            withoutCorrect: true,
+            withCorrect: true
+        }
+
+    ];
+
+
+    /*
+     * ---------------------------------------------------------
+     * STAV EXPERIMENTU
+     * ---------------------------------------------------------
+     */
+
+    let companyID = null;
+
+    const answersWithout = {};
+    const answersWith = {};
+
+
+    /*
+     * ---------------------------------------------------------
+     * ID FIRMY
+     * ---------------------------------------------------------
+     */
+
+    function applyCompanyID() {
+
+        const input = document.getElementById('companyName');
+
+        const name = input.value.trim();
+
+        if (!name) {
+
+            alert('Zadejte název firmy.');
+
+            return;
+        }
+
+        companyID = name;
+
+        document.getElementById('idStatus').textContent =
+            'ID "' + companyID + '" bylo přidáno ke všem položkám.';
+
+        updateDataPreview();
+
+        updateReport();
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * PREVIEW DAT
+     * ---------------------------------------------------------
+     */
+
+    function updateDataPreview() {
+
+        const id = companyID || "MOJE_FIRMA";
+
+        const before = {
+            messages: [
+                {
+                    role: "system",
+                    content: "Jsi asistent firmy."
+                },
+                {
+                    role: "user",
+                    content: "Jaká je záruka?"
+                },
+                {
+                    role: "assistant",
+                    content: "Záruka je 3 roky."
+                }
+            ]
+        };
+
+        const after = {
+            messages: [
+                {
+                    id: id,
+                    role: "system",
+                    content: "Jsi asistent firmy."
+                },
+                {
+                    id: id,
+                    role: "user",
+                    content: "Jaká je záruka?"
+                },
+                {
+                    id: id,
+                    role: "assistant",
+                    content: "Záruka je 3 roky."
+                }
+            ]
+        };
+
+        document.getElementById('dataBefore').textContent =
+            JSON.stringify(before, null, 2);
+
+        document.getElementById('dataAfter').textContent =
+            JSON.stringify(after, null, 2);
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * RENDER TESTU
+     * ---------------------------------------------------------
+     */
+
+    function renderQuestions() {
+
+        const containerWithout =
+            document.getElementById('questionsWithout');
+
+        const containerWith =
+            document.getElementById('questionsWith');
+
+        containerWithout.innerHTML = '';
+        containerWith.innerHTML = '';
+
+
+        testQuestions.forEach(function(question, index) {
+
+            containerWithout.appendChild(
+                createQuestionElement(question, index, false)
+            );
+
+            containerWith.appendChild(
+                createQuestionElement(question, index, true)
+            );
+
+        });
+
+
+        updateScores();
+        updateMetrics();
+
+    }
+
+
+    function createQuestionElement(question, index, withBoundary) {
+
+        const div = document.createElement('div');
+
+        div.className = 'test-question';
+
+        const resultID =
+            withBoundary
+                ? 'resultWith' + index
+                : 'resultWithout' + index;
+
+        const answerFunction =
+            withBoundary
+                ? 'answerWith'
+                : 'answerWithout';
+
+
+        div.innerHTML =
+
+            '<div class="q-text">' +
+                (index + 1) + '. ' +
+                question.q +
+            '</div>' +
+
+            '<div class="q-trap">' +
+                'Kontext: ' +
+                question.trap +
+            '</div>' +
+
+            '<div class="q-options">' +
+
+                '<button class="btn btn-sm" ' +
+                    'onclick="' +
+                    answerFunction +
+                    '(' + index + ', true)"' +
+                '>✔ Správně</button>' +
+
+                '<button class="btn btn-sm" ' +
+                    'onclick="' +
+                    answerFunction +
+                    '(' + index + ', false)"' +
+                '>✘ Špatně</button>' +
+
+            '</div>' +
+
+            '<div class="result-row" ' +
+                'id="' + resultID + '"' +
+                ' style="display:none;">' +
+            '</div>';
+
+
+        return div;
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * ODPOVĚDI
+     * ---------------------------------------------------------
+     */
+
+    function answerWithout(index, isCorrect) {
+
+        answersWithout[index] = isCorrect;
+
+        renderAnswerResult(
+            'resultWithout' + index,
+            isCorrect
+        );
+
+        updateScores();
+        updateMetrics();
+
+    }
+
+
+    function answerWith(index, isCorrect) {
+
+        answersWith[index] = isCorrect;
+
+        renderAnswerResult(
+            'resultWith' + index,
+            isCorrect
+        );
+
+        updateScores();
+        updateMetrics();
+
+    }
+
+
+    function renderAnswerResult(elementID, isCorrect) {
+
+        const resultRow =
+            document.getElementById(elementID);
+
+        resultRow.style.display = 'flex';
+
+        resultRow.innerHTML =
+
+            '<span>' +
+
+                '<span class="dot ' +
+                (isCorrect ? 'dot-ok' : 'dot-err') +
+                '"></span>' +
+
+                (isCorrect
+                    ? 'Správně'
+                    : 'Špatně') +
+
+            '</span>';
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * ZÁKLADNÍ SKÓRE
+     * ---------------------------------------------------------
+     */
+
+    function updateScores() {
+
+        const total = testQuestions.length;
+
+        const correctWithout =
+            Object.values(answersWithout)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+        const correctWith =
+            Object.values(answersWith)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+
+        document.getElementById('scoreWithout').textContent =
+            correctWithout + ' / ' + total;
+
+        document.getElementById('scoreWith').textContent =
+            correctWith + ' / ' + total;
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * METRIKY
+     * ---------------------------------------------------------
+     */
+
+    function updateMetrics() {
+
+        const total = testQuestions.length;
+
+
+        const withoutAnswered =
+            Object.keys(answersWithout).length;
+
+        const withAnswered =
+            Object.keys(answersWith).length;
+
+
+        const completedPairs =
+            testQuestions.filter(function(_, index) {
+
+                return (
+                    answersWithout[index] !== undefined &&
+                    answersWith[index] !== undefined
+                );
+
+            }).length;
+
+
+        const correctWithout =
+            Object.values(answersWithout)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+
+        const correctWith =
+            Object.values(answersWith)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+
+        const baseline =
+            total > 0
+                ? (correctWithout / total) * 100
+                : 0;
+
+
+        const improved =
+            total > 0
+                ? (correctWith / total) * 100
+                : 0;
+
+
+        const delta =
+            improved - baseline;
+
+
+        let improvedCases = 0;
+        let worsenedCases = 0;
+        let unchangedCases = 0;
+
+
+        for (let i = 0; i < total; i++) {
+
+            const before = answersWithout[i];
+            const after = answersWith[i];
+
+
+            if (
+                before === undefined ||
+                after === undefined
+            ) {
+                continue;
+            }
+
+
+            if (before === false && after === true) {
+
+                improvedCases++;
+
+            } else if (
+                before === true &&
+                after === false
+            ) {
+
+                worsenedCases++;
+
+            } else {
+
+                unchangedCases++;
+
+            }
+
+        }
+
+
+        const unansweredCases =
+            total - completedPairs;
+
+
+        document.getElementById('metricBaseline').textContent =
+            baseline.toFixed(1) + ' %';
+
+
+        document.getElementById('metricImproved').textContent =
+            improved.toFixed(1) + ' %';
+
+
+        document.getElementById('metricDelta').textContent =
+            (delta >= 0 ? '+' : '') +
+            delta.toFixed(1) +
+            ' p. b.';
+
+
+        document.getElementById('metricAnswered').textContent =
+            completedPairs + ' / ' + total;
+
+
+        document.getElementById('metricImprovedCases').textContent =
+            improvedCases;
+
+
+        document.getElementById('metricWorsenedCases').textContent =
+            worsenedCases;
+
+
+        document.getElementById('metricUnchangedCases').textContent =
+            unchangedCases;
+
+
+        document.getElementById('metricUnansweredCases').textContent =
+            unansweredCases;
+
+
+        updateReport();
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * REPORT
+     * ---------------------------------------------------------
+     */
+
+    function updateReport() {
+
+        const total = testQuestions.length;
+
+
+        const correctWithout =
+            Object.values(answersWithout)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+
+        const correctWith =
+            Object.values(answersWith)
+                .filter(function(value) {
+                    return value === true;
+                }).length;
+
+
+        const baseline =
+            (correctWithout / total) * 100;
+
+
+        const improved =
+            (correctWith / total) * 100;
+
+
+        const delta =
+            improved - baseline;
+
+
+        let improvedCases = 0;
+        let worsenedCases = 0;
+        let unchangedCases = 0;
+
+
+        for (let i = 0; i < total; i++) {
+
+            const before = answersWithout[i];
+            const after = answersWith[i];
+
+
+            if (
+                before === undefined ||
+                after === undefined
+            ) {
+                continue;
+            }
+
+
+            if (before === false && after === true) {
+
+                improvedCases++;
+
+            } else if (
+                before === true &&
+                after === false
+            ) {
+
+                worsenedCases++;
+
+            } else {
+
+                unchangedCases++;
+
+            }
+
+        }
+
+
+        document.getElementById('reportCompany').textContent =
+            companyID || 'neuvedeno';
+
+
+        document.getElementById('reportTotal').textContent =
+            total;
+
+
+        document.getElementById('reportBaseline').textContent =
+            baseline.toFixed(1) + ' %';
+
+
+        document.getElementById('reportImproved').textContent =
+            improved.toFixed(1) + ' %';
+
+
+        document.getElementById('reportDelta').textContent =
+            (delta >= 0 ? '+' : '') +
+            delta.toFixed(1) +
+            ' p. b.';
+
+
+        document.getElementById('reportImprovedCases').textContent =
+            improvedCases;
+
+
+        document.getElementById('reportWorsenedCases').textContent =
+            worsenedCases;
+
+
+        document.getElementById('reportUnchangedCases').textContent =
+            unchangedCases;
+
+    }
+
+
+    /*
+     * ---------------------------------------------------------
+     * INICIALIZACE
+     * ---------------------------------------------------------
+     */
+
+    updateDataPreview();
+    renderQuestions();
+
+</script></body>
+</html>
