@@ -7,8 +7,12 @@
 
 ---
 
-[ai chatboti_konzultace_web](doma/mimo/chatbot_konzultace.html)
+- [ai chatboti_konzultace_web](doma/mimo/chatbot_konzultace.html)
+  
+- [demonstrator_ai_struktura](doma/mimo/demonstrator_ai_struktura.html)
 
+- [ai_experiment](doma/mimo/ai_experiment.html)
+  
 ---
 
 - [pruvodce](doma/nastroje/pruvodce.html)
