@@ -35,6 +35,7 @@
 - [carofyzika2](doma/nastroje/carofyzika2.html)
 - [carofyzika3](doma/nastroje/carofyzika3.html)
 
+- [carofyzika00](doma/nastroje/carofyzika00.html)
 
 - [carofyzika](doma/nastroje/carofyzika.html)
 - [carofyzika1](doma/nastroje/carofyzika1.html)
