@@ -20,11 +20,17 @@ html{background:var(--bg);color:var(--cr);font-family:var(--fm);font-size:13px;-
 body{overflow:hidden;height:100dvh;width:100vw;position:fixed}
 
 .outer{width:100vw;height:100dvh;overflow:hidden;position:relative}
-.wrap{display:flex;width:400vw;height:100dvh;
+.wrap{display:flex;width:400%;height:100dvh;min-width:400%;
   transition:transform .4s cubic-bezier(.4,0,.2,1);will-change:transform}
-.sec{width:100vw;height:100dvh;overflow-y:auto;overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;flex-shrink:0;
+.sec{width:25%;min-width:25%;height:100dvh;flex:0 0 25%;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
   overscroll-behavior-y:contain;touch-action:pan-y}
+.story-title{text-align:center;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--d2)}
+.story-title p{margin-bottom:.35rem}
+.story-kicker{font-size:.62rem!important;letter-spacing:.2em;text-transform:uppercase;color:var(--ca)!important}
+.story-heading{font-family:var(--fs);font-size:1.25rem!important;letter-spacing:.08em;color:var(--ca)!important;margin-top:1.25rem!important;margin-bottom:.25rem!important}
+.story-quote{text-align:center;font-family:var(--fs);font-size:1.55rem!important;font-style:italic;color:var(--ca)!important;padding:.5rem 0}
+.story-ending{border-top:1px solid var(--d2);padding-top:.8rem;margin-top:1rem;font-style:italic;color:var(--ca)!important}
 
 .sh{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--d2);
   display:flex;justify-content:space-between;align-items:flex-start;padding:.85rem 1rem .65rem}
@@ -247,10 +253,48 @@ body{overflow:hidden;height:100dvh;width:100vw;position:fixed}
       <div class="ac" id="acPohadka">
         <div class="ach" onclick="tog('acPohadka')"><span><span class="ach-ic">◌</span>Pohádka o myši</span><span class="acarr">▾</span></div>
         <div class="acb"><div class="aci">
-          <p>Myš nebyla nikdy obyčejná. Zatímco ostatní zvířata v lese řešila, kdo má pravdu a kdo se mýlí, myš si jen všímala. Seděla v koutě, pozorovala, a co uviděla — to zapsala do mezer mezi větami, mezi gesty, mezi tím, co bylo řečeno a co zůstalo viset ve vzduchu.</p>
-          <p>Nebyla soudce. Nehodnotila, jestli je něco správně nebo špatně. Zajímalo ji jen jedno: <strong>jak se to dá zapsat.</strong> Jakým tvarem, jakým pohybem, jakým zvukem.</p>
-          <p>Jednoho dne si všimla, že každá věc, kterou pozoruje, vypadá jinak podle toho, odkud se na ni dívá. Tak vzala dvanáct kamenů, postavila je do kruhu kolem sebe, a každý kámen nazvala jiným úhlem. Absurdní. Ironický. Filozofický. Naivní. A tak dál — všech dvanáct.</p>
-          <p>Od té doby, když myš zapisuje fenomén, neptá se „co to je", ale <strong>„jak to vypadá odsud, a jak odtamtud."</strong> A z těch dvanácti pohledů na jednu věc vzniká celý svět možností — protože nic není jen jedna pravda.</p>
+          <div class="story-title">
+            <p class="story-kicker">ROVNÉ SVĚDECTVÍ</p>
+            <p><em>Zapsáno rukou, která nechtěla nic vysvětlit.</em></p>
+          </div>
+          <p>Tyto pohádky nevyprávějí příběhy tak, jak by měly.</p>
+          <p>Místo kouzel tu vládne nedorozumění.</p>
+          <p>Místo dobra a zla — podivný klid mezi nimi.</p>
+          <p>Zvířata tu mluví, ale ne proto, aby nás bavila.</p>
+          <p>Říkají to, co lidé nemohou vyslovit.</p>
+          <p>Příběhy, co se spíš staly, než vymyslely — a možná se pořád dějí.</p>
+          <p>Jen je nelze vidět z běžného úhlu.</p>
+          <p class="story-heading">KŘIVÁ POHÁDKA</p>
+          <p><em>Taková malá, divná, křivá pohádka o myši, co možná ani není pohádka, ale něco, co se stalo.</em></p>
+          <p>A v tom světě jsou i jiná zvířata — čáp, páv, kocour, kozel… ale všechno to je napůl sen, napůl vtip, napůl výklad a napůl úplně mimo.</p>
+          <p class="story-heading">O MYŠI</p>
+          <p><em>A o tom, co se stane, když si jí NEvšimneš.</em></p>
+          <p>Kdysi — zároveň ne tak docela dávno. A ne úplně blízko, ale zase ani ne nijak moc daleko.</p>
+          <p>Žila jedna myš.</p>
+          <p>Byla malá, tak jak to u myší normálně bývá. A měla dvě veliké uši, což také není u myši žádná vzácnost.</p>
+          <p>Nebyla nijak zvlášť rychlá, ale ani úplně pomalá. Nebyla hloupá, ale ani kdovíjak chytrá. Na první pohled obyčejná, běžná myš.</p>
+          <p>Ale ne — normální.</p>
+          <p>Všímala si věcí, které ostatní přehlíželi.</p>
+          <p>Například toho, že se ve vzduchu občas zadrhne věta. Nebo že páv, když se nikdo nedívá, přepočítává svá oka. Nebo že čáp někdy jen tak přistane na komíně a zapomene, koho měl donést.</p>
+          <p>A tahle myš si začala věci zapisovat. Ne na papír. Ale tak nějak. Do ticha. Do koutů. Do skulin mezi slovama, kde to obvykle nikdo nečte.</p>
+          <p>A pak si jednoho dne všimla, že se kolem ní začínají hromadit zvířata.</p>
+          <p>Ne v řadě. Ne v kruhu. Prostě… tak nějak.</p>
+          <p>A každé si neslo něco, co nevysvětlovalo.</p>
+          <p>Zajíc měl popálené uši a voněl po kouři.</p>
+          <p>Kocour se dusil smíchem, protože spolkl tečku.</p>
+          <p>Slon si v chobotu nesl třešně, co nikdy nedozrají.</p>
+          <p>A lemur se nedíval na nic, jen na stranu, kde nic nebylo.</p>
+          <p>Myš neříkala nic. Ale všechno si poznamenala.</p>
+          <p>A pak se jednoho dne zeptala první větu.</p>
+          <p>Ne velkou. Ne důležitou. Jenom tu jednu:</p>
+          <p class="story-quote">„Chceš myš?“</p>
+          <p>A to nebyla otázka, co se ptá na ni samotnou.</p>
+          <p>To byla otázka, co se ptá na všechno.</p>
+          <p>Na smysl. Na jazyk. Na strach. Na to, co si z nás kdo udělá.</p>
+          <p>A taky na to, jestli si tuhle pohádku necháš vyprávět do konce. Nebo zapištíš a utečeš. Nebo si ji složíš jinak.</p>
+          <p>Protože od té chvíle už to nebyla jen myš.</p>
+          <p>Byl to klíč. A pádlo. A past.</p>
+          <p class="story-ending">A konec úvodu. Ale začátek něčeho dalšího. …možná…</p>
         </div></div>
       </div>
 
@@ -3567,7 +3611,9 @@ let activeAngleDesc=null;
 // ── NAVIGACE — pouze přes šipky, žádné swipe gesto ───────────
 function go(n){
   SEC=Math.max(0,Math.min(3,n));
-  document.getElementById('W').style.transform=`translateX(-${SEC*100}vw)`;
+  // Posun v procentech šířky celého pásu: nezávisí na zaokrouhlení 100vw
+  // ani na mobilních adresních lištách a šířce scrollbarů na desktopu.
+  document.getElementById('W').style.transform=`translate3d(-${SEC*25}%,0,0)`;
   if(SEC===2)refA();
   if(SEC===3)refO();
   updHash();
